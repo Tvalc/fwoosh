@@ -1,0 +1,639 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>FWOOSH</title>
+<meta name="description" content="You're on fire. The only cure is setting someone else on fire.">
+<meta name="theme-color" content="#07070b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FWOOSH">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307070b'/%3E%3Ccircle cx='32' cy='32' r='16' fill='%23ffb04d'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2307070b'/%3E%3C/svg%3E">
+<style>
+  html,body{margin:0;padding:0;background:#07070b;overflow:hidden;height:100%;
+    -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}
+  body{display:flex;align-items:center;justify-content:center}
+  canvas{display:block;touch-action:none}
+</style>
+<canvas id="c"></canvas>
+<script>
+"use strict";
+// ---------------------------------------------------------------- FWOOSH · phase 1
+// Single file, zero deps. Freeze-tag abstracted: you are LIT, the only cure is
+// touching someone dark, and everyone who burns all the way down leaves a wall.
+//
+// PHASE 1 SCOPE ONLY. No pillars, no glyph, no wreck screen, no SPREAD,
+// no achievements, no share, no cosmetics, NO localStorage.
+//
+// Checkpoint question this build exists to answer:
+//   At minute three, when the court has filled with slag,
+//   is the arena getting more interesting or just more annoying?
+
+// ---------------------------------------------------------------- constants
+const VW = 720, VH = 1280;          // virtual world, portrait, x wraps
+const DT = 1/120;                   // fixed timestep
+
+const K = {
+  // player
+  DRIFT: 110,                       // px/s constant drift, never stopped unless you choose it
+  LUNGE_SPD: 620,
+  LUNGE_T: 0.18,                    // 112px of travel
+  CHARGES: 3,
+  CHARGE_REFILL: 0.9,
+  SWIPE_MIN: 40,
+  BRACE_STOP: 0.060,                // velocity -> 0 in 60ms
+  BRACE_FUSE_MULT: 1.6,
+  R_PLAYER: 14,
+  R_BRACED: 8.4,
+  SHATTER_COST: 0.35,               // fuse cost to break slag while LIT
+
+  // fuses
+  FUSE_START: 3.20,
+  FUSE_MAX: 3.20,                   // also the inherit cap on EAT
+  HUNTER_FUSE: 8.0,
+
+  // crowd
+  R_CELL: 13,
+  CROWD_START: 12,
+  CROWD_CAP: 16,
+  CROWD_RESPAWN: 6.0,
+  FLEE_RANGE: 140,
+  FLEE_SPD: 130,
+  WANDER_SPD: 46,
+
+  // hunters
+  HUNTER_SPD0: 180,
+  HUNTER_SPD1: 340,
+  HUNTER_LAG: 0.22,
+  HUNTER_CAP: 12,
+  COOLDOWN_MIN: 3,                  // the field must have held 3+ hunters at once to count as cleared
+  RELIGHT: 1.5,                     // dark player + no hunters = no fire anywhere; the arena relights
+  GRACE: 0.40,                      // a cell that just changed state is untouchable this long
+  IMMUNE: 1.00,                     // no re-contact with your own passee
+  BACKPASS_END: 1.20,               // backpass window is [IMMUNE, BACKPASS_END]
+  BACKPASS_MULT: 3.0,
+
+  // slag
+  R_SLAG: 11,                       // 22px across, 32 fit the arena width
+
+  // trail
+  TRAIL_EVERY: 0.06,
+  TRAIL_LIFE: 1.2,
+  R_TRAIL: 5,
+
+  // juice (ZERO screen shake, ever)
+  HITSTOP: 0.090,
+  SLOWMO_T: 0.120,
+  SLOWMO_SCALE: 0.25,
+  CLUTCH_FUSE: 0.40,                // sub-0.40s pass earns the slowmo
+};
+
+// ---------------------------------------------------------------- rng (deterministic)
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let SEED = 90909, rnd = mulberry32(SEED);
+
+// ---------------------------------------------------------------- state
+let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
+    armed, respawnT, mode, popCause, nextId, hitstop, slowmo, flash, frame, hist, peakHunters, noFireT;
+let ghost = false;   // test-only: player passes through cells without triggering contact
+let god = false;     // test-only: fuse refills instead of POPping, so long-run arena state is measurable
+
+function reset(seed){
+  if(seed !== undefined){ SEED = seed; }
+  rnd = mulberry32(SEED);
+  cells = []; slag = []; trail = []; rings = []; hist = [];
+  score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
+  mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
+  hitstop = 0; slowmo = 0; flash = 0;
+  hunterFuse = K.HUNTER_FUSE;
+  player = {
+    x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
+    spd: K.DRIFT, lunge: 0, charges: K.CHARGES, chargeT: 0,
+    bracing: false, r: K.R_PLAYER,
+    lit: true, fuse: K.FUSE_START,
+    passeeId: 0, passT: 999, passVal: 0,
+  };
+  for(let i=0;i<K.CROWD_START;i++) spawnCrowd(true);
+}
+
+function spawnCrowd(initial){
+  let x, y, tries = 0;
+  do{
+    x = 40 + rnd()*(VW-80);
+    y = 90 + rnd()*(VH-180);
+    tries++;
+  } while(tries < 30 && (dist(x,y,player.x,player.y) < (initial?170:260) || nearSlag(x,y,K.R_CELL+6)));
+  cells.push({
+    id: nextId++, x, y, vx:0, vy:0, hunter:false, fuse:0, grace:0, born:elapsed,
+    ph: rnd()*Math.PI*2, ps: 0.5 + rnd()*0.7, dir: rnd()*Math.PI*2,
+  });
+}
+
+// ---------------------------------------------------------------- helpers
+function dist(ax,ay,bx,by){ let dx = wrapDX(ax-bx), dy = ay-by; return Math.hypot(dx,dy); }
+function wrapDX(dx){ if(dx >  VW/2) dx -= VW; if(dx < -VW/2) dx += VW; return dx; }
+function nearSlag(x,y,r){ for(const s of slag){ if(dist(x,y,s.x,s.y) < r + K.R_SLAG) return true; } return false; }
+function hunters(){ return cells.filter(c=>c.hunter); }
+function crowd(){ return cells.filter(c=>!c.hunter); }
+function ring(x,y,r0,r1,col,life){ rings.push({x,y,r0,r1,col,t:0,life:life||0.35}); }
+
+// ---------------------------------------------------------------- input
+let ptr = { down:false, sx:0, sy:0, t:0, swiped:false };
+
+// keyboard: WASD/arrows steer, SHIFT dashes, SPACE braces
+const keys = Object.create(null);
+const KEYVEC = { w:[0,-1], s:[0,1], a:[-1,0], d:[1,0],
+                 arrowup:[0,-1], arrowdown:[0,1], arrowleft:[-1,0], arrowright:[1,0] };
+function heldVec(){
+  let x=0, y=0;
+  for(const k in KEYVEC){ if(keys[k]){ x += KEYVEC[k][0]; y += KEYVEC[k][1]; } }
+  const m = Math.hypot(x,y);
+  return m > 0.001 ? [x/m, y/m] : null;
+}
+let hinted = false;
+
+function lungeDir(dx,dy){
+  const m = Math.hypot(dx,dy); if(m < 0.0001) return;
+  if(player.charges <= 0 || mode !== 'play') return;
+  player.hx = dx/m; player.hy = dy/m;
+  player.lunge = K.LUNGE_T;
+  player.charges--;
+  player.bracing = false;
+}
+
+function onDown(x,y){
+  hinted = true;                                   // touch player: the keyboard hint isn't for you
+  if(mode === 'over'){ reset(); return; }
+  ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
+}
+function onMove(x,y){
+  if(!ptr.down || ptr.swiped) return;
+  const dx = x-ptr.sx, dy = y-ptr.sy;
+  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; player.bracing = false; lungeDir(dx,dy); }
+}
+function onUp(){ ptr.down = false; ptr.swiped = false; player.bracing = false; }
+
+// ---------------------------------------------------------------- step
+function step(){
+  frame++;
+  if(hitstop > 0){ hitstop -= DT; return; }          // hitstop freezes the sim
+  if(mode !== 'play') return;
+
+  const scale = slowmo > 0 ? K.SLOWMO_SCALE : 1;
+  const dt = DT * scale;
+  if(slowmo > 0) slowmo -= DT;
+  elapsed += dt;
+  if(flash > 0) flash -= DT;
+
+  // ---- input held: press-and-hold with no travel = BRACE
+  if(ptr.down && !ptr.swiped){ ptr.t += DT; if(ptr.t > 0.08) player.bracing = true; }
+
+  // ---- player
+  const p = player;
+  p.chargeT += dt;
+  while(p.chargeT >= K.CHARGE_REFILL && p.charges < K.CHARGES){ p.chargeT -= K.CHARGE_REFILL; p.charges++; }
+  if(p.charges >= K.CHARGES) p.chargeT = 0;
+
+  // keyboard steering: WASD sets your heading. A dash is committed — no mid-dash correction.
+  if(p.lunge <= 0){ const v = heldVec(); if(v){ p.hx = v[0]; p.hy = v[1]; } }
+
+  if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
+  else if(p.bracing){ p.spd = Math.max(0, p.spd - (K.DRIFT/K.BRACE_STOP)*dt); }
+  else { p.spd = p.spd < K.DRIFT ? Math.min(K.DRIFT, p.spd + (K.DRIFT/K.BRACE_STOP)*dt)
+                                 : Math.max(K.DRIFT, p.spd - 1400*dt); }
+  p.r = p.bracing ? K.R_BRACED : K.R_PLAYER;
+
+  p.x += p.hx*p.spd*dt;
+  p.y += p.hy*p.spd*dt;
+  if(p.x < 0) p.x += VW; if(p.x >= VW) p.x -= VW;
+  if(p.y < 40){ p.y = 40; p.hy = Math.abs(p.hy); }
+  if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
+
+  // ---- fuse
+  if(p.lit){
+    p.fuse -= dt * (p.bracing ? K.BRACE_FUSE_MULT : 1);
+    if(p.fuse <= 0){
+      if(god){ p.fuse = K.FUSE_START; }                            // test-only: measure long-run arena state
+      else { p.fuse = 0; pop(crowd().length === 0 ? 'nowhere to go' : 'you held it'); return; }
+    }
+    // ember trail
+    p.trailT = (p.trailT||0) + dt;
+    while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); }
+  }
+  p.passT += dt;
+
+  // ---- SHATTER: a lunge into slag destroys it, terminates the burst
+  if(p.lunge > 0){
+    for(let i=slag.length-1;i>=0;i--){
+      const s = slag[i];
+      if(dist(p.x,p.y,s.x,s.y) < p.r + K.R_SLAG){
+        slag.splice(i,1);
+        p.lunge = 0; p.spd = 0;                       // you stop dead at the block
+        if(p.lit) p.fuse = Math.max(0.001, p.fuse - K.SHATTER_COST);
+        ring(s.x,s.y,K.R_SLAG,44,'#7c8496',0.30);
+        hitstop = K.HITSTOP*0.6;
+        break;
+      }
+    }
+  } else {
+    // not lunging: slag is solid, push out
+    for(const s of slag){
+      const dx = wrapDX(p.x-s.x), dy = p.y-s.y, d = Math.hypot(dx,dy), min = p.r + K.R_SLAG;
+      if(d < min && d > 0.001){
+        p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d);
+        p.hx = dx/d; p.hy = dy/d;                     // deflect off the wall you made
+      }
+    }
+  }
+
+  // ---- player position history (hunter reaction lag)
+  hist.push({x:p.x,y:p.y});
+  const histMax = Math.ceil(K.HUNTER_LAG/DT)+2;
+  while(hist.length > histMax) hist.shift();
+  const lag = hist[0] || p;
+
+  // ---- cells
+  for(const c of cells){
+    if(c.grace > 0) c.grace -= dt;
+    if(c.hunter){
+      c.fuse -= dt;
+      if(c.fuse <= 0){ becomeSlag(c); continue; }
+      const t = 1 - (c.fuse / hunterFuse);
+      const spd = K.HUNTER_SPD0 + (K.HUNTER_SPD1-K.HUNTER_SPD0)*t;
+      const dx = wrapDX(lag.x-c.x), dy = lag.y-c.y, d = Math.hypot(dx,dy)||1;
+      c.vx = (dx/d)*spd; c.vy = (dy/d)*spd;           // pure pursuit, no braking
+    } else {
+      // lazy sine wander, flee any LIT thing inside 140px
+      let fx = 0, fy = 0, fleeing = false;
+      if(p.lit){
+        const dx = wrapDX(c.x-p.x), dy = c.y-p.y, d = Math.hypot(dx,dy)||1;
+        if(d < K.FLEE_RANGE){ fx = (dx/d)*K.FLEE_SPD; fy = (dy/d)*K.FLEE_SPD; fleeing = true; }
+      }
+      if(fleeing){ c.vx = fx; c.vy = fy; }
+      else{
+        c.ph += c.ps*dt;
+        c.vx = Math.cos(c.dir + Math.sin(c.ph)*0.9)*K.WANDER_SPD;
+        c.vy = Math.sin(c.dir + Math.sin(c.ph)*0.9)*K.WANDER_SPD;
+      }
+    }
+    c.x += c.vx*dt; c.y += c.vy*dt;
+    if(c.x < 0) c.x += VW; if(c.x >= VW) c.x -= VW;
+    if(c.y < 40){ c.y = 40; c.vy = Math.abs(c.vy); c.dir = -c.dir; }
+    if(c.y > VH-40){ c.y = VH-40; c.vy = -Math.abs(c.vy); c.dir = -c.dir; }
+    // slag is solid for cells too
+    for(const s of slag){
+      const dx = wrapDX(c.x-s.x), dy = c.y-s.y, d = Math.hypot(dx,dy), min = K.R_CELL + K.R_SLAG;
+      if(d < min && d > 0.001){ c.x += (dx/d)*(min-d); c.y += (dy/d)*(min-d); c.dir += 2.2; }
+    }
+  }
+  cells = cells.filter(c=>!c.dead);
+
+  // ---- trail
+  for(const t of trail) t.t += dt;
+  trail = trail.filter(t=>t.t < K.TRAIL_LIFE);
+  // a drifting crowd cell touching an ember ignites
+  for(const c of crowd()){
+    for(const t of trail){
+      if(dist(c.x,c.y,t.x,t.y) < K.R_CELL + K.R_TRAIL){ ignite(c, 'trail'); break; }
+    }
+  }
+
+  // ---- contact
+  for(const c of (ghost ? [] : cells)){
+    if(c.grace > 0) continue;                                     // just changed state, hands off
+    const d = dist(p.x,p.y,c.x,c.y);
+    if(d > p.r + K.R_CELL) continue;
+    if(p.lit && !c.hunter){ doPass(c); break; }
+    if(!p.lit && c.hunter){
+      if(c.id === p.passeeId && p.passT < K.IMMUNE) continue;   // immunity
+      doEat(c); break;
+    }
+  }
+
+  // ---- respawn
+  respawnT += dt;
+  if(respawnT >= K.CROWD_RESPAWN){ respawnT = 0; if(crowd().length < K.CROWD_CAP) spawnCrowd(false); }
+
+  // ---- COOLDOWN: clear a REAL field of hunters while LIT with a live crowd.
+  // Gated on peak simultaneous hunters so pass->backpass->"field is empty" can't be farmed.
+  const hn = hunters().length;
+  if(hn > peakHunters) peakHunters = hn;
+  armed = peakHunters >= K.COOLDOWN_MIN;
+  if(hn === 0 && armed && p.lit && crowd().length >= 8) cooldown();
+
+  // ---- RELIGHT: dark player + zero hunters = no fire in the arena at all.
+  // Without this the run silently dies: you can never become LIT again, so you can
+  // never score, POP, or cooldown. Somebody always has to be holding it.
+  if(!p.lit && hn === 0){
+    noFireT += dt;
+    if(noFireT >= K.RELIGHT){
+      noFireT = 0;
+      const pool = crowd();
+      if(pool.length){
+        let best = pool[0], bd = 1e9;
+        for(const c of pool){ const d = dist(c.x,c.y,p.x,p.y); if(d < bd){ bd = d; best = c; } }
+        ignite(best, 'relight');
+        ring(best.x,best.y,8,90,'#ff9a2e',0.5);
+      } else pop('the crowd ran out');     // nothing left to light: the floor is dead
+    }
+  } else noFireT = 0;
+
+  // ---- rings
+  for(const r of rings) r.t += dt;
+  rings = rings.filter(r=>r.t < r.life);
+}
+
+// ---------------------------------------------------------------- events
+function doPass(c){
+  const p = player;
+  const val = Math.round(60 + 340*(1 - p.fuse/K.FUSE_MAX));
+  const clutch = p.fuse < K.CLUTCH_FUSE;
+  score += val;
+  p.lit = false; p.fuse = 0;
+  p.passeeId = c.id; p.passT = 0; p.passVal = val;
+  ignite(c, 'pass');
+  ring(c.x,c.y,10,72,'#ff9a2e',0.36);
+  hitstop = K.HITSTOP; flash = DT*2;
+  if(clutch) slowmo = K.SLOWMO_T;
+}
+
+function doEat(c){
+  const p = player;
+  const backpass = (c.id === p.passeeId && p.passT >= K.IMMUNE && p.passT <= K.BACKPASS_END);
+  p.lit = true;
+  p.fuse = Math.min(c.fuse, K.FUSE_MAX);
+  c.hunter = false; c.fuse = 0; c.dir = rnd()*Math.PI*2;    // reverts to a dark crowd body
+  c.grace = K.GRACE;                                        // ...but you can't instantly dump back into it
+  if(backpass){ score += Math.round(p.passVal * K.BACKPASS_MULT); ring(c.x,c.y,10,110,'#ffe66d',0.5); }
+  else ring(c.x,c.y,10,58,'#5fd4ff',0.30);
+  p.passeeId = 0;
+  hitstop = K.HITSTOP; flash = DT*2;
+}
+
+function ignite(c, why){
+  if(hunters().length >= K.HUNTER_CAP){ becomeSlag(c); return; }   // 13th ignition slags instantly
+  c.hunter = true; c.fuse = hunterFuse; c.grace = K.GRACE;
+  if(why === 'trail') ring(c.x,c.y,8,40,'#ff6a2e',0.28);
+}
+
+function becomeSlag(c){
+  slag.push({x:c.x,y:c.y});
+  c.dead = true;
+  ring(c.x,c.y,K.R_CELL,50,'#4a5162',0.42);
+}
+
+function cooldown(){
+  cooldowns++;
+  peakHunters = 0; armed = false;
+  hunterFuse = Math.max(5.0, hunterFuse - 0.5);   // re-escalate: walls form faster
+  score += 500;
+  ring(player.x,player.y,20,260,'#8affc1',0.9);
+  flash = DT*3;
+}
+
+function pop(cause){
+  mode = 'over'; popCause = cause;
+  ring(player.x,player.y,10,180,'#ff4d3d',0.8);
+  flash = DT*3;
+}
+
+// ---------------------------------------------------------------- render
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let scale = 1;
+
+function fit(){
+  const iw = Math.max(320, window.innerWidth||360), ih = Math.max(480, window.innerHeight||640);
+  scale = Math.min(iw/VW, ih/VH);
+  const dpr = Math.min(2, window.devicePixelRatio||1);
+  cv.style.width = (VW*scale)+'px'; cv.style.height = (VH*scale)+'px';
+  cv.width = Math.round(VW*scale*dpr); cv.height = Math.round(VH*scale*dpr);
+  ctx.setTransform(scale*dpr,0,0,scale*dpr,0,0);
+}
+window.addEventListener('resize', fit);
+
+// draw one thing three times so the wrap seam is invisible
+function wrapDraw(x, fn){ fn(x); if(x < 120) fn(x+VW); if(x > VW-120) fn(x-VW); }
+
+function render(){
+  const p = player;
+  ctx.fillStyle = '#07070b'; ctx.fillRect(0,0,VW,VH);
+
+  // floor grid, very faint
+  ctx.strokeStyle = 'rgba(255,255,255,0.028)'; ctx.lineWidth = 1;
+  for(let x=0;x<VW;x+=90){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,VH); ctx.stroke(); }
+  for(let y=0;y<VH;y+=90){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(VW,y); ctx.stroke(); }
+
+  // ---- embers (sparse dots, never a ribbon)
+  for(const t of trail){
+    const a = 1 - t.t/K.TRAIL_LIFE;
+    wrapDraw(t.x, X=>{
+      ctx.fillStyle = 'rgba(255,138,46,'+(a*0.62).toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(X,t.y,K.R_TRAIL*(0.45+a*0.55),0,7); ctx.fill();
+    });
+  }
+
+  // ---- slag: flat matte block, zero motion
+  for(const s of slag){
+    wrapDraw(s.x, X=>{
+      ctx.fillStyle = '#2b303c';
+      ctx.fillRect(X-K.R_SLAG, s.y-K.R_SLAG, K.R_SLAG*2, K.R_SLAG*2);
+      ctx.strokeStyle = '#454d5e'; ctx.lineWidth = 2;
+      ctx.strokeRect(X-K.R_SLAG+1, s.y-K.R_SLAG+1, K.R_SLAG*2-2, K.R_SLAG*2-2);
+    });
+  }
+
+  // ---- cells
+  for(const c of cells){
+    const far = dist(c.x,c.y,p.x,p.y) > 300;
+    ctx.globalAlpha = far ? 0.30 : 1;
+    if(c.hunter){
+      const t = 1 - (c.fuse/hunterFuse);
+      wrapDraw(c.x, X=>{
+        // angular body, oriented along its committed heading
+        const a = Math.atan2(c.vy, c.vx);
+        ctx.save(); ctx.translate(X,c.y); ctx.rotate(a);
+        ctx.fillStyle = '#ff5a2e';
+        ctx.beginPath();
+        ctx.moveTo(K.R_CELL*1.35,0); ctx.lineTo(-K.R_CELL*0.8,K.R_CELL*0.86);
+        ctx.lineTo(-K.R_CELL*0.42,0); ctx.lineTo(-K.R_CELL*0.8,-K.R_CELL*0.86);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+        // draining fuse ring IS the speed gauge: full = slow & safe, empty = fast & about to be a wall
+        ctx.strokeStyle = '#ffcf5a'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(X,c.y,K.R_CELL+7,-Math.PI/2,-Math.PI/2 + (1-t)*Math.PI*2); ctx.stroke();
+      });
+    } else {
+      wrapDraw(c.x, X=>{
+        ctx.fillStyle = '#cfd6e6';
+        ctx.beginPath(); ctx.arc(X,c.y,K.R_CELL,0,7); ctx.fill();
+        ctx.fillStyle = '#8f98ab';
+        ctx.beginPath(); ctx.arc(X,c.y-3,K.R_CELL*0.42,0,7); ctx.fill();
+      });
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- rings
+  for(const r of rings){
+    const k = r.t/r.life, rr = r.r0 + (r.r1-r.r0)*k;
+    ctx.globalAlpha = (1-k)*0.85; ctx.strokeStyle = r.col; ctx.lineWidth = 3;
+    wrapDraw(r.x, X=>{ ctx.beginPath(); ctx.arc(X,r.y,rr,0,7); ctx.stroke(); });
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- player
+  wrapDraw(p.x, X=>{
+    if(p.lit){
+      const g = ctx.createRadialGradient(X,p.y,2,X,p.y,58);
+      g.addColorStop(0,'rgba(255,150,50,0.55)'); g.addColorStop(1,'rgba(255,110,40,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X,p.y,58,0,7); ctx.fill();
+    }
+    ctx.fillStyle = p.lit ? '#ffb04d' : '#7fe8ff';
+    ctx.beginPath(); ctx.arc(X,p.y,p.r,0,7); ctx.fill();
+    ctx.fillStyle = '#0a0a10';
+    ctx.beginPath(); ctx.arc(X,p.y,p.r*0.34,0,7); ctx.fill();
+    if(p.lit){
+      const k = Math.max(0, p.fuse/K.FUSE_MAX);
+      ctx.strokeStyle = p.fuse < K.CLUTCH_FUSE ? '#fff' : '#ffd36a';
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(X,p.y,p.r+11,-Math.PI/2,-Math.PI/2 + k*Math.PI*2); ctx.stroke();
+    }
+    if(p.bracing){
+      ctx.strokeStyle = 'rgba(255,255,255,0.30)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(X,p.y,p.r+22,0,7); ctx.stroke();
+    }
+  });
+
+  // ---- hud
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+  ctx.font = '700 62px system-ui,-apple-system,sans-serif';
+  ctx.fillText(String(score), VW/2, 92);
+  if(cooldowns > 0){
+    ctx.fillStyle = '#8affc1'; ctx.font = '600 22px system-ui,sans-serif';
+    ctx.fillText('COOLDOWN x'+cooldowns, VW/2, 126);
+  }
+  // lunge charges
+  for(let i=0;i<K.CHARGES;i++){
+    const on = i < player.charges;
+    ctx.fillStyle = on ? '#7fe8ff' : 'rgba(127,232,255,0.18)';
+    ctx.beginPath(); ctx.arc(VW/2 - 40 + i*40, VH-64, 11, 0, 7); ctx.fill();
+  }
+
+  if(!hinted && mode === 'play'){
+    ctx.fillStyle = 'rgba(255,255,255,0.32)';
+    ctx.font = '500 21px system-ui,-apple-system,sans-serif';
+    ctx.fillText('WASD move   ·   SHIFT dash   ·   SPACE brace', VW/2, VH-108);
+  }
+
+  if(flash > 0){ ctx.fillStyle = 'rgba(255,255,255,0.24)'; ctx.fillRect(0,0,VW,VH); }
+
+  if(mode === 'over'){
+    ctx.fillStyle = 'rgba(7,7,11,0.80)'; ctx.fillRect(0,0,VW,VH);
+    ctx.fillStyle = '#ff6a5a'; ctx.textAlign = 'center';
+    ctx.font = '800 82px system-ui,sans-serif'; ctx.fillText('POP', VW/2, VH/2 - 70);
+    ctx.fillStyle = '#aab2c4'; ctx.font = '400 27px system-ui,sans-serif';
+    ctx.fillText(popCause, VW/2, VH/2 - 24);
+    ctx.fillStyle = '#fff'; ctx.font = '700 66px system-ui,sans-serif';
+    ctx.fillText(String(score), VW/2, VH/2 + 66);
+    ctx.fillStyle = '#7b8397'; ctx.font = '400 23px system-ui,sans-serif';
+    ctx.fillText(fmt(elapsed)+'  ·  '+slag.length+' walls  ·  '+cooldowns+' cooldowns', VW/2, VH/2 + 110);
+    ctx.fillStyle = '#666f84'; ctx.font = '500 25px system-ui,sans-serif';
+    ctx.fillText('tap to go again', VW/2, VH/2 + 190);
+  }
+}
+function fmt(s){ const m = Math.floor(s/60), r = Math.floor(s%60); return m+':'+String(r).padStart(2,'0'); }
+
+// ---------------------------------------------------------------- loop
+let acc = 0, last = 0;
+function loop(now){
+  if(!last) last = now;
+  let d = (now-last)/1000; last = now;
+  if(d > 0.25) d = 0.25;
+  acc += d;
+  let guard = 0;
+  while(acc >= DT && guard++ < 600){ step(); acc -= DT; }
+  render();
+  requestAnimationFrame(loop);
+}
+
+// ---------------------------------------------------------------- wiring
+function local(e){
+  const r = cv.getBoundingClientRect();
+  return { x:(e.clientX-r.left)/scale, y:(e.clientY-r.top)/scale };
+}
+cv.addEventListener('pointerdown', e=>{ e.preventDefault(); const q=local(e); onDown(q.x,q.y); });
+cv.addEventListener('pointermove', e=>{ const q=local(e); onMove(q.x,q.y); });
+window.addEventListener('pointerup', onUp);
+window.addEventListener('pointercancel', onUp);
+// desktop: WASD/arrows steer, SHIFT dashes, SPACE braces
+window.addEventListener('keydown', e=>{
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
+  if(mode === 'over'){
+    if(KEYVEC[k] || k===' ' || k==='shift' || k==='enter'){ e.preventDefault(); reset(); }
+    return;
+  }
+  if(KEYVEC[k]){ e.preventDefault(); keys[k] = true; hinted = true; }
+  if(k === 'shift'){
+    e.preventDefault();
+    if(!e.repeat){                                   // holding SHIFT must not drain all 3 charges
+      const v = heldVec() || [player.hx, player.hy];
+      lungeDir(v[0], v[1]); hinted = true;
+    }
+  }
+  // brace on SPACE. Deliberately NOT ctrl: Ctrl+W closes the tab and the browser
+  // reserves it, so preventDefault() can't save a player bracing while moving up.
+  if(k === ' '){ e.preventDefault(); player.bracing = true; hinted = true; }
+});
+window.addEventListener('keyup', e=>{
+  const k = e.key.toLowerCase();
+  if(KEYVEC[k]) keys[k] = false;
+  if(k === ' ') player.bracing = false;
+});
+// dropping focus mid-key would otherwise leave you steering forever
+window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; player.bracing = false; });
+
+fit(); reset(); requestAnimationFrame(loop);
+
+// ---------------------------------------------------------------- debug hooks
+// The preview pane runs headless (document.hidden), so rAF is paused.
+// Drive and assert through these instead of screenshots.
+window.__fwoosh = {
+  tick(n){ for(let i=0;i<(n||1);i++) step(); return this.state(); },
+  sim(sec){ const n = Math.round((sec||1)/DT); for(let i=0;i<n;i++) step(); return this.state(); },
+  paint(){ render(); return true; },
+  reset(seed){ reset(seed); return this.state(); },
+  state(){ return {
+    mode, score, elapsed:+elapsed.toFixed(3), frame, cooldowns, popCause,
+    lit:player.lit, fuse:+player.fuse.toFixed(3), charges:player.charges,
+    bracing:player.bracing, spd:Math.round(player.spd), lunge:+player.lunge.toFixed(3),
+    x:Math.round(player.x), y:Math.round(player.y),
+    crowd:crowd().length, hunters:hunters().length, slag:slag.length,
+    trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
+    passeeId:player.passeeId, passT:+player.passT.toFixed(3), hitstop:+hitstop.toFixed(3),
+  }; },
+  cells(){ return cells.map(c=>({id:c.id,x:Math.round(c.x),y:Math.round(c.y),
+    hunter:c.hunter,fuse:+c.fuse.toFixed(2)})); },
+  slag(){ return slag.map(s=>({x:Math.round(s.x),y:Math.round(s.y)})); },
+  lunge(dx,dy){ lungeDir(dx,dy); return this.state(); },
+  brace(v){ player.bracing = !!v; return this.state(); },
+  tp(x,y){ player.x=x; player.y=y; return this.state(); },
+  setFuse(v){ player.fuse=v; return this.state(); },
+  ghost(v){ ghost = !!v; return ghost; },
+  god(v){ god = !!v; return god; },
+  setLit(v,f){ player.lit = !!v; if(f!==undefined) player.fuse = f; return this.state(); },
+  // advance until the player's own pass timer reaches t (game-time, so hitstop/slowmo safe)
+  untilPassT(t){ let g=0; while(player.passT < t && g++ < 3000) step(); return this.state(); },
+  grant(n){ player.charges = n===undefined?K.CHARGES:n; return this.state(); },
+  // does a legal 112px lunge vector exist from here? (the soft-lock instrument)
+  boxedIn(){
+    const p = player, reach = K.LUNGE_SPD*K.LUNGE_T;
+    for(let i=0;i<24;i++){
+      const a = i/24*Math.PI*2, ex = p.x+Math.cos(a)*reach, ey = p.y+Math.sin(a)*reach;
+      if(ey < 40 || ey > VH-40) continue;
+      if(!nearSlag(ex, ey<40?40:ey, p.r)) return false;
+    }
+    return true;
+  },
+  consts(){ return K; },
+};
+</script>
