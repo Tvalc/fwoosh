@@ -103,6 +103,41 @@ const K = {
   INTRO_T: 1.9,                     // cold-open reveal length
 };
 
+// ---------------------------------------------------------------- THE GRUDGE (story)
+// The opp is KEITH: someone you burned who took it personally and studied you.
+// No cutscenes. His voice rides the cold-open, the snipe callouts, and the game-over line,
+// and it develops across your feud: smug -> obsessed -> grudging respect. The arc is the
+// mechanic (he snipes your habits; defying them earns his respect). No em-dashes on purpose.
+const STORY = {
+  firstRun: "you're on fire. nobody knows why. pass it on.",
+  greet: {
+    debut: { big:'REMEMBER ME?', sub:["no. of course you don't.",
+             "you've done this to two hundred of us. it's Keith, by the way."] },
+    smug: [
+      { big:'YOU AGAIN.',    sub:['you pass to the same spot every time.', "i'm standing on it."] },
+      { big:'PREDICTABLE.',  sub:['i know where you go.', "i've always known."] },
+    ],
+    obsessed: [
+      { big:'I HAVE NOTES.', sub:['on you. a whole wall of them.', "it's me. i'm the wall."] },
+      { big:"I DON'T SLEEP.", sub:["i'm a wall.", "but if i did, it'd be your left drift."] },
+    ],
+    respect: [
+      { big:"I CAN'T READ YOU.", sub:['i hated you.', 'somehow this is worse.'] },
+      { big:'GO ON THEN.',        sub:["i've got nothing.", 'first time for everything.'] },
+    ],
+  },
+  fired:  { smug:['KNEW IT.','TOO SLOW.'], obsessed:['RIGHT ON SCHEDULE.','SAME AS ALWAYS.'],
+            respect:["...LET'S SEE.",'SURPRISE ME.'] },
+  sniped: { smug:['PREDICTABLE.','TOLD YOU.'], obsessed:['EVERY. TIME.','I HAD IT WRITTEN DOWN.'],
+            respect:['huh. still got you.','old habits. even yours.'] },
+  broken: { smug:["...that's new.",'wait.'], obsessed:['STOP IMPROVING.','WHO TAUGHT YOU THAT.'],
+            respect:['beautiful. again.',"didn't see that coming. good."] },
+  study:  { debut:['Keith is taking notes.'],
+            smug:['Keith filed this run. Keith remembers.','Keith has your number.'],
+            obsessed:['Keith watched every second of that.','Keith is not okay about you.'],
+            respect:["Keith isn't sure what to write anymore.",'Keith respects you. he hates that.'] },
+};
+
 // ---------------------------------------------------------------- rng (deterministic)
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -117,13 +152,32 @@ let god = false;     // test-only: fuse refills instead of POPping, so long-run 
 // ---- THE OPP: a rival built from how you played last session (persistent)
 let opp = loadOpp();
 let runBuf = [], snipe = null, snipeFuse = null, snipeUsed = false,
-    introT = 0, callout = null, oppScarred = false;
+    introT = 0, callout = null, oppScarred = false, gotSniped = false;
 
 function loadOpp(){
   const N = 6*8;
   try{ const s = JSON.parse(localStorage.getItem('fwoosh.opp'));
-    if(s && Array.isArray(s.terr) && s.terr.length === N) return s; }catch(e){}
-  return { terr: new Array(N).fill(0), lat: [], grudge: null, medianLat: null, runs: 0 };
+    if(s && Array.isArray(s.terr) && s.terr.length === N){
+      s.readsBroken = s.readsBroken||0; s.timesSniped = s.timesSniped||0; s.seenIntro = !!s.seenIntro;
+      return s; } }catch(e){}
+  return { terr: new Array(N).fill(0), lat: [], grudge: null, medianLat: null, runs: 0,
+           readsBroken: 0, timesSniped: 0, seenIntro: false };
+}
+
+// where the feud stands -> which register Keith speaks in. The arc: he learns you (smug),
+// over-invests (obsessed), then can't read you anymore and respects it (respect).
+function feudStage(){
+  if((opp.runs||0) <= 1) return 'debut';
+  const b = opp.readsBroken||0, s = opp.timesSniped||0;
+  if(b >= 4 && b > s) return 'respect';        // you've become genuinely unpredictable
+  if((opp.runs||0) >= 4 || b >= 2) return 'obsessed';
+  return 'smug';
+}
+function lineFor(kind){                          // fired/sniped/broken/study, keyed to the feud
+  let st = feudStage(), pool = STORY[kind];
+  if(!pool[st]) st = (kind === 'study') ? 'debut' : 'smug';
+  const arr = pool[st] || pool.smug || pool.debut;
+  return arr[(opp.runs||0) % arr.length];
 }
 function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp)); }catch(e){} }
 function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
@@ -140,13 +194,15 @@ function foldOpp(){
   }
   while(opp.lat.length > K.OPP_LAT_CAP) opp.lat.shift();
   opp.runs++;
+  if(oppScarred) opp.readsBroken = (opp.readsBroken||0) + 1;   // you defied the read
+  if(gotSniped)  opp.timesSniped = (opp.timesSniped||0) + 1;   // he called your habit
   saveOpp();
 }
 
 // place the grudge wall + arm the snipe from accumulated reads. Called from reset().
 function setupOpp(){
-  runBuf = []; snipe = null; snipeUsed = false; oppScarred = false; snipeFuse = null;
-  callout = null; introT = 0;
+  runBuf = []; snipe = null; snipeUsed = false; oppScarred = false; gotSniped = false;
+  snipeFuse = null; callout = null; introT = 0;
   // TERRITORY: hottest cell -> grudge wall
   let best = 0, bi = -1;
   for(let i=0;i<opp.terr.length;i++){ if(opp.terr[i] > best){ best = opp.terr[i]; bi = i; } }
@@ -159,6 +215,11 @@ function setupOpp(){
   }
   // cold-open only when there's a prior run to react to
   if(opp.runs >= 1 && (opp.grudge || snipeFuse != null)) introT = K.INTRO_T;
+  // very first run ever: establish the world before Keith exists
+  else if((opp.runs||0) === 0 && !opp.seenIntro){
+    callout = { text: STORY.firstRun, t:0, life:3.4, good:null };
+    opp.seenIntro = true; saveOpp();
+  }
 }
 
 function fireSnipe(){
@@ -168,7 +229,7 @@ function fireSnipe(){
   const tx = p.x + p.hx*p.spd*K.OPP_SNIPE_TELE;              // lead your drift
   const ty = Math.max(40, Math.min(VH-40, p.y + p.hy*p.spd*K.OPP_SNIPE_TELE));
   snipe = { ox:gx, oy:gy, tx:((tx%VW)+VW)%VW, ty, t:0, done:false, lt:0 };
-  callout = { text:'THE OPP READ YOUR LATE HOLD', t:0, life:1.6 };
+  callout = { text: lineFor('fired'), t:0, life:1.6, good:false };
 }
 
 function reset(seed){
@@ -424,12 +485,13 @@ function step(){
       snipe.done = true;
       if(p.lit && dist(p.x, p.y, snipe.tx, snipe.ty) < K.OPP_SNIPE_R){
         p.lit = false; p.fuse = 0; p.passeeId = 0; p.passT = 0;   // SNUFFED: put out early, no pass credit
+        gotSniped = true;
         ring(p.x, p.y, 10, 80, '#ff3d7a', 0.6);
-        callout = { text:'SNIPED', t:0, life:1.3 }; flash = DT*2; hitstop = K.HITSTOP;
+        callout = { text: lineFor('sniped'), t:0, life:1.4, good:false }; flash = DT*2; hitstop = K.HITSTOP;
       } else {
         oppScarred = true;                                        // read broken, scar the grudge wall
         ring(snipe.tx, snipe.ty, K.OPP_SNIPE_R, 6, '#7fe8ff', 0.4);
-        callout = { text:'READ BROKEN', t:0, life:1.3 };
+        callout = { text: lineFor('broken'), t:0, life:1.4, good:true };
       }
     }
   } else if(snipe && snipe.done){ snipe.lt += dt; if(snipe.lt > 0.5) snipe = null; }
@@ -640,12 +702,14 @@ function render(){
     }
   }
 
-  // ---- opp callout (fires read / snuffed / broken)
+  // ---- Keith's callout (fires read / snuffed / broken / the opening premise)
   if(callout){
     const a = Math.max(0, Math.min(1, (1 - callout.t/callout.life)*1.4));
     ctx.globalAlpha = a;
-    ctx.fillStyle = callout.text === 'READ BROKEN' ? '#7fe8ff' : '#ff5d94';
-    ctx.font = '800 33px system-ui,-apple-system,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = callout.good === true ? '#7fe8ff' : callout.good === false ? '#ff5d94' : '#dfe6f2';
+    const big = callout.good !== null;
+    ctx.font = (big ? '800 33px' : '500 26px') + ' system-ui,-apple-system,sans-serif';
+    ctx.textAlign = 'center';
     ctx.fillText(callout.text, VW/2, 208);
     ctx.globalAlpha = 1;
   }
@@ -684,11 +748,14 @@ function render(){
       ctx.fillStyle = '#c9a8b8'; ctx.font = '600 21px system-ui,sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('your most-passed spot', g.x, g.y - pr - 14);
     }
+    const st = feudStage();
+    const greet = st === 'debut' ? STORY.greet.debut
+                                 : STORY.greet[st][(opp.runs||0) % STORY.greet[st].length];
     ctx.textAlign = 'center';
     ctx.fillStyle = '#ff5d94'; ctx.font = '800 42px system-ui,-apple-system,sans-serif';
-    ctx.fillText('THE OPP LEARNED YOU', VW/2, VH*0.30);
-    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 25px system-ui,sans-serif';
-    ctx.fillText(snipeFuse != null ? 'it clocked your late holds' : 'it staked out your spot', VW/2, VH*0.30 + 44);
+    ctx.fillText(greet.big, VW/2, VH*0.28);
+    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 24px system-ui,sans-serif';
+    greet.sub.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH*0.28 + 42 + i*32));
     ctx.fillStyle = 'rgba(255,255,255,0.42)'; ctx.font = '500 20px system-ui,sans-serif';
     ctx.fillText('tap to begin', VW/2, VH*0.72);
   }
@@ -708,8 +775,8 @@ function render(){
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px system-ui,sans-serif';
     ctx.fillText('tap to go again', VW/2, VH/2 + 190);
     if(opp.runs >= 1){
-      ctx.fillStyle = '#a15277'; ctx.font = '600 21px system-ui,sans-serif';
-      ctx.fillText('the opp just studied this run', VW/2, VH/2 + 240);
+      ctx.fillStyle = '#a15277'; ctx.font = '600 22px system-ui,sans-serif';
+      ctx.fillText(lineFor('study'), VW/2, VH/2 + 240);
     }
   }
 }
@@ -815,13 +882,24 @@ window.__fwoosh = {
     snipeFuse: snipeFuse != null ? +snipeFuse.toFixed(3) : null, snipeUsed,
     grudge: opp.grudge ? {x:Math.round(opp.grudge.x), y:Math.round(opp.grudge.y)} : null,
     terrMax: Math.max.apply(null, opp.terr), terrSum: opp.terr.reduce((a,b)=>a+b,0),
-    introT: +introT.toFixed(2), scarred: oppScarred, runBuf: runBuf.length,
+    introT: +introT.toFixed(2), scarred: oppScarred, gotSniped, runBuf: runBuf.length,
+    stage: feudStage(), readsBroken: opp.readsBroken||0, timesSniped: opp.timesSniped||0,
     snipe: snipe ? {t:+snipe.t.toFixed(2), done:snipe.done, tx:Math.round(snipe.tx), ty:Math.round(snipe.ty)} : null,
     callout: callout ? callout.text : null,
   }; },
-  resetOpp(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null, runs:0 };
+  resetOpp(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null,
+    runs:0, readsBroken:0, timesSniped:0, seenIntro:false };
     try{ localStorage.removeItem('fwoosh.opp'); }catch(e){} return this.oppState(); },
   skipIntro(){ introT = 0; return true; },
   forcePop(){ pop('test'); return this.oppState(); },
+  // narration the render would show right now, for verifying the arc
+  narr(){ const st = feudStage();
+    const g = st==='debut' ? STORY.greet.debut : STORY.greet[st][(opp.runs||0)%STORY.greet[st].length];
+    return { stage:st, greetBig:g.big, greetSub:g.sub, firstRun:STORY.firstRun,
+      study: (opp.runs>=1) ? lineFor('study') : null,
+      fired: lineFor('fired'), sniped: lineFor('sniped'), broken: lineFor('broken') }; },
+  setFeud(runs, broken, sniped){ opp.runs=runs; opp.readsBroken=broken; opp.timesSniped=sniped;
+    return this.narr(); },
+  story(){ return STORY; },
 };
 </script>
