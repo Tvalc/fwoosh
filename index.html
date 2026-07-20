@@ -17,16 +17,23 @@
 <canvas id="c"></canvas>
 <script>
 "use strict";
-// ---------------------------------------------------------------- FWOOSH · phase 1
+// ---------------------------------------------------------------- FWOOSH
 // Single file, zero deps. Freeze-tag abstracted: you are LIT, the only cure is
 // touching someone dark, and everyone who burns all the way down leaves a wall.
 //
-// PHASE 1 SCOPE ONLY. No pillars, no glyph, no wreck screen, no SPREAD,
-// no achievements, no share, no cosmetics, NO localStorage.
+// PHASE 1: the action core (drift/dash/brace, PASS/EAT/SLAG, backpass, cooldown, relight).
+// PHASE 2A (THE OPP, first slice): a rival assembled from HOW you played last session.
+//   It reads two axes so far — LATENESS (your habitual late-hold fuse) and TERRITORY
+//   (your most-passed grid cell). Next run it drops a GRUDGE WALL on your spot and
+//   SNIPES ~0.3s before your habitual dump. You beat reads live; they scar off.
+//   Score is NEVER a meta input — the coupling is coordinates + timing, not currency.
+//   Persistence: one localStorage key `fwoosh.opp`. Crew/apex-duel/other axes NOT built yet.
 //
-// Checkpoint question this build exists to answer:
-//   At minute three, when the court has filled with slag,
-//   is the arena getting more interesting or just more annoying?
+// Phase-2A checkpoint: on run 2, does the grudge wall + snipe + callout read as
+//   "it studied me, I want to beat it" — or "the game placed a random wall and cheated"?
+//
+// Open core checkpoint (still): at minute three, is the slag-filled arena more
+//   interesting or just more annoying? (The apex duel, unbuilt, is the intended answer.)
 
 // ---------------------------------------------------------------- constants
 const VW = 720, VH = 1280;          // virtual world, portrait, x wraps
@@ -85,6 +92,15 @@ const K = {
   SLOWMO_T: 0.120,
   SLOWMO_SCALE: 0.25,
   CLUTCH_FUSE: 0.40,                // sub-0.40s pass earns the slowmo
+
+  // THE OPP (meta, phase 2A)
+  OPP_COLS: 6, OPP_ROWS: 8,         // territory histogram = 48 cells (120x160px each)
+  OPP_MIN_PASSES: 3,                // need this many recorded passes before the opp arms
+  OPP_LAT_CAP: 40,                  // rolling window of recent latenesses (fuse-at-pass)
+  OPP_SNIPE_LEAD: 0.30,             // snipe fires this much fuse-time BEFORE your habitual dump
+  OPP_SNIPE_TELE: 0.42,            // telegraph -> impact time (dodge window)
+  OPP_SNIPE_R: 34,                  // impact radius
+  INTRO_T: 1.9,                     // cold-open reveal length
 };
 
 // ---------------------------------------------------------------- rng (deterministic)
@@ -97,6 +113,63 @@ let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
     armed, respawnT, mode, popCause, nextId, hitstop, slowmo, flash, frame, hist, peakHunters, noFireT;
 let ghost = false;   // test-only: player passes through cells without triggering contact
 let god = false;     // test-only: fuse refills instead of POPping, so long-run arena state is measurable
+
+// ---- THE OPP: a rival built from how you played last session (persistent)
+let opp = loadOpp();
+let runBuf = [], snipe = null, snipeFuse = null, snipeUsed = false,
+    introT = 0, callout = null, oppScarred = false;
+
+function loadOpp(){
+  const N = 6*8;
+  try{ const s = JSON.parse(localStorage.getItem('fwoosh.opp'));
+    if(s && Array.isArray(s.terr) && s.terr.length === N) return s; }catch(e){}
+  return { terr: new Array(N).fill(0), lat: [], grudge: null, medianLat: null, runs: 0 };
+}
+function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp)); }catch(e){} }
+function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
+  return n ? (n%2 ? a[(n-1)/2] : (a[n/2-1]+a[n/2])/2) : 0; }
+function cellCenter(i){ const col = i%K.OPP_COLS, row = Math.floor(i/K.OPP_COLS);
+  return { x:(col+0.5)*(VW/K.OPP_COLS), y:(row+0.5)*(VH/K.OPP_ROWS) }; }
+
+// fold this run's records into the opp, then persist. Called once, at pop().
+function foldOpp(){
+  for(const r of runBuf){
+    const idx = r.row*K.OPP_COLS + r.col;
+    if(idx >= 0 && idx < opp.terr.length) opp.terr[idx]++;
+    opp.lat.push(r.lateness);
+  }
+  while(opp.lat.length > K.OPP_LAT_CAP) opp.lat.shift();
+  opp.runs++;
+  saveOpp();
+}
+
+// place the grudge wall + arm the snipe from accumulated reads. Called from reset().
+function setupOpp(){
+  runBuf = []; snipe = null; snipeUsed = false; oppScarred = false; snipeFuse = null;
+  callout = null; introT = 0;
+  // TERRITORY: hottest cell -> grudge wall
+  let best = 0, bi = -1;
+  for(let i=0;i<opp.terr.length;i++){ if(opp.terr[i] > best){ best = opp.terr[i]; bi = i; } }
+  opp.grudge = bi >= 0 ? cellCenter(bi) : null;
+  if(opp.grudge) slag.push({ x:opp.grudge.x, y:opp.grudge.y, grudge:true });
+  // LATENESS: arm the snipe just before your habitual dump-fuse
+  if(opp.lat.length >= K.OPP_MIN_PASSES){
+    opp.medianLat = median(opp.lat);
+    snipeFuse = Math.max(0.5, Math.min(K.FUSE_START-0.2, opp.medianLat + K.OPP_SNIPE_LEAD));
+  }
+  // cold-open only when there's a prior run to react to
+  if(opp.runs >= 1 && (opp.grudge || snipeFuse != null)) introT = K.INTRO_T;
+}
+
+function fireSnipe(){
+  const p = player;
+  snipeUsed = true;
+  const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : 60;
+  const tx = p.x + p.hx*p.spd*K.OPP_SNIPE_TELE;              // lead your drift
+  const ty = Math.max(40, Math.min(VH-40, p.y + p.hy*p.spd*K.OPP_SNIPE_TELE));
+  snipe = { ox:gx, oy:gy, tx:((tx%VW)+VW)%VW, ty, t:0, done:false, lt:0 };
+  callout = { text:'THE OPP READ YOUR LATE HOLD', t:0, life:1.6 };
+}
 
 function reset(seed){
   if(seed !== undefined){ SEED = seed; }
@@ -113,6 +186,7 @@ function reset(seed){
     lit: true, fuse: K.FUSE_START,
     passeeId: 0, passT: 999, passVal: 0,
   };
+  setupOpp();                                 // grudge wall + snipe, before crowd so they avoid it
   for(let i=0;i<K.CROWD_START;i++) spawnCrowd(true);
 }
 
@@ -163,6 +237,7 @@ function lungeDir(dx,dy){
 
 function onDown(x,y){
   hinted = true;                                   // touch player: the keyboard hint isn't for you
+  if(introT > 0){ introT = 0; return; }            // dismiss the cold-open
   if(mode === 'over'){ reset(); return; }
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
@@ -178,6 +253,7 @@ function step(){
   frame++;
   if(hitstop > 0){ hitstop -= DT; return; }          // hitstop freezes the sim
   if(mode !== 'play') return;
+  if(introT > 0){ introT -= DT; if(introT < 0) introT = 0; return; }  // cold-open reveal, sim frozen
 
   const scale = slowmo > 0 ? K.SLOWMO_SCALE : 1;
   const dt = DT * scale;
@@ -338,6 +414,27 @@ function step(){
     }
   } else noFireT = 0;
 
+  // ---- THE OPP: snipe your habitual late-hold.
+  // Fires ~0.3s of fuse-time BEFORE your median dump — punishing greed at your favorite moment.
+  // Beat it by passing (going dark) before impact, or dashing clear of the lead point.
+  if(snipeFuse != null && !snipeUsed && p.lit && p.fuse <= snipeFuse) fireSnipe();
+  if(snipe && !snipe.done){
+    snipe.t += dt;
+    if(snipe.t >= K.OPP_SNIPE_TELE){
+      snipe.done = true;
+      if(p.lit && dist(p.x, p.y, snipe.tx, snipe.ty) < K.OPP_SNIPE_R){
+        p.lit = false; p.fuse = 0; p.passeeId = 0; p.passT = 0;   // SNUFFED: put out early, no pass credit
+        ring(p.x, p.y, 10, 80, '#ff3d7a', 0.6);
+        callout = { text:'SNIPED', t:0, life:1.3 }; flash = DT*2; hitstop = K.HITSTOP;
+      } else {
+        oppScarred = true;                                        // read broken, scar the grudge wall
+        ring(snipe.tx, snipe.ty, K.OPP_SNIPE_R, 6, '#7fe8ff', 0.4);
+        callout = { text:'READ BROKEN', t:0, life:1.3 };
+      }
+    }
+  } else if(snipe && snipe.done){ snipe.lt += dt; if(snipe.lt > 0.5) snipe = null; }
+  if(callout){ callout.t += dt; if(callout.t >= callout.life) callout = null; }
+
   // ---- rings
   for(const r of rings) r.t += dt;
   rings = rings.filter(r=>r.t < r.life);
@@ -346,6 +443,14 @@ function step(){
 // ---------------------------------------------------------------- events
 function doPass(c){
   const p = player;
+  // THE OPP records the DECISION, never the score: how late (fuse) + where (grid cell).
+  if(mode === 'play'){
+    let col = Math.floor((((c.x%VW)+VW)%VW) / (VW/K.OPP_COLS));
+    let row = Math.floor(Math.max(0, Math.min(VH-1, c.y)) / (VH/K.OPP_ROWS));
+    col = Math.max(0, Math.min(K.OPP_COLS-1, col));
+    row = Math.max(0, Math.min(K.OPP_ROWS-1, row));
+    runBuf.push({ lateness: p.fuse, col, row });
+  }
   const val = Math.round(60 + 340*(1 - p.fuse/K.FUSE_MAX));
   const clutch = p.fuse < K.CLUTCH_FUSE;
   score += val;
@@ -393,6 +498,7 @@ function cooldown(){
 
 function pop(cause){
   mode = 'over'; popCause = cause;
+  foldOpp();                                    // this run's decisions teach the opp
   ring(player.x,player.y,10,180,'#ff4d3d',0.8);
   flash = DT*3;
 }
@@ -432,13 +538,24 @@ function render(){
     });
   }
 
-  // ---- slag: flat matte block, zero motion
+  // ---- slag: flat matte block, zero motion. The grudge wall is the opp's, placed with intent.
   for(const s of slag){
     wrapDraw(s.x, X=>{
-      ctx.fillStyle = '#2b303c';
-      ctx.fillRect(X-K.R_SLAG, s.y-K.R_SLAG, K.R_SLAG*2, K.R_SLAG*2);
-      ctx.strokeStyle = '#454d5e'; ctx.lineWidth = 2;
-      ctx.strokeRect(X-K.R_SLAG+1, s.y-K.R_SLAG+1, K.R_SLAG*2-2, K.R_SLAG*2-2);
+      if(s.grudge){
+        ctx.fillStyle = oppScarred ? '#241019' : '#3a1230';
+        ctx.fillRect(X-K.R_SLAG, s.y-K.R_SLAG, K.R_SLAG*2, K.R_SLAG*2);
+        ctx.strokeStyle = oppScarred ? '#6a2748' : '#ff3d7a'; ctx.lineWidth = 2;
+        ctx.strokeRect(X-K.R_SLAG+1, s.y-K.R_SLAG+1, K.R_SLAG*2-2, K.R_SLAG*2-2);
+        ctx.fillStyle = oppScarred ? '#6a2748' : '#ff3d7a';   // an eye: it's watching your spot
+        ctx.beginPath(); ctx.arc(X, s.y, 4.6, 0, 7); ctx.fill();
+        ctx.fillStyle = '#160a11';
+        ctx.beginPath(); ctx.arc(X, s.y, 2, 0, 7); ctx.fill();
+      } else {
+        ctx.fillStyle = '#2b303c';
+        ctx.fillRect(X-K.R_SLAG, s.y-K.R_SLAG, K.R_SLAG*2, K.R_SLAG*2);
+        ctx.strokeStyle = '#454d5e'; ctx.lineWidth = 2;
+        ctx.strokeRect(X-K.R_SLAG+1, s.y-K.R_SLAG+1, K.R_SLAG*2-2, K.R_SLAG*2-2);
+      }
     });
   }
 
@@ -504,6 +621,35 @@ function render(){
     }
   });
 
+  // ---- the opp's snipe: converging reticle on the predicted lead point + a strike travelling in
+  if(snipe){
+    const k = Math.min(1, snipe.t/K.OPP_SNIPE_TELE);
+    const rr = K.OPP_SNIPE_R*(1.65 - 0.9*k);
+    wrapDraw(snipe.tx, X=>{
+      ctx.strokeStyle = snipe.done ? 'rgba(127,232,255,0.55)' : 'rgba(255,61,122,'+(0.4+0.5*k).toFixed(2)+')';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(X, snipe.ty, rr, 0, 7); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(X-rr, snipe.ty); ctx.lineTo(X+rr, snipe.ty);
+      ctx.moveTo(X, snipe.ty-rr); ctx.lineTo(X, snipe.ty+rr); ctx.stroke();
+    });
+    if(!snipe.done){
+      const dx = wrapDX(snipe.tx - snipe.ox);
+      const sx = ((snipe.ox + dx*k)%VW+VW)%VW, sy = snipe.oy + (snipe.ty-snipe.oy)*k;
+      wrapDraw(sx, X=>{ ctx.fillStyle = '#ff3d7a'; ctx.beginPath(); ctx.arc(X, sy, 5, 0, 7); ctx.fill(); });
+    }
+  }
+
+  // ---- opp callout (fires read / snuffed / broken)
+  if(callout){
+    const a = Math.max(0, Math.min(1, (1 - callout.t/callout.life)*1.4));
+    ctx.globalAlpha = a;
+    ctx.fillStyle = callout.text === 'READ BROKEN' ? '#7fe8ff' : '#ff5d94';
+    ctx.font = '800 33px system-ui,-apple-system,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(callout.text, VW/2, 208);
+    ctx.globalAlpha = 1;
+  }
+
   // ---- hud
   ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
   ctx.font = '700 62px system-ui,-apple-system,sans-serif';
@@ -519,10 +665,32 @@ function render(){
     ctx.beginPath(); ctx.arc(VW/2 - 40 + i*40, VH-64, 11, 0, 7); ctx.fill();
   }
 
-  if(!hinted && mode === 'play'){
+  if(!hinted && mode === 'play' && introT <= 0){
     ctx.fillStyle = 'rgba(255,255,255,0.32)';
     ctx.font = '500 21px system-ui,-apple-system,sans-serif';
     ctx.fillText('WASD move   ·   SHIFT dash   ·   SPACE brace', VW/2, VH-108);
+  }
+
+  // ---- cold-open reveal: the whole "war report", rendered as a beat on your own floor
+  if(introT > 0){
+    ctx.fillStyle = 'rgba(7,7,11,0.64)'; ctx.fillRect(0,0,VW,VH);
+    const g = opp.grudge;
+    if(g){
+      const ph = K.INTRO_T - introT, pr = 34 + (Math.sin(ph*6)*0.5+0.5)*42;
+      wrapDraw(g.x, X=>{
+        ctx.strokeStyle = 'rgba(255,61,122,0.85)'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(X, g.y, pr, 0, 7); ctx.stroke();
+      });
+      ctx.fillStyle = '#c9a8b8'; ctx.font = '600 21px system-ui,sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('your most-passed spot', g.x, g.y - pr - 14);
+    }
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ff5d94'; ctx.font = '800 42px system-ui,-apple-system,sans-serif';
+    ctx.fillText('THE OPP LEARNED YOU', VW/2, VH*0.30);
+    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 25px system-ui,sans-serif';
+    ctx.fillText(snipeFuse != null ? 'it clocked your late holds' : 'it staked out your spot', VW/2, VH*0.30 + 44);
+    ctx.fillStyle = 'rgba(255,255,255,0.42)'; ctx.font = '500 20px system-ui,sans-serif';
+    ctx.fillText('tap to begin', VW/2, VH*0.72);
   }
 
   if(flash > 0){ ctx.fillStyle = 'rgba(255,255,255,0.24)'; ctx.fillRect(0,0,VW,VH); }
@@ -539,6 +707,10 @@ function render(){
     ctx.fillText(fmt(elapsed)+'  ·  '+slag.length+' walls  ·  '+cooldowns+' cooldowns', VW/2, VH/2 + 110);
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px system-ui,sans-serif';
     ctx.fillText('tap to go again', VW/2, VH/2 + 190);
+    if(opp.runs >= 1){
+      ctx.fillStyle = '#a15277'; ctx.font = '600 21px system-ui,sans-serif';
+      ctx.fillText('the opp just studied this run', VW/2, VH/2 + 240);
+    }
   }
 }
 function fmt(s){ const m = Math.floor(s/60), r = Math.floor(s%60); return m+':'+String(r).padStart(2,'0'); }
@@ -568,6 +740,7 @@ window.addEventListener('pointercancel', onUp);
 // desktop: WASD/arrows steer, SHIFT dashes, SPACE braces
 window.addEventListener('keydown', e=>{
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
+  if(introT > 0){ introT = 0; if(KEYVEC[k]||k===' '||k==='shift'||k==='enter'){ e.preventDefault(); } return; }
   if(mode === 'over'){
     if(KEYVEC[k] || k===' ' || k==='shift' || k==='enter'){ e.preventDefault(); reset(); }
     return;
@@ -635,5 +808,20 @@ window.__fwoosh = {
     return true;
   },
   consts(){ return K; },
+  // ---- THE OPP inspection
+  oppState(){ return {
+    runs: opp.runs, passes: opp.lat.length,
+    medianLat: opp.medianLat != null ? +opp.medianLat.toFixed(3) : null,
+    snipeFuse: snipeFuse != null ? +snipeFuse.toFixed(3) : null, snipeUsed,
+    grudge: opp.grudge ? {x:Math.round(opp.grudge.x), y:Math.round(opp.grudge.y)} : null,
+    terrMax: Math.max.apply(null, opp.terr), terrSum: opp.terr.reduce((a,b)=>a+b,0),
+    introT: +introT.toFixed(2), scarred: oppScarred, runBuf: runBuf.length,
+    snipe: snipe ? {t:+snipe.t.toFixed(2), done:snipe.done, tx:Math.round(snipe.tx), ty:Math.round(snipe.ty)} : null,
+    callout: callout ? callout.text : null,
+  }; },
+  resetOpp(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null, runs:0 };
+    try{ localStorage.removeItem('fwoosh.opp'); }catch(e){} return this.oppState(); },
+  skipIntro(){ introT = 0; return true; },
+  forcePop(){ pop('test'); return this.oppState(); },
 };
 </script>
