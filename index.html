@@ -93,6 +93,18 @@ const K = {
   SLOWMO_SCALE: 0.25,
   CLUTCH_FUSE: 0.40,                // sub-0.40s pass earns the slowmo
 
+  // bosses: the apex duel (Keith, the win) + risers (minibosses)
+  DUEL_CROWD: 3,                    // crowd below this late-run = Keith gets up
+  DUEL_MIN_T: 20,                   // never before 20s in
+  KEITH_R: 20, KEITH_FUSE: 4.0, KEITH_DOWNS: 3,
+  KEITH_FLEE: 130,                  // unlit Keith evades like crowd: herding is the offense
+  KEITH_PUR0: 190, KEITH_PUR1: 310, // lit Keith hunts you to shed it back
+  BOSS_RISE_T: 0.8, BOSS_STAGGER_T: 2.2,
+  PASSBACK_FUSE: 2.5,               // what you inherit when a boss sheds onto you
+  RISER_AT: 4, RISER_EVERY: 3,      // your 4th wall this run raises one; then every 3rd
+  RISER_R: 17, RISER_FUSE: 3.0, RISER_SPD: 150, RISER_TAG_CD: 2.5,
+  DUEL_BONUS: 1500, RISER_BONUS: 400,
+
   // THE OPP (meta, phase 2A)
   OPP_COLS: 6, OPP_ROWS: 8,         // territory histogram = 48 cells (120x160px each)
   OPP_MIN_PASSES: 3,                // need this many recorded passes before the opp arms
@@ -142,6 +154,11 @@ const STORY = {
             respect:['huh. still got you.','old habits. even yours.'] },
   broken: { smug:["...that's new.",'wait.'], obsessed:['STOP IMPROVING.','WHO TAUGHT YOU THAT.'],
             respect:['beautiful. again.',"didn't see that coming. good."] },
+  duel:   { rise:["IT'S JUST US NOW.",'MY TURN.'],
+            tag:["FINE. I'LL HOLD IT.",'GIVE IT HERE THEN.'],
+            back:['NOT TODAY.','RETURN TO SENDER.'],
+            yieldSub:['you made me hold it.','nobody makes me hold it.'] },
+  riser:  { rise:'ONE OF YOUR WALLS IS UP.', shed:'IT SHED THE BURN.', dead:'BACK DOWN. STAY DOWN.' },
   study:  { debut:['Keith is taking notes.'],
             smug:['Keith filed this run. Keith remembers.','Keith has your number.'],
             obsessed:['Keith watched every second of that.','Keith is not okay about you.'],
@@ -163,21 +180,24 @@ let god = false;     // test-only: fuse refills instead of POPping, so long-run 
 let opp = loadOpp();
 let runBuf = [], snipe = null, snipeFuse = null, snipeUsed = false,
     introT = 0, introKind = 'keith', callout = null, oppScarred = false, gotSniped = false;
+let boss = null, duelActive = false, won = false, slagThisRun = 0, nextRiserAt = 0;
 
 function loadOpp(){
   const N = 6*8;
   try{ const s = JSON.parse(localStorage.getItem('fwoosh.opp'));
     if(s && Array.isArray(s.terr) && s.terr.length === N){
       s.readsBroken = s.readsBroken||0; s.timesSniped = s.timesSniped||0; s.seenIntro = !!s.seenIntro;
+      s.duelWins = s.duelWins||0;
       return s; } }catch(e){}
   return { terr: new Array(N).fill(0), lat: [], grudge: null, medianLat: null, runs: 0,
-           readsBroken: 0, timesSniped: 0, seenIntro: false };
+           readsBroken: 0, timesSniped: 0, seenIntro: false, duelWins: 0 };
 }
 
 // where the feud stands -> which register Keith speaks in. The arc: he learns you (smug),
 // over-invests (obsessed), then can't read you anymore and respects it (respect).
 function feudStage(){
   if((opp.runs||0) <= 1) return 'debut';
+  if((opp.duelWins||0) >= 1) return 'respect';  // he yielded. that settles it.
   const b = opp.readsBroken||0, s = opp.timesSniped||0;
   if(b >= 4 && b > s) return 'respect';        // you've become genuinely unpredictable
   if((opp.runs||0) >= 4 || b >= 2) return 'obsessed';
@@ -248,6 +268,7 @@ function reset(seed){
   cells = []; slag = []; trail = []; rings = []; hist = [];
   score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
   mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
+  boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = K.RISER_AT;
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.HUNTER_FUSE;
   player = {
@@ -435,6 +456,84 @@ function step(){
   }
   cells = cells.filter(c=>!c.dead);
 
+  // ---- boss update (riser or apex Keith)
+  if(boss && mode === 'play'){
+    const b = boss;
+    if(b.state === 'rising' || b.state === 'stagger'){
+      b.t -= dt; if(b.t <= 0) b.state = 'idle';
+    } else {
+      if(b.state === 'lit'){
+        b.fuse -= dt;
+        if(b.fuse <= 0){ bossDown(); }
+        else if(b.kind === 'keith'){
+          // lit Keith hunts YOU to shed it back — pursue your lagged position, ramping speed
+          const t = 1 - b.fuse/K.KEITH_FUSE;
+          const spd = K.KEITH_PUR0 + (K.KEITH_PUR1-K.KEITH_PUR0)*t;
+          const dx = wrapDX(lag.x-b.x), dy = lag.y-b.y, dd = Math.hypot(dx,dy)||1;
+          b.vx = dx/dd*spd; b.vy = dy/dd*spd;
+        } else {
+          // lit riser does what everyone in this world does: sheds onto the nearest body
+          const pool = crowd(); let tgt = null, bd = 1e9;
+          for(const c of pool){ const d = dist(b.x,b.y,c.x,c.y); if(d < bd){ bd = d; tgt = c; } }
+          const gx = tgt ? tgt.x : p.x, gy = tgt ? tgt.y : p.y;
+          const dx = wrapDX(gx-b.x), dy = gy-b.y, dd = Math.hypot(dx,dy)||1;
+          b.vx = dx/dd*165; b.vy = dy/dd*165;
+          if(tgt && bd < b.r + K.R_CELL){
+            ignite(tgt, 'riser'); b.state = 'idle'; b.fuse = 0;
+            callout = { text: STORY.riser.shed, t:0, life:1.2, good:false };
+          }
+        }
+      } else {                                        // unlit
+        if(b.kind === 'keith'){
+          // he does not want it back: evades like crowd. Herding him is the offense.
+          const dx = wrapDX(b.x-p.x), dy = b.y-p.y, dd = Math.hypot(dx,dy)||1;
+          if(dd < 300){ b.vx = dx/dd*K.KEITH_FLEE; b.vy = dy/dd*K.KEITH_FLEE; }
+          else { b.vx *= 0.9; b.vy *= 0.9; }
+        } else {
+          // riser hunts the crowd, tagging them lit — the fire spreading on its own
+          b.tagCd -= dt;
+          const pool = crowd(); let tgt = null, bd = 1e9;
+          for(const c of pool){ const d = dist(b.x,b.y,c.x,c.y); if(d < bd){ bd = d; tgt = c; } }
+          if(tgt){
+            const dx = wrapDX(tgt.x-b.x), dy = tgt.y-b.y, dd = Math.hypot(dx,dy)||1;
+            b.vx = dx/dd*K.RISER_SPD; b.vy = dy/dd*K.RISER_SPD;
+            if(bd < b.r + K.R_CELL && b.tagCd <= 0){
+              ignite(tgt, 'riser'); b.tagCd = K.RISER_TAG_CD;
+              ring(tgt.x, tgt.y, 8, 44, '#ff6a2e', 0.3);
+            }
+          } else { b.vx *= 0.9; b.vy *= 0.9; }
+        }
+      }
+      b.x += b.vx*dt; b.y += b.vy*dt;
+      if(b.x < 0) b.x += VW; if(b.x >= VW) b.x -= VW;
+      if(b.y < 40) b.y = 40; if(b.y > VH-40) b.y = VH-40;
+      // slag is solid for bosses too — cornering Keith against your walls IS the fight
+      for(const s of slag){
+        const dx = wrapDX(b.x-s.x), dy = b.y-s.y, d = Math.hypot(dx,dy), min = b.r + K.R_SLAG;
+        if(d < min && d > 0.001){ b.x += (dx/d)*(min-d); b.y += (dy/d)*(min-d); }
+      }
+      // player contact: the one law. Fire transfers on touch.
+      if(!ghost && dist(p.x,p.y,b.x,b.y) < p.r + b.r){
+        if(p.lit && b.state !== 'lit'){
+          p.lit = false; p.fuse = 0; p.passeeId = 0; p.passT = 0;
+          b.state = 'lit'; b.fuse = b.kind === 'keith' ? K.KEITH_FUSE : K.RISER_FUSE;
+          score += 150;
+          ring(b.x, b.y, b.r, 90, '#ff9a2e', 0.4);
+          hitstop = K.HITSTOP; flash = DT*2;
+          if(b.kind === 'keith')
+            callout = { text: STORY.duel.tag[(b.downs) % STORY.duel.tag.length], t:0, life:1.4, good:true };
+        } else if(!p.lit && b.state === 'lit'){
+          p.lit = true; p.fuse = K.PASSBACK_FUSE;
+          b.state = 'idle'; b.fuse = 0;
+          ring(p.x, p.y, 10, 70, '#ff3d7a', 0.4);
+          hitstop = K.HITSTOP; flash = DT*2;
+          if(b.kind === 'keith')
+            callout = { text: STORY.duel.back[(b.downs) % STORY.duel.back.length], t:0, life:1.4, good:false };
+        }
+      }
+    }
+  }
+
   // ---- trail
   for(const t of trail) t.t += dt;
   trail = trail.filter(t=>t.t < K.TRAIL_LIFE);
@@ -457,9 +556,16 @@ function step(){
     }
   }
 
-  // ---- respawn
-  respawnT += dt;
-  if(respawnT >= K.CROWD_RESPAWN){ respawnT = 0; if(crowd().length < K.CROWD_CAP) spawnCrowd(false); }
+  // ---- respawn (paused during the duel: everyone's hiding)
+  if(!duelActive){
+    respawnT += dt;
+    if(respawnT >= K.CROWD_RESPAWN){ respawnT = 0; if(crowd().length < K.CROWD_CAP) spawnCrowd(false); }
+  }
+
+  // ---- THE DUEL TRIGGER: the floor you emptied is the boss arena
+  if(!duelActive && !won && opp.runs >= 1 && elapsed > K.DUEL_MIN_T && crowd().length < K.DUEL_CROWD){
+    startDuel();
+  }
 
   // ---- COOLDOWN: clear a REAL field of hunters while LIT with a live crowd.
   // Gated on peak simultaneous hunters so pass->backpass->"field is empty" can't be farmed.
@@ -471,17 +577,23 @@ function step(){
   // ---- RELIGHT: dark player + zero hunters = no fire in the arena at all.
   // Without this the run silently dies: you can never become LIT again, so you can
   // never score, POP, or cooldown. Somebody always has to be holding it.
-  if(!p.lit && hn === 0){
+  if(!p.lit && hn === 0 && !(boss && boss.state === 'lit')){
     noFireT += dt;
     if(noFireT >= K.RELIGHT){
       noFireT = 0;
-      const pool = crowd();
-      if(pool.length){
-        let best = pool[0], bd = 1e9;
-        for(const c of pool){ const d = dist(c.x,c.y,p.x,p.y); if(d < bd){ bd = d; best = c; } }
-        ignite(best, 'relight');
-        ring(best.x,best.y,8,90,'#ff9a2e',0.5);
-      } else pop('the crowd ran out');     // nothing left to light: the floor is dead
+      if(duelActive){
+        // during the duel the fire comes back to YOU. There is nobody else left.
+        p.lit = true; p.fuse = K.FUSE_START;
+        ring(p.x, p.y, 8, 90, '#ff9a2e', 0.5);
+      } else {
+        const pool = crowd();
+        if(pool.length){
+          let best = pool[0], bd = 1e9;
+          for(const c of pool){ const d = dist(c.x,c.y,p.x,p.y); if(d < bd){ bd = d; best = c; } }
+          ignite(best, 'relight');
+          ring(best.x,best.y,8,90,'#ff9a2e',0.5);
+        } else pop('the crowd ran out');     // nothing left to light: the floor is dead
+      }
     }
   } else noFireT = 0;
 
@@ -555,8 +667,65 @@ function ignite(c, why){
 
 function becomeSlag(c){
   slag.push({x:c.x,y:c.y});
-  c.dead = true;
+  c.dead = true; slagThisRun++;
   ring(c.x,c.y,K.R_CELL,50,'#4a5162',0.42);
+  maybeRise();
+}
+
+// ---------------------------------------------------------------- bosses
+// One contact law everywhere: fire transfers on touch. Bosses go DOWN instead of slagging.
+// RISER (miniboss): a wall you made gets back up and spreads fire through the crowd.
+// KEITH APEX (the win): the emptied floor is the boss arena; he uses your own moves.
+function maybeRise(){
+  if(boss || duelActive || won || mode !== 'play') return;
+  if(slagThisRun < nextRiserAt) return;
+  const i = slag.findIndex(s => !s.grudge);          // the oldest wall that isn't Keith's
+  if(i < 0) return;
+  const s = slag.splice(i,1)[0];
+  nextRiserAt += K.RISER_EVERY;
+  boss = { kind:'riser', x:s.x, y:s.y, r:K.RISER_R, state:'rising', t:K.BOSS_RISE_T,
+           fuse:0, downs:0, tagCd:1.0, vx:0, vy:0 };
+  ring(s.x, s.y, K.R_SLAG, 90, '#c2364f', 0.6);
+  callout = { text: STORY.riser.rise, t:0, life:1.6, good:false };
+}
+
+function startDuel(){
+  if(boss && boss.kind === 'riser'){ slag.push({x:boss.x, y:boss.y}); }   // riser sits back down
+  duelActive = true; snipeUsed = true; snipe = null;
+  const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
+  slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
+  boss = { kind:'keith', x:gx, y:gy, r:K.KEITH_R, state:'rising', t:K.BOSS_RISE_T,
+           fuse:0, downs:0, tagCd:0, vx:0, vy:0 };
+  ring(gx, gy, K.R_SLAG, 140, '#ff3d7a', 0.8);
+  callout = { text: STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length], t:0, life:1.8, good:false };
+  flash = DT*2;
+}
+
+function winDuel(){
+  won = true; mode = 'over'; popCause = 'he yielded';
+  score += K.DUEL_BONUS;
+  opp.duelWins = (opp.duelWins||0) + 1;
+  foldOpp();
+  ring(boss.x, boss.y, 20, 320, '#8affc1', 1.0);
+  flash = DT*3;
+}
+
+function bossDown(){
+  const b = boss;
+  if(b.kind === 'riser'){
+    slag.push({x:b.x, y:b.y});                       // dead for good this time
+    score += K.RISER_BONUS;
+    ring(b.x, b.y, K.RISER_R, 90, '#7fe8ff', 0.5);
+    callout = { text: STORY.riser.dead, t:0, life:1.4, good:true };
+    boss = null;
+  } else {
+    b.downs++;
+    if(b.downs >= K.KEITH_DOWNS){ winDuel(); return; }
+    b.state = 'stagger'; b.t = K.BOSS_STAGGER_T; b.fuse = 0;
+    ring(b.x, b.y, b.r, 110, '#7fe8ff', 0.6);
+    callout = { text: 'KEITH BURNED DOWN · ' + b.downs + '/' + K.KEITH_DOWNS, t:0, life:1.6, good:true };
+    hitstop = K.HITSTOP;
+  }
 }
 
 function cooldown(){
@@ -566,6 +735,15 @@ function cooldown(){
   score += 500;
   ring(player.x,player.y,20,260,'#8affc1',0.9);
   flash = DT*3;
+  // the fire answers: each cooldown ignites more of the crowd at once.
+  // Multiple taggers, always traced to the player's own feat — never free-running spread.
+  const n = Math.min(1 + cooldowns, 5);
+  const pool = crowd().filter(c => c.grace <= 0);
+  for(let i = 0; i < n && pool.length; i++){
+    const c = pool.splice(Math.floor(rnd()*pool.length), 1)[0];
+    ignite(c, 'surge');
+    ring(c.x, c.y, 8, 60, '#ff9a2e', 0.4);
+  }
 }
 
 function pop(cause){
@@ -693,6 +871,42 @@ function render(){
     }
   });
 
+  // ---- boss (riser or apex Keith)
+  if(boss){
+    const b = boss;
+    const grow = b.state === 'rising' ? Math.max(0.2, 1 - b.t/K.BOSS_RISE_T) : 1;
+    const rr = b.r * grow;
+    const flat = b.state === 'stagger';
+    wrapDraw(b.x, X=>{
+      if(b.state === 'lit'){
+        const g = ctx.createRadialGradient(X,b.y,2,X,b.y,rr*3.4);
+        g.addColorStop(0,'rgba(255,150,50,0.5)'); g.addColorStop(1,'rgba(255,110,40,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X,b.y,rr*3.4,0,7); ctx.fill();
+      }
+      const col = b.kind === 'keith' ? (flat ? '#7a2447' : '#ff3d7a') : (flat ? '#5e1f2c' : '#c2364f');
+      if(b.kind === 'keith' && !flat){
+        ctx.fillStyle = col;
+        ctx.beginPath(); ctx.arc(X, b.y, rr, 0, 7); ctx.fill();
+      } else {
+        // riser (and staggered Keith) reads as a wall that got up: a rounded slab
+        ctx.fillStyle = col;
+        const h = flat ? rr*0.55 : rr;
+        ctx.fillRect(X-rr, b.y-h, rr*2, h*2);
+      }
+      // the eye — same eye as the grudge wall. It's him.
+      ctx.fillStyle = b.state === 'lit' ? '#fff' : '#ffd7e6';
+      ctx.beginPath(); ctx.arc(X, b.y - (flat ? 0 : rr*0.1), 5.4*grow, 0, 7); ctx.fill();
+      ctx.fillStyle = '#160a11';
+      ctx.beginPath(); ctx.arc(X, b.y - (flat ? 0 : rr*0.1), 2.4*grow, 0, 7); ctx.fill();
+      if(b.state === 'lit'){
+        const fmax = b.kind === 'keith' ? K.KEITH_FUSE : K.RISER_FUSE;
+        const k = Math.max(0, b.fuse/fmax);
+        ctx.strokeStyle = '#ffd36a'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(X, b.y, rr+10, -Math.PI/2, -Math.PI/2 + k*Math.PI*2); ctx.stroke();
+      }
+    });
+  }
+
   // ---- the opp's snipe: converging reticle on the predicted lead point + a strike travelling in
   if(snipe){
     const k = Math.min(1, snipe.t/K.OPP_SNIPE_TELE);
@@ -737,6 +951,15 @@ function render(){
     const on = i < player.charges;
     ctx.fillStyle = on ? '#7fe8ff' : 'rgba(127,232,255,0.18)';
     ctx.beginPath(); ctx.arc(VW/2 - 40 + i*40, VH-64, 11, 0, 7); ctx.fill();
+  }
+  // duel: Keith's downs, top-right. Three burns to a yield.
+  if(duelActive && boss && boss.kind === 'keith'){
+    for(let i=0;i<K.KEITH_DOWNS;i++){
+      const litPip = i < boss.downs;
+      ctx.fillStyle = litPip ? '#8affc1' : 'rgba(255,61,122,0.30)';
+      ctx.strokeStyle = '#ff3d7a'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(VW-52 - i*34, 66, 10, 0, 7); ctx.fill(); ctx.stroke();
+    }
   }
 
   if(!hinted && mode === 'play' && introT <= 0){
@@ -786,7 +1009,21 @@ function render(){
 
   if(flash > 0){ ctx.fillStyle = 'rgba(255,255,255,0.24)'; ctx.fillRect(0,0,VW,VH); }
 
-  if(mode === 'over'){
+  if(mode === 'over' && won){
+    ctx.fillStyle = 'rgba(7,7,11,0.82)'; ctx.fillRect(0,0,VW,VH);
+    ctx.fillStyle = '#8affc1'; ctx.textAlign = 'center';
+    ctx.font = '800 74px system-ui,-apple-system,sans-serif';
+    ctx.fillText('KEITH YIELDS.', VW/2, VH/2 - 110);
+    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 26px system-ui,sans-serif';
+    STORY.duel.yieldSub.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH/2 - 56 + i*36));
+    ctx.fillStyle = '#fff'; ctx.font = '700 66px system-ui,sans-serif';
+    ctx.fillText(String(score), VW/2, VH/2 + 78);
+    ctx.fillStyle = '#7b8397'; ctx.font = '400 23px system-ui,sans-serif';
+    ctx.fillText(fmt(elapsed)+'  ·  win #'+(opp.duelWins||1), VW/2, VH/2 + 122);
+    ctx.fillStyle = '#666f84'; ctx.font = '500 25px system-ui,sans-serif';
+    ctx.fillText('tap to run it back', VW/2, VH/2 + 196);
+  }
+  else if(mode === 'over'){
     ctx.fillStyle = 'rgba(7,7,11,0.80)'; ctx.fillRect(0,0,VW,VH);
     ctx.fillStyle = '#ff6a5a'; ctx.textAlign = 'center';
     ctx.font = '800 82px system-ui,sans-serif'; ctx.fillText('POP', VW/2, VH/2 - 70);
@@ -872,6 +1109,7 @@ window.__fwoosh = {
     bracing:player.bracing, spd:Math.round(player.spd), lunge:+player.lunge.toFixed(3),
     x:Math.round(player.x), y:Math.round(player.y),
     crowd:crowd().length, hunters:hunters().length, slag:slag.length,
+    duel:duelActive, won, slagThisRun,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
     passeeId:player.passeeId, passT:+player.passT.toFixed(3), hitstop:+hitstop.toFixed(3),
   }; },
@@ -908,11 +1146,12 @@ window.__fwoosh = {
     terrMax: Math.max.apply(null, opp.terr), terrSum: opp.terr.reduce((a,b)=>a+b,0),
     introT: +introT.toFixed(2), scarred: oppScarred, gotSniped, runBuf: runBuf.length,
     stage: feudStage(), readsBroken: opp.readsBroken||0, timesSniped: opp.timesSniped||0,
+    duelWins: opp.duelWins||0,
     snipe: snipe ? {t:+snipe.t.toFixed(2), done:snipe.done, tx:Math.round(snipe.tx), ty:Math.round(snipe.ty)} : null,
     callout: callout ? callout.text : null,
   }; },
   resetOpp(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null,
-    runs:0, readsBroken:0, timesSniped:0, seenIntro:false };
+    runs:0, readsBroken:0, timesSniped:0, seenIntro:false, duelWins:0 };
     try{ localStorage.removeItem('fwoosh.opp'); }catch(e){} return this.oppState(); },
   skipIntro(){ introT = 0; return true; },
   forcePop(){ pop('test'); return this.oppState(); },
@@ -925,5 +1164,14 @@ window.__fwoosh = {
   setFeud(runs, broken, sniped){ opp.runs=runs; opp.readsBroken=broken; opp.timesSniped=sniped;
     return this.narr(); },
   story(){ return STORY; },
+  // ---- boss inspection & drivers
+  bossState(){ return boss ? { kind:boss.kind, state:boss.state, x:Math.round(boss.x), y:Math.round(boss.y),
+    fuse:+boss.fuse.toFixed(2), downs:boss.downs, t:+(boss.t||0).toFixed(2) } : null; },
+  forceDuel(){ startDuel(); return this.bossState(); },
+  riseNow(){ slagThisRun = nextRiserAt; maybeRise(); return this.bossState(); },
+  killCrowd(n){ let k = 0;
+    for(const c of cells){ if(!c.hunter && k < (n||99)){ c.dead = true; k++; } }
+    cells = cells.filter(c=>!c.dead); return crowd().length; },
+  bossTp(x,y){ if(boss){ boss.x=x; boss.y=y; } return this.bossState(); },
 };
 </script>
