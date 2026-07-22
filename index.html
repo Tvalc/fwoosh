@@ -109,7 +109,17 @@ const K = {
 // and it develops across your feud: smug -> obsessed -> grudging respect. The arc is the
 // mechanic (he snipes your habits; defying them earns his respect). No em-dashes on purpose.
 const STORY = {
-  firstRun: "you're on fire. nobody knows why. pass it on.",
+  // first-boot premise card: the player must KNOW what is going on before they touch anything.
+  // Concrete events only, no vibes: who lit you, where the fire came from, what to do, the stakes.
+  premise: [
+    'somebody touched you and ran.',
+    "that's how it spreads. that's how everyone gets it.",
+    "this fire started ages ago. nobody's put it out.",
+    "someone is always holding it. right now it's you.",
+    "your only move: touch someone else. now it's theirs.",
+    'hold it too long and you burn into a wall. for good.',
+    'every wall in here used to be a person.',
+  ],
   greet: {
     debut: { big:'REMEMBER ME?', sub:["no. of course you don't.",
              "you've done this to two hundred of us. it's Keith, by the way."] },
@@ -152,7 +162,7 @@ let god = false;     // test-only: fuse refills instead of POPping, so long-run 
 // ---- THE OPP: a rival built from how you played last session (persistent)
 let opp = loadOpp();
 let runBuf = [], snipe = null, snipeFuse = null, snipeUsed = false,
-    introT = 0, callout = null, oppScarred = false, gotSniped = false;
+    introT = 0, introKind = 'keith', callout = null, oppScarred = false, gotSniped = false;
 
 function loadOpp(){
   const N = 6*8;
@@ -214,10 +224,10 @@ function setupOpp(){
     snipeFuse = Math.max(0.5, Math.min(K.FUSE_START-0.2, opp.medianLat + K.OPP_SNIPE_LEAD));
   }
   // cold-open only when there's a prior run to react to
-  if(opp.runs >= 1 && (opp.grudge || snipeFuse != null)) introT = K.INTRO_T;
-  // very first run ever: establish the world before Keith exists
+  if(opp.runs >= 1 && (opp.grudge || snipeFuse != null)){ introT = K.INTRO_T; introKind = 'keith'; }
+  // very first boot ever: the premise card. The player must know what is going on before playing.
   else if((opp.runs||0) === 0 && !opp.seenIntro){
-    callout = { text: STORY.firstRun, t:0, life:3.4, good:null };
+    introT = 8.0; introKind = 'premise';           // tap dismisses; 8s is only the fallback
     opp.seenIntro = true; saveOpp();
   }
 }
@@ -297,8 +307,8 @@ function lungeDir(dx,dy){
 }
 
 function onDown(x,y){
+  if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
-  if(introT > 0){ introT = 0; return; }            // dismiss the cold-open
   if(mode === 'over'){ reset(); return; }
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
@@ -735,8 +745,22 @@ function render(){
     ctx.fillText('WASD move   ·   SHIFT dash   ·   SPACE brace', VW/2, VH-108);
   }
 
+  // ---- first-boot premise card: plain statement of what is going on. Concrete, no mystery.
+  if(introT > 0 && introKind === 'premise'){
+    ctx.fillStyle = 'rgba(7,7,11,0.82)'; ctx.fillRect(0,0,VW,VH);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffb04d'; ctx.font = '800 54px system-ui,-apple-system,sans-serif';
+    ctx.fillText("YOU'RE ON FIRE.", VW/2, VH*0.20);
+    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 23px system-ui,sans-serif';
+    STORY.premise.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH*0.20 + 66 + i*40));
+    ctx.fillStyle = '#fff'; ctx.font = '800 36px system-ui,-apple-system,sans-serif';
+    ctx.fillText("DON'T END UP A WALL.", VW/2, VH*0.20 + 66 + STORY.premise.length*40 + 52);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = '500 20px system-ui,sans-serif';
+    ctx.fillText('tap to start', VW/2, VH*0.82);
+  }
+
   // ---- cold-open reveal: the whole "war report", rendered as a beat on your own floor
-  if(introT > 0){
+  else if(introT > 0){
     ctx.fillStyle = 'rgba(7,7,11,0.64)'; ctx.fillRect(0,0,VW,VH);
     const g = opp.grudge;
     if(g){
@@ -895,7 +919,7 @@ window.__fwoosh = {
   // narration the render would show right now, for verifying the arc
   narr(){ const st = feudStage();
     const g = st==='debut' ? STORY.greet.debut : STORY.greet[st][(opp.runs||0)%STORY.greet[st].length];
-    return { stage:st, greetBig:g.big, greetSub:g.sub, firstRun:STORY.firstRun,
+    return { stage:st, greetBig:g.big, greetSub:g.sub, premise:STORY.premise, introKind,
       study: (opp.runs>=1) ? lineFor('study') : null,
       fired: lineFor('fired'), sniped: lineFor('sniped'), broken: lineFor('broken') }; },
   setFeud(runs, broken, sniped){ opp.runs=runs; opp.readsBroken=broken; opp.timesSniped=sniped;
