@@ -86,7 +86,9 @@ const K = {
   BURN_FUSE: 6.5,                   // a flaming villager burns into a WALL after this (unsaved)
   PANIC_SPD: 150,                   // flaming villager panic-run (catchable with a dash)
   SAVE_SCORE: 120,                  // points per villager saved
-  OVERLOAD_HOLD: 1.4,               // grace at max heat before you burn up — BRACE to vent, or dump into Keith
+  // HEALTH: carrying fire burns your health down, faster the more you hold; empty of fire, you recover.
+  HP_DRAIN: 0.035,                  // health/sec lost PER unit of heat carried (heat 6 -> ~0.21/s)
+  HP_REGEN: 0.22,                   // health/sec regained while carrying no fire
   SAVE_QUOTA: 12,                   // save this many villagers and Keith rises for the finale
   DUEL_DUMP: 8,                     // total heat you must dump into Keith to make him yield
 
@@ -392,6 +394,7 @@ function reset(seed){
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
     heat: 0,                              // ABSORBER: fires currently carried (0..HEAT_MAX)
+    hp: 1,                                // HEALTH (0..1): burns down while carrying fire, recovers when clear
     passeeId: 0, passT: 999, passVal: 0,
   };
   setupOpp();                                 // grudge wall + snipe, before crowd so they avoid it
@@ -523,8 +526,7 @@ function step(){
   if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
 
   // ---- HEAT: the fire you're carrying. It PERSISTS while you run (you're holding it, taking it to
-  // Keith) — it does NOT just burn off. You shed it only on purpose: BRACE to vent, or dump it into
-  // Keith. Sit at max and you burn up. (Absorbing villagers is the only way to gain it.)
+  // Keith) — it does NOT just burn off. You shed it only on purpose: BRACE to vent, or dump it into Keith.
   if(p.heat > 0){
     if(p.bracing){ heatCoolT += dt;                       // brace = deliberately vent the fire
       while(heatCoolT >= K.HEAT_VENT && p.heat > 0){ heatCoolT -= K.HEAT_VENT; p.heat = Math.max(0, p.heat-1); } }
@@ -534,10 +536,11 @@ function step(){
     while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); }
   } else heatCoolT = 0;
   p.lit = p.heat > 0;                                   // legacy flag some draws read
-  if(p.heat >= K.HEAT_MAX){
-    overloadT += dt;
-    if(overloadT >= K.OVERLOAD_HOLD && !god && !intro){ pop('too much fire'); return; }
-  } else overloadT = 0;
+  // ---- HEALTH: the fire burns you down — faster the more you carry. Clear of fire, you recover.
+  if(god || intro){ p.hp = 1; }
+  else if(p.heat > 0){ p.hp -= dt * p.heat * K.HP_DRAIN;
+    if(p.hp <= 0){ p.hp = 0; pop('burned up'); return; } }
+  else { p.hp = Math.min(1, p.hp + dt * K.HP_REGEN); }
   p.passT += dt;
 
   // ---- SHATTER: a lunge into slag destroys it, terminates the burst
@@ -1597,7 +1600,7 @@ const SKINS = {
       } },
     player(ctx,X,p){ const y=p.y, r=p.r, bob=Math.sin(frame*0.18)*2;
       groundShadow(ctx, X, y+r*1.55, r*1.5, r*0.42);
-      const hf=p.heat/K.HEAT_MAX, danger=p.heat>=K.HEAT_MAX-1;   // burning out -> the cinder man
+      const hf=p.heat/K.HEAT_MAX, danger=(p.hp!=null && p.hp<0.3);   // low health = burning out -> cinder man
       const flip=(p.hx||0) < -0.01, pop=1+(p.absorbPop||0)*1.25;
       if(p.heat>0){ const gr=12+hf*54, g=ctx.createRadialGradient(X,y,2,X,y,gr);   // glow grows with heat carried
         g.addColorStop(0, danger?'rgba(255,90,50,'+(0.55+0.35*Math.sin(frame*0.6)).toFixed(2)+')':'rgba(255,160,60,'+(0.32+0.32*hf).toFixed(2)+')');
@@ -1893,34 +1896,44 @@ function render(){
   }
   if(hudOn){
     ctx.textAlign='center';
-    // ---- OBJECTIVE (what wins the run), stated plainly at the top
+    // ---- HEALTH bar (your life): fire burns it down, faster the more you carry; clear of fire it recovers
+    { const bw=VW*0.62, bx=VW/2-bw/2, by=106, bh=17, hp=Math.max(0,Math.min(1,player.hp)), low=hp<0.25;
+      roundRectPath(ctx,bx,by,bw,bh,8); ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fill();
+      const col = hp>0.5?'#5fdc7a' : hp>0.25?'#ffd23d' : '#ff4d3d';
+      ctx.save(); if(low) ctx.globalAlpha=0.55+0.45*Math.sin(frame*0.5);
+      roundRectPath(ctx,bx,by,Math.max(0,bw*hp),bh,8); ctx.fillStyle=col; ctx.fill(); ctx.restore();
+      roundRectPath(ctx,bx,by,bw,bh,8); ctx.lineWidth=2; ctx.strokeStyle='rgba(255,255,255,0.28)'; ctx.stroke();
+      ctx.font='700 13px "Pixelify",system-ui,sans-serif'; ctx.fillStyle= low?'#ff5a3d':'rgba(255,255,255,0.6)';
+      ctx.fillText(player.heat>0 ? 'HEALTH — the fire is burning you down' : 'HEALTH — recovering', VW/2, by-5);
+    }
+    // ---- OBJECTIVE (what wins the run)
+    const oy=156;
     if(!duelActive){
       ctx.fillStyle='#8affc1'; ctx.font='800 22px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('SAVE THE TOWN', VW/2, 128);
-      const q=K.SAVE_QUOTA, bw=Math.min(20,(VW*0.72)/q-4), gap=4, tot=q*bw+(q-1)*gap, x0=VW/2-tot/2, y=140;
+      ctx.fillText('SAVE THE TOWN', VW/2, oy);
+      const q=K.SAVE_QUOTA, bw=Math.min(20,(VW*0.72)/q-4), gap=4, tot=q*bw+(q-1)*gap, x0=VW/2-tot/2, y=oy+12;
       for(let i=0;i<q;i++){ ctx.fillStyle = i<saved ? '#8affc1' : 'rgba(138,255,193,0.16)';
         roundRectPath(ctx,x0+i*(bw+gap),y,bw,10,3); ctx.fill(); }
       ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif';
       ctx.fillText('pull the fire off villagers · '+saved+'/'+q+' saved · then KEITH', VW/2, y+26);
     } else {
       ctx.fillStyle='#ff6a9c'; ctx.font='800 22px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('UNLOAD YOUR FIRE ON KEITH', VW/2, 128);
-      const dm=K.DUEL_DUMP, bw=Math.min(24,(VW*0.72)/dm-4), gap=4, tot=dm*bw+(dm-1)*gap, x0=VW/2-tot/2, y=140;
+      ctx.fillText('UNLOAD YOUR FIRE ON KEITH', VW/2, oy);
+      const dm=K.DUEL_DUMP, bw=Math.min(24,(VW*0.72)/dm-4), gap=4, tot=dm*bw+(dm-1)*gap, x0=VW/2-tot/2, y=oy+12;
       for(let i=0;i<dm;i++){ ctx.fillStyle = i<dumped ? '#8affc1' : 'rgba(255,90,150,0.2)';
         roundRectPath(ctx,x0+i*(bw+gap),y,bw,10,3); ctx.fill(); }
       ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif';
       ctx.fillText('ram Keith to dump your heat · '+dumped+'/'+dm, VW/2, y+26);
     }
-    // ---- HEAT meter (the thing that KILLS you), by the player's controls, clearly labelled
+    // ---- HEAT meter (how much fire you carry = how fast your HEALTH drops), by the controls
     const hm=K.HEAT_MAX, bw=30, gap=7, tot=hm*bw+(hm-1)*gap, x0=VW/2-tot/2, hy=VH-158;
-    const full=player.heat>=K.HEAT_MAX, warn=player.heat>=K.HEAT_MAX-1;
+    const hi=player.heat>=K.HEAT_MAX-1;
     for(let i=0;i<hm;i++){ const on=i<player.heat, x=x0+i*(bw+gap);
-      ctx.fillStyle = on ? (full ? 'rgba(255,'+(45+Math.floor(50*(0.5+0.5*Math.sin(frame*0.5))))+',40,0.97)' : (i>=hm-2?'#ff6a3d':'#ff9a2e'))
-                         : 'rgba(255,150,80,0.12)';
+      ctx.fillStyle = on ? (i>=hm-2?'#ff5a3d':'#ff9a2e') : 'rgba(255,150,80,0.12)';
       roundRectPath(ctx,x,hy,bw,12,4); ctx.fill(); }
     ctx.font='700 15px "Pixelify",system-ui,sans-serif';
-    ctx.fillStyle = warn ? '#ff5a3d' : 'rgba(255,255,255,0.5)';
-    ctx.fillText(full ? 'OVERHEATING — HOLD BRACE!' : warn ? 'HEAT HIGH — BRACE TO VENT' : 'HEAT · full = you burn', VW/2, hy-8);
+    ctx.fillStyle = hi ? '#ff5a3d' : 'rgba(255,255,255,0.5)';
+    ctx.fillText(player.heat===0 ? 'FIRE CARRIED · none — healing' : hi ? 'CARRYING A LOT — BRACE TO VENT' : 'FIRE CARRIED · draining health', VW/2, hy-8);
   }
   // lunge charges — Makko ember pips (dim when spent)
   for(let i=0;i<K.CHARGES;i++){
@@ -2112,7 +2125,7 @@ window.__fwoosh = {
     bracing:player.bracing, spd:Math.round(player.spd), lunge:+player.lunge.toFixed(3),
     x:Math.round(player.x), y:Math.round(player.y),
     crowd:crowd().length, hunters:hunters().length, slag:slag.length,
-    heat:player.heat, saved, dumped, overloadT:+overloadT.toFixed(2),
+    heat:player.heat, hp:+(player.hp!=null?player.hp:1).toFixed(3), saved, dumped,
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
     passeeId:player.passeeId, passT:+player.passT.toFixed(3), hitstop:+hitstop.toFixed(3),
