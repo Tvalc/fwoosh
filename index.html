@@ -58,10 +58,17 @@ const VW = 720, VH = 1280;          // virtual world, portrait, x wraps
 const DT = 1/120;                   // fixed timestep
 
 const K = {
-  // player
-  DRIFT: 110,                       // px/s constant drift, never stopped unless you choose it
-  LUNGE_SPD: 620,
-  LUNGE_T: 0.18,                    // 112px of travel
+  // player — AUTO-RUN: you never stop. You DASH to steer, and HOLD/SPACE to vent.
+  DRIFT: 110,                       // (legacy) old constant drift
+  RUN: 170,                         // px/s auto-run — always moving
+  FRANTIC_SPD: 0.55,                // + this fraction of speed at full burn (near death = faster/frantic)
+  WEAVE: 0.28,                      // base auto-wander when you're not steering (rad-ish/s)
+  WEAVE_BURN: 2.6,                  // extra wander at full burn — control degrades as you burn
+  DASH_CD: 0.12,                    // min gap between dashes — dash is the steer, so it's ~free
+  LUNGE_SPD: 640,
+  LUNGE_T: 0.18,                    // 115px of travel
+  VENT_AMOUNT: 3,                   // heat blasted off per vent burst
+  VENT_CD: 0.32,                    // min gap between vent bursts (hold to chain them)
   CHARGES: 3,
   CHARGE_REFILL: 0.9,
   SWIPE_MIN: 40,
@@ -390,7 +397,8 @@ function reset(seed){
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
-    spd: K.DRIFT, lunge: 0, charges: K.CHARGES, chargeT: 0,
+    spd: K.RUN, lunge: 0, charges: K.CHARGES, chargeT: 0, dashCd: 0,
+    venting: false, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
     heat: 0,                              // ABSORBER: fires currently carried (0..HEAT_MAX)
@@ -439,15 +447,16 @@ function heldVec(){
   return m > 0.001 ? [x/m, y/m] : null;
 }
 let hinted = false;
+let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (navigator.maxTouchPoints||0) > 0);
 
 function lungeDir(dx,dy){
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
-  if(player.charges <= 0 || mode !== 'play') return;
+  if(mode !== 'play' || player.dashCd > 0) return;       // dash is the steer — cooldown-gated, ~free
   if(intro && intro.phase === 'walkin') return;          // no control during the scripted entrance
   player.hx = dx/m; player.hy = dy/m;
   player.lunge = K.LUNGE_T;
-  player.charges--;
-  player.bracing = false;
+  player.dashCd = K.DASH_CD;
+  player.venting = false;
 }
 
 function onDown(x,y){
@@ -460,9 +469,9 @@ function onDown(x,y){
 function onMove(x,y){
   if(!ptr.down || ptr.swiped) return;
   const dx = x-ptr.sx, dy = y-ptr.sy;
-  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; player.bracing = false; lungeDir(dx,dy); }
+  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; player.venting = false; lungeDir(dx,dy); }
 }
-function onUp(){ ptr.down = false; ptr.swiped = false; player.bracing = false; }
+function onUp(){ ptr.down = false; ptr.swiped = false; player.venting = false; }
 
 // ---------------------------------------------------------------- step
 function step(){
@@ -498,25 +507,29 @@ function step(){
   elapsed += dt;
   if(flash > 0) flash -= DT;
 
-  // ---- input held: press-and-hold with no travel = BRACE (ignored while auto-walking in)
-  if(ptr.down && !ptr.swiped && !introWalk){ ptr.t += DT; if(ptr.t > 0.08) player.bracing = true; }
+  // ---- input held: press-and-hold with no swipe = VENT (mobile). Ignored while auto-walking in.
+  if(ptr.down && !ptr.swiped && !introWalk){ ptr.t += DT; if(ptr.t > 0.06) player.venting = true; }
 
   // ---- player
   const p = player;
-  p.chargeT += dt;
-  while(p.chargeT >= K.CHARGE_REFILL && p.charges < K.CHARGES){ p.chargeT -= K.CHARGE_REFILL; p.charges++; }
-  if(p.charges >= K.CHARGES) p.chargeT = 0;
-  if(surgeT > 0) p.charges = K.CHARGES;            // SURGE: dash never runs dry
+  if(p.dashCd > 0) p.dashCd -= dt;
+  if(p.ventCd > 0) p.ventCd -= dt;
+  if(p.ventFlash > 0) p.ventFlash -= dt;
 
-  // keyboard steering: WASD sets your heading. A dash is committed — no mid-dash correction.
-  if(p.lunge <= 0 && !introWalk){ const v = heldVec(); if(v){ p.hx = v[0]; p.hy = v[1]; } }
-
+  // AUTO-RUN: you never stop. Heading persists; with no steering you WEAVE on your own, and the weave
+  // gets wilder as you burn (frantic, harder to control). You DASH to send yourself where you want.
+  const burn = Math.max(0, Math.min(1, 1 - (p.hp!=null ? p.hp : 1)));   // 0 healthy .. 1 near death
+  if(p.lunge <= 0 && !introWalk){
+    const v = heldVec();
+    if(v){ p.hx = v[0]; p.hy = v[1]; }                                  // WASD nudges your heading (desktop)
+    else { const w = (K.WEAVE + burn*K.WEAVE_BURN) * Math.sin(frame*0.05 + p.wph) * dt;
+      const a = Math.atan2(p.hy, p.hx) + w; p.hx = Math.cos(a); p.hy = Math.sin(a); }
+  }
   if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
-  else if(p.bracing){ p.spd = Math.max(0, p.spd - (K.DRIFT/K.BRACE_STOP)*dt); }
-  else { p.spd = p.spd < K.DRIFT ? Math.min(K.DRIFT, p.spd + (K.DRIFT/K.BRACE_STOP)*dt)
-                                 : Math.max(K.DRIFT, p.spd - 1400*dt); }
-  p.r = p.bracing ? K.R_BRACED : K.R_PLAYER;
-  if(introWalk){ p.hx = 0; p.hy = -1; p.spd = INTRO.WALK; p.bracing = false; }  // scripted entrance
+  else { const run = K.RUN * (1 + burn*K.FRANTIC_SPD);                  // frantic = faster as you burn
+    p.spd = p.spd > run ? Math.max(run, p.spd - 1600*dt) : run; }       // ease down from a dash, never below run
+  p.r = K.R_PLAYER;
+  if(introWalk){ p.hx = 0; p.hy = -1; p.spd = INTRO.WALK; p.venting = false; }  // scripted entrance
 
   p.x += p.hx*p.spd*dt;
   p.y += p.hy*p.spd*dt;
@@ -528,13 +541,11 @@ function step(){
   // ---- HEAT: the fire you're carrying. It PERSISTS while you run (you're holding it, taking it to
   // Keith) — it does NOT just burn off. You shed it only on purpose: BRACE to vent, or dump it into Keith.
   if(p.heat > 0){
-    if(p.bracing){ heatCoolT += dt;                       // brace = deliberately vent the fire
-      while(heatCoolT >= K.HEAT_VENT && p.heat > 0){ heatCoolT -= K.HEAT_VENT; p.heat = Math.max(0, p.heat-1); } }
-    else heatCoolT = 0;                                    // running: the fire STAYS on you
+    if(p.venting) ventBurst();                             // HOLD/SPACE = blast the fire off you (badass)
     // heat trail (ember wisps) while carrying
     p.trailT = (p.trailT||0) + dt;
     while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); }
-  } else heatCoolT = 0;
+  }
   p.lit = p.heat > 0;                                   // legacy flag some draws read
   // ---- HEALTH: the fire burns you down — faster the more you carry. Clear of fire, you recover.
   if(god || intro){ p.hp = 1; }
@@ -692,6 +703,8 @@ function step(){
 
   // ---- absorb-flourish sparks: fire streaming into you (home on the player, curling in)
   for(const s of sparks){ s.t += dt; const k = s.t/s.life;
+    if(s.out){ const drag = 1 - Math.min(0.9, dt*3.4);        // VENT: blast outward, decelerate
+      s.x += s.vx*dt; s.y += s.vy*dt; s.vx*=drag; s.vy*=drag; continue; }
     const dx = wrapDX(p.x - s.x), dy = p.y - s.y, d = Math.hypot(dx,dy)||1;
     const pull = 6 + 22*k;                                    // accelerate inward
     s.x += (dx/d)*pull + (-dy/d)*s.sw*(1-k);                  // + tangential swirl that eases out
@@ -846,6 +859,24 @@ function absorb(c){
   callout = { text: SAVE_LINES[Math.floor(rnd()*SAVE_LINES.length)], t:0, life:0.9, good:true };
 }
 const SAVE_LINES = ['SAVED!', 'GO! RUN!', 'GOT YOU!', 'CLEAR!'];
+
+// VENT — blast the fire off you in a shockwave. The opposite of an absorb: fire erupts OUTWARD.
+function ventBurst(){
+  const p = player;
+  if(p.heat <= 0 || p.ventCd > 0) return;
+  const amt = Math.min(p.heat, K.VENT_AMOUNT);
+  p.heat = Math.max(0, p.heat - amt);
+  p.ventCd = K.VENT_CD; p.ventFlash = 0.30;
+  const N = 14 + amt*6;
+  for(let i=0;i<N;i++){ const a = (i/N)*Math.PI*2 + rnd()*0.5, sp = 230 + rnd()*320;
+    sparks.push({ x:p.x, y:p.y, t:0, life:0.34+rnd()*0.26, out:true, sw:0,
+      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, hue:18+rnd()*40 }); }
+  ring(p.x, p.y, p.r+2,  p.r+190, '#ffe6a6', 0.32);       // white-hot shockwave
+  ring(p.x, p.y, p.r+12, p.r+130, '#ff6a2e', 0.42);       // fire ring behind it
+  hitstop = K.HITSTOP; flash = DT*2.2;
+  callout = { text: VENT_LINES[Math.floor(rnd()*VENT_LINES.length)], t:0, life:0.7, good:true };
+}
+const VENT_LINES = ['FWOOSH!', 'OFF ME!', 'BLAST!', 'TAKE IT BACK!'];
 
 function becomeSlag(c){
   slag.push({x:c.x,y:c.y});
@@ -1599,30 +1630,38 @@ const SKINS = {
         ctx.fillStyle='rgba(255,150,40,0.75)'; ctx.beginPath(); ctx.moveTo(X-6,base);
         ctx.quadraticCurveTo(X,base-K.R_CELL*3,X+6,base); ctx.fill();
       } },
-    player(ctx,X,p){ const y=p.y, r=p.r, bob=Math.sin(frame*0.18)*2;
+    player(ctx,X,p){ const y=p.y, r=p.r;
+      // BURN — how far your health has dropped. Drives everything: fire, shake, run speed, redness.
+      const burn = Math.max(0, Math.min(1, 1 - (p.hp!=null ? p.hp : 1)));   // 0 healthy .. 1 near death
+      const hf = p.heat/K.HEAT_MAX;
+      // FRANTIC SHAKE — grows sharply as your hearts drop (you're panicking, on fire)
+      const jit = burn*burn*5;
+      const jx = (Math.sin(frame*0.9)+Math.sin(frame*1.7))*0.5*jit;
+      const jy = (Math.sin(frame*1.13)+Math.sin(frame*2.1))*0.5*jit;
+      const DX = X+jx, DY = y+jy;
       groundShadow(ctx, X, y+r*1.55, r*1.5, r*0.42);
-      const hf=p.heat/K.HEAT_MAX, danger=(p.hp!=null && p.hp<0.3);   // low health = burning out -> cinder man
-      const flip=(p.hx||0) < -0.01, pop=1+(p.absorbPop||0)*1.25;
-      if(p.heat>0){ const gr=12+hf*54, g=ctx.createRadialGradient(X,y,2,X,y,gr);   // glow grows with heat carried
-        g.addColorStop(0, danger?'rgba(255,90,50,'+(0.55+0.35*Math.sin(frame*0.6)).toFixed(2)+')':'rgba(255,160,60,'+(0.32+0.32*hf).toFixed(2)+')');
+      // GLOW — from the fire you carry AND how burned you are; reddens toward death
+      const glow = Math.max(hf, burn*0.9);
+      if(glow>0.02){ const gr=12+glow*60, g=ctx.createRadialGradient(DX,DY,2,DX,DY,gr), red=burn>0.4;
+        g.addColorStop(0, red?'rgba(255,80,45,'+(0.45+0.4*Math.sin(frame*0.6)).toFixed(2)+')'
+                              :'rgba(255,160,60,'+(0.30+0.34*glow).toFixed(2)+')');
         g.addColorStop(1,'rgba(255,110,40,0)');
-        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill(); }
-      const PH = r*5.0*pop;                                        // apparent player height (person fills its frame)
-      if(danger){
-        // OVERHEATING — the cinder man. The 'hero' sheet's character fills only ~77% of its frame,
-        // so draw it ~1.3x taller than the person's target to keep the same on-screen size (no shrink).
-        const CH = PH*1.30;
-        if(!drawAnim(ctx,'hero',X,y,CH,{fps:11, flip}) &&
-           !drawSpr(ctx,'hero',X,y,CH,{dy:bob, flip})) SKINS.vector.player(ctx,X,p);
-        drawFlame(ctx, X, y+r*1.2, r*4.4, frame*0.45, 0.8);        // flames off the cinder man
-      } else {
-        // the PERSON — running (this is who walks in and absorbs the fire)
-        const moving = p.spd > 55, fps = p.bracing ? 3 : (moving ? 12 : 5);
-        if(!drawAnim(ctx,'hero_run',X,y,PH,{fps, flip}) &&
-           !drawSpr(ctx,'ashimp',X,y,PH,{dy:bob, flip})) SKINS.vector.player(ctx,X,p);
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(DX,DY,gr,0,7); ctx.fill(); }
+      // THE PERSON — always this one sprite (no resize). Legs go faster the more you burn (frantic).
+      const flip=(p.hx||0) < -0.01, pop=1+(p.absorbPop||0)*1.25+(p.ventFlash>0?p.ventFlash*1.4:0);
+      const PH = r*5.0*pop, fps = 11 + burn*12;
+      if(!drawAnim(ctx,'hero_run',DX,DY,PH,{fps, flip}) &&
+         !drawSpr(ctx,'ashimp',DX,DY,PH,{flip})) SKINS.vector.player(ctx,X,p);
+      // PROGRESSIVELY MORE ON FIRE — more & bigger flame licks the further your hearts drop
+      if(burn>0.06){
+        const n = 1 + Math.round(burn*3);                         // 1..4 licks across the body
+        for(let i=0;i<n;i++){ const fx = DX + (i-(n-1)/2)*r*0.75;
+          drawFlame(ctx, fx, DY+r*1.25, r*(2.6+burn*3.8), frame*(0.3+burn*0.5)+i*3.1, 0.5+burn*0.45); }
       }
-      if(p.bracing){ ctx.strokeStyle='rgba(150,215,255,0.55)'; ctx.lineWidth=2.5;   // bracing vents heat = cool ring
-        ctx.beginPath(); ctx.arc(X,y,r+22+3*Math.sin(frame*0.4),0,7); ctx.stroke(); } },
+      // VENT FLARE — a white-hot ring snaps out the instant you blast fire off you
+      if(p.ventFlash>0){ const a=p.ventFlash/0.30;
+        ctx.strokeStyle='rgba(255,240,200,'+(0.85*a).toFixed(2)+')'; ctx.lineWidth=3+7*a;
+        ctx.beginPath(); ctx.arc(X,y,r+18+(1-a)*44,0,7); ctx.stroke(); } },
     boss(ctx,X,b,grow,rr,flat){ const y=b.y, keith=b.kind==='keith', H=rr*(keith?4.7:4.3);
       groundShadow(ctx, X, y+rr*1.5, rr*1.7, rr*0.5);
       if(b.state==='lit'){ const fmax=keith?K.KEITH_FUSE:K.RISER_FUSE, k=Math.max(0,b.fuse/fmax);
@@ -1912,24 +1951,22 @@ function render(){
     ctx.textAlign='center'; ctx.font='800 23px "Pixelify",system-ui,sans-serif';
     if(!duelActive){ ctx.fillStyle='#8affc1'; ctx.fillText('SAVE THE TOWN   '+saved+' / '+K.SAVE_QUOTA, VW/2, 106); }
     else { ctx.fillStyle='#ff6a9c'; ctx.fillText('UNLOAD ON KEITH   '+dumped+' / '+K.DUEL_DUMP, VW/2, 106); }
-    // VENT prompt when carrying a dangerous amount of fire (health dropping fast)
-    if(player.heat >= K.HEAT_MAX-1){
-      ctx.fillStyle='#ff5a3d'; ctx.font='700 21px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('HOLD BRACE TO VENT', VW/2, VH-150);
-    }
-    // DASH charges — Makko ember pips (dim when spent)
-    for(let i=0;i<K.CHARGES;i++){
-      const on = i < player.charges, cx = VW/2 - 46 + i*46, cy = VH-62;
-      if(!drawSpr(ctx,'ui_charge',cx,cy, on?32:27, {alpha: on?1:0.25})){
-        ctx.fillStyle = on ? '#7fe8ff' : 'rgba(127,232,255,0.18)';
-        ctx.beginPath(); ctx.arc(cx, cy, 11, 0, 7); ctx.fill(); }
+    // VENT prompt while carrying fire — pulses hot when you're loaded up and burning fast
+    if(player.heat > 0){
+      const hot = player.heat >= K.HEAT_MAX-1;
+      ctx.fillStyle = hot ? '#ff5a3d' : 'rgba(255,160,95,0.75)';
+      ctx.font='700 22px "Pixelify",system-ui,sans-serif';
+      ctx.globalAlpha = hot ? (0.72+0.28*Math.sin(frame*0.5)) : 0.85;
+      ctx.fillText(isTouch ? 'HOLD TO VENT' : 'SPACE TO VENT', VW/2, VH-92);
+      ctx.globalAlpha = 1;
     }
   }
 
   if(!hinted && mode === 'play' && introT <= 0 && !intro){
-    ctx.fillStyle = 'rgba(255,255,255,0.32)';
+    ctx.fillStyle = 'rgba(255,255,255,0.36)';
     ctx.font = '500 21px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('WASD move   ·   SHIFT dash   ·   SPACE brace', VW/2, VH-108);
+    ctx.fillText(isTouch ? 'SWIPE to dash   ·   HOLD to vent'
+                         : 'AUTO-RUN · WASD steer · SHIFT dash · SPACE vent', VW/2, VH-108);
   }
 
   // ---- LIVE intro dialogue box (Keith narrates over gameplay)
@@ -2057,7 +2094,7 @@ function local(e){
   const r = cv.getBoundingClientRect();
   return { x:(e.clientX-r.left)/scale, y:(e.clientY-r.top)/scale };
 }
-cv.addEventListener('pointerdown', e=>{ e.preventDefault(); const q=local(e); onDown(q.x,q.y); });
+cv.addEventListener('pointerdown', e=>{ e.preventDefault(); if(e.pointerType==='touch') isTouch=true; const q=local(e); onDown(q.x,q.y); });
 cv.addEventListener('pointermove', e=>{ const q=local(e); onMove(q.x,q.y); });
 window.addEventListener('pointerup', onUp);
 window.addEventListener('pointercancel', onUp);
@@ -2080,17 +2117,16 @@ window.addEventListener('keydown', e=>{
       lungeDir(v[0], v[1]); hinted = true;
     }
   }
-  // brace on SPACE. Deliberately NOT ctrl: Ctrl+W closes the tab and the browser
-  // reserves it, so preventDefault() can't save a player bracing while moving up.
-  if(k === ' '){ e.preventDefault(); player.bracing = true; hinted = true; }
+  // VENT on SPACE — hold to keep blasting fire off you.
+  if(k === ' '){ e.preventDefault(); player.venting = true; hinted = true; }
 });
 window.addEventListener('keyup', e=>{
   const k = e.key.toLowerCase();
   if(KEYVEC[k]) keys[k] = false;
-  if(k === ' ') player.bracing = false;
+  if(k === ' ') player.venting = false;
 });
 // dropping focus mid-key would otherwise leave you steering forever
-window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; player.bracing = false; });
+window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; player.venting = false; });
 
 fit(); reset(); requestAnimationFrame(loop); CG.init();
 
@@ -2178,6 +2214,8 @@ window.__fwoosh = {
   grudgeAt(x,y,scar){ opp.grudge={x:x,y:y}; oppScarred=!!scar; slag.push({x:x,y:y,grudge:true}); return this.oppState(); },
   winNow(){ if(!boss) startDuel(); winDuel(); return this.state(); },
   setHeat(n){ player.heat = Math.max(0, Math.min(K.HEAT_MAX, n)); return this.state(); },
+  vent(){ player.ventCd = 0; ventBurst(); return { heat:player.heat, sparks:sparks.length, flash:+flash.toFixed(3) }; },
+  setHp(v){ player.hp = Math.max(0, Math.min(1, v)); return this.state(); },
   startIntro(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null,
     runs:0, readsBroken:0, timesSniped:0, seenIntro:false, duelWins:0, loreIdx:0 };
     reset(); return { intro: intro && intro.phase, mode }; },
