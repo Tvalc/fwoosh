@@ -78,8 +78,7 @@ const K = {
 
   // ABSORBER loop: Keith's fire spreads through the town; you pull it off villagers to save them.
   HEAT_MAX: 6,                      // fires you can carry at once
-  HEAT_COOL: 1.55,                  // seconds to shed 1 heat while running (too slow to save you at max)
-  HEAT_COOL_BRACE: 0.40,            // braced = vent fast (this is how you survive a full meter)
+  HEAT_VENT: 0.30,                  // sec per heat shed while BRACING (running does NOT cool — fire persists)
   SPARK_EVERY: 2.6,                 // Keith ignites a fresh villager this often
   SPREAD_R: 52,                     // a flaming villager torches calm ones within this
   SPREAD_EVERY: 0.9,               // spread check cadence per flaming villager
@@ -87,7 +86,7 @@ const K = {
   BURN_FUSE: 6.5,                   // a flaming villager burns into a WALL after this (unsaved)
   PANIC_SPD: 150,                   // flaming villager panic-run (catchable with a dash)
   SAVE_SCORE: 120,                  // points per villager saved
-  OVERLOAD_HOLD: 1.1,               // grace at max heat before you burn up (< HEAT_COOL, so running won't save you — BRACE to vent)
+  OVERLOAD_HOLD: 1.4,               // grace at max heat before you burn up — BRACE to vent, or dump into Keith
   SAVE_QUOTA: 12,                   // save this many villagers and Keith rises for the finale
   DUEL_DUMP: 8,                     // total heat you must dump into Keith to make him yield
 
@@ -520,12 +519,13 @@ function step(){
   if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
   if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
 
-  // ---- HEAT: the fire you're carrying. It cools as you run (fast while braced); sit at max and
-  // you burn up. (Replaces the old hold-the-fuse pop; heat now comes from absorbing villagers.)
+  // ---- HEAT: the fire you're carrying. It PERSISTS while you run (you're holding it, taking it to
+  // Keith) — it does NOT just burn off. You shed it only on purpose: BRACE to vent, or dump it into
+  // Keith. Sit at max and you burn up. (Absorbing villagers is the only way to gain it.)
   if(p.heat > 0){
-    const step = p.bracing ? K.HEAT_COOL_BRACE : K.HEAT_COOL;
-    heatCoolT += dt;
-    while(heatCoolT >= step && p.heat > 0){ heatCoolT -= step; p.heat = Math.max(0, p.heat-1); }
+    if(p.bracing){ heatCoolT += dt;                       // brace = deliberately vent the fire
+      while(heatCoolT >= K.HEAT_VENT && p.heat > 0){ heatCoolT -= K.HEAT_VENT; p.heat = Math.max(0, p.heat-1); } }
+    else heatCoolT = 0;                                    // running: the fire STAYS on you
     // heat trail (ember wisps) while carrying
     p.trailT = (p.trailT||0) + dt;
     while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); }
