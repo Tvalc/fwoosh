@@ -258,6 +258,7 @@ let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
     armed, respawnT, mode, popCause, nextId, hitstop, slowmo, flash, frame, hist, peakHunters, noFireT;
 let sparkT = 0, heatCoolT = 0, dumped = 0, saved = 0, overloadT = 0;   // ABSORBER loop state
 let sparks = [];   // absorb-flourish particles (fire streaming from a saved villager into you)
+let onTitle = true;   // boot on the title/start screen; first tap dismisses it into the game
 let ghost = false;   // test-only: player passes through cells without triggering contact
 let god = false;     // test-only: fuse refills instead of POPping, so long-run arena state is measurable
 
@@ -447,6 +448,7 @@ function lungeDir(dx,dy){
 }
 
 function onDown(x,y){
+  if(onTitle){ onTitle = false; hinted = false; reset(); return; }   // start from the title screen
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ reset(); return; }
@@ -462,6 +464,7 @@ function onUp(){ ptr.down = false; ptr.swiped = false; player.bracing = false; }
 // ---------------------------------------------------------------- step
 function step(){
   frame++;
+  if(onTitle) return;                                // title screen: only animate (frame++), no sim
   if(hitstop > 0){ hitstop -= DT; return; }          // hitstop freezes the sim
   if(mode !== 'play') return;
   if(introT > 0){ introT -= DT; if(introT < 0) introT = 0; return; }  // cold-open reveal, sim frozen
@@ -1736,7 +1739,46 @@ function drawDialogue(ctx){
   ctx.restore();
 }
 
+// ---- TITLE / START SCREEN: FWOOSH logo, Keith looming, the hero below, the town ablaze
+function drawTitle(ctx){
+  ctx.fillStyle='#0a0710'; ctx.fillRect(0,0,VW,VH);
+  if(sprReady('bg')){ const im=MAKKO_IMG['bg'], sc=Math.max(VW/im.naturalWidth,VH/im.naturalHeight),
+    w=im.naturalWidth*sc, h=im.naturalHeight*sc;
+    ctx.save(); ctx.globalAlpha=0.30; ctx.drawImage(im,(VW-w)/2,(VH-h)/2,w,h); ctx.restore(); }
+  const fg=ctx.createLinearGradient(0,VH,0,VH*0.5);       // the town burning below
+  fg.addColorStop(0,'rgba(255,120,35,0.6)'); fg.addColorStop(1,'rgba(255,90,25,0)');
+  ctx.fillStyle=fg; ctx.fillRect(0,VH*0.5,VW,VH*0.5);
+  // Keith looms with pink rays
+  const kx=VW*0.5, ky=VH*0.54;
+  for(let i=0;i<26;i++){ const a=i/26*Math.PI*2, hw=0.02*(0.7+0.4*Math.sin(frame*0.02+i));
+    ctx.fillStyle=i%2?'rgba(255,61,122,0.10)':'rgba(255,61,122,0.05)';
+    ctx.beginPath(); ctx.moveTo(kx,ky); ctx.lineTo(kx+Math.cos(a-hw)*1500,ky+Math.sin(a-hw)*1500);
+    ctx.lineTo(kx+Math.cos(a+hw)*1500,ky+Math.sin(a+hw)*1500); ctx.closePath(); ctx.fill(); }
+  drawSpr(ctx,'keith', kx, ky, VH*0.30, {sy:1+0.02*Math.sin(frame*0.08)});
+  // the hero (a person), below, facing the fire
+  if(!drawAnim(ctx,'hero_run', VW*0.5, VH*0.75, VH*0.135, {fps:7})) drawSpr(ctx,'ashimp', VW*0.5, VH*0.75, VH*0.11,{});
+  // flames across the bottom + rising embers
+  for(let i=0;i<7;i++) drawFlame(ctx, VW*(i+0.5)/7, VH*1.0, VH*0.09+8*Math.sin(frame*0.3+i*2), frame*0.36+i*3, 0.9);
+  for(let i=0;i<46;i++){ const life=VH*0.8, t=((frame*2.4)+i*67)%life, ex=(i*97+Math.sin(frame*0.03+i)*38)%VW,
+    ey=VH*0.99-t, al=0.7*(1-t/life);
+    if(al>0){ ctx.fillStyle='rgba(255,'+(140+(i*37)%90)+',55,'+al.toFixed(2)+')'; const s=2+(i%3); ctx.fillRect(ex,ey,s,s); } }
+  // TITLE
+  ctx.textAlign='center';
+  const ty=VH*0.24, tg=ctx.createRadialGradient(VW/2,ty,8,VW/2,ty,VW*0.55);
+  tg.addColorStop(0,'rgba(255,150,45,0.5)'); tg.addColorStop(1,'rgba(255,120,30,0)');
+  ctx.fillStyle=tg; ctx.fillRect(0,ty-VW*0.45,VW,VW*0.9);
+  const bob=Math.sin(frame*0.05)*4;
+  if(!drawTextFit(ctx,'FWOOSH', VW/2, ty+bob, 140, VW*0.92)){
+    ctx.fillStyle='#ffb04d'; ctx.font='900 120px "Pixelify",system-ui,sans-serif'; ctx.fillText('FWOOSH', VW/2, ty+bob); }
+  ctx.fillStyle='#ffd0a0'; ctx.font='600 26px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('save the town — burn down keith', VW/2, VH*0.335);
+  const blink=0.35+0.55*(0.5+0.5*Math.sin(frame*0.12));
+  ctx.fillStyle='rgba(255,255,255,'+blink.toFixed(2)+')'; ctx.font='700 30px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('TAP TO START', VW/2, VH*0.90);
+}
+
 function render(){
+  if(onTitle){ drawTitle(ctx); return; }
   const p = player;
   SK.bg(ctx);
 
@@ -2027,6 +2069,7 @@ window.addEventListener('keydown', e=>{
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
   if(k === 'k'){ e.preventDefault();                       // cycle art skins (dev/preview)
     const names = Object.keys(SKINS); setSkin(names[(names.indexOf(SKIN_NAME)+1)%names.length]); return; }
+  if(onTitle){ if(KEYVEC[k]||k===' '||k==='enter'){ e.preventDefault(); onTitle=false; hinted=false; reset(); } return; }
   if(introT > 0){ introT = 0; if(KEYVEC[k]||k===' '||k==='shift'||k==='enter'){ e.preventDefault(); } return; }
   if(mode === 'over'){
     if(KEYVEC[k] || k===' ' || k==='shift' || k==='enter'){ e.preventDefault(); reset(); }
