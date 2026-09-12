@@ -396,6 +396,8 @@ function reset(seed){
   };
   setupOpp();                                 // grudge wall + snipe, before crowd so they avoid it
   for(let i=0;i<K.CROWD_START;i++) spawnCrowd(true);
+  // state the objective plainly on run start (the intro's dialogue box covers the very first boot)
+  if(!intro) callout = { text:'SAVE THE VILLAGERS — run into the burning ones', t:0, life:3.4, good:null };
   if(typeof CG!=='undefined') CG.start();     // CrazyGames: a run begins
 }
 
@@ -1835,22 +1837,36 @@ function render(){
     ctx.fillStyle='#fff'; ctx.font='700 62px "Pixelify",system-ui,sans-serif';
     ctx.fillText(String(score), VW/2, 92);
   }
-  // HEAT meter — the fire you're carrying. Fills as you absorb; flashes red at max (vent by bracing).
   if(hudOn){
-    const hm = K.HEAT_MAX, bw = 30, gap = 7, tot = hm*bw + (hm-1)*gap, x0 = VW/2 - tot/2, y = 118;
-    const danger = player.heat >= K.HEAT_MAX;
-    for(let i=0;i<hm;i++){
-      const on = i < player.heat, x = x0 + i*(bw+gap);
-      ctx.fillStyle = on ? (danger ? 'rgba(255,'+(50+Math.floor(45*(0.5+0.5*Math.sin(frame*0.5))))+',40,0.95)' : '#ff9a2e')
-                         : 'rgba(255,150,80,0.13)';
-      roundRectPath(ctx, x, y, bw, 12, 4); ctx.fill();
+    ctx.textAlign='center';
+    // ---- OBJECTIVE (what wins the run), stated plainly at the top
+    if(!duelActive){
+      ctx.fillStyle='#8affc1'; ctx.font='800 22px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('SAVE THE TOWN', VW/2, 128);
+      const q=K.SAVE_QUOTA, bw=Math.min(20,(VW*0.72)/q-4), gap=4, tot=q*bw+(q-1)*gap, x0=VW/2-tot/2, y=140;
+      for(let i=0;i<q;i++){ ctx.fillStyle = i<saved ? '#8affc1' : 'rgba(138,255,193,0.16)';
+        roundRectPath(ctx,x0+i*(bw+gap),y,bw,10,3); ctx.fill(); }
+      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('pull the fire off villagers · '+saved+'/'+q+' saved · then KEITH', VW/2, y+26);
+    } else {
+      ctx.fillStyle='#ff6a9c'; ctx.font='800 22px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('UNLOAD YOUR FIRE ON KEITH', VW/2, 128);
+      const dm=K.DUEL_DUMP, bw=Math.min(24,(VW*0.72)/dm-4), gap=4, tot=dm*bw+(dm-1)*gap, x0=VW/2-tot/2, y=140;
+      for(let i=0;i<dm;i++){ ctx.fillStyle = i<dumped ? '#8affc1' : 'rgba(255,90,150,0.2)';
+        roundRectPath(ctx,x0+i*(bw+gap),y,bw,10,3); ctx.fill(); }
+      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('ram Keith to dump your heat · '+dumped+'/'+dm, VW/2, y+26);
     }
-    ctx.textAlign='center'; ctx.font='700 15px "Pixelify",system-ui,sans-serif';
-    ctx.fillStyle = danger ? '#ff5a3d' : 'rgba(255,255,255,0.45)';
-    ctx.fillText(danger ? 'VENT — HOLD BRACE' : 'HEAT', VW/2, y+30);
-    // save progress toward the finale
-    ctx.fillStyle='rgba(138,255,193,0.6)'; ctx.font='600 16px "Pixelify",system-ui,sans-serif'; ctx.textAlign='left';
-    ctx.fillText('SAVED  '+saved+' / '+K.SAVE_QUOTA, 18, 40);
+    // ---- HEAT meter (the thing that KILLS you), by the player's controls, clearly labelled
+    const hm=K.HEAT_MAX, bw=30, gap=7, tot=hm*bw+(hm-1)*gap, x0=VW/2-tot/2, hy=VH-158;
+    const full=player.heat>=K.HEAT_MAX, warn=player.heat>=K.HEAT_MAX-1;
+    for(let i=0;i<hm;i++){ const on=i<player.heat, x=x0+i*(bw+gap);
+      ctx.fillStyle = on ? (full ? 'rgba(255,'+(45+Math.floor(50*(0.5+0.5*Math.sin(frame*0.5))))+',40,0.97)' : (i>=hm-2?'#ff6a3d':'#ff9a2e'))
+                         : 'rgba(255,150,80,0.12)';
+      roundRectPath(ctx,x,hy,bw,12,4); ctx.fill(); }
+    ctx.font='700 15px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = warn ? '#ff5a3d' : 'rgba(255,255,255,0.5)';
+    ctx.fillText(full ? 'OVERHEATING — HOLD BRACE!' : warn ? 'HEAT HIGH — BRACE TO VENT' : 'HEAT · full = you burn', VW/2, hy-8);
   }
   // lunge charges — Makko ember pips (dim when spent)
   for(let i=0;i<K.CHARGES;i++){
@@ -1858,15 +1874,6 @@ function render(){
     if(!drawSpr(ctx,'ui_charge',cx,cy, on?32:27, {alpha: on?1:0.25})){
       ctx.fillStyle = on ? '#7fe8ff' : 'rgba(127,232,255,0.18)';
       ctx.beginPath(); ctx.arc(cx, cy, 11, 0, 7); ctx.fill(); }
-  }
-  // duel: heat dumped into Keith, top-right progress bar
-  if(duelActive && boss && boss.kind === 'keith'){
-    const dm = K.DUEL_DUMP, bw = 16, gap = 4, x0 = VW - 20 - dm*(bw+gap), y = 60;
-    ctx.textAlign='right'; ctx.fillStyle='#ff6a9c'; ctx.font='700 16px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('UNLOAD ON KEITH', VW-20, y-8);
-    for(let i=0;i<dm;i++){ const on = i < dumped, x = x0 + i*(bw+gap);
-      ctx.fillStyle = on ? '#8affc1' : 'rgba(255,90,150,0.22)';
-      roundRectPath(ctx, x, y, bw, 12, 3); ctx.fill(); }
   }
 
   if(!hinted && mode === 'play' && introT <= 0 && !intro){
@@ -1942,16 +1949,16 @@ function render(){
   else if(mode === 'over'){
     ctx.fillStyle = 'rgba(7,7,11,0.80)'; ctx.fillRect(0,0,VW,VH);
     ctx.textAlign = 'center';
-    if(!drawText(ctx, 'POP', VW/2, VH/2 - 78, 78)){
+    if(!drawTextFit(ctx, 'BURNED UP', VW/2, VH/2 - 84, 66, VW*0.86)){
       ctx.fillStyle = '#ff6a5a';
-      ctx.font = '800 82px "Pixelify",system-ui,sans-serif'; ctx.fillText('POP', VW/2, VH/2 - 70); }
-    ctx.fillStyle = '#aab2c4'; ctx.font = '400 27px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(popCause, VW/2, VH/2 - 24);
+      ctx.font = '800 74px "Pixelify",system-ui,sans-serif'; ctx.fillText('BURNED UP', VW/2, VH/2 - 70); }
+    ctx.fillStyle = '#aab2c4'; ctx.font = '400 25px "Pixelify",system-ui,sans-serif';
+    ctx.fillText('you carried too much fire — brace to vent it', VW/2, VH/2 - 22);
     if(!drawText(ctx, String(score), VW/2, VH/2 + 62, 64)){
       ctx.fillStyle = '#fff'; ctx.font = '700 66px "Pixelify",system-ui,sans-serif';
       ctx.fillText(String(score), VW/2, VH/2 + 66); }
     ctx.fillStyle = '#7b8397'; ctx.font = '400 23px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(fmt(elapsed)+'  ·  '+slag.length+' walls  ·  '+cooldowns+' cooldowns', VW/2, VH/2 + 110);
+    ctx.fillText(saved+' villagers saved  ·  '+fmt(elapsed), VW/2, VH/2 + 110);
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
     ctx.fillText('tap to go again', VW/2, VH/2 + 190);
     if(opp.runs >= 1){
