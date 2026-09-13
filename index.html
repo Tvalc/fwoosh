@@ -438,7 +438,10 @@ function crowd(){ return cells.filter(c=>!c.hunter && !c.saving); }     // calm,
 function ring(x,y,r0,r1,col,life){ rings.push({x,y,r0,r1,col,t:0,life:life||0.35}); }
 
 // ---------------------------------------------------------------- input
-let ptr = { down:false, sx:0, sy:0, t:0, swiped:false };
+let ptr = { down:false, sx:0, sy:0, t:0, swiped:false, onVent:false };
+// The VENT button — a fixed thumb-target, bottom-right. Vent fires ONLY from here (or SPACE), never from a
+// stray tap, so it can't happen by accident.
+function ventBtn(){ const r = 80; return { x: VW - r - 26, y: VH - r - 58, r }; }
 
 // keyboard: WASD/arrows steer, SHIFT dashes, SPACE braces
 const keys = Object.create(null);
@@ -468,14 +471,16 @@ function onDown(x,y){
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ reset(); return; }
+  const vb = ventBtn();                                   // pressed the VENT button? -> vent, not a dash
+  if(mode === 'play' && Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; player.venting = true; return; }
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
 function onMove(x,y){
   if(!ptr.down || ptr.swiped) return;
   const dx = x-ptr.sx, dy = y-ptr.sy;
-  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; player.venting = false; lungeDir(dx,dy); }
+  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; lungeDir(dx,dy); }   // swipe anywhere = dash
 }
-function onUp(){ ptr.down = false; ptr.swiped = false; player.venting = false; }
+function onUp(){ ptr.down = false; ptr.swiped = false; if(ptr.onVent){ ptr.onVent = false; player.venting = false; } }
 
 // ---------------------------------------------------------------- step
 function step(){
@@ -511,8 +516,7 @@ function step(){
   elapsed += dt;
   if(flash > 0) flash -= DT;
 
-  // ---- input held: press-and-hold with no swipe = VENT (mobile). Ignored while auto-walking in.
-  if(ptr.down && !ptr.swiped && !introWalk){ ptr.t += DT; if(ptr.t > 0.06) player.venting = true; }
+  // (vent is triggered only by the VENT button or SPACE — never by a stray hold — so it can't misfire)
 
   // ---- player
   const p = player;
@@ -1279,6 +1283,38 @@ function silhouette(key){
   return (_sil[key] = c);
 }
 
+// THE VENT BUTTON — bespoke thumb-target (bottom-right). A fire-blast disc that lights up when you're carrying
+// heat and dims when you're empty; the icon is the real Makko flame. Press/hold it (or SPACE) to vent.
+function drawVentButton(ctx){
+  const b = ventBtn(), heatF = player.heat/K.HEAT_MAX, hot = player.heat > 0, pressed = player.venting;
+  ctx.save(); ctx.textAlign = 'center';
+  // aura when there's fire to blast off — pulls the thumb to it
+  if(hot){ const pr = b.r*1.16 + heatF*14 + (pressed?10:3*Math.sin(frame*0.3));
+    const g = ctx.createRadialGradient(b.x,b.y,b.r*0.55, b.x,b.y,pr);
+    g.addColorStop(0,'rgba(255,120,40,'+(0.28+0.30*heatF).toFixed(2)+')'); g.addColorStop(1,'rgba(255,90,30,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(b.x,b.y,pr,0,7); ctx.fill(); }
+  const R = b.r*(pressed?0.93:1);
+  ctx.globalAlpha = hot ? 1 : 0.42;                         // dim when there's nothing to vent
+  // disc
+  const base = ctx.createRadialGradient(b.x,b.y-R*0.35,R*0.2, b.x,b.y,R);
+  base.addColorStop(0, pressed?'#6a2411':'#3c1a10'); base.addColorStop(1,'#180b09');
+  ctx.fillStyle=base; ctx.beginPath(); ctx.arc(b.x,b.y,R,0,7); ctx.fill();
+  // Makko flame icon inside the disc
+  if(!drawFlame(ctx, b.x, b.y+R*0.52, R*(1.15+heatF*0.45), frame*0.4, hot?0.95:0.5)){
+    ctx.fillStyle = hot?'#ff7a2e':'rgba(255,120,60,0.5)';
+    ctx.beginPath(); ctx.moveTo(b.x-R*0.32,b.y+R*0.42); ctx.quadraticCurveTo(b.x,b.y-R*0.55,b.x+R*0.32,b.y+R*0.42); ctx.fill(); }
+  // ring
+  ctx.lineWidth = pressed?6:4; ctx.strokeStyle = hot ? (pressed?'#ffe4b0':'#ff8a3d') : 'rgba(255,150,90,0.55)';
+  ctx.beginPath(); ctx.arc(b.x,b.y,R,0,7); ctx.stroke();
+  // label under the disc
+  ctx.globalAlpha = hot ? 1 : 0.5;
+  if(!drawText(ctx,'VENT', b.x, b.y+R+30, 26)){
+    ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Pixelify",system-ui,sans-serif';
+    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText('VENT', b.x, b.y+R+34); ctx.fillText('VENT', b.x, b.y+R+34); }
+  if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
+  ctx.restore();
+}
+
 // soft ground shadow under an actor — sells the top-down/3-4 grounding
 function groundShadow(ctx, X, y, rw, rh){
   ctx.save(); ctx.fillStyle='rgba(0,0,0,0.34)';
@@ -2005,22 +2041,15 @@ function render(){
       ctx.textAlign='center'; ctx.font='800 23px "Pixelify",system-ui,sans-serif';
       ctx.fillStyle='#ff6a9c'; ctx.fillText('UNLOAD ON KEITH   '+dumped+' / '+K.DUEL_DUMP, VW/2, 112);
     }
-    // VENT prompt while carrying fire — pulses hot when you're loaded up and burning fast
-    if(player.heat > 0){
-      const hot = player.heat >= K.HEAT_MAX-1;
-      ctx.fillStyle = hot ? '#ff5a3d' : 'rgba(255,160,95,0.75)';
-      ctx.font='700 22px "Pixelify",system-ui,sans-serif';
-      ctx.globalAlpha = hot ? (0.72+0.28*Math.sin(frame*0.5)) : 0.85;
-      ctx.fillText(isTouch ? 'HOLD TO VENT' : 'SPACE TO VENT', VW/2, VH-92);
-      ctx.globalAlpha = 1;
-    }
+    // VENT button — bespoke thumb-target; vent fires only from here (or SPACE)
+    drawVentButton(ctx);
   }
 
   if(!hinted && mode === 'play' && introT <= 0 && !intro){
-    ctx.fillStyle = 'rgba(255,255,255,0.36)';
+    ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.36)';
     ctx.font = '500 21px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(isTouch ? 'SWIPE to dash   ·   HOLD to vent'
-                         : 'AUTO-RUN · WASD steer · SHIFT dash · SPACE vent', VW/2, VH-108);
+    ctx.fillText(isTouch ? 'SWIPE anywhere to dash   ·   tap VENT to blast fire off'
+                         : 'AUTO-RUN · WASD steer · SHIFT dash · SPACE / VENT button', VW/2, VH-186);
   }
 
   // ---- LIVE intro dialogue box (Keith narrates over gameplay)
