@@ -96,6 +96,11 @@ const K = {
   SAVE_SCORE: 120,                  // base points per villager saved
   BLAZE_MULT: 0.5,                  // + this per heat carried, to the save score (hold fire = big points)
   VENT_IGNITE_R: 82,                // vent blasts fire OUTWARD — calm villagers this close get RE-IGNITED
+  // META: the villagers you SAVE are the root of everything. Saves mint EMBERS (currency) + raise the town.
+  EMBER_BASE: 3,                    // embers per save, before the blaze multiplier
+  EMBER_RUN_CAP: 160,               // soft cap: saves past this still count for the town, but mint 0 embers
+  WIN_EMBERS: 25,                   // KEITH YIELDS bounty
+  WELL_RISE: 6,                     // cumulative lifetime saves to raise The Well from rubble
   // HEALTH: carrying fire burns your health down, faster the more you hold; empty of fire, you recover.
   HP_DRAIN: 0.035,                  // health/sec lost PER unit of heat carried (heat 6 -> ~0.21/s)
   HP_REGEN: 0.22,                   // health/sec regained while carrying no fire
@@ -272,6 +277,11 @@ let sparkT = 0, heatCoolT = 0, dumped = 0, saved = 0, overloadT = 0;   // ABSORB
 let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager when one fills in
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
+let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
+// ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
+let META = loadMeta();
+let runEmbers = 0;               // embers minted this run (banked into META at run end)
+let hubScroll = 0, hubSheet = null, wellJustRose = false, hubToast = 0, hubToastMsg = '', hubBtns = [];
 let sparks = [];   // absorb-flourish particles (fire streaming from a saved villager into you)
 let onTitle = true;   // boot on the title/start screen; first tap dismisses it into the game
 let ghost = false;   // test-only: player passes through cells without triggering contact
@@ -319,6 +329,49 @@ function lineFor(kind){                          // fired/sniped/broken/study, k
   return arr[(opp.runs||0) % arr.length];
 }
 function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp)); }catch(e){} }
+
+// ---- META: persistent progression, all minted by SAVING villagers. Separate key from opp; per-field
+// defaults so an old/partial blob degrades instead of crashing.
+function loadMeta(){
+  let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
+  const d = { v:1, embers:0, saved:0, bestBlaze:0,
+    buildings:{ well:{ built:false, hearts:0, regen:0 } },
+    hero:'stranger', diary:{ read:[] }, flags:{} };
+  if(!s || s.v!==1) return d;
+  s.buildings = s.buildings || {};
+  s.buildings.well = Object.assign({}, d.buildings.well, s.buildings.well||{});
+  s.diary = Object.assign({}, d.diary, s.diary||{});
+  return Object.assign({}, d, s);
+}
+function saveMeta(){ try{ localStorage.setItem('fwoosh.meta', JSON.stringify(META)); }catch(e){} }
+// apply purchased upgrades to this run's stats (called at the top of reset()). Defaults = unchanged behaviour.
+function applyUpgrades(){
+  const b = (META.buildings && META.buildings.well) || {};
+  maxHearts    = 5 + (b.hearts||0);                 // more hearts -> drain auto-slows via the existing 5/maxHearts
+  RUN_HP_REGEN = K.HP_REGEN + 0.05*(b.regen||0);    // faster recovery while clear of fire
+}
+// The Well shop (Phase 1). Two clean axes so the vent risk/reward is tuned, never deleted.
+const WELL_SHOP = [
+  { track:'hearts', name:'DEEP WELL',  desc:'+1 max heart (survive more fire)', costs:[60,150,360] },
+  { track:'regen',  name:'COOL BLOOD', desc:'recover faster when clear of fire', costs:[45,120] },
+];
+function buyWell(track){
+  const b = META.buildings.well, item = WELL_SHOP.find(s=>s.track===track);
+  const tier = b[track]||0;
+  if(!item || tier >= item.costs.length) return;         // maxed
+  const cost = item.costs[tier];
+  if(META.embers < cost) return;                          // can't afford
+  META.embers -= cost; b[track] = tier+1; saveMeta();
+  hubToast = 2.0; hubToastMsg = item.name+' UP';
+}
+// land in the town after a run; raise The Well the first time you cross the saves milestone
+function enterHub(){
+  mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
+  if(META.buildings.well && !META.buildings.well.built && META.saved >= K.WELL_RISE){
+    META.buildings.well.built = true; wellJustRose = true; hubToast = 3.2; hubToastMsg = 'THE WELL STANDS AGAIN';
+  }
+  saveMeta();
+}
 function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
   return n ? (n%2 ? a[(n-1)/2] : (a[n/2-1]+a[n/2])/2) : 0; }
 function cellCenter(i){ const col = i%K.OPP_COLS, row = Math.floor(i/K.OPP_COLS);
@@ -336,6 +389,10 @@ function foldOpp(){
   if(oppScarred) opp.readsBroken = (opp.readsBroken||0) + 1;   // you defied the read
   if(gotSniped)  opp.timesSniped = (opp.timesSniped||0) + 1;   // he called your habit
   saveOpp();
+  // META: bank this run's embers (+ win bounty). META.saved was already incremented per save in absorb().
+  if(won) runEmbers += K.WIN_EMBERS;
+  META.embers += runEmbers;
+  saveMeta();
 }
 
 // place the grudge wall + arm the snipe from accumulated reads. Called from reset().
@@ -398,6 +455,7 @@ function reset(seed){
   score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
   mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
   boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
+  runEmbers = 0; applyUpgrades();      // META: fresh run-ember tally + apply purchased upgrades to this run
   powerups = []; surgeT = 0; mergeT = 0;
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
@@ -472,7 +530,8 @@ function onDown(x,y){
   if(onTitle){ onTitle = false; hinted = false; reset(); return; }   // start from the title screen
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
-  if(mode === 'over'){ reset(); return; }
+  if(mode === 'over'){ enterHub(); return; }        // run ended -> return to the town hub
+  if(mode === 'hub'){ hubClick(x,y); return; }      // tapping the town: buildings / shop / PLAY
   // Mobile only: the on-screen VENT button. (Desktop vents with SPACE, so no button — a click there dashes.)
   if(isTouch && mode === 'play'){ const vb = ventBtn();
     if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; player.venting = true; return; } }
@@ -570,7 +629,7 @@ function step(){
   if(god || intro){ p.hp = 1; }
   else if(p.heat > 0){ p.hp -= dt * p.heat * K.HP_DRAIN * (5/maxHearts);   // more hearts -> burn slower
     if(p.hp <= 0){ p.hp = 0; pop('burned up'); return; } }
-  else { p.hp = Math.min(1, p.hp + dt * K.HP_REGEN); }
+  else { p.hp = Math.min(1, p.hp + dt * RUN_HP_REGEN); }   // regen tuned by the Well's Cool Blood upgrade
   p.passT += dt;
 
   // ---- SHATTER: a lunge into slag destroys it, terminates the burst
@@ -869,6 +928,11 @@ function absorb(c){
   saved++;
   const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're already carrying, the bigger the save
   score += Math.round(K.SAVE_SCORE * blaze);
+  // META: this save mints EMBERS (blaze-scaled, soft-capped) and adds to the lifetime town counter
+  if(blaze > META.bestBlaze) META.bestBlaze = blaze;
+  let em = Math.round(K.EMBER_BASE * blaze);
+  em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
+  runEmbers += em; META.saved++;
   p.heat = Math.min(K.HEAT_MAX, p.heat + 1);
   // FLOURISH: pull the fire off them — a swirl of flame streaming into you
   for(let i=0;i<14;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);
@@ -1876,6 +1940,155 @@ function drawDialogue(ctx){
 }
 
 // ---- TITLE / START SCREEN: FWOOSH logo, Keith looming, the hero below, the town ablaze
+// ---------------------------------------------------------------- THE TOWN HUB (meta home base)
+function hubB(x,y,w,h,act,enabled){ hubBtns.push({x,y,w,h,act,enabled:enabled!==false}); }
+function hubClick(x,y){
+  for(let i=hubBtns.length-1;i>=0;i--){ const b=hubBtns[i];         // topmost (drawn last) wins
+    if(b.enabled && x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h){ hubAct(b.act); return; } }
+  if(hubSheet) hubSheet=null;                                       // tap outside an open sheet closes it
+}
+function hubAct(a){
+  if(a==='play'){ reset(); return; }
+  if(a==='well'){ hubSheet = META.buildings.well.built ? 'well' : null; return; }
+  if(a==='diary'){ hubSheet='diary'; return; }
+  if(a==='close'){ hubSheet=null; return; }
+  if(a.indexOf('buy:')===0){ buyWell(a.slice(4)); return; }
+}
+// a soft rounded panel
+function panel(ctx,x,y,w,h,r,fill,stroke){ ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  if(fill){ ctx.fillStyle=fill; ctx.fill(); } if(stroke){ ctx.lineWidth=2; ctx.strokeStyle=stroke; ctx.stroke(); } }
+
+function drawHub(ctx){
+  hubBtns = [];
+  if(hubToast>0) hubToast-=0.016;
+  // --- backdrop: the town at night, a few embers still drifting
+  ctx.fillStyle='#0b0713'; ctx.fillRect(0,0,VW,VH);
+  if(sprReady('bg')){ const im=MAKKO_IMG['bg'], sc=Math.max(VW/im.naturalWidth,VH/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc;
+    ctx.save(); ctx.globalAlpha=0.22; ctx.drawImage(im,(VW-w)/2,(VH-h)/2,w,h); ctx.restore(); }
+  const gr=ctx.createLinearGradient(0,0,0,VH); gr.addColorStop(0,'rgba(20,12,30,0.5)'); gr.addColorStop(1,'rgba(255,110,40,0.10)');
+  ctx.fillStyle=gr; ctx.fillRect(0,0,VW,VH);
+  for(let i=0;i<26;i++){ const life=VH*0.9, t=((frame*1.6)+i*90)%life, ex=(i*127+Math.sin(frame*0.02+i)*30)%VW, ey=VH-t, al=0.5*(1-t/life);
+    if(al>0){ ctx.fillStyle='rgba(255,'+(150+(i*23)%80)+',60,'+al.toFixed(2)+')'; ctx.fillRect(ex,ey,2+(i%2),2+(i%2)); } }
+
+  // --- top HUD: embers · lifetime saved · hearts preview
+  ctx.textAlign='left';
+  if(!drawText(ctx, String(META.embers), 92, 52, 40)){ ctx.fillStyle='#ffcf6b'; ctx.font='800 40px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(META.embers), 60, 58); }
+  ctx.textAlign='left'; ctx.fillStyle='#ffb14d'; ctx.font='600 18px "Pixelify",system-ui,sans-serif'; ctx.fillText('EMBERS', 60, 74);
+  if(sprReady('happy')){ ctx.save(); ctx.globalAlpha=0.9; drawSpr(ctx,'happy',34,44,44,{}); ctx.restore(); }
+  ctx.textAlign='right'; ctx.fillStyle='#8affc1'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(META.saved), VW-24, 46);
+  ctx.fillStyle='rgba(138,255,193,0.8)'; ctx.font='600 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('VILLAGERS SAVED', VW-24, 66);
+  { const n=Math.min(maxHearts,8), hs=20; for(let i=0;i<n;i++){ const hx=VW-24-(n-i)*(hs+2)+hs/2, hy=84; if(!drawSpr(ctx,'heart',hx,hy,hs,{})){ ctx.fillStyle='#ff4d4d'; ctx.beginPath(); ctx.arc(hx,hy,hs*0.32,0,7); ctx.fill(); } } }
+
+  // --- town title
+  ctx.textAlign='center';
+  if(!drawTextFit(ctx,'ASHFORD', VW/2, 150, 66, VW*0.8)){ ctx.fillStyle='#ffb04d'; ctx.font='900 64px "Pixelify",system-ui,sans-serif'; ctx.fillText('ASHFORD', VW/2, 150); }
+  ctx.fillStyle='rgba(255,208,160,0.75)'; ctx.font='500 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('the town you came back to save', VW/2, 182);
+
+  // --- Keith feud banner (teaser)
+  panel(ctx, 40, 208, VW-80, 52, 12, 'rgba(60,16,34,0.72)', 'rgba(255,61,122,0.5)');
+  if(sprReady('keith')) drawSpr(ctx,'keith', 74, 234, 60, {});
+  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='700 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('KEITH: '+feudStage().toUpperCase(), 110, 230);
+  ctx.fillStyle='rgba(255,157,189,0.7)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('he watches you rebuild. keep winning to escalate.', 110, 250);
+
+  // --- building cards. The Well is LIVE; the rest are teasers on the same SAVED counter.
+  const cardY=282, cardH=118, gap=14, cw=(VW-80-gap)/2;
+  const wellBuilt = META.buildings.well.built;
+  // The Well (live)
+  drawBuildingCard(ctx, 40, cardY, cw, cardH, 'THE WELL',
+    wellBuilt ? 'tap to spend embers' : (K.WELL_RISE-META.saved)+' more saves',
+    wellBuilt ? '#7fe8ff' : '#ffb14d', wellBuilt, 'well', wellBuilt?'well':null);
+  // Forge (teaser)
+  drawBuildingCard(ctx, 40+cw+gap, cardY, cw, cardH, 'THE FORGE', 'locked', '#7b8397', false, null, null);
+  // Hero teaser + Diary teaser
+  drawBuildingCard(ctx, 40, cardY+cardH+gap, cw, cardH, 'HERO: BRAM', 'locked', '#7b8397', false, null, null);
+  drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', 'story — optional', '#c9a0ff', true, 'diary', null);
+
+  // --- NEXT chip (always a visible next goal)
+  let nextTxt;
+  if(!wellBuilt) nextTxt='NEXT: '+(K.WELL_RISE-META.saved)+' saves -> raise The Well';
+  else { const b=META.buildings.well, dw=WELL_SHOP[0], cb=WELL_SHOP[1];
+    if((b.hearts||0)<dw.costs.length) nextTxt='NEXT: '+dw.costs[b.hearts||0]+' embers -> Deep Well '+((b.hearts||0)+1);
+    else if((b.regen||0)<cb.costs.length) nextTxt='NEXT: '+cb.costs[b.regen||0]+' embers -> Cool Blood '+((b.regen||0)+1);
+    else nextTxt='The Well is maxed — more of Ashford rises soon'; }
+  const chY=cardY+2*cardH+gap+22;
+  panel(ctx, 40, chY, VW-80, 40, 10, 'rgba(255,180,80,0.12)', 'rgba(255,180,80,0.35)');
+  ctx.textAlign='center'; ctx.fillStyle='#ffcf8a'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText(nextTxt, VW/2, chY+26);
+
+  // --- PLAY button
+  const pbY=VH-150, pbW=VW-120, pbX=60, pbH=88;
+  const pulse=0.5+0.5*Math.sin(frame*0.08);
+  panel(ctx, pbX, pbY, pbW, pbH, 16, 'rgba(255,120,40,'+(0.28+0.12*pulse).toFixed(2)+')', '#ff8a3d');
+  ctx.textAlign='center';
+  if(!drawText(ctx,'SAVE THE TOWN', VW/2, pbY+52, 34)){ ctx.fillStyle='#fff'; ctx.font='800 40px "Pixelify",system-ui,sans-serif'; ctx.fillText('SAVE THE TOWN', VW/2, pbY+56); }
+  ctx.fillStyle='rgba(255,240,220,0.8)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(isTouch?'tap to run':'SPACE / click to run', VW/2, pbY+76);
+  hubB(pbX, pbY, pbW, pbH, 'play');
+
+  // --- sheets
+  if(hubSheet==='well') drawWellSheet(ctx);
+  else if(hubSheet==='diary') drawDiarySheet(ctx);
+
+  // --- toast (build/purchase feedback)
+  if(hubToast>0){ ctx.globalAlpha=Math.min(1,hubToast); ctx.textAlign='center';
+    const ty=VH*0.52; panel(ctx, VW/2-220, ty-28, 440, 56, 12, 'rgba(10,8,16,0.9)', 'rgba(255,207,107,0.7)');
+    ctx.fillStyle='#ffcf6b'; ctx.font='800 24px "Pixelify",system-ui,sans-serif'; ctx.fillText(hubToastMsg, VW/2, ty+8); ctx.globalAlpha=1; }
+}
+
+function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, sprKey){
+  panel(ctx, x, y, w, h, 12, live?'rgba(22,26,38,0.85)':'rgba(16,16,22,0.7)', live?col:'rgba(120,131,151,0.35)');
+  ctx.save(); if(!live) ctx.globalAlpha=0.55;
+  // icon
+  if(live && sprKey==='well' && sprReady('beacon')) drawSpr(ctx,'beacon', x+w/2, y+h*0.46, h*0.62, {});
+  else if(act==='diary'){ ctx.fillStyle=col; ctx.font='40px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText('📖', x+w/2, y+h*0.5); }
+  else { ctx.fillStyle=live?col:'#5a6072'; ctx.font='40px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(live?'✦':'🔒', x+w/2, y+h*0.5); }
+  ctx.restore();
+  ctx.textAlign='center'; ctx.fillStyle=live?'#fff':'rgba(200,205,220,0.8)'; ctx.font='800 20px "Pixelify",system-ui,sans-serif';
+  ctx.fillText(title, x+w/2, y+h-26);
+  ctx.fillStyle=live?col:'rgba(140,150,170,0.8)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(sub, x+w/2, y+h-8);
+  if(act) hubB(x,y,w,h,act,true);
+}
+
+function drawWellSheet(ctx){
+  const h=360, y=VH-h; ctx.fillStyle='rgba(6,5,11,0.55)'; ctx.fillRect(0,0,VW,VH);
+  panel(ctx, 0, y, VW, h+20, 18, 'rgba(14,16,26,0.98)', 'rgba(127,232,255,0.5)');
+  hubB(0,0,VW,y,'close');                                     // tap above the sheet closes it
+  ctx.textAlign='center'; ctx.fillStyle='#7fe8ff'; ctx.font='800 34px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE WELL', VW/2, y+50);
+  ctx.fillStyle='rgba(200,230,245,0.8)'; ctx.font='500 17px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('saves rebuilt the shell — embers pay for the rest', VW/2, y+78);
+  let ry=y+108;
+  for(const item of WELL_SHOP){
+    const tier=META.buildings.well[item.track]||0, maxed=tier>=item.costs.length;
+    const cost=maxed?0:item.costs[tier], afford=META.embers>=cost;
+    panel(ctx, 30, ry, VW-60, 96, 12, 'rgba(30,34,48,0.9)', 'rgba(127,232,255,0.25)');
+    ctx.textAlign='left'; ctx.fillStyle='#fff'; ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillText(item.name, 50, ry+34);
+    ctx.fillStyle='rgba(200,210,225,0.8)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(item.desc, 50, ry+58);
+    // tier pips
+    for(let i=0;i<item.costs.length;i++){ ctx.fillStyle=i<tier?'#7fe8ff':'rgba(127,232,255,0.2)'; ctx.beginPath(); ctx.arc(52+i*20, ry+80, 6,0,7); ctx.fill(); }
+    // buy button
+    const bw=150, bx=VW-30-bw-14, by=ry+18, bh=60;
+    const label = maxed?'MAX':(cost+' 🔥');
+    panel(ctx, bx, by, bw, bh, 10, maxed?'rgba(90,96,114,0.5)':(afford?'rgba(255,150,60,0.9)':'rgba(90,60,40,0.6)'), maxed?'#5a6072':(afford?'#ffd9a0':'#7b5a3a'));
+    ctx.textAlign='center'; ctx.fillStyle=maxed?'#aab':(afford?'#1a0f08':'rgba(255,220,180,0.6)'); ctx.font='800 24px "Pixelify",system-ui,sans-serif'; ctx.fillText(label, bx+bw/2, by+40);
+    if(!maxed && afford) hubB(bx,by,bw,bh,'buy:'+item.track);
+    ry+=112;
+  }
+  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
+}
+
+function drawDiarySheet(ctx){
+  const h=420, y=VH-h; ctx.fillStyle='rgba(6,5,11,0.6)'; ctx.fillRect(0,0,VW,VH);
+  panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.98)', 'rgba(201,160,255,0.5)');
+  hubB(0,0,VW,y,'close');
+  ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+48);
+  ctx.fillStyle='rgba(210,195,235,0.7)'; ctx.font='italic 500 16px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('the story is yours to read or skip — never needed to win', VW/2, y+74);
+  // a few lore lines the saved villagers have shared (optional flavour, pays nothing)
+  const lines = (typeof STORY!=='undefined' && STORY.lore) ? STORY.lore.slice(0,6) : ['You beat Keith once, and left.','His hatred caught fire.','It spread to everyone.','You came back.'];
+  ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='500 20px "Pixelify",system-ui,sans-serif';
+  lines.forEach((ln,i)=> ctx.fillText('"'+ln+'"', VW/2, y+124+i*40));
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
+}
+
 function drawTitle(ctx){
   ctx.fillStyle='#0a0710'; ctx.fillRect(0,0,VW,VH);
   if(sprReady('bg')){ const im=MAKKO_IMG['bg'], sc=Math.max(VW/im.naturalWidth,VH/im.naturalHeight),
@@ -1915,6 +2128,7 @@ function drawTitle(ctx){
 
 function render(){
   if(onTitle){ drawTitle(ctx); return; }
+  if(mode === 'hub'){ drawHub(ctx); return; }
   const p = player;
   SK.bg(ctx);
 
@@ -2147,7 +2361,7 @@ function render(){
     ctx.fillStyle = '#7b8397'; ctx.font = '400 23px "Pixelify",system-ui,sans-serif';
     ctx.fillText(fmt(elapsed)+'  ·  win #'+(opp.duelWins||1), VW/2, VH/2 + 122);
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('tap to run it back', VW/2, VH/2 + 196);
+    ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 196);
   }
   else if(mode === 'over'){
     ctx.fillStyle = 'rgba(7,7,11,0.80)'; ctx.fillRect(0,0,VW,VH);
@@ -2163,7 +2377,7 @@ function render(){
     ctx.fillStyle = '#7b8397'; ctx.font = '400 23px "Pixelify",system-ui,sans-serif';
     ctx.fillText(saved+' villagers saved  ·  '+fmt(elapsed), VW/2, VH/2 + 110);
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('tap to go again', VW/2, VH/2 + 190);
+    ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 190);
     if(opp.runs >= 1){
       ctx.fillStyle = '#a15277'; ctx.font = '600 22px "Pixelify",system-ui,sans-serif';
       ctx.fillText(lineFor('study'), VW/2, VH/2 + 240);
@@ -2222,7 +2436,12 @@ window.addEventListener('keydown', e=>{
   if(onTitle){ if(KEYVEC[k]||k===' '||k==='enter'){ e.preventDefault(); onTitle=false; hinted=false; reset(); } return; }
   if(introT > 0){ introT = 0; if(KEYVEC[k]||k===' '||k==='shift'||k==='enter'){ e.preventDefault(); } return; }
   if(mode === 'over'){
-    if(KEYVEC[k] || k===' ' || k==='shift' || k==='enter'){ e.preventDefault(); reset(); }
+    if(KEYVEC[k] || k===' ' || k==='shift' || k==='enter'){ e.preventDefault(); enterHub(); }
+    return;
+  }
+  if(mode === 'hub'){                                 // in the town: Space/Enter = PLAY, Esc closes a sheet
+    if(k===' '||k==='enter'){ e.preventDefault(); if(hubSheet) hubSheet=null; else reset(); }
+    else if(k==='escape'){ hubSheet=null; }
     return;
   }
   if(KEYVEC[k]){ e.preventDefault(); keys[k] = true; hinted = true; }
@@ -2334,6 +2553,10 @@ window.__fwoosh = {
   setHp(v){ player.hp = Math.max(0, Math.min(1, v)); return this.state(); },
   setHearts(n){ maxHearts = Math.max(1, Math.round(n)); return { maxHearts }; },
   setSaved(n){ saved = Math.max(0, Math.round(n)); saveIconPop = 0.6; return { saved }; },
+  meta(){ return META; },
+  metaSet(o){ Object.assign(META, o); saveMeta(); return META; },
+  clearMeta(){ try{ localStorage.removeItem('fwoosh.meta'); }catch(e){} META = loadMeta(); return META; },
+  enterHub(){ enterHub(); return { mode }; },
   startIntro(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null,
     runs:0, readsBroken:0, timesSniped:0, seenIntro:false, duelWins:0, loreIdx:0 };
     reset(); return { intro: intro && intro.phase, mode }; },
