@@ -276,6 +276,7 @@ let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
     armed, respawnT, mode, popCause, nextId, hitstop, slowmo, flash, frame, hist, peakHunters, noFireT;
 let sparkT = 0, heatCoolT = 0, dumped = 0, saved = 0, overloadT = 0;   // ABSORBER loop state
 let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager when one fills in
+let dashPop = 0;     // flourish pop when a dash charge finishes recharging
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
@@ -599,8 +600,9 @@ function step(){
   if(p.ventCd > 0) p.ventCd -= dt;
   if(p.ventFlash > 0) p.ventFlash -= dt;
   // DASH CHARGES recharge over time (max + speed set by The Forge upgrades)
+  if(dashPop > 0) dashPop -= dt*2.2;
   if(p.charges < RUN_MAX_CHARGES){ p.chargeT += dt;
-    while(p.chargeT >= RUN_CHARGE_REFILL && p.charges < RUN_MAX_CHARGES){ p.chargeT -= RUN_CHARGE_REFILL; p.charges++; } }
+    while(p.chargeT >= RUN_CHARGE_REFILL && p.charges < RUN_MAX_CHARGES){ p.chargeT -= RUN_CHARGE_REFILL; p.charges++; dashPop = 0.55; } }
   else p.chargeT = 0;
 
   // AUTO-RUN: you never stop. Heading persists; with no steering you WEAVE on your own, and the weave
@@ -2306,11 +2308,27 @@ function render(){
       ctx.strokeText('BLAZE x'+mult.toFixed(1), VW-16, 46); ctx.fillText('BLAZE x'+mult.toFixed(1), VW-16, 46);
       ctx.globalAlpha=1;
     }
-    // DASH charges (bottom-left) — Makko ember pips; the recharging one fills up
-    { const n=RUN_MAX_CHARGES, ps=30, gap=7, x0=26, yy=VH-58;
-      for(let i=0;i<n;i++){ const cx=x0+i*(ps+gap)+ps/2, ready=i<player.charges;
-        const a = ready?1 : (i===player.charges ? 0.22+0.4*Math.min(1,(player.chargeT||0)/RUN_CHARGE_REFILL) : 0.16);
-        if(!drawSpr(ctx,'ui_charge',cx,yy,ready?ps:ps*0.85,{alpha:a})){ ctx.fillStyle='rgba(127,232,255,'+a.toFixed(2)+')'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); } }
+    // DASH charges (bottom-left) — Makko ember pips. Empty = dark socket; recharging one FILLS UP
+    // bottom-to-top with a shimmer; a finished charge pops with a flourish ring.
+    { const n=RUN_MAX_CHARGES, ps=32, gap=8, x0=26, yy=VH-56;
+      for(let i=0;i<n;i++){ const cx=x0+i*(ps+gap)+ps/2, ready=i<player.charges, charging=(i===player.charges && player.charges<n);
+        // dark socket always
+        if(!drawSpr(ctx,'ui_charge',cx,yy,ps,{alpha:0.13})){ ctx.fillStyle='rgba(255,150,60,0.13)'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); }
+        if(ready){
+          const newest=(i===player.charges-1);
+          if(newest && dashPop>0){ ctx.save(); ctx.globalAlpha=Math.min(1,dashPop); ctx.strokeStyle='#ffe6a6'; ctx.lineWidth=2+4*dashPop;
+            ctx.beginPath(); ctx.arc(cx,yy, ps*0.5+(0.55-dashPop)*22, 0,7); ctx.stroke(); ctx.restore(); }
+          const pop = newest ? 1+Math.max(0,dashPop)*0.5 : 1;
+          if(!drawSpr(ctx,'ui_charge',cx,yy,ps*pop,{})){ ctx.fillStyle='#ff8a3d'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); }
+        } else if(charging){
+          const f=Math.max(0,Math.min(1,(player.chargeT||0)/RUN_CHARGE_REFILL)), fy=yy+ps/2-ps*f;
+          ctx.save(); ctx.beginPath(); ctx.rect(cx-ps/2, fy, ps, ps*f); ctx.clip();   // reveal bottom-up
+          if(!drawSpr(ctx,'ui_charge',cx,yy,ps,{})){ ctx.fillStyle='#ff8a3d'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); }
+          ctx.restore();
+          if(f>0.04){ ctx.save(); ctx.globalAlpha=0.55+0.45*Math.sin(frame*0.5); ctx.strokeStyle='#fff2c8'; ctx.lineWidth=2;   // shimmer at the fill line
+            ctx.beginPath(); ctx.moveTo(cx-ps*0.38,fy); ctx.lineTo(cx+ps*0.38,fy); ctx.stroke(); ctx.restore(); }
+        }
+      }
     }
     // VENT: bespoke button on mobile; SPACE (with a compact reminder) on desktop
     if(isTouch) drawVentButton(ctx);
