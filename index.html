@@ -101,6 +101,7 @@ const K = {
   EMBER_RUN_CAP: 160,               // soft cap: saves past this still count for the town, but mint 0 embers
   WIN_EMBERS: 25,                   // KEITH YIELDS bounty
   WELL_RISE: 6,                     // cumulative lifetime saves to raise The Well from rubble
+  FORGE_RISE: 16,                   // cumulative lifetime saves to raise The Forge (dash upgrades)
   // HEALTH: carrying fire burns your health down, faster the more you hold; empty of fire, you recover.
   HP_DRAIN: 0.035,                  // health/sec lost PER unit of heat carried (heat 6 -> ~0.21/s)
   HP_REGEN: 0.22,                   // health/sec regained while carrying no fire
@@ -114,7 +115,7 @@ const K = {
   CROWD_RESPAWN: 6.0,
   FLEE_RANGE: 140,
   FLEE_SPD: 130,
-  WANDER_SPD: 46,
+  WANDER_SPD: 84,                   // calm villagers actively run around the square (was a slow drift)
 
   // hunters
   HUNTER_SPD0: 180,
@@ -278,6 +279,7 @@ let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager wh
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
+let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash economy, upgraded at The Forge
 // ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
 let META = loadMeta();
 let runEmbers = 0;               // embers minted this run (banked into META at run end)
@@ -335,41 +337,45 @@ function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp))
 function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
   const d = { v:1, embers:0, saved:0, bestBlaze:0,
-    buildings:{ well:{ built:false, hearts:0, regen:0 } },
+    buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 } },
     hero:'stranger', diary:{ read:[] }, flags:{} };
   if(!s || s.v!==1) return d;
   s.buildings = s.buildings || {};
-  s.buildings.well = Object.assign({}, d.buildings.well, s.buildings.well||{});
+  s.buildings.well  = Object.assign({}, d.buildings.well,  s.buildings.well||{});
+  s.buildings.forge = Object.assign({}, d.buildings.forge, s.buildings.forge||{});
   s.diary = Object.assign({}, d.diary, s.diary||{});
   return Object.assign({}, d, s);
 }
 function saveMeta(){ try{ localStorage.setItem('fwoosh.meta', JSON.stringify(META)); }catch(e){} }
-// apply purchased upgrades to this run's stats (called at the top of reset()). Defaults = unchanged behaviour.
+// apply purchased upgrades to this run's stats (called at the top of reset() + after a purchase).
 function applyUpgrades(){
-  const b = (META.buildings && META.buildings.well) || {};
-  maxHearts    = 5 + (b.hearts||0);                 // more hearts -> drain auto-slows via the existing 5/maxHearts
-  RUN_HP_REGEN = K.HP_REGEN + 0.05*(b.regen||0);    // faster recovery while clear of fire
+  const w=(META.buildings&&META.buildings.well)||{}, f=(META.buildings&&META.buildings.forge)||{};
+  maxHearts        = 5 + (w.hearts||0);                       // more hearts -> drain auto-slows via 5/maxHearts
+  RUN_HP_REGEN     = K.HP_REGEN + 0.05*(w.regen||0);          // faster recovery while clear of fire
+  RUN_MAX_CHARGES  = K.CHARGES + (f.charges||0);              // The Forge: more dash charges
+  RUN_CHARGE_REFILL= K.CHARGE_REFILL * Math.pow(0.82, f.recharge||0);  // ...and they recharge faster
 }
-// The Well shop (Phase 1). Two clean axes so the vent risk/reward is tuned, never deleted.
-const WELL_SHOP = [
-  { track:'hearts', name:'DEEP WELL',  desc:'+1 max heart (survive more fire)', costs:[60,150,360] },
-  { track:'regen',  name:'COOL BLOOD', desc:'recover faster when clear of fire', costs:[45,120] },
-];
-function buyWell(track){
-  const b = META.buildings.well, item = WELL_SHOP.find(s=>s.track===track);
-  const tier = b[track]||0;
-  if(!item || tier >= item.costs.length) return;         // maxed
-  const cost = item.costs[tier];
-  if(META.embers < cost) return;                          // can't afford
-  META.embers -= cost; b[track] = tier+1; saveMeta();
-  hubToast = 2.0; hubToastMsg = item.name+' UP';
+// Building shops — generic. Each building is a set of ember-bought tiers.
+const SHOPS = {
+  well:  { title:'THE WELL',  color:'#7fe8ff', sub:'saves raised the shell — embers pay for the rest', items:[
+    { track:'hearts', name:'DEEP WELL',  desc:'+1 max heart (survive more fire)', costs:[60,150,360] },
+    { track:'regen',  name:'COOL BLOOD', desc:'recover faster when clear of fire', costs:[45,120] } ] },
+  forge: { title:'THE FORGE', color:'#ff9a45', sub:'iron for the road — dash more, recharge quicker', items:[
+    { track:'charges',  name:'QUICK FEET',  desc:'+1 dash charge', costs:[80,200,480] },
+    { track:'recharge', name:'SECOND WIND', desc:'dashes recharge faster', costs:[70,180] } ] },
+};
+function buy(building, track){
+  const shop=SHOPS[building], b=META.buildings[building], item=shop&&shop.items.find(s=>s.track===track);
+  if(!b||!item) return; const tier=b[track]||0;
+  if(tier>=item.costs.length || META.embers<item.costs[tier]) return;
+  META.embers-=item.costs[tier]; b[track]=tier+1; saveMeta(); applyUpgrades();
+  hubToast=2.0; hubToastMsg=item.name+' UP';
 }
-// land in the town after a run; raise The Well the first time you cross the saves milestone
+// land in the town after a run; raise any building whose saves-milestone you just crossed
 function enterHub(){
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
-  if(META.buildings.well && !META.buildings.well.built && META.saved >= K.WELL_RISE){
-    META.buildings.well.built = true; wellJustRose = true; hubToast = 3.2; hubToastMsg = 'THE WELL STANDS AGAIN';
-  }
+  const rise=(key,at,name)=>{ const b=META.buildings[key]; if(b&&!b.built&&META.saved>=at){ b.built=true; wellJustRose=true; hubToast=3.2; hubToastMsg=name+' STANDS AGAIN'; return true; } return false; };
+  rise('well', K.WELL_RISE, 'THE WELL') || rise('forge', K.FORGE_RISE, 'THE FORGE');
   saveMeta();
 }
 function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
@@ -461,7 +467,7 @@ function reset(seed){
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
-    spd: K.RUN, lunge: 0, charges: K.CHARGES, chargeT: 0, dashCd: 0,
+    spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0,
     venting: false, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
@@ -518,11 +524,11 @@ let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (nav
 
 function lungeDir(dx,dy){
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
-  if(mode !== 'play' || player.dashCd > 0) return;       // dash is the steer — cooldown-gated, ~free
+  if(mode !== 'play' || player.charges <= 0 || player.dashCd > 0) return;   // dashes are a rechargeable resource
   if(intro && intro.phase === 'walkin') return;          // no control during the scripted entrance
   player.hx = dx/m; player.hy = dy/m;
   player.lunge = K.LUNGE_T;
-  player.dashCd = K.DASH_CD;
+  player.charges--; player.dashCd = K.DASH_CD;   // spend a charge (+ a tiny gap so one swipe can't double-fire)
   player.venting = false;
 }
 
@@ -592,6 +598,10 @@ function step(){
   if(p.dashCd > 0) p.dashCd -= dt;
   if(p.ventCd > 0) p.ventCd -= dt;
   if(p.ventFlash > 0) p.ventFlash -= dt;
+  // DASH CHARGES recharge over time (max + speed set by The Forge upgrades)
+  if(p.charges < RUN_MAX_CHARGES){ p.chargeT += dt;
+    while(p.chargeT >= RUN_CHARGE_REFILL && p.charges < RUN_MAX_CHARGES){ p.chargeT -= RUN_CHARGE_REFILL; p.charges++; } }
+  else p.chargeT = 0;
 
   // AUTO-RUN: you never stop. Heading persists; with no steering you WEAVE on your own, and the weave
   // gets wilder as you burn (frantic, harder to control). You DASH to send yourself where you want.
@@ -688,8 +698,10 @@ function step(){
         if(fleeing){ const m = Math.hypot(fx,fy)||1; c.vx = fx/m*K.FLEE_SPD; c.vy = fy/m*K.FLEE_SPD; }
         else{
           c.ph += c.ps*dt;
-          c.vx = Math.cos(c.dir + Math.sin(c.ph)*0.9)*K.WANDER_SPD;
-          c.vy = Math.sin(c.dir + Math.sin(c.ph)*0.9)*K.WANDER_SPD;
+          c.wanderT = (c.wanderT||0)+dt;                  // scurry: pick a new heading every ~1-2s = running around
+          if(c.wanderT > (c.wanderNext||0)){ c.dir = rnd()*Math.PI*2; c.wanderT = 0; c.wanderNext = 0.7+rnd()*1.6; }
+          c.vx = Math.cos(c.dir + Math.sin(c.ph)*0.7)*K.WANDER_SPD;
+          c.vy = Math.sin(c.dir + Math.sin(c.ph)*0.7)*K.WANDER_SPD;
         }
       }
     }
@@ -1065,7 +1077,7 @@ function mergeCheck(){
 
 function collectPowerup(pu){
   surgeT = K.SURGE_T;
-  player.charges = K.CHARGES;
+  player.charges = RUN_MAX_CHARGES;
   if(player.lit) player.fuse = K.FUSE_START;
   score += K.SURGE_BONUS;
   ring(pu.x,pu.y,10,150,'#ffe08a',0.8); ring(player.x,player.y,14,120,'#7fe8ff',0.7);
@@ -1749,11 +1761,23 @@ const SKINS = {
       ug.addColorStop(1,'rgba(255,120,50,0)');
       ctx.fillStyle=ug; ctx.beginPath(); ctx.arc(X,y+R*0.2,R*2.3,0,7); ctx.fill();
       if(!drawSpr(ctx,'husk',X,y,H,{})) return SKINS.vector.wall(ctx,X,y,grudge,scarred); },
-    cell(ctx,X,y,c){ const fleeing=Math.hypot(c.vx||0,c.vy||0)>90;
-      const bob=Math.sin(frame*0.2+(c.ph||0))*(fleeing?2.4:1.4);
+    cell(ctx,X,y,c){
+      if(c.saving){
+        // SAVED! the happy villager bursts free and bounds off to safety, cheering
+        const t=c.saveT||0, pop=1+Math.max(0,0.45-t)*1.7, hop=-Math.abs(Math.sin(t*17))*K.R_CELL*1.15;
+        const flip=(c.vx||0)<0, tilt=Math.sin(t*17)*0.12;
+        groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.05, K.R_CELL*0.32);
+        if(t<0.32){ ctx.save(); ctx.globalAlpha=(0.32-t)/0.32; ctx.strokeStyle='#8affc1'; ctx.lineWidth=3;   // green 'SAVED' pop
+          ctx.beginPath(); ctx.arc(X,y,K.R_CELL*(1.6+t*12),0,7); ctx.stroke(); ctx.restore(); }
+        if(!drawSpr(ctx,'happy',X,y+hop,K.R_CELL*3.7*pop,{flip,rot:tilt}) &&
+           !drawSpr(ctx,'townsfolk',X,y+hop,K.R_CELL*3.5,{flip})) SKINS.vector.cell(ctx,X,y,c);
+        return;
+      }
+      // CALM — running around the square: a lively hop + slight lean by movement
+      const spd=Math.hypot(c.vx||0,c.vy||0), run=spd>10, step=Math.sin(frame*(run?0.5:0.2)+(c.ph||0));
+      const hop=run? -Math.abs(step)*K.R_CELL*0.55 : -step*1.3, flip=(c.vx||0)<0, tilt=run? step*0.09:0;
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
-      if(!drawAnim(ctx,'townsfolk',X,y,K.R_CELL*4.2,{fps:fleeing?11:7, flip:(c.vx||0)<0, t:(c.id||0)*5}) &&
-         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*3.5,{dy:-bob, flip:(c.vx||0)<0, sy:1+(fleeing?0.06:0.02)*Math.sin(frame*0.5+(c.id||0))}))
+      if(!drawSpr(ctx,'townsfolk',X,y+hop,K.R_CELL*3.5,{flip, rot:tilt, sy:1+(run?0.06:0.02)*Math.abs(step)}))
         SKINS.vector.cell(ctx,X,y,c); },
     hunter(ctx,X,y,a,t){ const flip=(frame*0.12|0)%2===0, k=Math.max(0,Math.min(1,1-t));   // t=burn progress
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
@@ -1950,10 +1974,10 @@ function hubClick(x,y){
 }
 function hubAct(a){
   if(a==='play'){ reset(); return; }
-  if(a==='well'){ hubSheet = META.buildings.well.built ? 'well' : null; return; }
   if(a==='diary'){ hubSheet='diary'; return; }
   if(a==='close'){ hubSheet=null; return; }
-  if(a.indexOf('buy:')===0){ buyWell(a.slice(4)); return; }
+  if(a==='well'||a==='forge'){ hubSheet = META.buildings[a].built ? a : null; return; }
+  if(a.indexOf('buy:')===0){ const p=a.split(':'); buy(p[1],p[2]); return; }
 }
 // a soft rounded panel
 function panel(ctx,x,y,w,h,r,fill,stroke){ ctx.beginPath();
@@ -1992,21 +2016,24 @@ function drawHub(ctx){
   ctx.fillStyle='rgba(255,157,189,0.72)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('he watches you rebuild', 112, 264);
 
   // --- building cards (2x2), translucent over the scene. Makko-sprite icons, no emoji.
-  const cardY=296, cardH=116, gap=14, cw=(VW-80-gap)/2, wellBuilt = META.buildings.well.built;
+  const cardY=296, cardH=116, gap=14, cw=(VW-80-gap)/2, wellBuilt = META.buildings.well.built, forgeBuilt = META.buildings.forge.built;
   drawBuildingCard(ctx, 40, cardY, cw, cardH, 'THE WELL',
     wellBuilt ? 'tap to spend embers' : (K.WELL_RISE-META.saved)+' more saves',
     wellBuilt ? '#7fe8ff' : '#ffb14d', wellBuilt, 'well', 'beacon');
-  drawBuildingCard(ctx, 40+cw+gap, cardY, cw, cardH, 'THE FORGE', 'rebuild coming', '#8a93a7', false, null, null);
+  drawBuildingCard(ctx, 40+cw+gap, cardY, cw, cardH, 'THE FORGE',
+    forgeBuilt ? 'dash upgrades' : (K.FORGE_RISE-META.saved)+' more saves',
+    forgeBuilt ? '#ff9a45' : '#ffb14d', forgeBuilt, 'forge', 'fire');
   drawBuildingCard(ctx, 40, cardY+cardH+gap, cw, cardH, 'HERO: BRAM', 'rebuild coming', '#8a93a7', false, null, 'happy');
   drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', 'story — optional', '#c9a0ff', true, 'diary', null);
 
   // --- NEXT chip (always a visible next goal)
+  const nextUp=(bld)=>{ const b=META.buildings[bld], sh=SHOPS[bld]; for(const it of sh.items){ if((b[it.track]||0)<it.costs.length) return {cost:it.costs[b[it.track]||0], name:it.name, tier:(b[it.track]||0)+1}; } return null; };
   let nextTxt;
   if(!wellBuilt) nextTxt='NEXT: '+(K.WELL_RISE-META.saved)+' saves to raise The Well';
-  else { const b=META.buildings.well, dw=WELL_SHOP[0], cb=WELL_SHOP[1];
-    if((b.hearts||0)<dw.costs.length) nextTxt='NEXT: '+dw.costs[b.hearts||0]+' embers  ·  Deep Well '+((b.hearts||0)+1);
-    else if((b.regen||0)<cb.costs.length) nextTxt='NEXT: '+cb.costs[b.regen||0]+' embers  ·  Cool Blood '+((b.regen||0)+1);
-    else nextTxt='The Well is maxed — more of Ashford rises soon'; }
+  else if(nextUp('well')){ const u=nextUp('well'); nextTxt='NEXT: '+u.cost+' embers  ·  '+u.name+' '+u.tier; }
+  else if(!forgeBuilt) nextTxt='NEXT: '+(K.FORGE_RISE-META.saved)+' saves to raise The Forge';
+  else if(nextUp('forge')){ const u=nextUp('forge'); nextTxt='NEXT: '+u.cost+' embers  ·  '+u.name+' '+u.tier; }
+  else nextTxt='Ashford is thriving — more rises soon';
   const chY=VH-186;
   panel(ctx, 60, chY, VW-120, 40, 10, 'rgba(255,180,80,0.14)', 'rgba(255,180,80,0.4)');
   ctx.textAlign='center'; ctx.fillStyle='#ffcf8a'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText(nextTxt, VW/2, chY+26);
@@ -2020,7 +2047,7 @@ function drawHub(ctx){
   hubB(pbX, pbY, pbW, pbH, 'play');
 
   // --- sheets
-  if(hubSheet==='well') drawWellSheet(ctx);
+  if(hubSheet==='well'||hubSheet==='forge') drawShopSheet(ctx, hubSheet);
   else if(hubSheet==='diary') drawDiarySheet(ctx);
 
   // --- toast (build/purchase feedback)
@@ -2032,7 +2059,8 @@ function drawHub(ctx){
 function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
   panel(ctx, x, y, w, h, 14, live?'rgba(14,18,28,0.66)':'rgba(10,10,16,0.6)', live?col:'rgba(120,131,151,0.4)');
   ctx.save(); if(!live) ctx.globalAlpha=0.45;
-  if(iconSpr && sprReady(iconSpr)) drawSpr(ctx, iconSpr, x+w/2, y+h*0.40, h*0.5, {});
+  if(iconSpr==='fire') drawFlame(ctx, x+w/2, y+h*0.56, h*0.52, frame*0.4, live?0.95:0.4);
+  else if(iconSpr && sprReady(iconSpr)) drawSpr(ctx, iconSpr, x+w/2, y+h*0.40, h*0.5, {});
   ctx.restore();
   ctx.textAlign='center'; ctx.fillStyle=live?'#fff':'rgba(205,210,225,0.9)'; ctx.font='800 20px "Pixelify",system-ui,sans-serif';
   ctx.fillText(title, x+w/2, y+h-28);
@@ -2040,22 +2068,22 @@ function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
   if(act) hubB(x,y,w,h,act,true);
 }
 
-function drawWellSheet(ctx){
+function drawShopSheet(ctx, bld){
+  const shop=SHOPS[bld], col=shop.color, colDim='rgba('+ (bld==='forge'?'255,154,69':'127,232,255') +',0.25)';
   const h=360, y=VH-h; ctx.fillStyle='rgba(6,5,11,0.55)'; ctx.fillRect(0,0,VW,VH);
-  panel(ctx, 0, y, VW, h+20, 18, 'rgba(14,16,26,0.98)', 'rgba(127,232,255,0.5)');
+  panel(ctx, 0, y, VW, h+20, 18, 'rgba(14,16,26,0.98)', col);
   hubB(0,0,VW,y,'close');                                     // tap above the sheet closes it
-  ctx.textAlign='center'; ctx.fillStyle='#7fe8ff'; ctx.font='800 34px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE WELL', VW/2, y+50);
-  ctx.fillStyle='rgba(200,230,245,0.8)'; ctx.font='500 17px "Pixelify",system-ui,sans-serif';
-  ctx.fillText('saves rebuilt the shell — embers pay for the rest', VW/2, y+78);
+  ctx.textAlign='center'; ctx.fillStyle=col; ctx.font='800 34px "Pixelify",system-ui,sans-serif'; ctx.fillText(shop.title, VW/2, y+50);
+  ctx.fillStyle='rgba(210,220,235,0.8)'; ctx.font='500 17px "Pixelify",system-ui,sans-serif';
+  ctx.fillText(shop.sub, VW/2, y+78);
   let ry=y+108;
-  for(const item of WELL_SHOP){
-    const tier=META.buildings.well[item.track]||0, maxed=tier>=item.costs.length;
+  for(const item of shop.items){
+    const tier=META.buildings[bld][item.track]||0, maxed=tier>=item.costs.length;
     const cost=maxed?0:item.costs[tier], afford=META.embers>=cost;
-    panel(ctx, 30, ry, VW-60, 96, 12, 'rgba(30,34,48,0.9)', 'rgba(127,232,255,0.25)');
+    panel(ctx, 30, ry, VW-60, 96, 12, 'rgba(30,34,48,0.9)', colDim);
     ctx.textAlign='left'; ctx.fillStyle='#fff'; ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillText(item.name, 50, ry+34);
     ctx.fillStyle='rgba(200,210,225,0.8)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(item.desc, 50, ry+58);
-    // tier pips
-    for(let i=0;i<item.costs.length;i++){ ctx.fillStyle=i<tier?'#7fe8ff':'rgba(127,232,255,0.2)'; ctx.beginPath(); ctx.arc(52+i*20, ry+80, 6,0,7); ctx.fill(); }
+    for(let i=0;i<item.costs.length;i++){ ctx.fillStyle=i<tier?col:'rgba(180,190,210,0.2)'; ctx.beginPath(); ctx.arc(52+i*20, ry+80, 6,0,7); ctx.fill(); }
     // buy button — dark stone with the bold Makko flame + gold cost digits (no emoji, crisp numbers)
     const bw=152, bx=VW-30-bw-14, by=ry+18, bh=60;
     panel(ctx, bx, by, bw, bh, 10, maxed?'rgba(40,44,58,0.8)':(afford?'rgba(34,24,14,0.96)':'rgba(24,20,26,0.7)'), maxed?'#5a6072':(afford?'#ffb14d':'rgba(120,90,60,0.5)'));
@@ -2065,7 +2093,7 @@ function drawWellSheet(ctx){
       if(sprReady('flames')) drawFlame(ctx, bx+38, by+48, 44, frame*0.4, 1);
       if(!drawNumber(ctx, cost, bx+bw/2+20, by+30, 32)){ ctx.fillStyle='#ffcf6b'; ctx.font='800 28px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(cost), bx+bw/2+20, by+40); }
       ctx.restore(); }
-    if(!maxed && afford) hubB(bx,by,bw,bh,'buy:'+item.track);
+    if(!maxed && afford) hubB(bx,by,bw,bh,'buy:'+bld+':'+item.track);
     ry+=112;
   }
   ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
@@ -2278,13 +2306,19 @@ function render(){
       ctx.strokeText('BLAZE x'+mult.toFixed(1), VW-16, 46); ctx.fillText('BLAZE x'+mult.toFixed(1), VW-16, 46);
       ctx.globalAlpha=1;
     }
+    // DASH charges (bottom-left) — Makko ember pips; the recharging one fills up
+    { const n=RUN_MAX_CHARGES, ps=30, gap=7, x0=26, yy=VH-58;
+      for(let i=0;i<n;i++){ const cx=x0+i*(ps+gap)+ps/2, ready=i<player.charges;
+        const a = ready?1 : (i===player.charges ? 0.22+0.4*Math.min(1,(player.chargeT||0)/RUN_CHARGE_REFILL) : 0.16);
+        if(!drawSpr(ctx,'ui_charge',cx,yy,ready?ps:ps*0.85,{alpha:a})){ ctx.fillStyle='rgba(127,232,255,'+a.toFixed(2)+')'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); } }
+    }
     // VENT: bespoke button on mobile; SPACE (with a compact reminder) on desktop
     if(isTouch) drawVentButton(ctx);
     else if(player.heat > 0){
       const hot = player.heat >= K.HEAT_MAX-1;
       ctx.textAlign='center'; ctx.globalAlpha = hot ? (0.72+0.28*Math.sin(frame*0.5)) : 0.8;
-      ctx.fillStyle = hot ? '#ff6a3d' : 'rgba(255,175,110,0.95)'; ctx.font='700 24px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('SPACE — VENT (blast fire off)', VW/2, VH-70); ctx.globalAlpha=1;
+      ctx.fillStyle = hot ? '#ff6a3d' : 'rgba(255,175,110,0.95)'; ctx.font='700 22px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('SPACE — VENT', VW/2, VH-96); ctx.globalAlpha=1;
     }
   }
 
