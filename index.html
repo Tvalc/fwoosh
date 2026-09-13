@@ -93,7 +93,9 @@ const K = {
   SPREAD_CHANCE: 0.5,              // chance a nearby calm villager catches on a check
   BURN_FUSE: 6.5,                   // a flaming villager burns into a WALL after this (unsaved)
   PANIC_SPD: 150,                   // flaming villager panic-run (catchable with a dash)
-  SAVE_SCORE: 120,                  // points per villager saved
+  SAVE_SCORE: 120,                  // base points per villager saved
+  BLAZE_MULT: 0.5,                  // + this per heat carried, to the save score (hold fire = big points)
+  VENT_IGNITE_R: 82,                // vent blasts fire OUTWARD — calm villagers this close get RE-IGNITED
   // HEALTH: carrying fire burns your health down, faster the more you hold; empty of fire, you recover.
   HP_DRAIN: 0.035,                  // health/sec lost PER unit of heat carried (heat 6 -> ~0.21/s)
   HP_REGEN: 0.22,                   // health/sec regained while carrying no fire
@@ -471,16 +473,24 @@ function onDown(x,y){
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ reset(); return; }
-  const vb = ventBtn();                                   // pressed the VENT button? -> vent, not a dash
-  if(mode === 'play' && Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; player.venting = true; return; }
+  // Mobile only: the on-screen VENT button. (Desktop vents with SPACE, so no button — a click there dashes.)
+  if(isTouch && mode === 'play'){ const vb = ventBtn();
+    if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; player.venting = true; return; } }
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
 function onMove(x,y){
   if(!ptr.down || ptr.swiped) return;
   const dx = x-ptr.sx, dy = y-ptr.sy;
-  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; lungeDir(dx,dy); }   // swipe anywhere = dash
+  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; lungeDir(dx,dy); }   // swipe/drag = dash that way
 }
-function onUp(){ ptr.down = false; ptr.swiped = false; if(ptr.onVent){ ptr.onVent = false; player.venting = false; } }
+function onUp(){
+  if(ptr.onVent){ ptr.onVent = false; player.venting = false; }
+  else if(ptr.down && !ptr.swiped){                       // a click / tap (no drag) = DASH toward the point
+    const dx = ptr.sx-player.x, dy = ptr.sy-player.y;
+    if(Math.hypot(dx,dy) >= 12) lungeDir(dx,dy);
+  }
+  ptr.down = false; ptr.swiped = false;
+}
 
 // ---------------------------------------------------------------- step
 function step(){
@@ -856,7 +866,9 @@ function absorb(c){
   c.saving = true; c.saveT = 0; c.dir = rnd()*Math.PI*2;   // freed -> run to safety, then leave
   const dx = wrapDX(c.x - p.x) || (rnd()-0.5), dy = (c.y - p.y) || -1, m = Math.hypot(dx,dy)||1;
   c.svx = dx/m*K.FLEE_SPD*1.6; c.svy = dy/m*K.FLEE_SPD*1.6;
-  saved++; score += K.SAVE_SCORE;
+  saved++;
+  const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're already carrying, the bigger the save
+  score += Math.round(K.SAVE_SCORE * blaze);
   p.heat = Math.min(K.HEAT_MAX, p.heat + 1);
   // FLOURISH: pull the fire off them — a swirl of flame streaming into you
   for(let i=0;i<14;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);
@@ -886,7 +898,12 @@ function ventBurst(){
   ring(p.x, p.y, p.r+2,  p.r+190, '#ffe6a6', 0.32);       // white-hot shockwave
   ring(p.x, p.y, p.r+12, p.r+130, '#ff6a2e', 0.42);       // fire ring behind it
   hitstop = K.HITSTOP; flash = DT*2.2;
-  callout = { text: VENT_LINES[Math.floor(rnd()*VENT_LINES.length)], t:0, life:0.7, good:true };
+  // COST: the fire doesn't vanish — it flies OUT and re-ignites villagers near you. Vent in the OPEN,
+  // or you set the town alight again (undoing rescues, spawning more danger). Positioning is the skill.
+  let relit = 0;
+  for(const c of crowd()){ if(dist(c.x, c.y, p.x, p.y) <= K.VENT_IGNITE_R){ ignite(c, 'vent'); relit++; } }
+  if(relit > 0) callout = { text: relit > 1 ? 'YOU RELIT THE TOWN!' : 'IT SPREAD BACK!', t:0, life:1.1, good:false };
+  else callout = { text: VENT_LINES[Math.floor(rnd()*VENT_LINES.length)], t:0, life:0.7, good:true };
 }
 const VENT_LINES = ['FWOOSH!', 'OFF ME!', 'BLAST!', 'TAKE IT BACK!'];
 
@@ -2041,8 +2058,24 @@ function render(){
       ctx.textAlign='center'; ctx.font='800 23px "Pixelify",system-ui,sans-serif';
       ctx.fillStyle='#ff6a9c'; ctx.fillText('UNLOAD ON KEITH   '+dumped+' / '+K.DUEL_DUMP, VW/2, 112);
     }
-    // VENT button — bespoke thumb-target; vent fires only from here (or SPACE)
-    drawVentButton(ctx);
+    // BLAZE multiplier — the reward for holding fire (top-right). Bigger the more heat you carry.
+    if(player.heat > 0){
+      const mult = 1 + player.heat*K.BLAZE_MULT, hot = player.heat >= K.HEAT_MAX-1;
+      ctx.textAlign='right'; ctx.fillStyle = hot ? '#ff7a3d' : '#ffb14d';
+      ctx.font = '800 '+(26+player.heat*2)+'px "Pixelify",system-ui,sans-serif';
+      ctx.globalAlpha = hot ? (0.8+0.2*Math.sin(frame*0.5)) : 0.95;
+      ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.85)';
+      ctx.strokeText('BLAZE x'+mult.toFixed(1), VW-16, 46); ctx.fillText('BLAZE x'+mult.toFixed(1), VW-16, 46);
+      ctx.globalAlpha=1;
+    }
+    // VENT: bespoke button on mobile; SPACE (with a compact reminder) on desktop
+    if(isTouch) drawVentButton(ctx);
+    else if(player.heat > 0){
+      const hot = player.heat >= K.HEAT_MAX-1;
+      ctx.textAlign='center'; ctx.globalAlpha = hot ? (0.72+0.28*Math.sin(frame*0.5)) : 0.8;
+      ctx.fillStyle = hot ? '#ff6a3d' : 'rgba(255,175,110,0.95)'; ctx.font='700 24px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('SPACE — VENT (blast fire off)', VW/2, VH-70); ctx.globalAlpha=1;
+    }
   }
 
   if(!hinted && mode === 'play' && introT <= 0 && !intro){
