@@ -2,6 +2,8 @@
 
 Read `docs/COORDINATION.md` and the linked ownership board before editing. Tony's explicit instructions take precedence over these defaults.
 
+- **Standing art rule for every agent: use Makko art for all Fwoosh artwork.** This covers characters, animations, environments, UI art, effects and diary illustrations. Reuse or process Makko sources; do not substitute another generator, stock art or newly drawn replacement artwork unless Tony explicitly changes this rule. If Makko access or a needed source is missing, report it and continue other work rather than inventing a substitute. Preserve source provenance; never label an unverified asset as Makko.
+
 - Work in a separate folder and feature branch. Do not reset, stash, clean, switch branches in, or commit another agent's active checkout.
 - Parallel lanes: Cursor owns the modular refactor and animations. Codex owns progression/save reliability, testing, records and source preservation. Codex may implement scoped runtime fixes in its own checkout while Cursor continues; a handoff is not a prerequisite for independent work. Reconcile actual overlapping diffs during integration.
 - Preserve raw assets and existing browser save compatibility. Never infer final-district completion from district unlock alone.
