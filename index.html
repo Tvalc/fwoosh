@@ -2058,10 +2058,16 @@ const SKINS = {
       if(!drawNumber(ctx, score, VW/2, VH*0.31, 60)){
         ctx.fillStyle='#fff'; ctx.font='800 62px "Pixelify",system-ui,sans-serif';
         ctx.lineWidth=8; ctx.strokeStyle='#08120c'; ctx.strokeText(String(score), VW/2, VH*0.31); ctx.fillText(String(score), VW/2, VH*0.31); }
+      ctx.font='700 24px "Pixelify",system-ui,sans-serif'; ctx.lineWidth=6; ctx.strokeStyle='#08120c'; ctx.fillStyle='#ffcf6b';
+      const dl='+'+saved+' SAVED   ·   +'+runEmbers+' EMBERS';
+      ctx.strokeText(dl, VW/2, VH*0.40); ctx.fillText(dl, VW/2, VH*0.40);
+      if(districtCleared){ ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#8affc1';
+        const nx='NEW DISTRICT: '+DISTRICTS[Math.min(4,(META.district||1)-1)];
+        ctx.strokeText(nx, VW/2, VH*0.44); ctx.fillText(nx, VW/2, VH*0.44); }
       ctx.fillStyle='#cbd3e0'; ctx.font='500 22px "Pixelify",system-ui,sans-serif';
       ctx.lineWidth=5; ctx.strokeStyle='#08120c';
-      const tl='win #'+(opp.duelWins||1)+'   ·   tap to run it back';
-      ctx.strokeText(tl, VW/2, VH*0.35); ctx.fillText(tl, VW/2, VH*0.35);
+      const tl='DISTRICT '+runDistrict+'  ·  tap → back to Ashford';
+      ctx.strokeText(tl, VW/2, VH*0.485); ctx.fillText(tl, VW/2, VH*0.485);
     },
     bg(ctx){
       const g=ctx.createLinearGradient(0,0,0,VH);           // a warm dim room floor, not a void
@@ -2378,10 +2384,16 @@ const SKINS = {
       if(!drawNumber(ctx, score, VW/2, VH*0.31, 60)){
         ctx.fillStyle='#fff'; ctx.font='800 62px "Pixelify",system-ui,sans-serif';
         ctx.lineWidth=8; ctx.strokeStyle='#08120c'; ctx.strokeText(String(score), VW/2, VH*0.31); ctx.fillText(String(score), VW/2, VH*0.31); }
+      ctx.font='700 24px "Pixelify",system-ui,sans-serif'; ctx.lineWidth=6; ctx.strokeStyle='#08120c'; ctx.fillStyle='#ffcf6b';
+      const dl='+'+saved+' SAVED   ·   +'+runEmbers+' EMBERS';
+      ctx.strokeText(dl, VW/2, VH*0.40); ctx.fillText(dl, VW/2, VH*0.40);
+      if(districtCleared){ ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#8affc1';
+        const nx='NEW DISTRICT: '+DISTRICTS[Math.min(4,(META.district||1)-1)];
+        ctx.strokeText(nx, VW/2, VH*0.44); ctx.fillText(nx, VW/2, VH*0.44); }
       ctx.fillStyle='#cbd3e0'; ctx.font='500 22px "Pixelify",system-ui,sans-serif';
       ctx.lineWidth=5; ctx.strokeStyle='#08120c';
-      const tl='win #'+(opp.duelWins||1)+'   ·   tap to run it back';
-      ctx.strokeText(tl, VW/2, VH*0.35); ctx.fillText(tl, VW/2, VH*0.35);
+      const tl='DISTRICT '+runDistrict+'  ·  tap → back to Ashford';
+      ctx.strokeText(tl, VW/2, VH*0.485); ctx.fillText(tl, VW/2, VH*0.485);
     },
   },
 };
@@ -3057,8 +3069,10 @@ function render(){
       ctx.fillText(String(score), VW/2, VH/2 + 66); }
     ctx.fillStyle = '#7b8397'; ctx.font = '400 23px "Pixelify",system-ui,sans-serif';
     ctx.fillText(saved+' villagers saved  ·  '+fmt(elapsed), VW/2, VH/2 + 110);
+    ctx.fillStyle = '#ffcf6b'; ctx.font = '700 24px "Pixelify",system-ui,sans-serif';
+    ctx.fillText('+'+runEmbers+' embers earned', VW/2, VH/2 + 146);
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 190);
+    ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 200);
     if(opp.runs >= 1){
       ctx.fillStyle = '#a15277'; ctx.font = '600 22px "Pixelify",system-ui,sans-serif';
       ctx.fillText(lineFor('study'), VW/2, VH/2 + 240);
