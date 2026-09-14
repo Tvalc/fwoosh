@@ -29,3 +29,7 @@ Tony explicitly reaffirmed parallel work on September 14. Codex continues its la
 - [#6 Duplicate settlement robustness](https://github.com/Tvalc/fwoosh/issues/6)
 
 Deferred until scoped: heroes/mastery, Tavern and later buildings, feud redesign, district art expansion, audio production, daily challenges and monetization.
+
+## Latest authorization
+
+Tony authorized the immediate combined release and deployment after each major completed change for live testing. Codex integrates Cursor 2d9316c, verifies, and publishes; no further release permission is required for these scoped changes. Keep original checkouts untouched. Codex continues the story/city interview here; the separate Vovinam Ledger task receives shared decisions explicitly.

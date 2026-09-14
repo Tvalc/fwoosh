@@ -652,22 +652,20 @@ const SKINS = {
         }
         return;
       }
-      // CALM — running around the square. Ratkin run-cycle prototype; townsfolk remains the fallback.
-      const vill = animReady('ratkin') ? 'ratkin' : 'townsfolk';
+      // CALM — running around the square: the Makko 12-frame townsfolk animation, faster legs while running
       const spd=Math.hypot(c.vx||0,c.vy||0), run=spd>10, flip=(c.vx||0)<0, step=Math.sin(frame*0.5+(c.ph||0));
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
-      if(!drawAnim(ctx,vill,X,y,K.R_CELL*4.2,{fps:run?13:6, flip, t:(c.id||0)*3}) &&
-         !drawSpr(ctx,vill,X,y+(run?-Math.abs(step)*K.R_CELL*0.5:0),K.R_CELL*3.5,{flip}))
+      if(!drawAnim(ctx,'townsfolk',X,y,K.R_CELL*4.2,{fps:run?13:6, flip, t:(c.id||0)*3}) &&
+         !drawSpr(ctx,'townsfolk',X,y+(run?-Math.abs(step)*K.R_CELL*0.5:0),K.R_CELL*3.5,{flip}))
         SKINS.vector.cell(ctx,X,y,c); },
     hunter(ctx,X,y,a,t){ const flip=(frame*0.12|0)%2===0, k=Math.max(0,Math.min(1,1-t));   // t=burn progress
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
       const gr=16+k*18+5*Math.sin(frame*0.45), g=ctx.createRadialGradient(X,y,2,X,y,gr);  // engulfing fire glow
       g.addColorStop(0,'rgba(255,150,50,0.62)'); g.addColorStop(0.5,'rgba(255,90,30,0.35)'); g.addColorStop(1,'rgba(255,90,30,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill();
-      // a villager, panicking, ON FIRE — someone to save, not a monster
-      const vill = animReady('ratkin') ? 'ratkin' : 'townsfolk';
-      if(!drawAnim(ctx,vill,X,y,K.R_CELL*4.2,{flip, fps:13}) &&
-         !drawSpr(ctx,vill,X,y,K.R_CELL*3.5,{flip, dy:-Math.abs(Math.sin(frame*0.5))*2}))
+      // a villager, panicking, ON FIRE (townsfolk sprite + rising flames) — someone to save, not a monster
+      if(!drawAnim(ctx,'townsfolk',X,y,K.R_CELL*4.2,{flip, fps:13}) &&
+         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*3.5,{flip, dy:-Math.abs(Math.sin(frame*0.5))*2}))
         SKINS.vector.hunter(ctx,X,y,a,t);
       // ACTUAL animated flames engulfing the villager (Makko 5-frame fire, per-villager desynced)
       const ph = frame*0.32 + X*0.09;

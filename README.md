@@ -4,7 +4,7 @@ A portrait fire-rescue game: absorb fire from villagers, manage the heat you car
 
 ## Checkpoint
 
-This development branch combines Cursor's refactor, cinder recut and ratkin prototype through `317963f` with Codex progression/input fixes, records and backup tools. Runtime files live in `js/`, `css/` and `media/`. The included ratkin prototype still requires art approval. This checkpoint is not a production deployment.
+This release combines Cursor's modular refactor and Makko-source restoration through `2d9316c` with Codex's progression/input fixes, records and backup tools. The non-Makko ratkin prototype is removed; villagers use the existing Makko townsfolk animation and cinder venting uses the original Makko sheet. New city/release systems are approved design work, not yet implemented. See `docs/CANON.md` and `docs/STATUS.md`.
 
 ## Play locally
 

@@ -4,7 +4,7 @@
 
 Tony's standing instruction, reaffirmed September 14, 2026: **all artwork for this game must be Makko art.** This applies to Codex, Cursor and any future agent, including characters, animation, environments, UI art, visual-effect artwork and diary illustrations. Reuse existing Makko assets or obtain new art through Makko. Cropping, recutting, transparency cleanup, atlasing and animation integration may process those sources while retaining their provenance. Do not substitute other generators, stock assets or freshly drawn replacement artwork without Tony explicitly changing the rule. If Makko or the required source is unavailable, record the dependency and continue independent work. Existing assets with unknown provenance need verification; do not silently relabel or replace them.
 
-Reviewed 2026-09-14. Replaces the procedural fire-passing spec preserved in `docs/archive/ART-prototype.md`. Main `d7945b4` embeds runtime art; Cursor refactor 435d0fb extracts it into media/ with metadata in js/media-meta.js. The combined review branch also includes cinder 358da15 and ratkin prototype 317963f.
+Reviewed 2026-09-14. Replaces the procedural fire-passing spec preserved in `docs/archive/ART-prototype.md`. Main `d7945b4` embeds runtime art; Cursor refactor 435d0fb extracts it into media/ with metadata in js/media-meta.js. Cursor 2d9316c supersedes the cinder recut and ratkin prototype: the original Makko cinder sheet is restored and the non-Makko ratkin is removed.
 
 ## What the art communicates
 
@@ -28,10 +28,9 @@ Actors/forms, townsfolk, Keith, imps/demons, husks, rescue/happy sprites; arena 
 | hero_run | 4 | 189 × 308 |
 | save | 18 | 174 × 224 |
 | ventfire | 10 | 171 × 280 |
-| ventcinder | 10 | 139 × 280 |
-| ratkin | 4 | 176 × 180 |
+| ventcinder | 18 | 139 × 200 |
 
-An existing sheet is not proof that requested locomotion is finished. Cursor starts with the ratkin run for Tony's approval. Fire vent has a committed tall tapered-flame fix; cinder has a committed looping recut. Ratkin is present as one review prototype; neither is recorded as Tony-approved.
+An existing sheet is not proof that requested locomotion is finished. The ratkin prototype was removed for violating the Makko-only requirement; produce a Makko prototype for Tony's review before expanding the cast. The cinder sheet is restored to its original Makko version, so the visual clipping/scale request remains open. Historical fire-vent processing includes a synthesized taper; verify its compliance with Tony before further visual work rather than calling every historical pixel verified Makko.
 
 ## Diary
 

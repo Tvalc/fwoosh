@@ -11,7 +11,7 @@ import struct
 import sys
 
 root = Path(sys.argv[1]).resolve()
-report_path = Path(sys.argv[2])
+report_path = Path(sys.argv[2]) if len(sys.argv) > 2 else None
 checks = []
 
 def check(name, ok, detail):
@@ -52,6 +52,7 @@ report = {'method':'Static modular resource and atlas validation; no visual appr
           'media_files':[{'path':p.relative_to(root).as_posix(), 'bytes':p.stat().st_size,
                           'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
                          for p in sorted((root / 'media').rglob('*')) if p.is_file()]}
-report_path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+if report_path:
+    report_path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
 print(json.dumps({k:v for k,v in report.items() if k!='media_files'}, indent=2))
 sys.exit(1 if report['fail'] else 0)

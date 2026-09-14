@@ -1,38 +1,31 @@
-# Fwoosh status — 2026-09-14
+# Fwoosh status — September 14, 2026
 
-Evidence: Cursor commits through `317963f` combined with Codex fixes. Implemented means present in source; release and human balance approval remain separate.
+## Release candidate
 
-## Implemented
+Combines Cursor through `2d9316c` with Codex progression/input fixes. Tony authorized publication and requests a live update after each major completed change. Verify the GitHub Pages deployment before describing a candidate as live.
 
-- Absorber loop, persistent heat, person/fire/cinder presentation, auto-run, rechargeable steering dashes.
-- Held vent: purge heat, then heal half a heart every 0.30 seconds; demon pressure scales with current hearts.
-- Chain rescues, interceptable arson imps, husks, rekindling, wraiths, demon-kill rewards, solid props.
-- Edge: rescues/intercepts help and losses hurt; duel heat-dump progress changes accordingly. This supersedes the draft Resolve mechanic.
-- Five districts: Market Row, Rowhouses, Old Mill, Chapel, Keith's House. Rescue quotas 12/14/16/18/20. Keith gains charge, spit, wake, demon call and siphon cumulatively.
-- Allies, scaled bounties, persistent district unlocks and replay selection.
-- Ashford hub, Well at 6 saves, Forge at 16, health/regen/dash/recharge shops, run-end summary.
-- Shrine, 15-chapter Duy diary and read/unlock state. Three chapters assign artwork.
-- CrazyGames lifecycle hooks. Ad/revive/purchase flows are not implemented by those hooks.
+Implemented: absorber/heat/vent arcade loop, chain rescues, imps, demons, husks/wraiths, Edge, five districts and Keith encounters, allies, rewards, district replay, ember banking, Well/Forge upgrades, Shrine and 15 diary chapters. CrazyGames lifecycle hooks exist; ads and purchases do not.
 
-## First batch
+Release fixes: persisted 5/5 completion; independent building unlocks; one settlement per run; no rewards changing after a terminal victory; canceled touches/focus loss cannot trigger a dash. Modular code, save documentation, audit tools and verified local source recovery are included.
 
-Cursor: modular refactor, cinder recut and ratkin prototype committed. Tony reviews the prototype before cast expansion.
+## Art correction
 
-Codex: final completion persistence, simultaneous building unlocks and defensive run settlement implemented in an independent branch. Integrated against Cursor refactor 435d0fb: 29 state checks and 11 asset checks pass. Backup tool: 5 checks pass; 236 files including 182 raw art sources captured and fully restored. Issues #4–#6 remain open pending integration.
+Cursor removed the non-Makko ratkin prototype and restored the original Makko cinder vent in `2d9316c`. This release integrates that correction. Full run cycles and the requested cinder visual improvement remain unfinished. All new artwork must come from Makko. Three diary chapters have assigned artwork; twelve assignments remain, with an existing dark_cell image to evaluate for reuse.
 
-## Pending decisions
+## Approved design, not implemented
 
-1. Duy's death/debt/sentence versus the older intro's 'you beat Keith, left town, became famous'. Neither has been silently rewritten.
-2. Nineteen-life debt and the Door versus five-district completion. Shrine says the debt is settled but the sentence is not; diary wording promises a door after nineteen. Reconcile deliberately.
-3. Ratkin run style approval before producing the cast.
-4. Destination/access model for off-device source-art backup. The verified local archive is not cloud backup.
+- Duy rebuilds ratkin society and earns their favor; the ratkin grant release toward resurrection. Keith is the jailer.
+- Ember foundations, offline ratkin construction, mandatory ember sealing, food/materials/workforce production, deterministic production upgrades and permanent cosmetic unlocks.
+- Embers are never sold for real money.
+- Chit-tat-to's Invoice converts Duy's collected embers into repayment of Cuong's debt, with bonuses/items/upgrades and a missable Ratkin recruit after Duy returns having rebuilt society. Values and detailed rules remain in interview.
+- Duy-specific RPG System Shop integration. See CANON.md; do not assume lifetime versus unspent ember budget.
 
-## Metadata
+## Next work
 
-The development branch HTML description now describes rescue, carried fire and five districts. This changes discoverability copy without choosing story canon. Old prototype comments remain in runtime files and should be refreshed when their owners can do so safely.
+1. Verify this integrated release and publish it for Tony's live testing.
+2. Reconcile the intro, greetings, diary and Shrine with approved canon while preserving undecided mechanics.
+3. Interview and implement city rebuilding, then ratkin favor/release and RPG handoff in bounded increments.
+4. Makko animation/diary art, audio and physical-phone/balance polish.
+5. Keep roadmap, GitHub issues, public descriptions and the shared Ledger handoff current. Off-device source-art backup still needs a destination; the verified archive is local.
 
-No external publishing dashboard or separate tracker was audited. GitHub issues are the shared backlog established here.
-
-## Latest verification
-
-38 state/input checks and 12 asset checks pass on the combined build including Cursor 317963f. Fixed interrupted-input dashes and post-victory reward mutation. A 47-file package was extracted and browser-checked. Remaining release gates: human balance playthrough, physical-phone inputs, ratkin approval and review of the combined branch. See AUDIT.md.
+Heroes/mastery, Tavern/later buildings, feud redesign and daily/share features are deferred proposals. Their old roadmap entries are not implementation approval.

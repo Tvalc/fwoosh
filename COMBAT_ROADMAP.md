@@ -22,3 +22,7 @@ Earlier local proposal preserved in docs/archive/COMBAT_ROADMAP-proposal.md. Evi
 4. Next: human balance playthrough and physical-phone testing; Tony reviews ratkin before cast expansion. Independent lanes continue in parallel.
 
 Keep heat/vent risk-reward, bounded attack concurrency and no screen shake. Cool Blood still boosts clear-of-fire regeneration; repurposing it for vent healing is a proposal requiring a balance decision.
+
+## Correction after Cursor 2d9316c
+
+The non-Makko ratkin prototype is removed and the original Makko cinder sheet restored. Earlier completion claims for those two art tasks are superseded. New Makko locomotion and cinder visual correction remain open. Tony authorized deployment of the integrated reliability/refactor release for live testing.
