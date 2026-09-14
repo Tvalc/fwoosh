@@ -1036,7 +1036,7 @@ function drawShrineSheet(ctx){
   const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
     ctx.textAlign='right'; ctx.fillStyle=col||'#efe4ff'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText(val, VW-44, yy); };
   row('LIVES CARRIED OUT, ALL TOLD', String(META.saved||0), y+218, '#8affc1');
-  row('QUARTERS OF ASHFORD RECLAIMED', Math.max(0,(META.district||1)-1)+' / 5', y+254, '#ffcf8a');
+  row('QUARTERS OF ASHFORD RECLAIMED', (META.clearedDistricts||0)+' / 5', y+254, '#ffcf8a');
   row('THE JAILER, KEITH', feudStage().toUpperCase(), y+290, '#ff9dbd');
   row('EMBERS BANKED', String(META.embers||0), y+326, '#ffb14d');
 

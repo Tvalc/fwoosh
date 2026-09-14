@@ -7,10 +7,15 @@ let selDistrict = 1, runDistrict = 1, runQuota = 12;
 // defaults so an old/partial blob degrades instead of crashing.
 function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
-  const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1,
+  const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1, clearedDistricts:0,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
     hero:'stranger', diary:{ read:[] }, flags:{} };
   if(!s || s.v!==1) return d;
+  // Old saves prove only the districts BEFORE the highest unlocked one were cleared.
+  // Keep v1 saves compatible; district 5 being unlocked does not prove it was beaten.
+  s.district = Math.max(1, Math.min(5, Math.trunc(Number(s.district)||1)));
+  s.clearedDistricts = Math.max(s.district-1,
+    Math.max(0, Math.min(5, Math.trunc(Number(s.clearedDistricts)||0))));
   s.buildings = s.buildings || {};
   s.buildings.well  = Object.assign({}, d.buildings.well,  s.buildings.well||{});
   s.buildings.forge = Object.assign({}, d.buildings.forge, s.buildings.forge||{});
@@ -48,8 +53,13 @@ function enterHub(){
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
   selDistrict = Math.min(5, Math.max(1, META.district||1));   // default the picker to your deepest unlocked
   if(districtCleared){ hubToast=3.4; hubToastMsg=DISTRICTS[Math.min(4,(META.district||1)-1)]+' UNLOCKED'; districtCleared=false; }
-  const rise=(key,at,name)=>{ const b=META.buildings[key]; if(b&&!b.built&&META.saved>=at){ b.built=true; wellJustRose=true; hubToast=3.2; hubToastMsg=name+' STANDS AGAIN'; return true; } return false; };
-  rise('well', K.WELL_RISE, 'THE WELL') || rise('forge', K.FORGE_RISE, 'THE FORGE');
+  const raised = [];
+  const rise=(key,at,name)=>{ const b=META.buildings[key];
+    if(b&&!b.built&&META.saved>=at){ b.built=true; raised.push(name); } };
+  rise('well', K.WELL_RISE, 'THE WELL');
+  rise('forge', K.FORGE_RISE, 'THE FORGE');
+  if(raised.length){ wellJustRose=true; hubToast=raised.length>1 ? 4.5 : 3.2;
+    hubToastMsg=raised.join(' + ')+(raised.length>1 ? ' STAND AGAIN' : ' STANDS AGAIN'); }
   saveMeta();
 }
 

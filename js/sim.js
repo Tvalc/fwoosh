@@ -47,6 +47,7 @@ let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (d
 let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash economy, upgraded at The Forge
 // ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
 let runEmbers = 0;               // embers minted this run (banked into META at run end)
+let runSettled = false;          // one terminal event may bank this run and update its records
 let hubScroll = 0, hubSheet = null, wellJustRose = false, hubToast = 0, hubToastMsg = '', hubBtns = [];
 
 let diaryOpen = null, diaryPage = 0;   // null = chapter list; else the open chapter index
@@ -72,7 +73,7 @@ function reset(seed){
   score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
   mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
   boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
-  runEmbers = 0; applyUpgrades();      // META: fresh run-ember tally + apply purchased upgrades to this run
+  runEmbers = 0; runSettled = false; applyUpgrades();      // fresh tally/settlement + purchased upgrades
   runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Keith LV)
   runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Keith rises
   powerups = []; surgeT = 0; mergeT = 0;
@@ -409,6 +410,7 @@ function step(){
   }
 
   if(duelActive && boss && mode === 'play') stepDuelFX(dt);   // Keith's projectiles / wake / pulses / your allies
+  if(mode !== 'play') return;   // victory or a lethal boss hit already banked this run; stop earning/mutating it
 
   // ---- trail (heat wisps; no longer ignites anyone — you carry fire OUT, not around)
   for(const t of trail) t.t += dt;
@@ -957,12 +959,14 @@ let pendCall = null;
 function setDelayedCallout(text, delay, good){ pendCall = { text, t:delay, good:!!good }; }
 
 function winDuel(){
+  if(mode !== 'play' || runSettled) return;
   won = true; mode = 'over'; popCause = 'he yielded';
   CG.stop(); CG.happy();                       // CrazyGames: round ended, a win
   score += K.DUEL_BONUS;
   opp.duelWins = (opp.duelWins||0) + 1;
   // DISTRICT progression: clearing your deepest district opens the next (the ember bounty scales at line ~481).
   districtCleared = false;
+  META.clearedDistricts = Math.max(META.clearedDistricts||0, runDistrict);
   if(runDistrict >= (META.district||1) && (META.district||1) < 5){ META.district = runDistrict + 1; districtCleared = true; }
   saveMeta();
   foldOpp();
@@ -1048,6 +1052,7 @@ function cooldown(){
 }
 
 function pop(cause){
+  if(mode !== 'play' || runSettled) return;
   mode = 'over'; popCause = cause;
   CG.stop();                                    // CrazyGames: round ended
   foldOpp();                                    // this run's decisions teach the opp

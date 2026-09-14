@@ -51,6 +51,11 @@ function onUp(){
   }
   ptr.down = false; ptr.swiped = false;
 }
+// An interrupted gesture is not a completed tap: cancel without spending a dash.
+function cancelPointer(){
+  if(ptr.onVent) player.venting = false;
+  ptr.down = false; ptr.swiped = false; ptr.onVent = false;
+}
 
 
 // ---------------------------------------------------------------- wiring
@@ -61,7 +66,7 @@ function local(e){
 cv.addEventListener('pointerdown', e=>{ e.preventDefault(); if(e.pointerType==='touch') isTouch=true; const q=local(e); onDown(q.x,q.y); });
 cv.addEventListener('pointermove', e=>{ const q=local(e); onMove(q.x,q.y); });
 window.addEventListener('pointerup', onUp);
-window.addEventListener('pointercancel', onUp);
+window.addEventListener('pointercancel', cancelPointer);
 // desktop: WASD/arrows steer, SHIFT dashes, SPACE braces
 window.addEventListener('keydown', e=>{
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
@@ -96,4 +101,4 @@ window.addEventListener('keyup', e=>{
   if(k === ' ') player.venting = false;
 });
 // dropping focus mid-key would otherwise leave you steering forever
-window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; player.venting = false; });
+window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; cancelPointer(); player.venting = false; });

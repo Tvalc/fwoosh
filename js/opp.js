@@ -34,6 +34,8 @@ function cellCenter(i){ const col = i%K.OPP_COLS, row = Math.floor(i/K.OPP_COLS)
 
 // fold this run's records into the opp, then persist. Called once, at pop().
 function foldOpp(){
+  if(runSettled) return;
+  runSettled = true;
   for(const r of runBuf){
     const idx = r.row*K.OPP_COLS + r.col;
     if(idx >= 0 && idx < opp.terr.length) opp.terr[idx]++;

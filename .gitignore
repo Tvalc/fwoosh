@@ -2,3 +2,7 @@
 assets/
 dist/
 node_modules/
+
+work/
+
+__pycache__/
