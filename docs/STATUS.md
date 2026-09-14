@@ -1,35 +1,23 @@
 # Fwoosh status — September 14, 2026
 
-## Release candidate
+## Verified live baseline
 
-Combines Cursor through `2d9316c` with Codex progression/input fixes. Tony authorized publication and requests a live update after each major completed change. Verify the GitHub Pages deployment before describing a candidate as live.
+Build 2026-09-14-story-1 deployed at main 0b3c1acc89ed6ceace6235fce14d3f7d40599c05. Reliability/refactor/Makko corrections and the action-first Keith narration are live. The arcade loop, heat/vent/heal, chain rescues, imps/demons/husks/wraiths, Edge, five districts and encounters/replay, allies, rewards, ember banking, Well/Forge, Shrine and fifteen diary chapters exist.
 
-Implemented: absorber/heat/vent arcade loop, chain rescues, imps, demons, husks/wraiths, Edge, five districts and Keith encounters, allies, rewards, district replay, ember banking, Well/Forge upgrades, Shrine and 15 diary chapters. CrazyGames lifecycle hooks exist; ads and purchases do not.
+## HUD release candidate
 
-Release fixes: persisted 5/5 completion; independent building unlocks; one settlement per run; no rewards changing after a terminal victory; canceled touches/focus loss cannot trigger a dash. Modular code, save documentation, audit tools and verified local source recovery are included.
+Build 2026-09-14-hud-1 adds an always-visible six-segment heat gauge, numeric heat and BLAZE multiplier, larger RESCUED tally/progress bar, separately labeled Edge and Keith progress. Hearts and score sit above the gauges. Narration and mobile vent remain exposed. All character artwork reuses Makko assets; no media, balance or save fields changed.
 
-## Art correction
+All 41 existing gameplay/input checks pass (docs/reports/hud-state.json). Browser fixtures were visually checked at 320px width for zero heat, full heat, Keith encounter and intro dialogue, plus the wider display. Physical-phone and human balance testing remain open. Publication is authorized; verify the Pages deployment and live marker before calling this candidate live. The coordination issue records the final deployment result.
 
-Cursor removed the non-Makko ratkin prototype and restored the original Makko cinder vent in `2d9316c`. This release integrates that correction. Full run cycles and the requested cinder visual improvement remain unfinished. All new artwork must come from Makko. Three diary chapters have assigned artwork; twelve assignments remain, with an existing dark_cell image to evaluate for reuse.
+## Next: city rebuilding
 
-## Approved design, not implemented
+Confirmed: freely placed buildings, multiple homes/production buildings and unique landmarks; roads and layout affect output; ratkin physically haul goods with distance and congestion; automatic staffing/priorities with optional player optimization. Ember foundations, offline construction and mandatory ember sealing precede operation. Food/materials/workforce support growth; ember upgrades accelerate progress. Random sealing appearances are cosmetic in Fwoosh. Embers will never be sold.
 
-- Duy rebuilds ratkin society and earns their favor; the ratkin grant release toward resurrection. Keith is the jailer.
-- Ember foundations, offline ratkin construction, mandatory ember sealing, food/materials/workforce production, deterministic production upgrades and permanent cosmetic unlocks.
-- Embers are never sold for real money.
-- Chit-tat-to's Invoice converts Duy's collected embers into repayment of Cuong's debt, with bonuses/items/upgrades and a missable Ratkin recruit after Duy returns having rebuilt society. Values and detailed rules remain in interview.
-- Duy-specific RPG System Shop integration. See CANON.md; do not assume lifetime versus unspent ember budget.
+The city implementation, ratkin favor/judgment, earned resurrection, Invoice conversion/rewards, RPG System Shop and missable Ratkin recruit remain unbuilt. Interview costs, timing, resources, controls, release conditions and cross-game accounting before implementation. See docs/CANON.md and the complete docs/ROADMAP.md.
 
-## Next work
+## Art and coordination
 
-1. Verify this integrated release and publish it for Tony's live testing.
-2. Reconcile the intro, greetings, diary and Shrine with approved canon while preserving undecided mechanics.
-3. Interview and implement city rebuilding, then ratkin favor/release and RPG handoff in bounded increments.
-4. Makko animation/diary art, audio and physical-phone/balance polish.
-5. Keep roadmap, GitHub issues, public descriptions and the shared Ledger handoff current. Off-device source-art backup still needs a destination; the verified archive is local.
+Cursor owns Makko animations/art in its separate checkout. Full run cycles and cinder clipping/scale correction remain open; the non-Makko prototype was removed and original Makko cinder restored. Twelve diary assignments remain; evaluate existing dark_cell artwork for one. Codex continues scoped gameplay/records/release work independently and passes shared canon to the Ledger task explicitly.
 
-Heroes/mastery, Tavern/later buildings, feud redesign and daily/share features are deferred proposals. Their old roadmap entries are not implementation approval.
-
-## Story release checkpoint
-
-The reliability release deployed at ef04377 and was verified live. Story candidate 2026-09-14-story-1 implements the initial action-first narration and reconciles later story/Shrine/title/victory copy. All 41 gameplay/input checks pass, including intro lifecycle, immediate control, old-save preservation and mobile vent rendering. This does not implement the future city/Invoice mechanics. Next interview: first city rebuilding milestone.
+Tony authorizes publication after each verified major change. Preserve original checkouts and existing saves. Verified source backup is local; off-device destination remains unresolved. Heroes/mastery, expanded landmarks, feud redesign and daily/share/ads remain proposals needing reconciliation, not automatic launch requirements.

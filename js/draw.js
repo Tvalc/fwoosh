@@ -815,6 +815,52 @@ function wrapText(ctx,str,x,y,maxW,lh){ const words=String(str).split(' '); let 
     if(ctx.measureText(t).width>maxW && line){ ctx.fillText(line,x,yy); line=w; yy+=lh; } else line=t; }
   if(line) ctx.fillText(line,x,yy); return yy; }
 
+// Live data gauges use canvas UI; character artwork remains the existing Makko assets.
+function drawRunMeters(ctx){
+  const x=24, w=VW-48, heat=Math.max(0,Math.min(K.HEAT_MAX,player.heat||0));
+  const hot=heat>=K.HEAT_MAX-1, heatColor=hot?'#ff7065':heat>0?'#ffb34f':'#93b9c1';
+  ctx.save(); ctx.globalAlpha=1;
+  ctx.font='800 26px "Pixelify",system-ui,sans-serif'; ctx.textAlign='left';
+  ctx.fillStyle='#fff0df'; ctx.fillText('HEAT '+Math.round(heat*10)/10+' / '+K.HEAT_MAX,x,83);
+  ctx.textAlign='right'; ctx.fillStyle='#ffcf80';
+  ctx.fillText('BLAZE x'+(1+heat*K.BLAZE_MULT).toFixed(1),VW-x,83);
+  ctx.textAlign='center'; ctx.font='700 20px "Pixelify",system-ui,sans-serif'; ctx.fillStyle=heatColor;
+  ctx.fillText(player.venting?(heat>0?'VENTING':'HEALING'):hot?'HIGH HEAT':heat===0?'COOL':'',VW/2,82);
+  // Segments represent carried fires, not health. Keep the empty gauge visible too.
+  const gap=6, sw=(w-gap*(K.HEAT_MAX-1))/K.HEAT_MAX;
+  for(let i=0;i<K.HEAT_MAX;i++){
+    const sx=x+i*(sw+gap), fill=Math.max(0,Math.min(1,heat-i));
+    ctx.fillStyle='#302b32'; ctx.fillRect(sx,97,sw,18);
+    if(fill>0){ctx.fillStyle=heatColor;ctx.fillRect(sx,97,sw*fill,18);}
+  }
+  // One familiar Makko villager plus a large tally remains legible at every district quota.
+  drawSpr(ctx,'happy',43,157,40,{});
+  ctx.textAlign='left'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#a0ffd0';
+  ctx.fillText('RESCUED '+saved+' / '+runQuota,74,153);
+  const progress=Math.max(0,Math.min(1,saved/Math.max(1,runQuota)));
+  ctx.fillStyle='#233932';ctx.fillRect(x,171,w,12);
+  if(progress>0){ctx.fillStyle='#8affc1';ctx.fillRect(x,171,w*progress,12);}
+  if(duelActive){
+    const need=(boss&&boss.dumpNeeded)||K.DUEL_DUMP;
+    ctx.font='700 22px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#ff9dbd';
+    ctx.fillText('KEITH '+Math.floor(dumped)+' / '+need,x,213);
+    const bx=230,bw=VW-x-bx,f=Math.max(0,Math.min(1,dumped/need));
+    ctx.fillStyle='#392532';ctx.fillRect(bx,200,bw,10);
+    if(f>0){ctx.fillStyle='#ff91b8';ctx.fillRect(bx,200,bw*f,10);}
+  } else {
+    // Edge remains secondary and explicitly named so it cannot be mistaken for heat.
+    const bw=180,bx=VW/2-60,cx=bx+bw/2,span=K.EDGE_PER_DOWN*K.EDGE_HEADSTART_CAP;
+    const f=Math.max(-1,Math.min(1,edge/span));
+    ctx.textAlign='right';ctx.font='600 18px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#c2b6c8';
+    ctx.fillText('EDGE',bx-14,208);
+    ctx.fillStyle='#34303c';ctx.fillRect(bx,200,bw,7);
+    ctx.fillStyle=f>=0?'#8affc1':'#ff769c';
+    if(f!==0)ctx.fillRect(f>=0?cx:cx+bw*f/2,200,Math.abs(bw*f/2),7);
+    ctx.fillStyle='#dbd2df';ctx.fillRect(cx-1,197,2,13);
+  }
+  ctx.restore();
+}
+
 // ---- VN-style dialogue box (lower third): Keith narrates over LIVE gameplay during the intro.
 // Square portrait on the left animates (bob + scale) while the line is still typing out.
 function drawDialogue(ctx){
@@ -1389,7 +1435,7 @@ function render(){
       ctx.fillStyle = callout.good === true ? '#7fe8ff' : callout.good === false ? '#ff5d94' : '#dfe6f2';
       const big = callout.good !== null;
       ctx.font = (big ? '800 33px' : '500 26px') + ' "Pixelify",system-ui,sans-serif';
-      ctx.fillText(callout.text, VW/2, 208);
+      ctx.fillText(callout.text, VW/2, 265);
     }
     ctx.globalAlpha = 1;
   }
@@ -1397,12 +1443,14 @@ function render(){
   // ---- HUD (clean: hearts for health, gold score, one-line objective; hidden on title/intro/over)
   const hudOn = mode === 'play' && !onTitle && introT <= 0 && (!intro || intro.phase==='talk');
   if(hudOn){
-    // SCORE — gold Makko display font, top-center
-    ctx.textAlign='center';
-    if(!drawNumber(ctx, score, VW/2, 62, 46)){
-      ctx.fillStyle='#fff'; ctx.font='700 48px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(score), VW/2, 72); }
+    // A dark backing separates live values from the busy town artwork.
+    const hudShade=ctx.createLinearGradient(0,0,0,244);
+    hudShade.addColorStop(0,'rgba(9,8,15,0.94)');hudShade.addColorStop(0.88,'rgba(9,8,15,0.87)');hudShade.addColorStop(1,'rgba(9,8,15,0)');
+    ctx.fillStyle=hudShade;ctx.fillRect(0,0,VW,244);
+    ctx.textAlign='right';ctx.fillStyle='#ffcf80';ctx.font='800 27px "Pixelify",system-ui,sans-serif';
+    ctx.fillText('SCORE '+score,VW-24,38);
     // HEALTH — a row of Makko hearts, top-left (count scales with maxHearts). Fire burns them down; clear, they refill.
-    { const n=maxHearts, hs=Math.min(38, Math.floor((VW*0.52)/n)-2), gap=2, hxx=16, hyy=12, hp=Math.max(0,Math.min(1,player.hp)), low=hp<0.3;
+    { const n=maxHearts, hs=Math.min(38, Math.floor((VW*0.44)/n)-2), gap=2, hxx=24, hyy=12, hp=Math.max(0,Math.min(1,player.hp)), low=hp<0.3;
       for(let i=0;i<n;i++){
         const cx=hxx+i*(hs+gap)+hs/2, cy=hyy+hs/2, fillf=Math.max(0,Math.min(1, hp*n - i));
         if(!drawSpr(ctx,'heart',cx,cy,hs,{alpha:0.20})){ ctx.fillStyle='rgba(255,80,80,0.2)'; ctx.beginPath(); ctx.arc(cx,cy,hs*0.32,0,7); ctx.fill(); }
@@ -1412,48 +1460,7 @@ function render(){
           ctx.restore(); }
       }
     }
-    // OBJECTIVE
-    if(!duelActive){
-      // RESCUE COUNTER — a row of villager SILHOUETTES that fill in with happy, saved villagers.
-      const q=runQuota, ih=40, iw=Math.round(ih*0.675), gap=5;
-      const rowW=q*iw+(q-1)*gap, x0=(VW-rowW)/2, by=128;              // by = the ground line the villagers stand on
-      const sil=silhouette('happy'), asp=(sprReady('happy')?MAKKO_IMG.happy.naturalWidth/MAKKO_IMG.happy.naturalHeight:0.675);
-      for(let i=0;i<q;i++){
-        const filled=i<saved, cx=x0+i*(iw+gap)+iw/2;
-        const pop = (filled && i===saved-1) ? 1+saveIconPop*0.6 : 1;   // newest saved villager pops in
-        const H=ih*pop, W=H*asp, cy=by-H/2;
-        if(filled){
-          if(!drawSpr(ctx,'happy',cx,cy,H,{})){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(cx,cy,iw*0.42,0,7); ctx.fill(); }
-        } else if(sil){ ctx.globalAlpha=0.5; ctx.drawImage(sil, cx-W/2, cy-H/2, W, H); ctx.globalAlpha=1; }
-        else { ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.arc(cx,cy,iw*0.42,0,7); ctx.fill(); }
-      }
-      ctx.textAlign='center'; ctx.fillStyle='rgba(138,255,193,0.9)'; ctx.font='700 16px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('SAVE THE TOWN   '+saved+' / '+q, VW/2, by+18);
-      // THE EDGE — a thin two-sided bar: fills right (your favor) or left (Keith). Quiet until it moves.
-      { const bw=200, bh=7, bx=(VW-bw)/2, byy=by+30, cx=VW/2;
-        const span=K.EDGE_PER_DOWN*K.EDGE_HEADSTART_CAP;               // full bar = enough lead for max head-start
-        const f=Math.max(-1, Math.min(1, edge/span));
-        ctx.fillStyle='rgba(255,255,255,0.10)'; roundRectPath(ctx,bx,byy,bw,bh,3); ctx.fill();
-        const pulse=0.75+0.25*Math.min(1,edgePop);
-        if(f>=0){ if(f>0){ ctx.fillStyle='rgba(138,255,193,'+pulse.toFixed(2)+')'; roundRectPath(ctx,cx,byy,(bw/2)*f,bh,3); ctx.fill(); } }
-        else { ctx.fillStyle='rgba(255,90,120,'+pulse.toFixed(2)+')'; const w=(bw/2)*(-f); roundRectPath(ctx,cx-w,byy,w,bh,3); ctx.fill(); }
-        ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fillRect(cx-1,byy-2,2,bh+4);   // center notch (0)
-      }
-    } else {
-      ctx.textAlign='center'; ctx.font='800 23px "Pixelify",system-ui,sans-serif';
-      const need = (boss&&boss.dumpNeeded)||K.DUEL_DUMP, lv=(boss&&boss.level)||1;
-      ctx.fillStyle='#ff6a9c'; ctx.fillText('UNLOAD ON KEITH  LV.'+lv+'   '+Math.floor(dumped)+' / '+need, VW/2, 112);
-    }
-    // BLAZE multiplier — the reward for holding fire (top-right). Bigger the more heat you carry.
-    if(player.heat > 0){
-      const mult = 1 + player.heat*K.BLAZE_MULT, hot = player.heat >= K.HEAT_MAX-1;
-      ctx.textAlign='right'; ctx.fillStyle = hot ? '#ff7a3d' : '#ffb14d';
-      ctx.font = '800 '+(26+player.heat*2)+'px "Pixelify",system-ui,sans-serif';
-      ctx.globalAlpha = hot ? (0.8+0.2*Math.sin(frame*0.5)) : 0.95;
-      ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.85)';
-      ctx.strokeText('BLAZE x'+mult.toFixed(1), VW-16, 46); ctx.fillText('BLAZE x'+mult.toFixed(1), VW-16, 46);
-      ctx.globalAlpha=1;
-    }
+    drawRunMeters(ctx);
     // DASH charges (bottom-left) — Makko ember pips. Empty = dark socket; recharging one FILLS UP
     // bottom-to-top with a shimmer; a finished charge pops with a flourish ring.
     { const n=RUN_MAX_CHARGES, ps=32, gap=8, x0=26, yy=VH-56;

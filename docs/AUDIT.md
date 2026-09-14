@@ -53,3 +53,7 @@ The 47-file release ZIP was CRC-checked, compared byte-for-byte to source, extra
 ## Story pass
 
 41 state/input checks pass. Three additional regressions verify title-to-intro lifecycle with immediate controls, old-save progress retained across one-time intro replay, and mobile vent HUD/action during dialogue. Browser inspection confirms Keith dialogue over the running game. Runtime media is unchanged from the released Makko correction.
+
+## HUD pass
+
+Build 2026-09-14-hud-1: all 41 existing gameplay/input checks pass. Browser fixture screenshots verify empty/full heat, rescue progress, Keith encounter, and live-action narration at 320px width; wider rendering was checked too. Functional gauges use canvas UI and existing Makko character assets. No runtime media, save schema or balance changes. Human/physical-phone playtesting remains separate.
