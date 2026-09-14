@@ -652,12 +652,12 @@ function nearSlag(x,y,r){ for(const s of slag){ if(dist(x,y,s.x,s.y) < r + K.R_S
 // like the border walls. Coords are in game space (720x1280), tuned to line up with the art.
 // circle prop: {x,y,r}; box prop: {x,y,w,h} with x,y = top-left. (window.OBS_DEBUG draws them for tuning.)
 const OBSTACLES = [
-  { x:0,   y:26,  w:156, h:104, label:'crates-TL' },     // stacked crates, top-left
-  { x:12,  y:305, w:92,  h:150, label:'barrels-L' },     // barrels, upper-left
-  { x:552, y:345, w:148, h:162, label:'wagon-R' },       // wagon, right side
-  { x:600, y:515, w:100, h:92,  label:'crates-R' },      // crates/junk below the wagon
-  { x:112, y:1088, r:92, label:'well-BL' },              // the well, bottom-left — covers the full rim incl. its top
-  { x:525, y:1030, w:175, h:205, label:'crates-BR' },    // crate stack, bottom-right (under the mobile HEAL/vent button)
+  { x:0,   y:26,   w:162, h:272, label:'crates-TL' },    // two-crate stack, top-left — covers both boxes top to bottom
+  { x:10,  y:296,  w:118, h:176, label:'barrels-L' },    // barrel cluster, upper-left
+  { x:480, y:285,  w:220, h:222, label:'wagon-R' },      // broken wagon, right — covers the raised end + left planks/shovel
+  { x:600, y:515,  w:100, h:92,  label:'crates-R' },     // pot/sack below the wagon
+  { x:124, y:1110, r:79,  label:'well-BL' },             // the well, bottom-left — seated on the stone rim
+  { x:470, y:1028, w:230, h:204, label:'crates-BR' },    // crate + plank pile, bottom-right (under the mobile HEAL/vent button)
 ];
 // Push a circle entity (radius er) out of every obstacle it overlaps. Records the last surface normal on
 // e._nx/e._ny (for deflecting a heading). Returns true if it corrected anything.
