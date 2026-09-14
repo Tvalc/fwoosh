@@ -175,7 +175,8 @@ const K = {
   CRACK_TELE: 0.9,                  // convulsion telegraph before the wraith rises
   REKINDLE_COST: 1,                 // heat you SPEND to pour fire back into a husk and save them (mirror of absorb)
   WRAITH_CAP: 5,                    // persistent town-wraiths roaming at once (over-cap cracks don't add a body)
-  WRAITH_KILL_HEAT: 0.5,           // dash-kill a risen wraith: a little heat + denied fuel
+  WRAITH_KILL_HEAT: 0.5,           // dash-kill ANY fire monster: heat you can turn into a save or a dump
+  DEMON_KILL_EMBERS: 2,            // + embers per shattered monster (your reward for clearing them)
 
   // trail
   TRAIL_EVERY: 0.06,
@@ -195,6 +196,24 @@ const K = {
   KEITH_FLEE: 130,                  // unlit Keith evades like crowd: herding is the offense
   KEITH_PUR0: 190, KEITH_PUR1: 310, // lit Keith hunts you to shed it back
   BOSS_RISE_T: 0.8, BOSS_STAGGER_T: 2.2,
+
+  // LEVELED KEITH — each duel win escalates him; movesets are CUMULATIVE, one active at a time (capped
+  // concurrency), gated behind a telegraph. No screen shake.
+  DUMP_PER_LEVEL: 2,                // heat you must dump grows per level (L1..L5: 8,10,12,14,16)
+  KEITH_MOVE_CD0: 3.4,             // gap before his first/again move (shrinks with level)
+  KEITH_MOVE_CD_MIN: 1.7,          // never spam faster than this (concurrency guard)
+  KEITH_TELE: 0.8,                 // wind-up telegraph before any move fires
+  KEITH_HIT: 0.5,                  // a move that connects costs you HALF A HEART (scaled by maxHearts)
+  // L2 EMBER SPIT: fireballs at your lagged spot
+  SPIT_N: 3, SPIT_SPD: 250, SPIT_R: 12, SPIT_SPREAD: 0.34,
+  // L3 WAKE OF FIRE: Keith dash-line; the laid trail is ABSORBABLE fire (fuel your dump)
+  WAKE_SPD: 560, WAKE_SEG_EVERY: 0.03, WAKE_LIFE: 2.4, WAKE_R: 20, WAKE_HEAT_CAP: 2,
+  // L4 DEMON CALL: he summons fire monsters that hunt you (dash-kill for dump fuel)
+  KEITH_DEMONS: 3, KEITH_DEMON_TTL: 7.0,
+  // L5 SIPHON MELTDOWN: villager shield + expanding pulse with a safe gap
+  SIPHON_PULL: 4, SIPHON_R: 96, SIPHON_PULSE_SPD: 240, SIPHON_GAP: 0.9,
+  // allies: rescued villagers that each body-block one incoming attack
+  ALLY_PER_SAVED: 3, ALLY_MAX: 6,
   PASSBACK_FUSE: 2.5,               // what you inherit when a boss sheds onto you
   OVERLOAD_PENALTY: 1.35,           // a hunter catching a LIT you shoves its fire on: fuse burned toward the pop
   OVERLOAD_IFRAME: 0.55,            // brief immunity after an overload so a swarm can't chain-pop you in one instant
@@ -327,6 +346,10 @@ let demons = [];     // fire demons summoned while venting (attack player + vill
 let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
 let husks = [];      // villagers you failed to save: temporary soft-solid coals that crack into roaming wraiths
 let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
+let shots = [];      // Keith's ember-spit fireballs (duel)
+let wake = [];       // Keith's wake-of-fire segments (duel) — absorbable heat
+let pulses = [];     // Keith's siphon-meltdown ring pulses (duel)
+let allies = [];     // rescued villagers fighting at your side in the duel — each blocks one attack
 let arsonT = 0;      // send-cadence timer
 let intercepts = 0, edge = 0;   // imps you cut off this run + THE EDGE (town war balance; + you, - Keith)
 let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines fire once
@@ -522,6 +545,7 @@ function reset(seed){
   demons = []; ventSwarmT = 0; demonSpawnT = 0;
   arson = []; arsonT = 0; intercepts = 0; edge = 0; arsonSeen = false;
   husks = []; huskSeen = false; edgePop = 0;
+  shots = []; wake = []; pulses = []; allies = []; demonKillSeen = false;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
@@ -545,7 +569,7 @@ function spawnCrowd(initial){
     x = 40 + rnd()*(VW-80);
     y = 90 + rnd()*(VH-180);
     tries++;
-  } while(tries < 30 && (dist(x,y,player.x,player.y) < (initial?170:260) || nearSlag(x,y,K.R_CELL+6)));
+  } while(tries < 30 && (dist(x,y,player.x,player.y) < (initial?170:260) || nearSlag(x,y,K.R_CELL+6) || nearObstacle(x,y,K.R_CELL+8)));
   cells.push({
     id: nextId++, x, y, vx:0, vy:0, hunter:false, fuse:0, grace:0, born:elapsed,
     ph: rnd()*Math.PI*2, ps: 0.5 + rnd()*0.7, dir: rnd()*Math.PI*2,
@@ -556,6 +580,43 @@ function spawnCrowd(initial){
 function dist(ax,ay,bx,by){ let dx = wrapDX(ax-bx), dy = ay-by; return Math.hypot(dx,dy); }
 function wrapDX(dx){ return dx; }   // arena is enclosed (solid side walls) — no horizontal wrap
 function nearSlag(x,y,r){ for(const s of slag){ if(dist(x,y,s.x,s.y) < r + K.R_SLAG) return true; } return false; }
+
+// ---- STATIC MAP OBSTACLES: the props baked into the Makko backdrop (well, wagon, barrels, crates) are SOLID,
+// like the border walls. Coords are in game space (720x1280), tuned to line up with the art.
+// circle prop: {x,y,r}; box prop: {x,y,w,h} with x,y = top-left. (window.OBS_DEBUG draws them for tuning.)
+const OBSTACLES = [
+  { x:0,   y:26,  w:156, h:104, label:'crates-TL' },     // stacked crates, top-left
+  { x:12,  y:305, w:92,  h:150, label:'barrels-L' },     // barrels, upper-left
+  { x:552, y:345, w:148, h:162, label:'wagon-R' },       // wagon, right side
+  { x:600, y:515, w:100, h:92,  label:'crates-R' },      // crates/junk below the wagon
+  { x:78,  y:1196, r:66, label:'well-BL' },              // the well, bottom-left (validated)
+  { x:545, y:1212, w:155, h:78, label:'crates-BR' },     // crates, bottom-right
+];
+// Push a circle entity (radius er) out of every obstacle it overlaps. Records the last surface normal on
+// e._nx/e._ny (for deflecting a heading). Returns true if it corrected anything.
+function collideObstacles(e, er){
+  let hit = false;
+  for(const o of OBSTACLES){
+    if(o.r != null){                                     // circle prop
+      const dx = e.x-o.x, dy = e.y-o.y, d = Math.hypot(dx,dy), min = er+o.r;
+      if(d < min && d > 0.001){ e.x = o.x+dx/d*min; e.y = o.y+dy/d*min; e._nx = dx/d; e._ny = dy/d; hit = true; }
+    } else {                                             // box prop: resolve against nearest point
+      const cx = Math.max(o.x, Math.min(e.x, o.x+o.w)), cy = Math.max(o.y, Math.min(e.y, o.y+o.h));
+      const dx = e.x-cx, dy = e.y-cy, d = Math.hypot(dx,dy);
+      if(d < er){
+        if(d > 0.001){ e.x = cx+dx/d*er; e.y = cy+dy/d*er; e._nx = dx/d; e._ny = dy/d; }
+        else {                                           // center inside: eject along the shallowest axis
+          const l = e.x-o.x, rgt = o.x+o.w-e.x, t = e.y-o.y, b = o.y+o.h-e.y, m = Math.min(l,rgt,t,b);
+          if(m===l){ e.x = o.x-er; e._nx=-1; e._ny=0; } else if(m===rgt){ e.x = o.x+o.w+er; e._nx=1; e._ny=0; }
+          else if(m===t){ e.y = o.y-er; e._nx=0; e._ny=-1; } else { e.y = o.y+o.h+er; e._nx=0; e._ny=1; }
+        }
+        hit = true;
+      }
+    }
+  }
+  return hit;
+}
+function nearObstacle(x,y,r){ const e={x,y}; return collideObstacles(e, r); }   // (mutates a throwaway; ok for spawn tests)
 function hunters(){ return cells.filter(c=>c.hunter); }                 // flaming villagers
 function crowd(){ return cells.filter(c=>!c.hunter && !c.saving); }     // calm, still-present villagers
 function ring(x,y,r0,r1,col,life){ rings.push({x,y,r0,r1,col,t:0,life:life||0.35}); }
@@ -689,6 +750,10 @@ function step(){
   if(p.x > VW-K.EDGE){ p.x = VW-K.EDGE; p.hx = -Math.abs(p.hx); }
   if(p.y < 40){ p.y = 40; p.hy = Math.abs(p.hy); }
   if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
+  if(collideObstacles(p, p.r)){                                   // props are solid like the borders
+    if(p._nx!=null){ p.hx = p._nx; p.hy = p._ny; }               // deflect the auto-run heading off the prop
+    if(p.lunge > 0){ p.lunge = 0; p.spd = 0; }                    // a dash into a prop stops dead (like slag)
+  }
   if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
 
   // ---- VENT (HOLD): purge your heat, then heal hearts a half at a time. Rooted + exposed while you hold,
@@ -782,6 +847,7 @@ function step(){
       const dx = wrapDX(c.x-s.x), dy = c.y-s.y, d = Math.hypot(dx,dy), min = K.R_CELL + K.R_SLAG;
       if(d < min && d > 0.001){ c.x += (dx/d)*(min-d); c.y += (dy/d)*(min-d); c.dir += 2.2; }
     }
+    if(!c.saving && collideObstacles(c, K.R_CELL)){ c.dir += 2.4; }   // props are solid for villagers too
   }
   cells = cells.filter(c=>!c.dead);
 
@@ -841,6 +907,7 @@ function step(){
         const dx = wrapDX(b.x-s.x), dy = b.y-s.y, d = Math.hypot(dx,dy), min = b.r + K.R_SLAG;
         if(d < min && d > 0.001){ b.x += (dx/d)*(min-d); b.y += (dy/d)*(min-d); }
       }
+      collideObstacles(b, b.r);                                     // props corner Keith too
       // player contact: DUMP the fire you're carrying into Keith (he lit it; he can hold it).
       // Corner him against your walls, unload your heat. Enough dumped -> he yields.
       if(!ghost && p.heat > 0 && dist(p.x,p.y,b.x,b.y) < p.r + b.r){
@@ -1069,11 +1136,11 @@ function stepDemons(dt){
   const order = demons.map((d,i)=>({i,dd:dist(d.x,d.y,p.x,p.y)})).sort((a,b)=>a.dd-b.dd);
   const canHit = new Set(order.slice(0,2).map(o=>o.i));
   for(let i=demons.length-1;i>=0;i--){ const d=demons[i]; d.t+=dt; if(d.hitCd>0) d.hitCd-=dt; if(d.fresh!=null) d.fresh+=dt;
-    // TOWN wraiths (cracked from husks) PERSIST until killed or the duel; VENT demons linger then collapse on release
-    if(d.source === 'town'){
-      if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){   // DASH-KILL a risen wraith
-        killWraith(d); demons.splice(i,1); continue; }
-    } else if(!p.venting){ d.ttl -= dt; if(d.ttl<=0){                     // released -> linger then collapse to sparks
+    // DASH-KILL: dash through ANY fire monster to shatter it for heat + embers (your reward for clearing them).
+    // You can't while venting (rooted) — so vent to heal, then dash the swarm down.
+    if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){ killDemon(d); demons.splice(i,1); continue; }
+    // lifecycle: TOWN wraiths persist until killed/duel; VENT/KEITH demons linger then collapse when unsustained
+    if(d.source !== 'town' && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
         for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
         demons.splice(i,1); continue; } }
     let tx=p.x, ty=p.y; d.tgt=null;
@@ -1082,6 +1149,7 @@ function stepDemons(dt){
     const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
     d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
     if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
+    collideObstacles(d, K.DEMON_R);                                 // fire monsters can't phase through props
     if(canHit.has(i) && d.hitCd<=0 && p.hurtCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
       p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
       if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
@@ -1194,12 +1262,18 @@ function rekindleHusk(h){
     sparks.push({ x:h.x+Math.cos(a)*r, y:h.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:150 }); }
   callout = { text:'REKINDLED!', t:0, life:1.0, good:true };
 }
-function killWraith(d){   // dash into a risen town-wraith: destroy it, take a little heat, deny Keith the fuel
+let demonKillSeen = false;
+function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat you can bank + embers to spend
   const p = player;
+  const town = d.source === 'town';
   p.heat = Math.min(K.HEAT_MAX, p.heat + K.WRAITH_KILL_HEAT);
-  p.absorbPop = 0.24; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
-  ring(d.x, d.y, 6, 46, '#b0d8ff', 0.5);
-  for(let k=0;k<8;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.2,out:true,vx:Math.cos(a)*130,vy:Math.sin(a)*130,hue:210}); }
+  const em = Math.max(0, Math.min(K.DEMON_KILL_EMBERS, K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  edge += 0.25; edgePop = 0.5;                                   // clearing them nudges the town war your way
+  p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
+  ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
+  for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:town?285:24}); }
+  if(!demonKillSeen){ demonKillSeen = true; callout = { text:'DASH THROUGH FIRE MONSTERS TO SHATTER THEM · +HEAT +EMBERS', t:0, life:2.3, good:true }; }
+  else callout = { text:'SHATTERED! +EMBERS', t:0, life:0.7, good:true };
 }
 
 // ---------------------------------------------------------------- bosses
@@ -2394,6 +2468,13 @@ function render(){
   if(mode === 'hub'){ drawHub(ctx); return; }
   const p = player;
   SK.bg(ctx);
+
+  if(window.OBS_DEBUG){                                 // obstacle-tuning overlay (dev only)
+    ctx.save(); ctx.strokeStyle='rgba(0,255,255,0.9)'; ctx.fillStyle='rgba(0,255,255,0.12)'; ctx.lineWidth=2;
+    for(const o of OBSTACLES){ if(o.r!=null){ ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,7); ctx.fill(); ctx.stroke(); }
+      else { ctx.fillRect(o.x,o.y,o.w,o.h); ctx.strokeRect(o.x,o.y,o.w,o.h); } }
+    ctx.restore();
+  }
 
   // ---- embers
   for(const t of trail){
