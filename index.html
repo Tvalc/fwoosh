@@ -655,8 +655,8 @@ const OBSTACLES = [
   { x:0,   y:26,   w:193, h:182, label:'crates-TL' },    // two-crate stack, top-left — both boxes, wider right; stops above the floor gap
   { x:10,  y:296,  w:120, h:182, label:'barrels-L' },    // barrel cluster, upper-left (below the gap)
   { x:480, y:285,  w:220, h:222, label:'wagon-R' },      // broken wagon, right — covers the raised end + left planks/shovel
-  { x:600, y:515,  w:100, h:92,  label:'crates-R' },     // pot/sack below the wagon
-  { x:129, y:1113, r:90,  label:'well-BL' },             // the well, bottom-left — big enough to cover the whole stone rim
+  { x:600, y:512,  w:100, h:95,  label:'crates-R' },     // pot/sack below the wagon (3px taller at top)
+  { x:133, y:1117, r:90,  label:'well-BL' },             // the well, bottom-left — big enough to cover the whole stone rim
   { x:470, y:1028, w:230, h:204, label:'crates-BR' },    // crate + plank pile, bottom-right (under the mobile HEAL/vent button)
 ];
 // Push a circle entity (radius er) out of every obstacle it overlaps. Records the last surface normal on
