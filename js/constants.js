@@ -25,7 +25,7 @@ const K = {
   DEMON_LIFE: 2.5, DEMON_R: 16,     // linger after you release, then collapse
   CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
   VENT_ANIM_SC_F: 1.20,             // fire-man vent-anim: 280px cell (body at bottom, tall tapered flame up top) — keeps body size, flame reaches high without clipping
-  VENT_ANIM_SC_C: 1.722,            // cinder-man vent-anim: 280px cell like fire — 1.23*(280/200) keeps the old on-screen body after the recut
+  VENT_ANIM_SC_C: 1.23,             // cinder-man vent-anim scale
   VENT_ANIM_ANCH: 0.5,              // vent-anim vertical anchor (cell bottom = the player's feet)
   CHARGES: 3,
   CHARGE_REFILL: 0.9,
