@@ -656,8 +656,8 @@ const OBSTACLES = [
   { x:12,  y:305, w:92,  h:150, label:'barrels-L' },     // barrels, upper-left
   { x:552, y:345, w:148, h:162, label:'wagon-R' },       // wagon, right side
   { x:600, y:515, w:100, h:92,  label:'crates-R' },      // crates/junk below the wagon
-  { x:78,  y:1196, r:66, label:'well-BL' },              // the well, bottom-left (validated)
-  { x:545, y:1212, w:155, h:78, label:'crates-BR' },     // crates, bottom-right
+  { x:112, y:1088, r:92, label:'well-BL' },              // the well, bottom-left — covers the full rim incl. its top
+  { x:525, y:1030, w:175, h:205, label:'crates-BR' },    // crate stack, bottom-right (under the mobile HEAL/vent button)
 ];
 // Push a circle entity (radius er) out of every obstacle it overlaps. Records the last surface normal on
 // e._nx/e._ny (for deflecting a heading). Returns true if it corrected anything.
