@@ -1200,9 +1200,10 @@ const HEAL_LINES = ['+HEART', 'BREATHE', 'MENDING'];
 function stepDemons(dt){
   const p = player;
   ventSwarmT = p.venting ? Math.min(12, ventSwarmT + dt) : Math.max(0, ventSwarmT - dt*0.6);   // swarm memory (anti tap-spam)
-  // DEMON CAP = 2 per heart of CURRENT health: at 1 heart you face 2, healthier -> more (up to MAX_DEMONS).
-  // So venting when you're desperate (low) is survivable — the pressure scales up only as you recover.
-  const demonCap = Math.min(K.MAX_DEMONS, Math.max(2, Math.round(2 * p.hp * maxHearts)));
+  // DEMON CAP = 2 per heart of CURRENT health. At 1 heart you face 2 (true at ANY maxHearts, since
+  // currentHearts = hp*maxHearts), so venting when desperate is always survivable; the swarm grows only
+  // as you recover, and scales up for tankier late-game builds that earn more hearts through the meta.
+  const demonCap = Math.max(2, Math.round(2 * p.hp * maxHearts));
   if(p.venting && ventSwarmT >= K.VENT_SUMMON && demons.length < demonCap){
     demonSpawnT += dt;
     const interval = Math.max(K.DEMON_INT_MIN, K.DEMON_INT0 - K.DEMON_INT_STEP*Math.max(0, ventSwarmT-K.VENT_SUMMON));
