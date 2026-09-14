@@ -29,3 +29,7 @@ Cursor removed the non-Makko ratkin prototype and restored the original Makko ci
 5. Keep roadmap, GitHub issues, public descriptions and the shared Ledger handoff current. Off-device source-art backup still needs a destination; the verified archive is local.
 
 Heroes/mastery, Tavern/later buildings, feud redesign and daily/share features are deferred proposals. Their old roadmap entries are not implementation approval.
+
+## Story release checkpoint
+
+The reliability release deployed at ef04377 and was verified live. Story candidate 2026-09-14-story-1 implements the initial action-first narration and reconciles later story/Shrine/title/victory copy. All 41 gameplay/input checks pass, including intro lifecycle, immediate control, old-save preservation and mobile vent rendering. This does not implement the future city/Invoice mechanics. Next interview: first city rebuilding milestone.

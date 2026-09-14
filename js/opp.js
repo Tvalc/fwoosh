@@ -66,16 +66,12 @@ function setupOpp(){
     opp.medianLat = median(opp.lat);
     snipeFuse = Math.max(0.5, Math.min(K.FUSE_START-0.2, opp.medianLat + K.OPP_SNIPE_LEAD));
   }
-  // LIVE intro: shown once per intro version (so first-timers AND returning players see a new
-  // intro exactly once). You walk in as a human, catch fire at center, then it's gameplay while
-  // Keith narrates the backstory through a lower-third dialogue box + portrait.
+  // The title boot must not consume the intro. Begin narration with control on the first actual run.
   if(opp.introVer !== INTRO_VERSION){
-    intro = { phase:'walkin', i:0, lineT:0 };
-    player.lit = false; player.fuse = 0;                 // arrive human
-    player.x = VW/2; player.y = VH*INTRO.START_Y;
-    player.hx = 0; player.hy = -1;
-    slag = slag.filter(s => !s.grudge); snipeFuse = null; snipe = null;  // clean floor for the intro
-    opp.introVer = INTRO_VERSION; opp.seenIntro = true; saveOpp();
+    intro = { phase:'talk', i:0, lineT:0 };
+    player.lit = false; player.fuse = 0;
+    slag = slag.filter(s => !s.grudge); snipeFuse = null; snipe = null;
+    if(!onTitle){ opp.introVer = INTRO_VERSION; opp.seenIntro = true; saveOpp(); }
   }
   // otherwise, on a return run, the Keith cold-open reacts to how you played
   else if(opp.runs >= 1 && (opp.grudge || snipeFuse != null)){ introT = K.INTRO_T; introKind = 'keith'; }
