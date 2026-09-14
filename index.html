@@ -484,12 +484,13 @@ function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp))
 function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
   const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1,
-    buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 } },
+    buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
     hero:'stranger', diary:{ read:[] }, flags:{} };
   if(!s || s.v!==1) return d;
   s.buildings = s.buildings || {};
   s.buildings.well  = Object.assign({}, d.buildings.well,  s.buildings.well||{});
   s.buildings.forge = Object.assign({}, d.buildings.forge, s.buildings.forge||{});
+  s.buildings.shrine = Object.assign({}, d.buildings.shrine, s.buildings.shrine||{});
   s.diary = Object.assign({}, d.diary, s.diary||{});
   return Object.assign({}, d, s);
 }
@@ -2535,6 +2536,7 @@ function hubAct(a){
   if(a==='dprev'){ selDistrict = Math.max(1, selDistrict-1); return; }
   if(a==='dnext'){ selDistrict = Math.min(Math.min(5,META.district||1), selDistrict+1); return; }
   if(a==='diary'){ hubSheet='diary'; diaryOpen=null; diaryPage=0; return; }
+  if(a==='shrine'){ hubSheet='shrine'; return; }
   if(a==='diaryback'){ diaryOpen=null; diaryPage=0; return; }
   if(a.indexOf('diaryopen:')===0){ diaryOpen=parseInt(a.split(':')[1],10); diaryPage=0; const e=DIARY[diaryOpen]; if(e) diaryMarkRead(e.id); return; }
   if(a==='diaryprev'){ diaryPage=Math.max(0,diaryPage-1); return; }
@@ -2587,7 +2589,7 @@ function drawHub(ctx){
   drawBuildingCard(ctx, 40+cw+gap, cardY, cw, cardH, 'THE FORGE',
     forgeBuilt ? 'dash upgrades' : (K.FORGE_RISE-META.saved)+' more saves',
     forgeBuilt ? '#ff9a45' : '#ffb14d', forgeBuilt, 'forge', 'fire');
-  drawBuildingCard(ctx, 40, cardY+cardH+gap, cw, cardH, 'HERO: BRAM', 'rebuild coming', '#8a93a7', false, null, 'happy');
+  drawBuildingCard(ctx, 40, cardY+cardH+gap, cw, cardH, 'THE SHRINE', 'enter the record', '#c9a0ff', true, 'shrine', 'beacon');
   const dFresh = diaryFreshCount();
   drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', dFresh>0 ? dFresh+' new to read' : 'story — optional', '#c9a0ff', true, 'diary', null);
   if(dFresh>0){ const bx=40+cw+gap+cw-22, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
@@ -2627,6 +2629,7 @@ function drawHub(ctx){
   // --- sheets
   if(hubSheet==='well'||hubSheet==='forge') drawShopSheet(ctx, hubSheet);
   else if(hubSheet==='diary') drawDiarySheet(ctx);
+  else if(hubSheet==='shrine') drawShrineSheet(ctx);
 
   // --- toast (build/purchase feedback)
   if(hubToast>0){ ctx.globalAlpha=Math.min(1,hubToast); ctx.textAlign='center';
@@ -2675,6 +2678,43 @@ function drawShopSheet(ctx, bld){
     ry+=112;
   }
   ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
+}
+
+function drawShrineSheet(ctx){
+  const h=470, y=VH-h;
+  ctx.fillStyle='rgba(6,5,11,0.72)'; ctx.fillRect(0,0,VW,VH);
+  panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.99)', 'rgba(201,160,255,0.5)');
+  hubB(0,0,VW,y,'close');
+  ctx.textAlign='center';
+  ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE SHRINE', VW/2, y+48);
+  ctx.fillStyle='rgba(210,195,235,0.72)'; ctx.font='italic 500 15px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('the System keeps one line for every soul. this is yours.', VW/2, y+72);
+
+  const debt=19, repaid=Math.min(debt, META.saved||0), settled=repaid>=debt;
+  // ---- THE BLOOD DEBT: nineteen tally marks, filled as you carry them back
+  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE BLOOD DEBT', 44, y+112);
+  const mx=44, my=y+126, mw=(VW-88)/debt;
+  for(let i=0;i<debt;i++){ const cx=mx+i*mw+mw/2; ctx.strokeStyle = i<repaid ? '#8affc1' : 'rgba(255,157,189,0.45)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(cx, my); ctx.lineTo(cx, my+26); ctx.stroke(); }
+  ctx.textAlign='right'; ctx.fillStyle = settled ? '#8affc1' : '#ffb14d'; ctx.font='700 16px "Pixelify",system-ui,sans-serif';
+  ctx.fillText(settled ? 'the debt is settled. the sentence is not.' : repaid+' of 19 carried back from the fire', VW-44, y+178);
+
+  // ---- record rows
+  const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
+    ctx.textAlign='right'; ctx.fillStyle=col||'#efe4ff'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText(val, VW-44, yy); };
+  row('LIVES CARRIED OUT, ALL TOLD', String(META.saved||0), y+218, '#8affc1');
+  row('QUARTERS OF ASHFORD RECLAIMED', Math.max(0,(META.district||1)-1)+' / 5', y+254, '#ffcf8a');
+  row('THE JAILER, KEITH', feudStage().toUpperCase(), y+290, '#ff9dbd');
+  row('EMBERS BANKED', String(META.embers||0), y+326, '#ffb14d');
+
+  // ---- read-the-record button -> the diary
+  const bY=y+h-92, bX=60, bW=VW-120, bH=66, fresh=diaryFreshCount();
+  panel(ctx, bX, bY, bW, bH, 14, 'rgba(40,30,58,0.9)', 'rgba(201,160,255,0.6)');
+  ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='800 23px "Pixelify",system-ui,sans-serif'; ctx.fillText('READ THE RECORD', VW/2, bY+34);
+  ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(fresh>0 ? fresh+' new to read' : 'the story, told by the town you save', VW/2, bY+54);
+  if(fresh>0){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bX+bW-26, bY+24, 12, 0, 7); ctx.fill(); ctx.fillStyle='#0a0710'; ctx.font='800 15px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(fresh), bX+bW-26, bY+29); }
+  hubB(bX, bY, bW, bH, 'diary');
+  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
 }
 
 function drawDiarySheet(ctx){
@@ -3376,6 +3416,7 @@ window.__fwoosh = {
   setWins(n){ opp.duelWins = n; return { duelWins:opp.duelWins }; },
   setDistrict(sel, unlocked){ selDistrict = sel||1; if(unlocked!=null){ META.district = unlocked; saveMeta(); } return { selDistrict, metaDistrict:META.district }; },
   openDiary(i){ onTitle=false; intro=null; mode='hub'; hubSheet='diary'; diaryOpen = (i==null?null:i); diaryPage=0; if(i!=null&&DIARY[i]) diaryMarkRead(DIARY[i].id); return { fresh:diaryFreshCount() }; },
+  showSheet(name){ onTitle=false; intro=null; mode='hub'; hubSheet=name; diaryOpen=null; return { hubSheet }; },
   diaryPage(n){ diaryPage=n; return diaryPage; },
   keithMove(k){ if(boss&&boss.kind==='keith'){ boss.move=null; boss.moveCd=0; startKeithMove(boss,k); } return { move:boss&&boss.move }; },
   duelFX(){ return { shots:shots.length, wake:wake.length, pulses:pulses.length, demons:demons.length, allies:allies.length, move:boss&&boss.move, shield:boss&&!!boss.shield }; },
