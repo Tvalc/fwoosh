@@ -67,8 +67,17 @@ const K = {
   DASH_CD: 0.12,                    // min gap between dashes — dash is the steer, so it's ~free
   LUNGE_SPD: 640,
   LUNGE_T: 0.18,                    // 115px of travel
-  VENT_AMOUNT: 3,                   // heat blasted off per vent burst
-  VENT_CD: 0.32,                    // min gap between vent bursts (hold to chain them)
+  // VENT (hold-to-heal): purge heat, then refill hearts a half at a time; spawns fire demons while held
+  VENT_PURGE: 0.16,                 // sec per heat while purging (before any heal)
+  VENT_HEAL_T: 0.55,               // sec per HALF-heart of healing (~0.9 hp/s at 5 hearts — the real heal now)
+  VENT_SUMMON: 0.60,                // grace before the first fire demon (a quick dump is free)
+  DEMON_INT0: 1.4,                  // demon spawn interval, tightens the longer you hold
+  DEMON_INT_STEP: 0.15, DEMON_INT_MIN: 0.5,
+  MAX_DEMONS: 6, DEMON_SPD: 135,    // slower than RUN(170) so a dash always escapes
+  DEMON_TGT_VILL: 0.6,              // 60% of demons hunt villagers, 40% hunt you
+  DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,  // only the nearest ~2 demons land hits -> 1-2 out = heal wins, full swarm loses
+  DEMON_LIFE: 2.5, DEMON_R: 16,     // linger after you release, then collapse
+  CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
   CHARGES: 3,
   CHARGE_REFILL: 0.9,
   SWIPE_MIN: 40,
@@ -105,7 +114,7 @@ const K = {
   FORGE_RISE: 16,                   // cumulative lifetime saves to raise The Forge (dash upgrades)
   // HEALTH: carrying fire burns your health down, faster the more you hold; empty of fire, you recover.
   HP_DRAIN: 0.035,                  // health/sec lost PER unit of heat carried (heat 6 -> ~0.21/s)
-  HP_REGEN: 0.22,                   // health/sec regained while carrying no fire
+  HP_REGEN: 0.04,                   // idle trickle only — real healing now comes from HOLDING VENT (the risky heal)
   SAVE_QUOTA: 12,                   // save this many villagers and Keith rises for the finale
   DUEL_DUMP: 8,                     // total heat you must dump into Keith to make him yield
 
@@ -278,6 +287,8 @@ let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
 let sparkT = 0, heatCoolT = 0, dumped = 0, saved = 0, overloadT = 0;   // ABSORBER loop state
 let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager when one fills in
 let dashPop = 0;     // flourish pop when a dash charge finishes recharging
+let demons = [];     // fire demons summoned while venting (attack player + villagers)
+let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
@@ -467,6 +478,7 @@ function reset(seed){
   powerups = []; surgeT = 0; mergeT = 0;
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
+  demons = []; ventSwarmT = 0; demonSpawnT = 0;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0,
@@ -526,7 +538,7 @@ let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (nav
 
 function lungeDir(dx,dy){
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
-  if(mode !== 'play' || player.charges <= 0 || player.dashCd > 0) return;   // dashes are a rechargeable resource
+  if(mode !== 'play' || player.venting || player.charges <= 0 || player.dashCd > 0) return;   // no dashing while venting (rooted); dashes are rechargeable
   if(intro && intro.phase === 'walkin') return;          // no control during the scripted entrance
   player.hx = dx/m; player.hy = dy/m;
   player.lunge = K.LUNGE_T;
@@ -618,6 +630,7 @@ function step(){
   if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
   else { const run = K.RUN * (1 + burn*K.FRANTIC_SPD);                  // frantic = faster as you burn
     p.spd = p.spd > run ? Math.max(run, p.spd - 1600*dt) : run; }       // ease down from a dash, never below run
+  if(p.venting) p.spd = 0;                                              // venting ROOTS you — exposed while you heal
   p.r = K.R_PLAYER;
   if(introWalk){ p.hx = 0; p.hy = -1; p.spd = INTRO.WALK; p.venting = false; }  // scripted entrance
 
@@ -629,20 +642,21 @@ function step(){
   if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
   if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
 
-  // ---- HEAT: the fire you're carrying. It PERSISTS while you run (you're holding it, taking it to
-  // Keith) — it does NOT just burn off. You shed it only on purpose: BRACE to vent, or dump it into Keith.
-  if(p.heat > 0){
-    if(p.venting) ventBurst();                             // HOLD/SPACE = blast the fire off you (badass)
-    // heat trail (ember wisps) while carrying
-    p.trailT = (p.trailT||0) + dt;
-    while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); }
-  }
+  // ---- VENT (HOLD): purge your heat, then heal hearts a half at a time. Rooted + exposed while you hold,
+  // and fire demons pour out of you. The only real way to get hearts back — but it costs you the town.
+  if(p.venting) ventHold(); else { p.ventPurge = 0; p.ventHealAcc = 0; }
+  stepDemons(dt);                                        // demons live/attack (and linger after you release)
+  if(mode !== 'play') return;                            // a demon (or purge) may have ended the run
+  if(p.heat > 0){ p.trailT = (p.trailT||0) + dt;         // heat trail (ember wisps) while carrying
+    while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); } }
   p.lit = p.heat > 0;                                   // legacy flag some draws read
-  // ---- HEALTH: the fire burns you down — faster the more you carry. Clear of fire, you recover.
+  // ---- HEALTH: carrying fire burns you down (faster the more you hold). Venting heals (in ventHold);
+  // otherwise only a faint idle trickle. So you MUST vent to recover — and eat the demons.
   if(god || intro){ p.hp = 1; }
+  else if(p.venting){ /* healing handled in ventHold(); no burn while purging it out */ }
   else if(p.heat > 0){ p.hp -= dt * p.heat * K.HP_DRAIN * (5/maxHearts);   // more hearts -> burn slower
     if(p.hp <= 0){ p.hp = 0; pop('burned up'); return; } }
-  else { p.hp = Math.min(1, p.hp + dt * RUN_HP_REGEN); }   // regen tuned by the Well's Cool Blood upgrade
+  else { p.hp = Math.min(1, p.hp + dt * RUN_HP_REGEN); }   // faint idle trickle only
   p.passT += dt;
 
   // ---- SHATTER: a lunge into slag destroys it, terminates the burst
@@ -934,56 +948,90 @@ function ignite(c, why){
 
 // ABSORB: pull the fire off a flaming villager. They flash free and sprint away (saved); you take
 // their heat. Holding at max heat cooks you (handled in step). This is the core verb now.
-function absorb(c){
+// Save ONE villager (the teleport-to-light rescue). chained=true = swept up by a hot chain (no extra heat gain).
+function saveCell(c, chained){
   const p = player;
   c.hunter = false; c.fuse = 0; c.grace = K.GRACE;
-  c.saving = true; c.saveT = 0; c.dir = 0;
-  c.svx = 0; c.svy = 0;   // TELEPORT: freeze in place — the save animation lifts them into the light, not a run-off
+  c.saving = true; c.saveT = 0; c.dir = 0; c.svx = 0; c.svy = 0;   // freeze in place — the anim lifts them into the light
   saved++;
-  const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're already carrying, the bigger the save
+  const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're carrying, the bigger the save
   score += Math.round(K.SAVE_SCORE * blaze);
-  // META: this save mints EMBERS (blaze-scaled, soft-capped) and adds to the lifetime town counter
   if(blaze > META.bestBlaze) META.bestBlaze = blaze;
   let em = Math.round(K.EMBER_BASE * blaze);
   em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
   runEmbers += em; META.saved++;
-  p.heat = Math.min(K.HEAT_MAX, p.heat + 1);
-  // FLOURISH: pull the fire off them — a swirl of flame streaming into you
-  for(let i=0;i<14;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);
-    sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0,
-      life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue: 20+rnd()*35 }); }
-  p.absorbPop = 0.28;                                     // little 'gulp' scale-pop
-  saveIconPop = 0.6;                                       // the new villager pops into the rescue counter
-  ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);         // green 'saved!' at the villager
-  ring(c.x, c.y, K.R_CELL+8, 60, '#d6ffe6', 0.4);
-  ring(p.x, p.y, p.r+6, 80, '#ffcf7a', 0.55);            // warm pulse as you take the heat
-  hitstop = K.HITSTOP*0.8; flash = DT*1.5;
-  callout = { text: SAVE_LINES[Math.floor(rnd()*SAVE_LINES.length)], t:0, life:0.9, good:true };
+  for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
+    sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
+  saveIconPop = 0.6; ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);
+  if(!chained){ p.heat = Math.min(K.HEAT_MAX, p.heat + 1);   // ONE +1 heat per absorb (not per chained villager)
+    p.absorbPop = 0.28; ring(p.x, p.y, p.r+6, 80, '#ffcf7a', 0.55); hitstop = K.HITSTOP*0.8; flash = DT*1.5; }
+}
+// ABSORB: run into a flaming villager. The fire you ALREADY carry arcs to nearby flaming villagers and saves
+// up to floor(heat) more in the same beat — so holding heat = pop a whole burning cluster at once.
+function absorb(c){
+  const p = player, reach = Math.floor(p.heat);
+  saveCell(c, false);
+  let chained = 0;
+  if(reach > 0){
+    const near = cells.filter(o=>o!==c && o.hunter && o.grace<=0 && !o.saving && dist(o.x,o.y,c.x,c.y)<=K.CHAIN_R)
+                      .sort((a,b)=>dist(a.x,a.y,c.x,c.y)-dist(b.x,b.y,c.x,c.y));
+    for(const o of near){ if(chained>=reach) break; saveCell(o, true); chained++;
+      ring((c.x+o.x)/2,(c.y+o.y)/2, 6, K.R_CELL*3.2, '#ffd27a', 0.35); }   // arc of fire to the chained villager
+  }
+  callout = chained>0 ? { text:(chained+1)+' SAVED!', t:0, life:1.0, good:true }
+                      : { text: SAVE_LINES[Math.floor(rnd()*SAVE_LINES.length)], t:0, life:0.9, good:true };
 }
 const SAVE_LINES = ['SAVED!', 'GO! RUN!', 'GOT YOU!', 'CLEAR!'];
 
-// VENT — blast the fire off you in a shockwave. The opposite of an absorb: fire erupts OUTWARD.
-function ventBurst(){
+// VENT (held): first PURGE your heat to 0 (no heal yet — the tax on hoarding), then HEAL hearts a half at a
+// time. You're rooted while you hold it, and stepDemons() breeds fire demons that hunt you and the town.
+function ventHold(){
   const p = player;
-  if(p.heat <= 0 || p.ventCd > 0) return;
-  const amt = Math.min(p.heat, K.VENT_AMOUNT);
-  p.heat = Math.max(0, p.heat - amt);
-  p.ventCd = K.VENT_CD; p.ventFlash = 0.30;
-  const N = 14 + amt*6;
-  for(let i=0;i<N;i++){ const a = (i/N)*Math.PI*2 + rnd()*0.5, sp = 230 + rnd()*320;
-    sparks.push({ x:p.x, y:p.y, t:0, life:0.34+rnd()*0.26, out:true, sw:0,
-      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, hue:18+rnd()*40 }); }
-  ring(p.x, p.y, p.r+2,  p.r+190, '#ffe6a6', 0.32);       // white-hot shockwave
-  ring(p.x, p.y, p.r+12, p.r+130, '#ff6a2e', 0.42);       // fire ring behind it
-  hitstop = K.HITSTOP; flash = DT*2.2;
-  // COST: the fire doesn't vanish — it flies OUT and re-ignites villagers near you. Vent in the OPEN,
-  // or you set the town alight again (undoing rescues, spawning more danger). Positioning is the skill.
-  let relit = 0;
-  for(const c of crowd()){ if(dist(c.x, c.y, p.x, p.y) <= K.VENT_IGNITE_R){ ignite(c, 'vent'); relit++; } }
-  if(relit > 0) callout = { text: relit > 1 ? 'YOU RELIT THE TOWN!' : 'IT SPREAD BACK!', t:0, life:1.1, good:false };
-  else callout = { text: VENT_LINES[Math.floor(rnd()*VENT_LINES.length)], t:0, life:0.7, good:true };
+  p.ventFlash = 0.3;
+  if(p.heat > 0){ p.ventPurge = (p.ventPurge||0) + DT;
+    while(p.ventPurge >= K.VENT_PURGE && p.heat > 0){ p.ventPurge -= K.VENT_PURGE; p.heat = Math.max(0, p.heat-1); } }
+  else { p.ventHealAcc = (p.ventHealAcc||0) + DT;
+    while(p.ventHealAcc >= K.VENT_HEAL_T && p.hp < 1){ p.ventHealAcc -= K.VENT_HEAL_T;
+      p.hp = Math.min(1, p.hp + 0.5/maxHearts);                          // +HALF a heart
+      flash = DT*2; ring(p.x, p.y, p.r+4, p.r+40, '#8affc1', 0.45);      // a green heal 'ding'
+      callout = { text: HEAL_LINES[Math.floor(rnd()*HEAL_LINES.length)], t:0, life:0.5, good:true }; } }
 }
-const VENT_LINES = ['FWOOSH!', 'OFF ME!', 'BLAST!', 'TAKE IT BACK!'];
+const HEAL_LINES = ['+HEART', 'BREATHE', 'MENDING'];
+
+// FIRE DEMONS — bred while you hold VENT; they hunt you (contact damage) and the town (re-ignite calm, wall
+// flaming). A dash outruns them; they linger a moment after you release, then collapse.
+function stepDemons(dt){
+  const p = player;
+  ventSwarmT = p.venting ? Math.min(12, ventSwarmT + dt) : Math.max(0, ventSwarmT - dt*0.6);   // swarm memory (anti tap-spam)
+  if(p.venting && ventSwarmT >= K.VENT_SUMMON && demons.length < K.MAX_DEMONS){
+    demonSpawnT += dt;
+    const interval = Math.max(K.DEMON_INT_MIN, K.DEMON_INT0 - K.DEMON_INT_STEP*Math.max(0, ventSwarmT-K.VENT_SUMMON));
+    if(demonSpawnT >= interval){ demonSpawnT = 0; const a=rnd()*Math.PI*2;
+      demons.push({ x:p.x, y:p.y, t:0, ttl:K.DEMON_LIFE, hitCd:0, huntVill: rnd()<K.DEMON_TGT_VILL, ph:rnd()*7, tgt:null }); }
+  } else demonSpawnT = 0;
+  if(!demons.length) return;
+  // only the nearest ~2 demons to the player can land a hit (so 1-2 out = heal wins, a full swarm loses)
+  const order = demons.map((d,i)=>({i,dd:dist(d.x,d.y,p.x,p.y)})).sort((a,b)=>a.dd-b.dd);
+  const canHit = new Set(order.slice(0,2).map(o=>o.i));
+  for(let i=demons.length-1;i>=0;i--){ const d=demons[i]; d.t+=dt; if(d.hitCd>0) d.hitCd-=dt;
+    if(!p.venting){ d.ttl -= dt; if(d.ttl<=0){                          // released -> linger then collapse to sparks
+        for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
+        demons.splice(i,1); continue; } }
+    let tx=p.x, ty=p.y; d.tgt=null;
+    if(d.huntVill){ let best=null,bd=1e9; for(const c of cells){ if(c.saving||c.dead) continue; const dd=dist(c.x,c.y,d.x,d.y); if(dd<bd){bd=dd;best=c;} }
+      if(best){ tx=best.x; ty=best.y; d.tgt=best; } }
+    const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
+    d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
+    if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
+    if(canHit.has(i) && d.hitCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
+      p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; flash = DT*2;
+      if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
+    if(d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
+      if(d.tgt.hunter) becomeSlag(d.tgt);                               // flaming -> instant WALL (lost forever)
+      else if(!d.tgt.saving && d.tgt.grace<=0) ignite(d.tgt,'demon');   // calm -> re-ignited
+      d.tgt=null; }
+  }
+}
 
 function becomeSlag(c){
   slag.push({x:c.x,y:c.y});
@@ -1382,10 +1430,12 @@ function silhouette(key){
 // THE VENT BUTTON — bespoke thumb-target (bottom-right). A fire-blast disc that lights up when you're carrying
 // heat and dims when you're empty; the icon is the real Makko flame. Press/hold it (or SPACE) to vent.
 function drawVentButton(ctx){
-  const b = ventBtn(), heatF = player.heat/K.HEAT_MAX, hot = player.heat > 0, pressed = player.venting;
+  const b = ventBtn(), heatF = player.heat/K.HEAT_MAX, pressed = player.venting;
+  const hot = (player.hp < 0.999 || player.heat > 0);      // "active": you can heal by holding it
+  const low = player.hp < 0.4;                             // hearts critical -> beckon
   ctx.save(); ctx.textAlign = 'center';
-  // aura when there's fire to blast off — pulls the thumb to it
-  if(hot){ const pr = b.r*1.16 + heatF*14 + (pressed?10:3*Math.sin(frame*0.3));
+  // aura when it's worth holding (heal or purge) — pulls the thumb to it, urgent when low
+  if(hot){ const pr = b.r*1.16 + heatF*14 + (pressed?10:(low?6:3)*Math.abs(Math.sin(frame*(low?0.5:0.3))));
     const g = ctx.createRadialGradient(b.x,b.y,b.r*0.55, b.x,b.y,pr);
     g.addColorStop(0,'rgba(255,120,40,'+(0.28+0.30*heatF).toFixed(2)+')'); g.addColorStop(1,'rgba(255,90,30,0)');
     ctx.fillStyle=g; ctx.beginPath(); ctx.arc(b.x,b.y,pr,0,7); ctx.fill(); }
@@ -1404,9 +1454,9 @@ function drawVentButton(ctx){
   ctx.beginPath(); ctx.arc(b.x,b.y,R,0,7); ctx.stroke();
   // label under the disc
   ctx.globalAlpha = hot ? 1 : 0.5;
-  if(!drawText(ctx,'VENT', b.x, b.y+R+30, 26)){
+  if(!drawText(ctx,'HEAL', b.x, b.y+R+30, 26)){
     ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Pixelify",system-ui,sans-serif';
-    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText('VENT', b.x, b.y+R+34); ctx.fillText('VENT', b.x, b.y+R+34); }
+    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText('HEAL', b.x, b.y+R+34); ctx.fillText('HEAL', b.x, b.y+R+34); }
   if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
   ctx.restore();
 }
@@ -2187,6 +2237,22 @@ function render(){
     ctx.globalAlpha = 1;
   }
 
+  // ---- FIRE DEMONS (bred by venting) — the firedemon Makko anim + a fiery glow; fade as they collapse
+  for(const d of demons){
+    wrapDraw(d.x, X=>{
+      const gr=K.DEMON_R*1.7+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
+      g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,d.y,gr,0,7); ctx.fill();
+      groundShadow(ctx, X, d.y+K.DEMON_R*1.2, K.DEMON_R*1.0, K.DEMON_R*0.34);
+      const flip = (d.tgt ? d.tgt.x<d.x : player.x<d.x);
+      ctx.globalAlpha = (!player.venting) ? Math.min(1, (d.ttl||0)/0.6) : 1;   // collapse fade
+      if(!drawAnim(ctx,'firedemon', X, d.y, K.DEMON_R*3.2, {fps:12, flip}) &&
+         !drawSpr(ctx,'firedemon', X, d.y, K.DEMON_R*3.0, {flip})){
+        ctx.fillStyle='#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
+      ctx.globalAlpha = 1;
+    });
+  }
+
   // ---- rings
   for(const r of rings){
     const k = r.t/r.life, rr = r.r0 + (r.r1-r.r0)*k;
@@ -2334,13 +2400,13 @@ function render(){
         }
       }
     }
-    // VENT: bespoke button on mobile; SPACE (with a compact reminder) on desktop
+    // VENT = hold-to-HEAL: button on mobile; SPACE reminder on desktop. Pulses when your hearts are low.
     if(isTouch) drawVentButton(ctx);
-    else if(player.heat > 0){
-      const hot = player.heat >= K.HEAT_MAX-1;
-      ctx.textAlign='center'; ctx.globalAlpha = hot ? (0.72+0.28*Math.sin(frame*0.5)) : 0.8;
-      ctx.fillStyle = hot ? '#ff6a3d' : 'rgba(255,175,110,0.95)'; ctx.font='700 22px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('SPACE — VENT', VW/2, VH-96); ctx.globalAlpha=1;
+    else if(player.hp < 0.999 || player.heat > 0){
+      const low = player.hp < 0.4;
+      ctx.textAlign='center'; ctx.globalAlpha = low ? (0.7+0.3*Math.sin(frame*0.5)) : 0.75;
+      ctx.fillStyle = low ? '#8affc1' : 'rgba(255,175,110,0.9)'; ctx.font='700 22px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('HOLD SPACE — HEAL (fire comes)', VW/2, VH-96); ctx.globalAlpha=1;
     }
   }
 
@@ -2601,7 +2667,7 @@ window.__fwoosh = {
   grudgeAt(x,y,scar){ opp.grudge={x:x,y:y}; oppScarred=!!scar; slag.push({x:x,y:y,grudge:true}); return this.oppState(); },
   winNow(){ if(!boss) startDuel(); winDuel(); return this.state(); },
   setHeat(n){ player.heat = Math.max(0, Math.min(K.HEAT_MAX, n)); return this.state(); },
-  vent(){ player.ventCd = 0; ventBurst(); return { heat:player.heat, sparks:sparks.length, flash:+flash.toFixed(3) }; },
+  vent(v){ player.venting = v===undefined?true:!!v; return { venting:player.venting, heat:player.heat, hp:+player.hp.toFixed(3), demons:demons.length }; },
   setHp(v){ player.hp = Math.max(0, Math.min(1, v)); return this.state(); },
   setHearts(n){ maxHearts = Math.max(1, Math.round(n)); return { maxHearts }; },
   setSaved(n){ saved = Math.max(0, Math.round(n)); saveIconPop = 0.6; return { saved }; },
