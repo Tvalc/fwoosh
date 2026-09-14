@@ -1,0 +1,11 @@
+{
+  "name": "fwoosh",
+  "private": true,
+  "description": "Phone-first fire-rescue arena. Play locally with npm run dev; git push updates GitHub Pages; npm run zip for CrazyGames.",
+  "scripts": {
+    "dev": "npx --yes serve . -p 8080",
+    "start": "npx --yes serve . -p 8080",
+    "zip": "python scripts/zip-game.py",
+    "test": "node tools/audit-game.cjs . && python tools/audit-assets.py ."
+  }
+}

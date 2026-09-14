@@ -1,0 +1,243 @@
+{
+  "checkpoint": "C:\\Users\\19415\\Documents\\Codex\\2026-09-14\\create-an-image-of\\work\\fwoosh-codex",
+  "generated_at": "2026-09-14T18:48:38.663Z",
+  "method": "Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.",
+  "source_sha256": {
+    "./js/media-meta.js": "e65e4048edde1e4288d76494fd95d81ce548e587f0b7c46da03b21f3d99874fa",
+    "./js/media.js": "9845e7654820970e1425f18e100d0f0429677066acccc9cb3a23608a42149767",
+    "./js/constants.js": "91c923bd26747738931dff56fd09ddfabd19ac9fa6455b28af964b9f9e12d42f",
+    "./js/story.js": "3f9d0459c4206c3b43985e5c59cad1a34e59facc8f3fa4fdd337715c79920b4e",
+    "./js/cg.js": "2a93a761b976e395bcebeeebabc7589636c052636c30193bc939507e443097f9",
+    "./js/meta.js": "dc6abb14298396ce452695993bc56205910875934c12a035c48f65f91b9c1e5f",
+    "./js/opp.js": "d601022ff1ae1b68129d0e6f6fa9b33f0d64e0341c1cd09c70aa9189aa4d3c38",
+    "./js/sim.js": "db462e280f19d9d3acfbaaa367b09b419c3e366e72f35f41b479e9c1e58c25bd",
+    "./js/draw.js": "1e527decea847de002ca230de9e031f9f3cccade6b4ac3beace2f8f8589153a7",
+    "./js/input.js": "62e47148ce57140cfd9aba7d226e5cdedaaf4868994bc369ad89d5f5917fee66",
+    "./js/main.js": "bd53326abb00a0c3cb7e40d4d59a737393fe77236d8808fd8c2472eda9ebec6d"
+  },
+  "pass": 29,
+  "fail": 0,
+  "results": [
+    {
+      "name": "Boot initializes title and a valid first run",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Five districts set rescue quotas and cumulative boss moves",
+      "status": "pass",
+      "detail": [
+        {
+          "district": 1,
+          "quota": 12,
+          "moves": [
+            "charge"
+          ],
+          "heatToWin": 8
+        },
+        {
+          "district": 2,
+          "quota": 14,
+          "moves": [
+            "charge",
+            "spit"
+          ],
+          "heatToWin": 10
+        },
+        {
+          "district": 3,
+          "quota": 16,
+          "moves": [
+            "charge",
+            "spit",
+            "wake"
+          ],
+          "heatToWin": 12
+        },
+        {
+          "district": 4,
+          "quota": 18,
+          "moves": [
+            "charge",
+            "spit",
+            "wake",
+            "demon"
+          ],
+          "heatToWin": 14
+        },
+        {
+          "district": 5,
+          "quota": 20,
+          "moves": [
+            "charge",
+            "spit",
+            "wake",
+            "demon",
+            "siphon"
+          ],
+          "heatToWin": 16
+        }
+      ]
+    },
+    {
+      "name": "Wins unlock districts 2–5 and bank the district-scaled bounty",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Replaying an earlier district does not skip unlocks",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "The fifth district has a persistent completion record",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A first run crossing both milestones raises both buildings",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Separate visits raise Well at 6 and Forge at 16",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Upgrade prices, limits, and persistence survive reload",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Unaffordable purchase does not spend embers or grant an upgrade",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Forge upgrades increase dash capacity and reduce recharge time",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Rescue counts persist; earned embers bank at run end",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Repeated game-over dispatch does not bank the same loss twice",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Repeated win dispatch pays the bounty and records the win only once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A late loss event cannot replace a settled win",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A late win event cannot replace a settled loss",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A new run can bank normally after an earlier settled run",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Direct duplicate banking cannot alter rewards or opponent history",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Unlocking both buildings gives one accurate combined message and persists",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A lethal demon bite while carrying heat settles a run exactly once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Diary reading neither pays currency nor changes rescue count",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Missing or invalid JSON saves start safely",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A partial v1 meta save retains progress and receives building defaults",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Legacy district saves migrate only the completion they prove",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Many old wins do not falsely complete the unlocked fifth district",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Replaying after final completion never reduces the saved count",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Each consecutive district win advances the completion count exactly once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Edge advantage leaves a fight; disadvantage remains bounded",
+      "status": "pass",
+      "detail": [
+        {
+          "district": 1,
+          "edge": -1000,
+          "dumped": 0,
+          "required": 14
+        },
+        {
+          "district": 1,
+          "edge": 1000,
+          "dumped": 6,
+          "required": 8
+        },
+        {
+          "district": 5,
+          "edge": -1000,
+          "dumped": 0,
+          "required": 22
+        },
+        {
+          "district": 5,
+          "edge": 1000,
+          "dumped": 6,
+          "required": 16
+        }
+      ]
+    },
+    {
+      "name": "A dash cancels venting and spends one charge",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "All five boss move handlers can advance without a simulation exception",
+      "status": "pass",
+      "detail": null
+    }
+  ]
+}

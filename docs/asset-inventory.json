@@ -1,0 +1,1072 @@
+{
+  "captured_at": "2026-09-14T18:06:33.517442+00:00",
+  "base_commit": "d7945b4bc9128e2bfca847ec799512b7ae20cd3d",
+  "scope": "Local captured source assets and pending modular runtime media. Source provenance and approval are not inferred from filenames.",
+  "files": [
+    {
+      "path": "assets/_cast.gif",
+      "bytes": 386657,
+      "sha256": "3070e3d8e46920d62503aab65cced7db8466812325db7ff8cba9efbd9601b509"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_01.png",
+      "bytes": 305183,
+      "sha256": "a8115f2b61cb77cc278fe1b7af726a3a4cb90d67081eec5d49c22cf43e6bbfb3"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_02.png",
+      "bytes": 383970,
+      "sha256": "8a545ad92d740dcbd578449912cd86975c2d360c20667f5293acb72478969728"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_03.png",
+      "bytes": 481256,
+      "sha256": "19f267f2601e5109f6085a5499df2970ddca70e5d732239ca3556f7f312f12af"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_04.png",
+      "bytes": 527768,
+      "sha256": "9814541fb3666fae59cabba220f75cec885fea938fc1865f1429b8dc17f64c1c"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_05.png",
+      "bytes": 565751,
+      "sha256": "b2737fd9c84494a979752d29b1036d8a297c643d71036a347bc2c5426b771530"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_06.png",
+      "bytes": 584800,
+      "sha256": "54d8b8b6f5c101090e3bdc011072e5e36477c2f074102c0576f9ada784d4a2fb"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_07.png",
+      "bytes": 609881,
+      "sha256": "74e221605a72e467ee34bbb0d8ba39f95f46d7ffb7d4042df949cce60b47aef0"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_08.png",
+      "bytes": 635315,
+      "sha256": "34bf70600b9a8565a19ace49c22e4dad6c006abc5df77edb9742969ac5f8144c"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_09.png",
+      "bytes": 671138,
+      "sha256": "13ccb3edf41cfce3847265d0703702f362f3d4ee88f035f4ac26711f65667905"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_10.png",
+      "bytes": 692353,
+      "sha256": "6ecc7df4ff98389d318ceaa7f43a9aedafb2a52caa5f42b152bd206f2bcc0c13"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_11.png",
+      "bytes": 702789,
+      "sha256": "86fe47057dbc0fa83b3cee5f3b04d58d0f2fbbdf95c8121817351c41a94eb5a4"
+    },
+    {
+      "path": "assets/anim/frames/ashimp/f_12.png",
+      "bytes": 709423,
+      "sha256": "65df297b6d97ecad018a7300766f6769f50eb2564303043ce074189f27c21aaa"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_01.png",
+      "bytes": 587238,
+      "sha256": "94c7c58ef6986ce39ee5bb65d47ec19de7e6124f0f9372cd8d222f7e9a81a3ea"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_02.png",
+      "bytes": 742820,
+      "sha256": "a89c2c4fe6d4391ad654d90a920a873685f040fd3a40cedbb3bfb26d66975951"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_03.png",
+      "bytes": 817806,
+      "sha256": "d1cd17ab7fa07c1b70e217dec0559a8bf1faf650ce0fd55b5980de79343778ec"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_04.png",
+      "bytes": 849385,
+      "sha256": "a3228681f83d73bff28dc61d2b8385954e334424b3070cfc4416e6270cc94d60"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_05.png",
+      "bytes": 866209,
+      "sha256": "ce94a2bd99bc483f74b5a6818dc6744e121ddf0e83240d4fbee7327eff891b9e"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_06.png",
+      "bytes": 895476,
+      "sha256": "fdd69eab9935e5e7bb112ca23787cf093e0d85fd83b090c26205ace58279c119"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_07.png",
+      "bytes": 910055,
+      "sha256": "fe774affb600cb4783ee02f8fc95e93a974b25dd5e7868ce35c4cc844bafd551"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_08.png",
+      "bytes": 914481,
+      "sha256": "42402e60722a8088503d3ea26ab119ff6b738ac174047700523c5d1faa9e1881"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_09.png",
+      "bytes": 904673,
+      "sha256": "b5938fe9c0032b3b9005e8ed79485922f594077766876c356d574e57a5041419"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_10.png",
+      "bytes": 792482,
+      "sha256": "57dd46c1b3d64766fa9598ee708fadafe7b8f3e87f7278ce067cf88a182a4f1f"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_11.png",
+      "bytes": 781209,
+      "sha256": "f415a63366f557e1c78c1e0c85bece5709abd1ba2339aa27244cc0cf25aaaff4"
+    },
+    {
+      "path": "assets/anim/frames/firedemon/f_12.png",
+      "bytes": 820628,
+      "sha256": "163ae6875203abc931dd2003da64696cf936e4fb7af6fe1a13ded6acb912d3fa"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_01.png",
+      "bytes": 262685,
+      "sha256": "5b226b20cbd2cdbcdc856abbf65e16adb0baef22c15bae2ec76a51030e381808"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_02.png",
+      "bytes": 367626,
+      "sha256": "3ad8d0725ae1a4b57ebee33e5b394efdd306d95bdf106cbe159d244e58170245"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_03.png",
+      "bytes": 383521,
+      "sha256": "71cdf89e8f9ed2f23e4ff55b9672ad969cdb046caecd35ddd1afaf5456752a88"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_04.png",
+      "bytes": 436214,
+      "sha256": "5b798f89e91584f60e1a6081bf704fe34bbb1d733a12d8adcaab3214988968df"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_05.png",
+      "bytes": 454597,
+      "sha256": "036e4ff0d23b75c4a23a8ad155b63ee71bc1e57f54d2f470368d4b785a6ed883"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_06.png",
+      "bytes": 499172,
+      "sha256": "570f1c63306cad02f11d66104e88b14fa63c42e5c1057662f00ff6850516e7b5"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_07.png",
+      "bytes": 454906,
+      "sha256": "11426ef6976bc0f34ad23ca5a9a29adef7d1709a64f13337cd002ab7a106d3cd"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_08.png",
+      "bytes": 559793,
+      "sha256": "c3acfc89e994685a3b9c0b05b4b23c188a88fa75db9a766280f891c7c4ae17a7"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_09.png",
+      "bytes": 523834,
+      "sha256": "19d49d9064f3ccaeaa78ea022de61e261c83cebc8d3a33f316301bddafc3222b"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_10.png",
+      "bytes": 532355,
+      "sha256": "681195364ee07673b40f7d56e8b3494d5565c1e450635c97f04dd92cdf9eda63"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_11.png",
+      "bytes": 563571,
+      "sha256": "701921a6c517b0e3fce2a69b53cbfa15f7ba1aad9d1759ca56eb511c8e9e7611"
+    },
+    {
+      "path": "assets/anim/frames/hero/f_12.png",
+      "bytes": 535816,
+      "sha256": "1484739042562f4f937f398743926f4dc1fe23b2a77ef6b8f3d627d0101cf83a"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_01.png",
+      "bytes": 252783,
+      "sha256": "960bc6805850a7e0cf02b4d5dcec554f3787aaf285305fe68b0be2fd1c3ba494"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_02.png",
+      "bytes": 317399,
+      "sha256": "6d21b44ee1ca20e349e1d53adf2f42a81b40b8794c19c02d61e32ef2d7aa1e25"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_03.png",
+      "bytes": 443613,
+      "sha256": "aae0d7c02184056ff196c12bf034fb97717a551af815b3812f8814f39afd4a28"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_04.png",
+      "bytes": 475813,
+      "sha256": "d5978a524e1afc2964b45d74384d0c61de2e7cd144dc674d11b46676b839dffb"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_05.png",
+      "bytes": 465166,
+      "sha256": "4ed121f11a86ed40dafecc01d859d158037e1c4e88548118a891736cb75e55a2"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_06.png",
+      "bytes": 484553,
+      "sha256": "748da4a1d62b3f04d46d03ecda44e7e9e06641e7b5e3aa66dc787e0601c2c164"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_07.png",
+      "bytes": 520425,
+      "sha256": "0324a6694252c61b74319350cea903a6766d4c83fccfd009d51fb46c8ddc1750"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_08.png",
+      "bytes": 528837,
+      "sha256": "6d669bcf8060132af4d85ac55129b6123e4d0a82462b65e03a4195cac5243c9f"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_09.png",
+      "bytes": 559957,
+      "sha256": "8a4028771582022b323e61079ea707d31256d26bf358c31ba9698f0fedc575a2"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_10.png",
+      "bytes": 526340,
+      "sha256": "eca404bb2d7195509eefb439b5f77a74fe34766677d92378f9d9ab94b6bd99ec"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_11.png",
+      "bytes": 534291,
+      "sha256": "72dcfbc9d2ab6063de8984512cf7c557c327d4caf7e7660be2f8c5864839c81b"
+    },
+    {
+      "path": "assets/anim/frames/keith/f_12.png",
+      "bytes": 547465,
+      "sha256": "d8b0db4db5b930e293244dd6671acf35da1e5b9a145cd5e9b6d7ed57d358ef14"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_01.png",
+      "bytes": 216391,
+      "sha256": "67709620157680fe2153e3dda7239b99e2002e95492836912f4e8ced1420126f"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_02.png",
+      "bytes": 421416,
+      "sha256": "61f48044808f2896866e3efadb717530ed242a68cf8a1e4501e237858b3d5a4a"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_03.png",
+      "bytes": 519769,
+      "sha256": "2b2be05a65b9d178854df844c03b7c865ce30b211f6e7b821d0044f2b40de08d"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_04.png",
+      "bytes": 573879,
+      "sha256": "52850f32fb6a11d7b543652c7b66ec8d9e107f5a6faee337e39024dbb9054ef8"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_05.png",
+      "bytes": 648158,
+      "sha256": "24b74bd9ee39e31b355e296d7167fa7ec6d2adf2073793f46718b9c5a201b62d"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_06.png",
+      "bytes": 690291,
+      "sha256": "057ef88b6313578c5e3cbdca3f0fe870efce943d9239696043bb25295b77faf4"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_07.png",
+      "bytes": 694811,
+      "sha256": "76f38c735f798d15df8a7620f48521989a2523a675bbe111c59644fd5c514ac7"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_08.png",
+      "bytes": 718705,
+      "sha256": "41be37379df6b617b79f03490477554b9718bda531a3e692b2200dc6e8d4c729"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_09.png",
+      "bytes": 707869,
+      "sha256": "6606ce02db76d112740ea11494d8c4dc5ef938d5a17a2298d4700da18ed0be20"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_10.png",
+      "bytes": 703716,
+      "sha256": "f5551627f9aeb6b2a764076324e16f828b7d0b8fddaae95a0d40569e3c0ebd2d"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_11.png",
+      "bytes": 645064,
+      "sha256": "501363b7c2d32208423c3145c85437c83ab5e2428fc49a7464daaba498867f30"
+    },
+    {
+      "path": "assets/anim/frames/townsfolk/f_12.png",
+      "bytes": 651794,
+      "sha256": "725a39ed4d7c503fb50cf704de82bc199617a1ac2cfb3919907a61e002de50b9"
+    },
+    {
+      "path": "assets/anim/montage_hero.png",
+      "bytes": 329740,
+      "sha256": "4c189066e4bb76dece1325b8bf519418c47c119c6a7493e4d44bbfcbdc888faa"
+    },
+    {
+      "path": "assets/anim/raw/ashimp_anim.mp4",
+      "bytes": 1852268,
+      "sha256": "2a154e3b1230a5c6371d94840640badbbb97a7d07b491592098d3c7349093688"
+    },
+    {
+      "path": "assets/anim/raw/firedemon_anim.mp4",
+      "bytes": 3064450,
+      "sha256": "11a5750300769d1e8a04d093288b79b5bba49945704eb880d9a4121cd060d57b"
+    },
+    {
+      "path": "assets/anim/raw/hero_anim.mp4",
+      "bytes": 2403027,
+      "sha256": "5db7adeec9279edc46370b60e73686d617d738d7cb6126140d02a8189facebe6"
+    },
+    {
+      "path": "assets/anim/raw/keith_anim.mp4",
+      "bytes": 1748758,
+      "sha256": "1d553fd27156a9a37f110122dc208dcb9d2372110b70bc5f87b60508ee26b56e"
+    },
+    {
+      "path": "assets/anim/raw/townsfolk_anim.mp4",
+      "bytes": 2337644,
+      "sha256": "6d5dd930e2ddc2257b6e6e3894ede757ada027d6cb378bf7a6db64c4faa019b5"
+    },
+    {
+      "path": "assets/anim/sheets/ashimp.gif",
+      "bytes": 74735,
+      "sha256": "e6f867f2a4d550997d952ce2f27a6af7363c2ebfbcc37c39978665d9d8e2b258"
+    },
+    {
+      "path": "assets/anim/sheets/ashimp.json",
+      "bytes": 36,
+      "sha256": "c9bede7b94c22b9db2a35dbc38dd7988ade19384a6397395e4e7836f3667f6c9"
+    },
+    {
+      "path": "assets/anim/sheets/ashimp.png",
+      "bytes": 230489,
+      "sha256": "df669d91f8bd5770ea61574cbdb02cdedf3a0f5d5ecb691cc0caaf1a60b6a94a"
+    },
+    {
+      "path": "assets/anim/sheets/firedemon.gif",
+      "bytes": 174452,
+      "sha256": "160fa8bc701557a0eacbbeb09775e7703963a4d130168c52f83eba22b09e795c"
+    },
+    {
+      "path": "assets/anim/sheets/firedemon.json",
+      "bytes": 36,
+      "sha256": "164160b500311392d0ec7fcf6c574a900e73f138bb14cfc9b136a0f81631f9ca"
+    },
+    {
+      "path": "assets/anim/sheets/firedemon.png",
+      "bytes": 504446,
+      "sha256": "67672a2bae538880be7f7fe1578668518eed2f28ed3c29d1629302192c3e2ba8"
+    },
+    {
+      "path": "assets/anim/sheets/hero.gif",
+      "bytes": 60060,
+      "sha256": "1a290e8a7cfabda888a7328dd8851a04515092f017399a7d4745015e3e7a6933"
+    },
+    {
+      "path": "assets/anim/sheets/hero.json",
+      "bytes": 36,
+      "sha256": "c53fb71388286ef6d76aaaa9e9737bb768b02c2ff7a464957f7cff456d6e5b82"
+    },
+    {
+      "path": "assets/anim/sheets/hero.png",
+      "bytes": 184306,
+      "sha256": "a5891e4bbc891ced3756ab7b2ea594d970ac229e8509dff43529089bbcc55a72"
+    },
+    {
+      "path": "assets/anim/sheets/keith.gif",
+      "bytes": 72428,
+      "sha256": "a9033f023d570d0f94c9875bae623d8d9e4089b4f005d1b3fed06e0bee1610f2"
+    },
+    {
+      "path": "assets/anim/sheets/keith.json",
+      "bytes": 36,
+      "sha256": "bbde60e6e18fb6eae3920f1a6aadda6e9d660e3c47495561706c0f4999f90ec9"
+    },
+    {
+      "path": "assets/anim/sheets/keith.png",
+      "bytes": 199240,
+      "sha256": "6aa43621be09e0ba3f250776d737fad2e349e31332cef80fe3a98abb4270bb0b"
+    },
+    {
+      "path": "assets/anim/sheets/townsfolk.gif",
+      "bytes": 102326,
+      "sha256": "62cfd8c99561e1b6271ed9882782c748e8d08c0160827b67854047bb055bebb5"
+    },
+    {
+      "path": "assets/anim/sheets/townsfolk.json",
+      "bytes": 36,
+      "sha256": "a1777eaed65ffef67a51e668848f20e3543a4413a5ab017974a2ecce73f05395"
+    },
+    {
+      "path": "assets/anim/sheets/townsfolk.png",
+      "bytes": 293699,
+      "sha256": "a0e7ba77b36e31d360dc80ad15593e0a81ffb657bc9572a6b10375d83b76ca2d"
+    },
+    {
+      "path": "assets/anim_process.py",
+      "bytes": 3477,
+      "sha256": "0e35db2f08e9dab7e1c7694ad190ce96f69f445c5117385be14ad0de1d1ba2c0"
+    },
+    {
+      "path": "assets/cast_gif.py",
+      "bytes": 1779,
+      "sha256": "d2808dadcb3496e7142214fd89bd828a6c5cbb19edf74c0759c754ab57221967"
+    },
+    {
+      "path": "assets/digits.py",
+      "bytes": 3382,
+      "sha256": "4c2ffd23444bbbb43484484b867baf09f1f328875302969593389bb01588376c"
+    },
+    {
+      "path": "assets/flames.py",
+      "bytes": 3083,
+      "sha256": "e7a4788a2ad68c6911c84cb49b3aad036a454662fdcddaebdb6f760e65221771"
+    },
+    {
+      "path": "assets/font/pixelify.css",
+      "bytes": 3552,
+      "sha256": "6ddb581ca959b35ab8a38967de458b4b1d59329c34f6210a66135792ad019677"
+    },
+    {
+      "path": "assets/font/pixelify_b64.txt",
+      "bytes": 16024,
+      "sha256": "c7b99fa3dc7e3dc3cc851a9e92790b2e17d0dd59d44d19d7cd122173edd26b3a"
+    },
+    {
+      "path": "assets/font/pixelify_latin.woff2",
+      "bytes": 12016,
+      "sha256": "4a5633a0c9c1b73abd133a56d3716c2d8df2ed03cb987346f72194aeb224f382"
+    },
+    {
+      "path": "assets/game/ashford_bg.png",
+      "bytes": 646504,
+      "sha256": "ce9ec987155021f3c0bcb9b6b49b1d568817fcd4305965c433440aad82f896a8"
+    },
+    {
+      "path": "assets/game/ashimp.png",
+      "bytes": 26609,
+      "sha256": "16ef29b370a0d9c9c4ebf324217cbe2cb9aa7d5dd348e13e2cf0431669695c8a"
+    },
+    {
+      "path": "assets/game/beacon.png",
+      "bytes": 109190,
+      "sha256": "e11afa8ad56b6428997757bec9fd65cdfe17d058ca6d0b74082c6c67dd597724"
+    },
+    {
+      "path": "assets/game/bg.png",
+      "bytes": 763440,
+      "sha256": "a4d14a681c3469c9c9ca7ed84b14e901434f3162f88e7f0b3295d2b007e81e6e"
+    },
+    {
+      "path": "assets/game/digits.json",
+      "bytes": 228,
+      "sha256": "db62cb3e281381269c217c4e3068c496048d1f3cb0aca6334c6a54ae4f388682"
+    },
+    {
+      "path": "assets/game/digits.png",
+      "bytes": 32161,
+      "sha256": "d47c0a83383bdaeeb308cdfac6a00ec298a956bee84ce8223e412db6d5397faa"
+    },
+    {
+      "path": "assets/game/firedemon.png",
+      "bytes": 44061,
+      "sha256": "2fbbc2fb8957515d048e6979aa177f71070e7ed476eff8f85e34064f5ad2579b"
+    },
+    {
+      "path": "assets/game/flames.json",
+      "bytes": 30,
+      "sha256": "f6c060933991db00a7a75baa05f8a2aa2d2c372e363b5392d4867ca79aefd617"
+    },
+    {
+      "path": "assets/game/flames.png",
+      "bytes": 40703,
+      "sha256": "6dffa683f2ac0c6566a623e82347dc66b74a300c19d3e10131a686c8a8c63596"
+    },
+    {
+      "path": "assets/game/glyphs.json",
+      "bytes": 1074,
+      "sha256": "f09818fb003b71e5bf01643cc76fafd54e189d42566d4952b8a45e4eba4c8317"
+    },
+    {
+      "path": "assets/game/glyphs.png",
+      "bytes": 154105,
+      "sha256": "9b932f3bdfa39d1bcacfbe0f666599b7937db5ae2249baec288d696781a752bd"
+    },
+    {
+      "path": "assets/game/happy.png",
+      "bytes": 20784,
+      "sha256": "7b729f06a62b7ceb57af38b09b983f595cfb1143f41cf0f14df14ae1a848694f"
+    },
+    {
+      "path": "assets/game/heart.png",
+      "bytes": 4261,
+      "sha256": "b3dfe17b80dd30f3a4b92bbeb2aa92775688e292e1bcab8fba3dd6abc78bc8ea"
+    },
+    {
+      "path": "assets/game/hero.png",
+      "bytes": 29498,
+      "sha256": "5137cc44855d0ce938175e63a2324253555bd77f6cfec946cd243b0cb3e5a33e"
+    },
+    {
+      "path": "assets/game/hero_run.json",
+      "bytes": 35,
+      "sha256": "636e1f36a646e324c45560df38772e9577ce561b323d65e066633f90977470a4"
+    },
+    {
+      "path": "assets/game/hero_run.png",
+      "bytes": 94192,
+      "sha256": "d10382d9ba20790ee8953cec6e4295b57203acfe504ea96c20eb1596de8dd254"
+    },
+    {
+      "path": "assets/game/husk.png",
+      "bytes": 28372,
+      "sha256": "b8acdb17927164e87aaefc97561fa3575d0c6a1c519d8000ebefce8deb9a267c"
+    },
+    {
+      "path": "assets/game/keith.png",
+      "bytes": 24209,
+      "sha256": "c9fc70ead3c45bba2a36cba89cba7652a543dee7c21a3c8ad6db530898cdfadf"
+    },
+    {
+      "path": "assets/game/powerup.png",
+      "bytes": 34235,
+      "sha256": "a777a7ce7fe64a966f7b6b499d1e37919bfc21d2f55a02f98a3a27dd6ad39b94"
+    },
+    {
+      "path": "assets/game/save.json",
+      "bytes": 36,
+      "sha256": "ceaec8c28b8f68d58d049038862c2f22772dd2c9456b2dc1028deeec3690e13e"
+    },
+    {
+      "path": "assets/game/save.png",
+      "bytes": 563615,
+      "sha256": "cbcafa3a6a10d151ac23b10924568931cec42f3065e14e000134520576bb7c3c"
+    },
+    {
+      "path": "assets/game/townsfolk.png",
+      "bytes": 29851,
+      "sha256": "f097f17695114683692ba690db51090dff56409055e72ace140079eed5cc7ef7"
+    },
+    {
+      "path": "assets/game/ui_charge.png",
+      "bytes": 5578,
+      "sha256": "f9ddccd14a69ef21913a4f91d051aeea13aabebb5a0bfcb99133077a7382a03f"
+    },
+    {
+      "path": "assets/game/ui_pip.png",
+      "bytes": 7549,
+      "sha256": "9e33be0a5cf82c0ae5ce36ce95d4d91d3baed8b747a3002800d7b7a8af986a3b"
+    },
+    {
+      "path": "assets/game/vent_vent_cinder.json",
+      "bytes": 36,
+      "sha256": "17e0c9573e9d1b724d2f1311aefc1c61bef997033c2940a566c4050b194de7fa"
+    },
+    {
+      "path": "assets/game/vent_vent_cinder.png",
+      "bytes": 401149,
+      "sha256": "b744c255e7154f5f954f0cf3bcd0e4d3afbeeb27f02e8ac1594eeacef2ab65fc"
+    },
+    {
+      "path": "assets/game/vent_vent_fire.json",
+      "bytes": 36,
+      "sha256": "002d7c0f609ea463f8351debd983cb0a8ef2b290f5d6f7f04d3436ceaa4cb812"
+    },
+    {
+      "path": "assets/game/vent_vent_fire.png",
+      "bytes": 447689,
+      "sha256": "305adf0803fdc3746e404508498b31ddbdf011fb0352df11d52284f69b6d7baf"
+    },
+    {
+      "path": "assets/glyphs.py",
+      "bytes": 8608,
+      "sha256": "694d5f0dd0152bd2a78150d226bddab3969d215bbad7755f9a68372892aeb59d"
+    },
+    {
+      "path": "assets/hero_run.py",
+      "bytes": 3488,
+      "sha256": "96f97d854617cea95f31cd098d85837b43baabddd12e7b4426a49464386e80a8"
+    },
+    {
+      "path": "assets/keyer.py",
+      "bytes": 2231,
+      "sha256": "73765edc59812e893c036df315e8a53349ccdab9f97887c4ab5ddee87a5ed64f"
+    },
+    {
+      "path": "assets/makko_anim.js",
+      "bytes": 1883386,
+      "sha256": "8dfdac3a1aecb8bc3a49ab84f4d32df487346e666eef0f47133dd6ca9d0a5193"
+    },
+    {
+      "path": "assets/makko_digits.js",
+      "bytes": 43184,
+      "sha256": "712a76de82521d27ab8c05cd5a157544da91afefca535b40093c5b05e85fcb01"
+    },
+    {
+      "path": "assets/makko_glyphs.js",
+      "bytes": 198655,
+      "sha256": "b5062f62ee0c436f0a28fd321a17e7a488c871e346f37d5b2b930ab65c1a8fbb"
+    },
+    {
+      "path": "assets/makko_sprites.js",
+      "bytes": 956538,
+      "sha256": "b7ef8cf9e831e095c0708251a2bc99a10221f97862f1b10ea364c7469cd8c4f7"
+    },
+    {
+      "path": "assets/promo.py",
+      "bytes": 4080,
+      "sha256": "d97e2ec7896afcca5776bffde232aaa2ae9e04d7041304c207e7f2759f550b96"
+    },
+    {
+      "path": "assets/promo2.py",
+      "bytes": 4095,
+      "sha256": "f30578268292fb57e92e97819fafdbd604bf266289670be88a50d77128e7f710"
+    },
+    {
+      "path": "assets/raw/_bg_view.png",
+      "bytes": 1374354,
+      "sha256": "e80a9d71a4ab4faba73b828bfa6b4338507973d86f2922d39f57780baa93b77d"
+    },
+    {
+      "path": "assets/raw/_bgp_view.png",
+      "bytes": 325779,
+      "sha256": "271fe858340d1027b23c147c7a9605b57bd2b7d67dddc488922b24caf3de51e5"
+    },
+    {
+      "path": "assets/raw/_bgtd_view.png",
+      "bytes": 406153,
+      "sha256": "7266f642a5e8549a6f5f26568c615d2210fbcbf57766bdb12f91ba691d14f948"
+    },
+    {
+      "path": "assets/raw/_digits_view.png",
+      "bytes": 917375,
+      "sha256": "53ed4cee92818a30c8159462b431fde49f0a5279d9ba80bb9cf03aa4278ab781"
+    },
+    {
+      "path": "assets/raw/_letters_am_view.png",
+      "bytes": 1052696,
+      "sha256": "fad1a6da6c3101dacb1f25022052710592ec2472c6584d68119dc1f28156dc5b"
+    },
+    {
+      "path": "assets/raw/ashford_bg.webp",
+      "bytes": 905406,
+      "sha256": "9ef0776520dc8a8051556f078b0db1227a86ed9671f8112a98d815091921d94c"
+    },
+    {
+      "path": "assets/raw/ashimp.webp",
+      "bytes": 720302,
+      "sha256": "fd542a9d5ff6c9d6852ff1c8f12828a963de38794c573ea421a0053db7736fc5"
+    },
+    {
+      "path": "assets/raw/background.webp",
+      "bytes": 1072836,
+      "sha256": "31a4d6732b87795f692ae9fe01199a94b05c8763bcc38f8c87aabd9509cd9c5a"
+    },
+    {
+      "path": "assets/raw/beacon.webp",
+      "bytes": 889556,
+      "sha256": "b1b3b884baa6b4b543b6405bef37b8b19588a8680e91e7582e6f6c5a103d938e"
+    },
+    {
+      "path": "assets/raw/bg_portrait.webp",
+      "bytes": 1098144,
+      "sha256": "be6ad0314de2d1cd104d513afdf9affb9989f38b7328c868d3885a8569db2e28"
+    },
+    {
+      "path": "assets/raw/bg_topdown.webp",
+      "bytes": 1332550,
+      "sha256": "12e76eabc82c9f6068b3249a19dd09edc9a75b4d1fecff3dc334600170b8696b"
+    },
+    {
+      "path": "assets/raw/firedemon.webp",
+      "bytes": 725532,
+      "sha256": "e705da87123430a991bfda52393c612c95bf3321acee6513f5357458042216ca"
+    },
+    {
+      "path": "assets/raw/flames.png",
+      "bytes": 636373,
+      "sha256": "0513df607e2680cd397958f0632dc0caaf8c2fdbd7bca8e799772bffaa42d843"
+    },
+    {
+      "path": "assets/raw/happy.webp",
+      "bytes": 727320,
+      "sha256": "2d0cef2efeb79ae53d657e6691eed2e8b13c105f87d6dde2208bb284e5b42270"
+    },
+    {
+      "path": "assets/raw/heart.png",
+      "bytes": 141502,
+      "sha256": "cd6ca9e0c517cdf729738b04fb189ae0a6b4c0dd1ed46a52279562113081545c"
+    },
+    {
+      "path": "assets/raw/hero.webp",
+      "bytes": 659322,
+      "sha256": "1626b189ebadd9c9b85629a76dbb61928babdf62c19c1ce9a8385524cb214bc3"
+    },
+    {
+      "path": "assets/raw/hero_person.png",
+      "bytes": 704596,
+      "sha256": "e40de88be4bee5a29ebd5e4f29215a00e87396dbca11ada68edbba409639e019"
+    },
+    {
+      "path": "assets/raw/husk.webp",
+      "bytes": 761292,
+      "sha256": "05201f18003c3d045005c2ebad0c96a7dea2082f4d4312e7e33fcdc5f7fe957e"
+    },
+    {
+      "path": "assets/raw/keith.webp",
+      "bytes": 732206,
+      "sha256": "7fe3201f88d21d720b6af271315f9dcb54fe4d5bb7079104997ceba24f144f78"
+    },
+    {
+      "path": "assets/raw/letters_am.webp",
+      "bytes": 868902,
+      "sha256": "e2f5558658233eeb800100e0aae5918a747033bdd90f17d52257f8f73043a588"
+    },
+    {
+      "path": "assets/raw/letters_nz.webp",
+      "bytes": 755424,
+      "sha256": "a9b67de4f35d8b4561af0c4777637a29a30d9a6dfc0aaf790ec6ab3d6b7e6dba"
+    },
+    {
+      "path": "assets/raw/n22.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/n23.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/n24.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/n25.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/n26.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/n27.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/powerup.webp",
+      "bytes": 722500,
+      "sha256": "87207a38d3837a797cc4716a7b3769617c5dbe9197a49f057dfe995e6ce7a0d3"
+    },
+    {
+      "path": "assets/raw/punct.webp",
+      "bytes": 714876,
+      "sha256": "34ebaff624ada6b8b9abd3f8594bffb6e1dcc4fef7915c1ffdcb74b9381a6237"
+    },
+    {
+      "path": "assets/raw/R_fix.webp",
+      "bytes": 692740,
+      "sha256": "62e22cb45c2da7facb979486b3da2d499759f6a76c198caf462feca02ce783be"
+    },
+    {
+      "path": "assets/raw/R_nano.webp",
+      "bytes": 734462,
+      "sha256": "065e240e1c639145a0d043908344f51fd42ecdd219168f7c0beebc4cb7ef6af6"
+    },
+    {
+      "path": "assets/raw/row_ag.webp",
+      "bytes": 783480,
+      "sha256": "b3d919de1188f95147beae5885700bb56d05c3f82df4484e40b048b5b6cf3b35"
+    },
+    {
+      "path": "assets/raw/row_digits.png",
+      "bytes": 649873,
+      "sha256": "6084e10fe7be407a4e88f4118c90d2aaf999c326d57900847fbba868cf713755"
+    },
+    {
+      "path": "assets/raw/row_hn.png",
+      "bytes": 515935,
+      "sha256": "88df59e27f13044c2bc0c6f663a613b3ade1115a27dc9e3189dd1cb071c53a80"
+    },
+    {
+      "path": "assets/raw/row_hn.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/row_ou.png",
+      "bytes": 514987,
+      "sha256": "b3a051a5291561164f2c770ab9d120790f25e2200932f37c258e733d89ee14c4"
+    },
+    {
+      "path": "assets/raw/row_ou.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/row_punct.png",
+      "bytes": 404096,
+      "sha256": "2f663e7df1b204f72afde76ca3c056025d5b1b9ef08da84a960928369ba5839c"
+    },
+    {
+      "path": "assets/raw/row_vz.png",
+      "bytes": 345059,
+      "sha256": "295e9cb934bb5e2c64dec0a3ff12f2374a41dd53b35a5b66bbb8d2451b5dc81d"
+    },
+    {
+      "path": "assets/raw/row_vz.webp",
+      "bytes": 88,
+      "sha256": "9d2505709301f205e4135106c7c92c66a58d85a1009b5b823475c6a047de1a9c"
+    },
+    {
+      "path": "assets/raw/save_anim.mp4",
+      "bytes": 1852356,
+      "sha256": "9099f01ee11f6ed3524513652ab6caa033edaea7d5995edcda0d7754d0de8691"
+    },
+    {
+      "path": "assets/raw/save_omni.mp4",
+      "bytes": 753515,
+      "sha256": "c9d7a5e0196a82c87867fea782319d96fbb6c3b1a2f8e13202c1a9d5493f316e"
+    },
+    {
+      "path": "assets/raw/townsfolk.webp",
+      "bytes": 690792,
+      "sha256": "05a284ea522c07e3d52b346898c10aa93bc1e1fd7f644afffb774d1f8d0b62ea"
+    },
+    {
+      "path": "assets/raw/ui_charge.webp",
+      "bytes": 622350,
+      "sha256": "9970bd5667f396d425bf0e96bb7ff34cb46faf0efe85f14c704c246083c46667"
+    },
+    {
+      "path": "assets/raw/ui_digits.webp",
+      "bytes": 751864,
+      "sha256": "28c869c2451332e74cad34ee84a598770d09145a47914c6763aaafd0fdaa9c8e"
+    },
+    {
+      "path": "assets/raw/ui_pip.webp",
+      "bytes": 688646,
+      "sha256": "6e7997b366e54d084082ee1008c9bf2a8dea4446024f0b1db6eae983b2969cd7"
+    },
+    {
+      "path": "assets/raw/vent_cinder.mp4",
+      "bytes": 757213,
+      "sha256": "c4c9815ee198eb4e5d691a4cdf7d531aa0d065bd82aa99fc9855650d0e754b90"
+    },
+    {
+      "path": "assets/raw/vent_fire.mp4",
+      "bytes": 718253,
+      "sha256": "781f010624675987a96b2bcc88487a8717b475a1bd1f2c9f39f04b1c21640188"
+    },
+    {
+      "path": "assets/sprites/ashimp.png",
+      "bytes": 366400,
+      "sha256": "24ee4abd796ea6ec0d19028dcf691b7c9daf2e4fe56d36a702b7e7d0ad90c9b3"
+    },
+    {
+      "path": "assets/sprites/beacon.png",
+      "bytes": 642643,
+      "sha256": "2a6e9913764d7b979af902bec71ff03db08f4c57bb99210b41bbba162241ae69"
+    },
+    {
+      "path": "assets/sprites/firedemon.png",
+      "bytes": 596242,
+      "sha256": "83d85faa98b55214abd93a72bb1aa723285b4ed00cb4a26b868c1f79ba6e9715"
+    },
+    {
+      "path": "assets/sprites/hero.png",
+      "bytes": 359297,
+      "sha256": "0de073094a88684eff0c08baa01b6aef7da646c8f7a5c633a8b20908daf70197"
+    },
+    {
+      "path": "assets/sprites/husk.png",
+      "bytes": 499981,
+      "sha256": "4b92c5ee3440a0d3980f4b0e7df58c4b6db588bbbd8df0abc9aca7de30d6e2b6"
+    },
+    {
+      "path": "assets/sprites/keith.png",
+      "bytes": 501128,
+      "sha256": "1083d10a7668b878161f3e871211b0189ed60879b6d94f9c6f50418d7adced6d"
+    },
+    {
+      "path": "assets/sprites/powerup.png",
+      "bytes": 428360,
+      "sha256": "aa4478cab390dc9548655c360bd9a4ef1edb943367a6db1a3cfb70cf76b7bfc3"
+    },
+    {
+      "path": "assets/sprites/townsfolk.png",
+      "bytes": 289355,
+      "sha256": "2fbcde6ff5b338cf428ff5f7eb72b91f9801b38b477fdea5d988cf1f6e85294c"
+    },
+    {
+      "path": "media/anim/ashimp.png",
+      "bytes": 230489,
+      "sha256": "df669d91f8bd5770ea61574cbdb02cdedf3a0f5d5ecb691cc0caaf1a60b6a94a"
+    },
+    {
+      "path": "media/anim/firedemon.png",
+      "bytes": 504446,
+      "sha256": "67672a2bae538880be7f7fe1578668518eed2f28ed3c29d1629302192c3e2ba8"
+    },
+    {
+      "path": "media/anim/hero.png",
+      "bytes": 184306,
+      "sha256": "a5891e4bbc891ced3756ab7b2ea594d970ac229e8509dff43529089bbcc55a72"
+    },
+    {
+      "path": "media/anim/hero_run.png",
+      "bytes": 94192,
+      "sha256": "d10382d9ba20790ee8953cec6e4295b57203acfe504ea96c20eb1596de8dd254"
+    },
+    {
+      "path": "media/anim/keith.png",
+      "bytes": 199240,
+      "sha256": "6aa43621be09e0ba3f250776d737fad2e349e31332cef80fe3a98abb4270bb0b"
+    },
+    {
+      "path": "media/anim/save.png",
+      "bytes": 563615,
+      "sha256": "cbcafa3a6a10d151ac23b10924568931cec42f3065e14e000134520576bb7c3c"
+    },
+    {
+      "path": "media/anim/townsfolk.png",
+      "bytes": 293699,
+      "sha256": "a0e7ba77b36e31d360dc80ad15593e0a81ffb657bc9572a6b10375d83b76ca2d"
+    },
+    {
+      "path": "media/anim/ventcinder.png",
+      "bytes": 401149,
+      "sha256": "b744c255e7154f5f954f0cf3bcd0e4d3afbeeb27f02e8ac1594eeacef2ab65fc"
+    },
+    {
+      "path": "media/anim/ventfire.png",
+      "bytes": 327124,
+      "sha256": "012cde96f7fb9fc8eaf380c5256655687551144569c78fa4e212b45834aa07b1"
+    },
+    {
+      "path": "media/diary/dark_cell.webp",
+      "bytes": 50422,
+      "sha256": "a3b9521f5442eeef3c85ab02d555187cd7312ae4b3042eeb3222cd45124c97a2"
+    },
+    {
+      "path": "media/diary/duy_gate.webp",
+      "bytes": 38076,
+      "sha256": "982db48f89704968916185e0acc4e16acb9c0d258456e48e533deb3e86b97466"
+    },
+    {
+      "path": "media/diary/duy_save.webp",
+      "bytes": 68802,
+      "sha256": "ba7e8f48b3a1dc9427a346c943d768a74d1ccfa47a8cd0b3e245029b733c9f7f"
+    },
+    {
+      "path": "media/diary/wraith.webp",
+      "bytes": 30774,
+      "sha256": "18a898220506b6a7771fa168a9493eb920f032ac0fdd8526718b357ee9dcd67c"
+    },
+    {
+      "path": "media/fx/flame.png",
+      "bytes": 40703,
+      "sha256": "6dffa683f2ac0c6566a623e82347dc66b74a300c19d3e10131a686c8a8c63596"
+    },
+    {
+      "path": "media/pixelify.woff2",
+      "bytes": 12016,
+      "sha256": "4a5633a0c9c1b73abd133a56d3716c2d8df2ed03cb987346f72194aeb224f382"
+    },
+    {
+      "path": "media/spr/ashford.png",
+      "bytes": 646504,
+      "sha256": "ce9ec987155021f3c0bcb9b6b49b1d568817fcd4305965c433440aad82f896a8"
+    },
+    {
+      "path": "media/spr/ashimp.png",
+      "bytes": 26609,
+      "sha256": "16ef29b370a0d9c9c4ebf324217cbe2cb9aa7d5dd348e13e2cf0431669695c8a"
+    },
+    {
+      "path": "media/spr/beacon.png",
+      "bytes": 109190,
+      "sha256": "e11afa8ad56b6428997757bec9fd65cdfe17d058ca6d0b74082c6c67dd597724"
+    },
+    {
+      "path": "media/spr/bg.png",
+      "bytes": 763440,
+      "sha256": "a4d14a681c3469c9c9ca7ed84b14e901434f3162f88e7f0b3295d2b007e81e6e"
+    },
+    {
+      "path": "media/spr/firedemon.png",
+      "bytes": 44061,
+      "sha256": "2fbbc2fb8957515d048e6979aa177f71070e7ed476eff8f85e34064f5ad2579b"
+    },
+    {
+      "path": "media/spr/happy.png",
+      "bytes": 20784,
+      "sha256": "7b729f06a62b7ceb57af38b09b983f595cfb1143f41cf0f14df14ae1a848694f"
+    },
+    {
+      "path": "media/spr/heart.png",
+      "bytes": 4261,
+      "sha256": "b3dfe17b80dd30f3a4b92bbeb2aa92775688e292e1bcab8fba3dd6abc78bc8ea"
+    },
+    {
+      "path": "media/spr/hero.png",
+      "bytes": 29498,
+      "sha256": "5137cc44855d0ce938175e63a2324253555bd77f6cfec946cd243b0cb3e5a33e"
+    },
+    {
+      "path": "media/spr/husk.png",
+      "bytes": 28372,
+      "sha256": "b8acdb17927164e87aaefc97561fa3575d0c6a1c519d8000ebefce8deb9a267c"
+    },
+    {
+      "path": "media/spr/keith.png",
+      "bytes": 24209,
+      "sha256": "c9fc70ead3c45bba2a36cba89cba7652a543dee7c21a3c8ad6db530898cdfadf"
+    },
+    {
+      "path": "media/spr/powerup.png",
+      "bytes": 34235,
+      "sha256": "a777a7ce7fe64a966f7b6b499d1e37919bfc21d2f55a02f98a3a27dd6ad39b94"
+    },
+    {
+      "path": "media/spr/townsfolk.png",
+      "bytes": 29851,
+      "sha256": "f097f17695114683692ba690db51090dff56409055e72ace140079eed5cc7ef7"
+    },
+    {
+      "path": "media/spr/ui_charge.png",
+      "bytes": 5578,
+      "sha256": "f9ddccd14a69ef21913a4f91d051aeea13aabebb5a0bfcb99133077a7382a03f"
+    },
+    {
+      "path": "media/spr/ui_pip.png",
+      "bytes": 7549,
+      "sha256": "9e33be0a5cf82c0ae5ce36ce95d4d91d3baed8b747a3002800d7b7a8af986a3b"
+    },
+    {
+      "path": "media/ui/digits.png",
+      "bytes": 32161,
+      "sha256": "d47c0a83383bdaeeb308cdfac6a00ec298a956bee84ce8223e412db6d5397faa"
+    },
+    {
+      "path": "media/ui/glyphs.png",
+      "bytes": 154105,
+      "sha256": "9b932f3bdfa39d1bcacfbe0f666599b7937db5ae2249baec288d696781a752bd"
+    }
+  ]
+}

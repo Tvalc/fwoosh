@@ -1,0 +1,10 @@
+---
+description: Mandatory Makko art source for all Fwoosh artwork
+alwaysApply: true
+---
+
+Tony requires Makko art for ALL artwork in Fwoosh. Use Makko for characters, animations, environments, UI art, visual-effect artwork and diary illustrations. This rule applies to Cursor, Codex and future agents.
+
+Reuse or process existing Makko sources, or obtain new artwork through Makko. Preserve source provenance through recuts, crops, transparency cleanup and atlas generation. Do not replace artwork with another generator, stock assets or newly drawn alternatives unless Tony explicitly changes this rule.
+
+If Makko access or the required source is unavailable, report the dependency and continue other work. Do not silently substitute another source or label unverified assets as Makko. See ART.md and AGENTS.md.
