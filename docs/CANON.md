@@ -37,6 +37,8 @@ Read its `docs/00b_locked_decisions.md`, `docs/03_story.md`, and `docs/21_canon_
 
 ## Still to establish in the interview
 
+- City placement confirmed: players place buildings and design the town layout. Tony chose multiple copies of homes and production buildings alongside unique landmarks. Ratkin physically transport food and materials along roads; travel distance and congestion affect output. Staffing uses automatic prioritization by default, with optional player optimization. Tony wants this automatic-by-default, optionally optimized approach throughout comparable systems; do not force manual micromanagement. Exact override controls remain to be scoped.
+
 - Tony confirmed Duy's release also reduces Cuong's debt in Vovinam Ledger. The amount remains undecided; do not assume five or the entire balance.
 - What constitutes a complete rebuild, and which systems belong in this story-update task versus later expansion.
 - What player actions earn ratkin favor, who communicates their judgment, and how release becomes available.
