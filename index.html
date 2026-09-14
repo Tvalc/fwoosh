@@ -112,7 +112,16 @@ const K = {
   ARSON_WARN: 0.45,                 // spawn telegraph: the imp hovers at the edge this long before it commits
   ARSON_HEAT: 1,                    // heat you take when you intercept (its fire is now yours)
   ARSON_EMBERS: 4,                  // bonus embers per intercept (×1.5 on a dash intercept)
-  ARSON_EDGE_PER: 0.34,            // duel edge banked per intercept (6 clean intercepts ~= one free Keith down)
+  ARSON_EDGE_PER: 1.0,             // EDGE banked per intercept — cutting off an imp = a villager saved before it lit
+
+  // THE EDGE — one running tally of who is winning the town. Saves/rekindles/intercepts push it toward YOU;
+  // villagers lost push it toward Keith. Cashed at the duel: a strong lead starts Keith already down; a deficit
+  // makes him demand extra downs. (Read once at the duel as text + a thin HUD bar — never a loud mid-run meter.)
+  EDGE_PER_DOWN: 10,                // EDGE per free Keith down (positive) / per extra down he demands (negative)
+  SAVE_EDGE: 1.0, SAVE_EDGE_HEAT: 0.4,   // save: EDGE += 1 + heat*0.4 (a chained save adds a flat +0.5)
+  LOSS_EDGE: 1.0, LOSS_EDGE_HEAT: 0.3,   // loss: EDGE -= 1 + heatAtIgnition*0.3
+  EDGE_HEADSTART_CAP: 2,            // most free downs a lead can buy (always leave 1 to fight)
+  EDGE_EXTRA_CAP: 2,               // most extra downs a deficit can add
   SPREAD_R: 52,                     // a flaming villager torches calm ones within this
   SPREAD_EVERY: 0.9,               // spread check cadence per flaming villager
   SPREAD_CHANCE: 0.5,              // chance a nearby calm villager catches on a check
@@ -313,12 +322,13 @@ let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
 let sparkT = 0, heatCoolT = 0, dumped = 0, saved = 0, overloadT = 0;   // ABSORBER loop state
 let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager when one fills in
 let dashPop = 0;     // flourish pop when a dash charge finishes recharging
+let edgePop = 0;     // brief pulse on the EDGE bar when it shifts
 let demons = [];     // fire demons summoned while venting (attack player + villagers)
 let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
 let husks = [];      // villagers you failed to save: temporary soft-solid coals that crack into roaming wraiths
 let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
 let arsonT = 0;      // send-cadence timer
-let intercepts = 0, runEdge = 0;   // imps you cut off this run + the duel edge they bank (spent at startDuel)
+let intercepts = 0, edge = 0;   // imps you cut off this run + THE EDGE (town war balance; + you, - Keith)
 let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines fire once
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
@@ -510,8 +520,8 @@ function reset(seed){
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
   demons = []; ventSwarmT = 0; demonSpawnT = 0;
-  arson = []; arsonT = 0; intercepts = 0; runEdge = 0; arsonSeen = false;
-  husks = []; huskSeen = false;
+  arson = []; arsonT = 0; intercepts = 0; edge = 0; arsonSeen = false;
+  husks = []; huskSeen = false; edgePop = 0;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
@@ -648,6 +658,7 @@ function step(){
   if(p.ventFlash > 0) p.ventFlash -= dt;
   // DASH CHARGES recharge over time (max + speed set by The Forge upgrades)
   if(dashPop > 0) dashPop -= dt*2.2;
+  if(edgePop > 0) edgePop -= dt*2.0;
   if(p.charges < RUN_MAX_CHARGES){ p.chargeT += dt;
     while(p.chargeT >= RUN_CHARGE_REFILL && p.charges < RUN_MAX_CHARGES){ p.chargeT -= RUN_CHARGE_REFILL; p.charges++; dashPop = 0.55; } }
   else p.chargeT = 0;
@@ -1000,6 +1011,8 @@ function saveCell(c, chained){
   for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
     sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
   saveIconPop = 0.6; ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);
+  edge += chained ? 0.5 : (K.SAVE_EDGE + p.heat*K.SAVE_EDGE_HEAT);   // THE EDGE: hotter saves win more of the town
+  edgePop = 0.5;
   if(!chained){ p.heat = Math.min(K.HEAT_MAX, p.heat + 1);   // ONE +1 heat per absorb (not per chained villager)
     p.absorbPop = 0.28; ring(p.x, p.y, p.r+6, 80, '#ffcf7a', 0.55); hitstop = K.HITSTOP*0.8; flash = DT*1.5; }
 }
@@ -1110,7 +1123,7 @@ function stepArson(dt){
 }
 function interceptArson(a){
   const p = player;
-  intercepts++; runEdge += K.ARSON_EDGE_PER;
+  intercepts++; edge += K.ARSON_EDGE_PER; edgePop = 0.5;
   const dashing = p.lunge > 0;
   p.heat = Math.min(K.HEAT_MAX, p.heat + K.ARSON_HEAT);
   let em = Math.round(K.ARSON_EMBERS * (dashing ? 1.5 : 1));
@@ -1136,6 +1149,8 @@ function becomeSlag(c){
 function becomeHusk(c){
   c.dead = true;
   husks.push({ x:c.x, y:c.y, t:0, heatAt: player.heat, ph: rnd()*7 });
+  edge -= K.LOSS_EDGE + player.heat*K.LOSS_EDGE_HEAT;   // THE EDGE swings toward Keith when the town burns
+  edgePop = 0.5;
   ring(c.x, c.y, K.R_CELL, 50, '#8a5a2e', 0.42);
   if(!huskSeen){ huskSeen = true; callout = { text:'A VILLAGER IS LOST — REKINDLE THEM (touch w/ fire) BEFORE THEY TURN', t:0, life:2.4, good:false }; }
 }
@@ -1166,6 +1181,7 @@ function rekindleHusk(h){
   cells.push({ id: nextId++, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
                hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
   saved++; META.saved++;
+  edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
   const em = Math.max(0, Math.min(Math.round(K.EMBER_BASE*0.5), K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
   score += Math.round(K.SAVE_SCORE*0.5);
   saveIconPop = 0.6; p.absorbPop = 0.28; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
@@ -1206,14 +1222,18 @@ function startDuel(){
   slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
   arson = []; husks = [];                            // imps stand down + coals go cold for the duel
   demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (Phase 3: they become Keith's reinforcements)
-  const edge = Math.min(1, Math.floor(runEdge));     // the intercepts you banked = a head-start on Keith (capped)
+  // THE EDGE is cashed here. A lead starts Keith already down; a deficit makes him demand extra downs.
+  const headStart = Math.min(K.EDGE_HEADSTART_CAP, Math.max(0, Math.floor(edge / K.EDGE_PER_DOWN)));
+  const extra     = Math.min(K.EDGE_EXTRA_CAP,     Math.max(0, Math.floor(-edge / K.EDGE_PER_DOWN)));
+  const needed = K.KEITH_DOWNS + extra;
   boss = { kind:'keith', x:gx, y:gy, r:K.KEITH_R, state:'rising', t:K.BOSS_RISE_T,
-           fuse:0, downs:edge, tagCd:0, vx:0, vy:0 };
+           fuse:0, downs:headStart, needed, tagCd:0, vx:0, vy:0 };
   ring(gx, gy, K.R_SLAG, 140, '#ff3d7a', 0.8);
-  const riseTxt = edge > 0
-    ? 'YOUR INTERCEPTS BIT DEEP · KEITH ' + edge + '/' + K.KEITH_DOWNS + ' DOWN'
-    : STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length];
-  callout = { text: riseTxt, t:0, life:2.0, good: edge > 0 };
+  let riseTxt;
+  if(headStart > 0) riseTxt = 'THE TOWN STANDS WITH YOU · KEITH ' + headStart + '/' + needed + ' DOWN';
+  else if(extra > 0) riseTxt = 'THE TOWN IS ASH · KEITH FIGHTS HARDER (' + needed + ' TO BURN)';
+  else riseTxt = STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length];
+  callout = { text: riseTxt, t:0, life:2.2, good: headStart > 0 };
   flash = DT*2;
 }
 
@@ -1237,10 +1257,11 @@ function bossDown(){
     boss = null;
   } else {
     b.downs++;
-    if(b.downs >= K.KEITH_DOWNS){ winDuel(); return; }
+    const need = b.needed || K.KEITH_DOWNS;
+    if(b.downs >= need){ winDuel(); return; }
     b.state = 'stagger'; b.t = K.BOSS_STAGGER_T; b.fuse = 0;
     ring(b.x, b.y, b.r, 110, '#7fe8ff', 0.6);
-    callout = { text: 'KEITH BURNED DOWN · ' + b.downs + '/' + K.KEITH_DOWNS, t:0, life:1.6, good:true };
+    callout = { text: 'KEITH BURNED DOWN · ' + b.downs + '/' + need, t:0, life:1.6, good:true };
     hitstop = K.HITSTOP;
   }
 }
@@ -2587,6 +2608,16 @@ function render(){
       }
       ctx.textAlign='center'; ctx.fillStyle='rgba(138,255,193,0.9)'; ctx.font='700 16px "Pixelify",system-ui,sans-serif';
       ctx.fillText('SAVE THE TOWN   '+saved+' / '+q, VW/2, by+18);
+      // THE EDGE — a thin two-sided bar: fills right (your favor) or left (Keith). Quiet until it moves.
+      { const bw=200, bh=7, bx=(VW-bw)/2, byy=by+30, cx=VW/2;
+        const span=K.EDGE_PER_DOWN*K.EDGE_HEADSTART_CAP;               // full bar = enough lead for max head-start
+        const f=Math.max(-1, Math.min(1, edge/span));
+        ctx.fillStyle='rgba(255,255,255,0.10)'; roundRectPath(ctx,bx,byy,bw,bh,3); ctx.fill();
+        const pulse=0.75+0.25*Math.min(1,edgePop);
+        if(f>=0){ if(f>0){ ctx.fillStyle='rgba(138,255,193,'+pulse.toFixed(2)+')'; roundRectPath(ctx,cx,byy,(bw/2)*f,bh,3); ctx.fill(); } }
+        else { ctx.fillStyle='rgba(255,90,120,'+pulse.toFixed(2)+')'; const w=(bw/2)*(-f); roundRectPath(ctx,cx-w,byy,w,bh,3); ctx.fill(); }
+        ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fillRect(cx-1,byy-2,2,bh+4);   // center notch (0)
+      }
     } else {
       ctx.textAlign='center'; ctx.font='800 23px "Pixelify",system-ui,sans-serif';
       ctx.fillStyle='#ff6a9c'; ctx.fillText('UNLOAD ON KEITH   '+dumped+' / '+K.DUEL_DUMP, VW/2, 112);
@@ -2823,7 +2854,7 @@ window.__fwoosh = {
     crowd:crowd().length, hunters:hunters().length, slag:slag.length,
     heat:player.heat, hp:+(player.hp!=null?player.hp:1).toFixed(3), saved, dumped,
     venting:player.venting, demons:demons.length, hurtCd:+(player.hurtCd||0).toFixed(3),
-    arson:arson.length, intercepts, runEdge:+runEdge.toFixed(2),
+    arson:arson.length, intercepts, edge:+edge.toFixed(2),
     husks:husks.length, wraiths:demons.filter(d=>d.source==='town').length,
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
