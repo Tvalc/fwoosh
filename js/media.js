@@ -2,6 +2,7 @@ const MAKKO_SPR_SRC = {
   "hero": "./media/spr/hero.png",
   "ashimp": "./media/spr/ashimp.png",
   "townsfolk": "./media/spr/townsfolk.png",
+  "ratkin": "./media/spr/ratkin.png",
   "powerup": "./media/spr/powerup.png",
   "firedemon": "./media/spr/firedemon.png",
   "husk": "./media/spr/husk.png",
@@ -31,7 +32,8 @@ const MAKKO_ANIM_SRC = {
   "hero_run": "./media/anim/hero_run.png",
   "save": "./media/anim/save.png",
   "ventfire": "./media/anim/ventfire.png",
-  "ventcinder": "./media/anim/ventcinder.png"
+  "ventcinder": "./media/anim/ventcinder.png",
+  "ratkin": "./media/anim/ratkin.png"
 };
 
 const MAKKO_DIGITS_SRC = "./media/ui/digits.png";
