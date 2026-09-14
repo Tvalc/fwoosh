@@ -70,7 +70,7 @@ const K = {
   LUNGE_T: 0.18,                    // 115px of travel
   // VENT (hold-to-heal): purge heat, then refill hearts a half at a time; spawns fire demons while held
   VENT_PURGE: 0.16,                 // sec per heat while purging (before any heal)
-  VENT_HEAL_T: 0.55,               // sec per HALF-heart of healing (~0.9 hp/s at 5 hearts — the real heal now)
+  VENT_HEAL_T: 0.30,               // sec per HALF-heart of healing (a full heart in ~0.6s — venting is a real, quick heal now)
   VENT_SUMMON: 0.60,                // grace before the first fire demon (a quick dump is free)
   DEMON_INT0: 1.4,                  // demon spawn interval, tightens the longer you hold
   DEMON_INT_STEP: 0.15, DEMON_INT_MIN: 0.5,
@@ -1200,7 +1200,10 @@ const HEAL_LINES = ['+HEART', 'BREATHE', 'MENDING'];
 function stepDemons(dt){
   const p = player;
   ventSwarmT = p.venting ? Math.min(12, ventSwarmT + dt) : Math.max(0, ventSwarmT - dt*0.6);   // swarm memory (anti tap-spam)
-  if(p.venting && ventSwarmT >= K.VENT_SUMMON && demons.length < K.MAX_DEMONS){
+  // DEMON CAP = 2 per heart of CURRENT health: at 1 heart you face 2, healthier -> more (up to MAX_DEMONS).
+  // So venting when you're desperate (low) is survivable — the pressure scales up only as you recover.
+  const demonCap = Math.min(K.MAX_DEMONS, Math.max(2, Math.round(2 * p.hp * maxHearts)));
+  if(p.venting && ventSwarmT >= K.VENT_SUMMON && demons.length < demonCap){
     demonSpawnT += dt;
     const interval = Math.max(K.DEMON_INT_MIN, K.DEMON_INT0 - K.DEMON_INT_STEP*Math.max(0, ventSwarmT-K.VENT_SUMMON));
     if(demonSpawnT >= interval){ demonSpawnT = 0; const a=rnd()*Math.PI*2;
