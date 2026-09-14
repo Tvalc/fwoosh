@@ -559,6 +559,10 @@ function nearSlag(x,y,r){ for(const s of slag){ if(dist(x,y,s.x,s.y) < r + K.R_S
 function hunters(){ return cells.filter(c=>c.hunter); }                 // flaming villagers
 function crowd(){ return cells.filter(c=>!c.hunter && !c.saving); }     // calm, still-present villagers
 function ring(x,y,r0,r1,col,life){ rings.push({x,y,r0,r1,col,t:0,life:life||0.35}); }
+// ring() calls now render as soft GLOW POPS (see the render loop) — no more hard flashing circles.
+function hexRGB(h){ if(typeof h!=='string' || h[0]!=='#') return '255,210,150';
+  h=h.slice(1); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const n=parseInt(h,16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); }
 
 // ---------------------------------------------------------------- input
 let ptr = { down:false, sx:0, sy:0, t:0, swiped:false, onVent:false };
@@ -2427,10 +2431,12 @@ function render(){
           ctx.arc(gx+Math.cos(a)*K.HUSK_R*0.4, h.y+Math.sin(a)*K.HUSK_R*0.5, 1.6, 0, 7); ctx.fill(); }
       }
       ctx.restore();
-      // a REKINDLE prompt ring when you're carrying fire and close-ish
+      // REKINDLE affordance: a soft green bloom under the coal when you're carrying fire (glow, not a ring)
       if(player.heat >= K.REKINDLE_COST && dist(h.x,h.y,player.x,player.y) < 130){
-        ctx.globalAlpha = 0.35+0.25*Math.sin(frame*0.25); ctx.strokeStyle='#8affc1'; ctx.lineWidth=2;
-        ctx.beginPath(); ctx.arc(gx, h.y, K.HUSK_R+8, 0, 7); ctx.stroke(); ctx.globalAlpha=1;
+        const pr = K.HUSK_R+13, pg = ctx.createRadialGradient(gx,h.y,1,gx,h.y,pr);
+        const pa = (0.24+0.14*Math.sin(frame*0.2)).toFixed(3);
+        pg.addColorStop(0,'rgba(138,255,193,'+pa+')'); pg.addColorStop(0.6,'rgba(138,255,193,'+(pa*0.5).toFixed(3)+')'); pg.addColorStop(1,'rgba(138,255,193,0)');
+        ctx.fillStyle=pg; ctx.beginPath(); ctx.arc(gx,h.y,pr,0,7); ctx.fill();
       }
     });
   }
@@ -2453,8 +2459,8 @@ function render(){
   for(const d of demons){
     const town = d.source === 'town';
     wrapDraw(d.x, X=>{
-      const gr=K.DEMON_R*1.7+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
-      if(town){ g.addColorStop(0,'rgba(180,110,150,0.6)'); g.addColorStop(1,'rgba(140,90,140,0)'); }
+      const gr=(town?K.DEMON_R*2.15:K.DEMON_R*1.7)+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
+      if(town){ g.addColorStop(0,'rgba(198,128,190,0.72)'); g.addColorStop(0.6,'rgba(150,95,155,0.30)'); g.addColorStop(1,'rgba(140,90,140,0)'); }
       else { g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)'); }
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,d.y,gr,0,7); ctx.fill();
       groundShadow(ctx, X, d.y+K.DEMON_R*1.2, K.DEMON_R*1.0, K.DEMON_R*0.34);
@@ -2463,26 +2469,24 @@ function render(){
       if(!drawAnim(ctx,'firedemon', X, d.y, K.DEMON_R*3.2, {fps:12, flip}) &&
          !drawSpr(ctx,'firedemon', X, d.y, K.DEMON_R*3.0, {flip})){
         ctx.fillStyle= town?'#b06a8a':'#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
-      // town wraith: a cool violet rim so it reads as the walking dead + "dash to kill", no per-sprite filter cost
-      if(town){ ctx.globalAlpha=0.5+0.2*Math.sin(frame*0.2+(d.ph||0)); ctx.strokeStyle='#c79be0'; ctx.lineWidth=2;
-        ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R+3,0,7); ctx.stroke(); }
       ctx.globalAlpha = 1;
     });
   }
 
   // ---- ARSON IMPS: Keith's fire messengers + a telegraph to their mark, so you can read the threat and cut it off
   for(const a of arson){
-    // warning line to the target villager (dashed, pulsing) + a target ring on the mark
+    // telegraph: a faint dashed FUSE LINE to the mark (a line, not a ring) + a warning GLOW on the villager
     if(a.tgt){
+      const pulse = 0.5 + 0.3*Math.sin(frame*0.3 + (a.ph||0));
       ctx.save();
-      const pulse = 0.35 + 0.25*Math.sin(frame*0.3 + (a.ph||0));
-      ctx.globalAlpha = (a.warn>0 ? 0.5 : 0.8) * pulse;
-      ctx.strokeStyle = '#ff5233'; ctx.lineWidth = 2; ctx.setLineDash([7,7]); ctx.lineDashOffset = -frame*0.6;
+      ctx.globalAlpha = (a.warn>0 ? 0.28 : 0.5) * pulse;
+      ctx.strokeStyle = '#ff7a4d'; ctx.lineWidth = 2; ctx.setLineDash([6,8]); ctx.lineDashOffset = -frame*0.6;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.tgt.x, a.tgt.y); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 0.55*pulse + 0.2; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.arc(a.tgt.x, a.tgt.y, K.R_CELL+7, 0, 7); ctx.stroke();
-      ctx.restore();
+      ctx.setLineDash([]); ctx.restore();
+      const tr = K.R_CELL+11, tg = ctx.createRadialGradient(a.tgt.x,a.tgt.y,1,a.tgt.x,a.tgt.y,tr);
+      const ta = (0.34*pulse+0.12).toFixed(3);
+      tg.addColorStop(0,'rgba(255,80,50,'+ta+')'); tg.addColorStop(0.6,'rgba(255,80,50,'+(ta*0.5).toFixed(3)+')'); tg.addColorStop(1,'rgba(255,80,50,0)');
+      ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(a.tgt.x,a.tgt.y,tr,0,7); ctx.fill();
     }
     wrapDraw(a.x, X=>{
       const R = K.ARSON_R;
@@ -2497,12 +2501,16 @@ function render(){
     });
   }
 
-  // ---- rings
+  // ---- rings -> soft GLOW POPS: a bloom of light that expands and fades. No hard stroked circles.
   for(const r of rings){
-    const k = r.t/r.life, rr = r.r0 + (r.r1-r.r0)*k;
-    ctx.globalAlpha = (1-k)*0.85; ctx.strokeStyle = r.col; ctx.lineWidth = 3;
-    wrapDraw(r.x, X=>{ ctx.beginPath(); ctx.arc(X,r.y,rr,0,7); ctx.stroke(); });
-    ctx.globalAlpha = 1;
+    const k = r.t/r.life, rr = r.r0 + (r.r1-r.r0)*k, a = (1-k)*(1-k), rgb = hexRGB(r.col);
+    wrapDraw(r.x, X=>{
+      const g = ctx.createRadialGradient(X, r.y, 0, X, r.y, Math.max(1,rr));
+      g.addColorStop(0,   'rgba('+rgb+','+(0.45*a).toFixed(3)+')');
+      g.addColorStop(0.55,'rgba('+rgb+','+(0.22*a).toFixed(3)+')');
+      g.addColorStop(1,   'rgba('+rgb+',0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X, r.y, Math.max(1,rr), 0, 7); ctx.fill();
+    });
   }
 
   // ---- absorb-flourish sparks: fire streaming into you
@@ -2519,8 +2527,10 @@ function render(){
 
   // ---- player (+ surge aura)
   if(surgeT > 0){ wrapDraw(p.x, X=>{
-    ctx.strokeStyle = 'rgba(255,225,140,'+(0.5*(0.6+0.4*Math.sin(frame*0.4))).toFixed(2)+')'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(X, p.y, p.r+18+Math.sin(frame*0.3)*4, 0, 7); ctx.stroke(); }); }
+    const ar = p.r+22+Math.sin(frame*0.3)*4, aa = 0.34*(0.6+0.4*Math.sin(frame*0.4));
+    const ag = ctx.createRadialGradient(X,p.y,p.r*0.5,X,p.y,ar);
+    ag.addColorStop(0,'rgba(255,225,140,0)'); ag.addColorStop(0.6,'rgba(255,225,140,'+(aa*0.6).toFixed(3)+')'); ag.addColorStop(1,'rgba(255,210,110,0)');
+    ctx.fillStyle=ag; ctx.beginPath(); ctx.arc(X,p.y,ar,0,7); ctx.fill(); }); }
   wrapDraw(p.x, X=> SK.player(ctx, X, p));
 
   // ---- boss (riser or apex Keith)
@@ -2537,12 +2547,11 @@ function render(){
     const k = Math.min(1, snipe.t/K.OPP_SNIPE_TELE);
     const rr = K.OPP_SNIPE_R*(1.65 - 0.9*k);
     wrapDraw(snipe.tx, X=>{
-      ctx.strokeStyle = snipe.done ? 'rgba(127,232,255,0.55)' : 'rgba(255,61,122,'+(0.4+0.5*k).toFixed(2)+')';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.arc(X, snipe.ty, rr, 0, 7); ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(X-rr, snipe.ty); ctx.lineTo(X+rr, snipe.ty);
-      ctx.moveTo(X, snipe.ty-rr); ctx.lineTo(X, snipe.ty+rr); ctx.stroke();
+      const col = snipe.done ? '127,232,255' : '255,61,122';
+      const gg = ctx.createRadialGradient(X,snipe.ty,1,X,snipe.ty,rr);
+      gg.addColorStop(0,'rgba('+col+','+(0.4+0.4*k).toFixed(2)+')'); gg.addColorStop(0.55,'rgba('+col+',0.14)'); gg.addColorStop(1,'rgba('+col+',0)');
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(X,snipe.ty,rr,0,7); ctx.fill();
+      ctx.fillStyle='rgba('+col+','+(0.6+0.4*k).toFixed(2)+')'; ctx.beginPath(); ctx.arc(X,snipe.ty,3,0,7); ctx.fill();
     });
     if(!snipe.done){
       const dx = wrapDX(snipe.tx - snipe.ox);
@@ -2640,8 +2649,10 @@ function render(){
         if(!drawSpr(ctx,'ui_charge',cx,yy,ps,{alpha:0.13})){ ctx.fillStyle='rgba(255,150,60,0.13)'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); }
         if(ready){
           const newest=(i===player.charges-1);
-          if(newest && dashPop>0){ ctx.save(); ctx.globalAlpha=Math.min(1,dashPop); ctx.strokeStyle='#ffe6a6'; ctx.lineWidth=2+4*dashPop;
-            ctx.beginPath(); ctx.arc(cx,yy, ps*0.5+(0.55-dashPop)*22, 0,7); ctx.stroke(); ctx.restore(); }
+          if(newest && dashPop>0){ const fr=ps*0.5+(0.55-dashPop)*20, fa=0.55*Math.min(1,dashPop);   // glow pop, not a ring
+            const fg=ctx.createRadialGradient(cx,yy,1,cx,yy,fr);
+            fg.addColorStop(0,'rgba(255,230,166,'+fa.toFixed(3)+')'); fg.addColorStop(0.6,'rgba(255,220,150,'+(fa*0.5).toFixed(3)+')'); fg.addColorStop(1,'rgba(255,220,150,0)');
+            ctx.fillStyle=fg; ctx.beginPath(); ctx.arc(cx,yy,fr,0,7); ctx.fill(); }
           const pop = newest ? 1+Math.max(0,dashPop)*0.5 : 1;
           if(!drawSpr(ctx,'ui_charge',cx,yy,ps*pop,{})){ ctx.fillStyle='#ff8a3d'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); }
         } else if(charging){
