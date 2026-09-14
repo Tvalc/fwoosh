@@ -361,6 +361,10 @@ let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash 
 let META = loadMeta();
 let runEmbers = 0;               // embers minted this run (banked into META at run end)
 let hubScroll = 0, hubSheet = null, wellJustRose = false, hubToast = 0, hubToastMsg = '', hubBtns = [];
+// DISTRICTS: 5 escalating quarters of Ashford. Clearing one (beating its Keith) unlocks the next.
+// selDistrict = the one you're about to play (pick any unlocked); runDistrict = the one this run IS.
+const DISTRICTS = ['MARKET ROW', 'THE ROWHOUSES', 'THE OLD MILL', 'THE CHAPEL', "KEITH'S HOUSE"];
+let selDistrict = 1, runDistrict = 1, runQuota = 12;
 let sparks = [];   // absorb-flourish particles (fire streaming from a saved villager into you)
 let onTitle = true;   // boot on the title/start screen; first tap dismisses it into the game
 let ghost = false;   // test-only: player passes through cells without triggering contact
@@ -413,7 +417,7 @@ function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp))
 // defaults so an old/partial blob degrades instead of crashing.
 function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
-  const d = { v:1, embers:0, saved:0, bestBlaze:0,
+  const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 } },
     hero:'stranger', diary:{ read:[] }, flags:{} };
   if(!s || s.v!==1) return d;
@@ -451,6 +455,8 @@ function buy(building, track){
 // land in the town after a run; raise any building whose saves-milestone you just crossed
 function enterHub(){
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
+  selDistrict = Math.min(5, Math.max(1, META.district||1));   // default the picker to your deepest unlocked
+  if(districtCleared){ hubToast=3.4; hubToastMsg=DISTRICTS[Math.min(4,(META.district||1)-1)]+' UNLOCKED'; districtCleared=false; }
   const rise=(key,at,name)=>{ const b=META.buildings[key]; if(b&&!b.built&&META.saved>=at){ b.built=true; wellJustRose=true; hubToast=3.2; hubToastMsg=name+' STANDS AGAIN'; return true; } return false; };
   rise('well', K.WELL_RISE, 'THE WELL') || rise('forge', K.FORGE_RISE, 'THE FORGE');
   saveMeta();
@@ -472,8 +478,8 @@ function foldOpp(){
   if(oppScarred) opp.readsBroken = (opp.readsBroken||0) + 1;   // you defied the read
   if(gotSniped)  opp.timesSniped = (opp.timesSniped||0) + 1;   // he called your habit
   saveOpp();
-  // META: bank this run's embers (+ win bounty). META.saved was already incremented per save in absorb().
-  if(won) runEmbers += K.WIN_EMBERS;
+  // META: bank this run's embers (+ win bounty, scaled by how deep the district was). saved already counted.
+  if(won) runEmbers += K.WIN_EMBERS * runDistrict;
   META.embers += runEmbers;
   saveMeta();
 }
@@ -539,6 +545,8 @@ function reset(seed){
   mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
   boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
   runEmbers = 0; applyUpgrades();      // META: fresh run-ember tally + apply purchased upgrades to this run
+  runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Keith LV)
+  runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Keith rises
   powerups = []; surgeT = 0; mergeT = 0;
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
@@ -955,7 +963,7 @@ function step(){
   // an edge against Keith. Miss it, and the villager catches. (Sends speed up as the run wears on.)
   if(!introWalk && !duelActive){
     arsonT += dt;
-    const cadence = Math.max(K.ARSON_MIN, K.ARSON_EVERY - elapsed*0.012);
+    const cadence = Math.max(K.ARSON_MIN, K.ARSON_EVERY - elapsed*0.012 - (runDistrict-1)*0.22);
     if(arsonT >= cadence){ arsonT = 0; spawnArson(); }
   }
   stepArson(dt);
@@ -965,7 +973,7 @@ function step(){
   }
 
   // ---- THE FINALE: save enough of the town and Keith rises to be dealt with
-  if(!duelActive && !won && saved >= K.SAVE_QUOTA){ startDuel(); }
+  if(!duelActive && !won && saved >= runQuota){ startDuel(); }
 
   const hn = hunters().length;
   if(hn > peakHunters) peakHunters = hn;
@@ -1436,8 +1444,8 @@ function startDuel(){
   arson = []; husks = [];                            // imps stand down + coals go cold for the duel
   demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (they become Keith's reinforcements below)
   shots = []; wake = []; pulses = [];
-  // Keith LEVELS UP every time you've beaten him. Movesets are cumulative; each level demands more dumped heat.
-  const level = Math.min(5, (opp.duelWins||0) + 1);
+  // Keith's LEVEL is the district you're in (deeper district = more movesets). Movesets are cumulative.
+  const level = Math.min(5, runDistrict);
   const roster = ['charge','spit','wake','demon','siphon'];   // unlocked one-per-level, cumulative
   const moves = roster.slice(0, level);
   // THE EDGE is cashed here: a lead pre-fills your dump progress; a deficit makes him demand more.
@@ -1472,10 +1480,15 @@ function winDuel(){
   CG.stop(); CG.happy();                       // CrazyGames: round ended, a win
   score += K.DUEL_BONUS;
   opp.duelWins = (opp.duelWins||0) + 1;
+  // DISTRICT progression: clearing your deepest district opens the next (the ember bounty scales at line ~481).
+  districtCleared = false;
+  if(runDistrict >= (META.district||1) && (META.district||1) < 5){ META.district = runDistrict + 1; districtCleared = true; }
+  saveMeta();
   foldOpp();
   ring(boss.x, boss.y, 20, 320, '#8affc1', 1.0);
   flash = DT*3;
 }
+let districtCleared = false;   // set on a win that unlocked a new district (for the game-over banner)
 
 function bossDown(){
   const b = boss;
@@ -2439,6 +2452,8 @@ function hubClick(x,y){
 }
 function hubAct(a){
   if(a==='play'){ reset(); return; }
+  if(a==='dprev'){ selDistrict = Math.max(1, selDistrict-1); return; }
+  if(a==='dnext'){ selDistrict = Math.min(Math.min(5,META.district||1), selDistrict+1); return; }
   if(a==='diary'){ hubSheet='diary'; return; }
   if(a==='close'){ hubSheet=null; return; }
   if(a==='well'||a==='forge'){ hubSheet = META.buildings[a].built ? a : null; return; }
@@ -2503,13 +2518,24 @@ function drawHub(ctx){
   panel(ctx, 60, chY, VW-120, 40, 10, 'rgba(255,180,80,0.14)', 'rgba(255,180,80,0.4)');
   ctx.textAlign='center'; ctx.fillStyle='#ffcf8a'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText(nextTxt, VW/2, chY+26);
 
-  // --- PLAY button
+  // --- PLAY button = DISTRICT launcher (‹ ›to pick any unlocked district, center to enter)
   const pbY=VH-128, pbW=VW-120, pbX=60, pbH=92, pulse=0.5+0.5*Math.sin(frame*0.08);
+  const unlocked=Math.min(5,META.district||1), canPrev=selDistrict>1, canNext=selDistrict<unlocked;
   panel(ctx, pbX, pbY, pbW, pbH, 16, 'rgba(255,120,40,'+(0.34+0.14*pulse).toFixed(2)+')', '#ff9a45');
   ctx.textAlign='center';
-  if(!drawTextFit(ctx,'SAVE THE TOWN', VW/2, pbY+50, 32, pbW*0.86)){ ctx.fillStyle='#fff'; ctx.font='800 36px "Pixelify",system-ui,sans-serif'; ctx.fillText('SAVE THE TOWN', VW/2, pbY+52); }
-  ctx.fillStyle='rgba(255,240,220,0.85)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText(isTouch?'tap to run':'SPACE / click to run', VW/2, pbY+76);
-  hubB(pbX, pbY, pbW, pbH, 'play');
+  // district line
+  ctx.fillStyle='rgba(255,240,220,0.92)'; ctx.font='800 15px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('DISTRICT '+selDistrict+' / 5  ·  KEITH LV.'+selDistrict, VW/2, pbY+26);
+  if(!drawTextFit(ctx,DISTRICTS[selDistrict-1], VW/2, pbY+56, 30, pbW*0.66)){ ctx.fillStyle='#fff'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillText(DISTRICTS[selDistrict-1], VW/2, pbY+58); }
+  const foot = (selDistrict===unlocked && unlocked<5) ? 'beat Keith to open the next district' : (isTouch?'tap to enter':'SPACE / click to enter');
+  ctx.fillStyle='rgba(255,240,220,0.8)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(foot, VW/2, pbY+78);
+  // arrows
+  ctx.font='800 40px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center';
+  ctx.fillStyle = canPrev ? '#ffe6c8' : 'rgba(255,230,200,0.22)'; ctx.fillText('‹', pbX+30, pbY+58);
+  ctx.fillStyle = canNext ? '#ffe6c8' : 'rgba(255,230,200,0.22)'; ctx.fillText('›', pbX+pbW-30, pbY+58);
+  hubB(pbX, pbY, pbW, pbH, 'play');                          // center enters
+  if(canPrev) hubB(pbX, pbY, 60, pbH, 'dprev');             // ‹ (checked before play — pushed later)
+  if(canNext) hubB(pbX+pbW-60, pbY, 60, pbH, 'dnext');      // ›
 
   // --- sheets
   if(hubSheet==='well'||hubSheet==='forge') drawShopSheet(ctx, hubSheet);
@@ -2874,7 +2900,7 @@ function render(){
     // OBJECTIVE
     if(!duelActive){
       // RESCUE COUNTER — a row of villager SILHOUETTES that fill in with happy, saved villagers.
-      const q=K.SAVE_QUOTA, ih=40, iw=Math.round(ih*0.675), gap=5;
+      const q=runQuota, ih=40, iw=Math.round(ih*0.675), gap=5;
       const rowW=q*iw+(q-1)*gap, x0=(VW-rowW)/2, by=128;              // by = the ground line the villagers stand on
       const sil=silhouette('happy'), asp=(sprReady('happy')?MAKKO_IMG.happy.naturalWidth/MAKKO_IMG.happy.naturalHeight:0.675);
       for(let i=0;i<q;i++){
@@ -3139,6 +3165,7 @@ window.__fwoosh = {
     venting:player.venting, demons:demons.length, hurtCd:+(player.hurtCd||0).toFixed(3),
     arson:arson.length, intercepts, edge:+edge.toFixed(2),
     husks:husks.length, wraiths:demons.filter(d=>d.source==='town').length,
+    runDistrict, runQuota, metaDistrict:META.district,
     keithLv:boss&&boss.level, keithMove:boss&&boss.move, dumpNeeded:boss&&boss.dumpNeeded,
     allies:allies.length, shots:shots.length, wake:wake.length, pulses:pulses.length, shield:boss&&!!boss.shield,
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
@@ -3202,7 +3229,8 @@ window.__fwoosh = {
   bossState(){ return boss ? { kind:boss.kind, state:boss.state, x:Math.round(boss.x), y:Math.round(boss.y),
     fuse:+boss.fuse.toFixed(2), downs:boss.downs, t:+(boss.t||0).toFixed(2) } : null; },
   forceDuel(){ startDuel(); return this.bossState(); },
-  setWins(n){ opp.duelWins = n; return { duelWins:opp.duelWins }; },   // sets Keith's level to n+1 next duel
+  setWins(n){ opp.duelWins = n; return { duelWins:opp.duelWins }; },
+  setDistrict(sel, unlocked){ selDistrict = sel||1; if(unlocked!=null){ META.district = unlocked; saveMeta(); } return { selDistrict, metaDistrict:META.district }; },
   keithMove(k){ if(boss&&boss.kind==='keith'){ boss.move=null; boss.moveCd=0; startKeithMove(boss,k); } return { move:boss&&boss.move }; },
   duelFX(){ return { shots:shots.length, wake:wake.length, pulses:pulses.length, demons:demons.length, allies:allies.length, move:boss&&boss.move, shield:boss&&!!boss.shield }; },
   riseNow(){ slagThisRun = nextRiserAt; maybeRise(); return this.bossState(); },
