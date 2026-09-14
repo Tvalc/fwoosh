@@ -101,6 +101,18 @@ const K = {
   HEAT_MAX: 6,                      // fires you can carry at once
   HEAT_VENT: 0.30,                  // sec per heat shed while BRACING (running does NOT cool — fire persists)
   SPARK_EVERY: 2.6,                 // Keith ignites a fresh villager this often
+  // ARSON IMPS — Keith no longer ignites villagers out of thin air. He SENDS a fire imp in from an edge that
+  // flies to a chosen villager and torches it on contact. DASH/run into the imp first to INTERCEPT it:
+  // you eat its fire (+heat), it mints bonus embers, and it banks an edge you cash in against Keith at the duel.
+  ARSON_EVERY: 2.6,                 // how often Keith sends an imp (scales down as the town heats up)
+  ARSON_MIN: 1.4,                   // fastest send cadence
+  ARSON_SPD: 156,                   // imp flight speed toward its mark (a hair faster than you run, so cut the angle)
+  ARSON_MAX: 4,                     // imps in flight at once
+  ARSON_R: 15,                      // imp radius (intercept + reach-the-villager)
+  ARSON_WARN: 0.45,                 // spawn telegraph: the imp hovers at the edge this long before it commits
+  ARSON_HEAT: 1,                    // heat you take when you intercept (its fire is now yours)
+  ARSON_EMBERS: 4,                  // bonus embers per intercept (×1.5 on a dash intercept)
+  ARSON_EDGE_PER: 0.34,            // duel edge banked per intercept (6 clean intercepts ~= one free Keith down)
   SPREAD_R: 52,                     // a flaming villager torches calm ones within this
   SPREAD_EVERY: 0.9,               // spread check cadence per flaming villager
   SPREAD_CHANCE: 0.5,              // chance a nearby calm villager catches on a check
@@ -293,6 +305,10 @@ let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager wh
 let dashPop = 0;     // flourish pop when a dash charge finishes recharging
 let demons = [];     // fire demons summoned while venting (attack player + villagers)
 let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
+let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
+let arsonT = 0;      // send-cadence timer
+let intercepts = 0, runEdge = 0;   // imps you cut off this run + the duel edge they bank (spent at startDuel)
+let arsonSeen = false;   // first-imp teach line fires once
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
@@ -483,6 +499,7 @@ function reset(seed){
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
   demons = []; ventSwarmT = 0; demonSpawnT = 0;
+  arson = []; arsonT = 0; intercepts = 0; runEdge = 0; arsonSeen = false;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
@@ -833,13 +850,15 @@ function step(){
     absorb(c); break;
   }
 
-  // ---- Keith's fire keeps seeding the town; villagers keep arriving so it never goes quiet
-  if(!introWalk){
-    sparkT += dt;
-    if(sparkT >= K.SPARK_EVERY){ sparkT = 0;
-      const calm = crowd(); if(calm.length) ignite(calm[Math.floor(rnd()*calm.length)], 'spark');
-    }
+  // ---- Keith no longer ignites villagers from thin air: he SENDS fire imps in from the edges, each flying to a
+  // chosen villager to torch it. Cut the imp off (run/dash into it) to INTERCEPT — eat its fire, mint embers, bank
+  // an edge against Keith. Miss it, and the villager catches. (Sends speed up as the run wears on.)
+  if(!introWalk && !duelActive){
+    arsonT += dt;
+    const cadence = Math.max(K.ARSON_MIN, K.ARSON_EVERY - elapsed*0.012);
+    if(arsonT >= cadence){ arsonT = 0; spawnArson(); }
   }
+  stepArson(dt);
   respawnT += dt;
   if(respawnT >= K.CROWD_RESPAWN){ respawnT = 0;
     if(crowd().length + hunters().length < K.CROWD_CAP) spawnCrowd(false);
@@ -1039,6 +1058,53 @@ function stepDemons(dt){
   }
 }
 
+// ---- ARSON IMPS: Keith's messengers of fire. Spawn at an edge, hover a beat (telegraph), then fly to a marked
+// villager and torch it. The player's counter-play: intercept before it lands.
+function spawnArson(){
+  if(arson.length >= K.ARSON_MAX) return;
+  const calm = crowd().filter(c => !arson.some(a => a.tgt === c));   // don't double-book the same villager
+  if(!calm.length) return;
+  const c = calm[Math.floor(rnd()*calm.length)];
+  // enter from the edge nearest the mark, so it reads as arriving from outside
+  const cand = [ {x:K.EDGE, y:c.y}, {x:VW-K.EDGE, y:c.y}, {x:c.x, y:40}, {x:c.x, y:VH-40} ];
+  const e = cand.reduce((b,p)=> dist(p.x,p.y,c.x,c.y) < dist(b.x,b.y,c.x,c.y) ? p : b);
+  arson.push({ x:e.x, y:e.y, tgt:c, t:0, warn:K.ARSON_WARN, ph:rnd()*7 });
+  if(!arsonSeen){ arsonSeen = true; callout = { text:'KEITH SENDS A FIRE IMP — CUT IT OFF', t:0, life:1.9, good:false }; }
+}
+function stepArson(dt){
+  if(!arson.length) return;
+  const p = player;
+  for(let i=arson.length-1;i>=0;i--){ const a = arson[i]; a.t += dt;
+    // the mark left the pool (saved/burning/gone) -> retarget to the nearest calm one, or wink out
+    if(!a.tgt || a.tgt.dead || a.tgt.hunter || a.tgt.saving){
+      const calm = crowd();
+      a.tgt = calm.length ? calm.reduce((b,c)=> dist(c.x,c.y,a.x,a.y) < dist(b.x,b.y,a.x,a.y) ? c : b) : null;
+      if(!a.tgt){ arson.splice(i,1); continue; }
+    }
+    if(!god && dist(a.x,a.y,p.x,p.y) <= K.ARSON_R + p.r){ interceptArson(a); arson.splice(i,1); continue; }   // INTERCEPT
+    if(a.warn > 0){ a.warn -= dt; continue; }                    // telegraph hover at the edge
+    const dx = wrapDX(a.tgt.x-a.x), dy = a.tgt.y-a.y, m = Math.hypot(dx,dy)||1;
+    a.x += (dx/m)*K.ARSON_SPD*dt; a.y += (dy/m)*K.ARSON_SPD*dt;
+    if(dist(a.x,a.y,a.tgt.x,a.tgt.y) <= K.ARSON_R + K.R_CELL){    // it lands -> torch the villager
+      if(!a.tgt.saving && a.tgt.grace <= 0 && !a.tgt.hunter) ignite(a.tgt,'arson');
+      arson.splice(i,1);
+    }
+  }
+}
+function interceptArson(a){
+  const p = player;
+  intercepts++; runEdge += K.ARSON_EDGE_PER;
+  const dashing = p.lunge > 0;
+  p.heat = Math.min(K.HEAT_MAX, p.heat + K.ARSON_HEAT);
+  let em = Math.round(K.ARSON_EMBERS * (dashing ? 1.5 : 1));
+  em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
+  runEmbers += em;
+  p.absorbPop = 0.3; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
+  ring(a.x, a.y, 4, 52, '#ffd27a', 0.5);
+  for(let k=0;k<11;k++){ const ang=rnd()*7; sparks.push({x:a.x,y:a.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(ang)*150,vy:Math.sin(ang)*150,hue:22+rnd()*30}); }
+  callout = { text: dashing ? 'INTERCEPTED! +EDGE' : 'CUT OFF! +EDGE', t:0, life:0.9, good:true };
+}
+
 function becomeSlag(c){
   slag.push({x:c.x,y:c.y});
   c.dead = true; slagThisRun++;
@@ -1068,10 +1134,15 @@ function startDuel(){
   duelActive = true; snipeUsed = true; snipe = null;
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
   slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
+  arson = [];                                        // imps stand down for the duel
+  const edge = Math.min(1, Math.floor(runEdge));     // the intercepts you banked = a head-start on Keith (capped)
   boss = { kind:'keith', x:gx, y:gy, r:K.KEITH_R, state:'rising', t:K.BOSS_RISE_T,
-           fuse:0, downs:0, tagCd:0, vx:0, vy:0 };
+           fuse:0, downs:edge, tagCd:0, vx:0, vy:0 };
   ring(gx, gy, K.R_SLAG, 140, '#ff3d7a', 0.8);
-  callout = { text: STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length], t:0, life:1.8, good:false };
+  const riseTxt = edge > 0
+    ? 'YOUR INTERCEPTS BIT DEEP · KEITH ' + edge + '/' + K.KEITH_DOWNS + ' DOWN'
+    : STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length];
+  callout = { text: riseTxt, t:0, life:2.0, good: edge > 0 };
   flash = DT*2;
 }
 
@@ -2269,6 +2340,33 @@ function render(){
     });
   }
 
+  // ---- ARSON IMPS: Keith's fire messengers + a telegraph to their mark, so you can read the threat and cut it off
+  for(const a of arson){
+    // warning line to the target villager (dashed, pulsing) + a target ring on the mark
+    if(a.tgt){
+      ctx.save();
+      const pulse = 0.35 + 0.25*Math.sin(frame*0.3 + (a.ph||0));
+      ctx.globalAlpha = (a.warn>0 ? 0.5 : 0.8) * pulse;
+      ctx.strokeStyle = '#ff5233'; ctx.lineWidth = 2; ctx.setLineDash([7,7]); ctx.lineDashOffset = -frame*0.6;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.tgt.x, a.tgt.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 0.55*pulse + 0.2; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(a.tgt.x, a.tgt.y, K.R_CELL+7, 0, 7); ctx.stroke();
+      ctx.restore();
+    }
+    wrapDraw(a.x, X=>{
+      const R = K.ARSON_R;
+      const gr = R*1.9 + 3*Math.sin(frame*0.5+(a.ph||0)), g = ctx.createRadialGradient(X,a.y,1,X,a.y,gr);
+      g.addColorStop(0,'rgba(255,150,60,0.7)'); g.addColorStop(1,'rgba(255,80,30,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,a.y,gr,0,7); ctx.fill();
+      const flip = (a.tgt ? a.tgt.x<a.x : player.x<a.x);
+      const bob = a.warn>0 ? 2*Math.sin(frame*0.4+(a.ph||0)) : 0;   // hover-bob during the telegraph
+      if(!drawAnim(ctx,'firedemon', X, a.y+bob, R*2.5, {fps:14, flip}) &&
+         !drawSpr(ctx,'firedemon', X, a.y+bob, R*2.4, {flip})){
+        ctx.fillStyle='#ff7a3a'; ctx.beginPath(); ctx.arc(X,a.y+bob,R*0.9,0,7); ctx.fill(); }
+    });
+  }
+
   // ---- rings
   for(const r of rings){
     const k = r.t/r.life, rr = r.r0 + (r.r1-r.r0)*k;
@@ -2616,6 +2714,7 @@ window.__fwoosh = {
     crowd:crowd().length, hunters:hunters().length, slag:slag.length,
     heat:player.heat, hp:+(player.hp!=null?player.hp:1).toFixed(3), saved, dumped,
     venting:player.venting, demons:demons.length, hurtCd:+(player.hurtCd||0).toFixed(3),
+    arson:arson.length, intercepts, runEdge:+runEdge.toFixed(2),
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
     passeeId:player.passeeId, passT:+player.passT.toFixed(3), hitstop:+hitstop.toFixed(3),
@@ -2686,6 +2785,8 @@ window.__fwoosh = {
   grudgeAt(x,y,scar){ opp.grudge={x:x,y:y}; oppScarred=!!scar; slag.push({x:x,y:y,grudge:true}); return this.oppState(); },
   winNow(){ if(!boss) startDuel(); winDuel(); return this.state(); },
   setHeat(n){ player.heat = Math.max(0, Math.min(K.HEAT_MAX, n)); return this.state(); },
+  spawnArson(){ spawnArson(); return { arson: arson.map(a=>({x:Math.round(a.x),y:Math.round(a.y),warn:+a.warn.toFixed(2),tgt:a.tgt&&a.tgt.id})) }; },
+  arson(){ return arson.map(a=>({x:Math.round(a.x),y:Math.round(a.y),warn:+a.warn.toFixed(2),tgtId:a.tgt&&a.tgt.id})); },
   vent(v){ player.venting = v===undefined?true:!!v; return { venting:player.venting, heat:player.heat, hp:+player.hp.toFixed(3), demons:demons.length }; },
   setHp(v){ player.hp = Math.max(0, Math.min(1, v)); return this.state(); },
   setHearts(n){ maxHearts = Math.max(1, Math.round(n)); return { maxHearts }; },
