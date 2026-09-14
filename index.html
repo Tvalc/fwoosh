@@ -1770,7 +1770,7 @@ const SKINS = {
       if(c.saving){
         // SAVED! — the Makko teleport animation: burning agony -> purified/healed -> pulled up into the light.
         const t=Math.min(1,(c.saveT||0)/K.SAVE_ANIM_DUR), fi=Math.min(17,Math.floor(t*18));
-        const H=K.R_CELL*8.6;                                  // tall cell: villager at the base, light column above
+        const H=K.R_CELL*5.0;                                  // sized so the villager matches the running townsfolk; light column rises above
         const sh=1-Math.min(1,t*1.4);                          // ground shadow fades as they lift into the light
         if(sh>0){ ctx.save(); ctx.globalAlpha=sh; groundShadow(ctx, X, y+K.R_CELL*1.4, K.R_CELL*1.0, K.R_CELL*0.3); ctx.restore(); }
         const alpha = t>0.9 ? Math.max(0,1-(t-0.9)/0.1) : 1;   // dissolve on the last beat = transported / gone
