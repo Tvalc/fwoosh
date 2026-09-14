@@ -1,2 +1,4 @@
-# Local art pipeline / source (game is self-contained in index.html)
+# Local art pipeline / source (processed sprites live in media/)
 assets/
+dist/
+node_modules/

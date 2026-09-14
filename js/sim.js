@@ -1,0 +1,1056 @@
+"use strict";
+// ---------------------------------------------------------------- FWOOSH
+// Static HTML/CSS/JS, zero runtime deps. Freeze-tag abstracted: you are LIT, the only cure is
+// touching someone dark, and everyone who burns all the way down leaves a wall.
+//
+// PHASE 1: the action core (drift/dash/brace, PASS/EAT/SLAG, backpass, cooldown, relight).
+// PHASE 2A (THE OPP, first slice): a rival assembled from HOW you played last session.
+//   It reads two axes so far — LATENESS (your habitual late-hold fuse) and TERRITORY
+//   (your most-passed grid cell). Next run it drops a GRUDGE WALL on your spot and
+//   SNIPES ~0.3s before your habitual dump. You beat reads live; they scar off.
+//   Score is NEVER a meta input — the coupling is coordinates + timing, not currency.
+//   Persistence: one localStorage key `fwoosh.opp`. Crew/apex-duel/other axes NOT built yet.
+//
+// Phase-2A checkpoint: on run 2, does the grudge wall + snipe + callout read as
+//   "it studied me, I want to beat it" — or "the game placed a random wall and cheated"?
+//
+// Open core checkpoint (still): at minute three, is the slag-filled arena more
+//   interesting or just more annoying? (The apex duel, unbuilt, is the intended answer.)
+
+
+// ---------------------------------------------------------------- rng (deterministic)
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let SEED = 90909, rnd = mulberry32(SEED);
+
+// ---------------------------------------------------------------- state
+let cells, slag, trail, rings, player, score, elapsed, hunterFuse, cooldowns,
+    armed, respawnT, mode, popCause, nextId, hitstop, slowmo, flash, frame, hist, peakHunters, noFireT;
+let sparkT = 0, heatCoolT = 0, dumped = 0, saved = 0, overloadT = 0;   // ABSORBER loop state
+let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager when one fills in
+let dashPop = 0;     // flourish pop when a dash charge finishes recharging
+let edgePop = 0;     // brief pulse on the EDGE bar when it shifts
+let demons = [];     // fire demons summoned while venting (attack player + villagers)
+let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
+let husks = [];      // villagers you failed to save: temporary soft-solid coals that crack into roaming wraiths
+let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
+let shots = [];      // Keith's ember-spit fireballs (duel)
+let wake = [];       // Keith's wake-of-fire segments (duel) — absorbable heat
+let pulses = [];     // Keith's siphon-meltdown ring pulses (duel)
+let allies = [];     // rescued villagers fighting at your side in the duel — each blocks one attack
+let arsonT = 0;      // send-cadence timer
+let intercepts = 0, edge = 0;   // imps you cut off this run + THE EDGE (town war balance; + you, - Keith)
+let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines fire once
+let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
+                     // so the burn transformation is fraction-based; more hearts = proportionally tankier.
+let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
+let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash economy, upgraded at The Forge
+// ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
+let runEmbers = 0;               // embers minted this run (banked into META at run end)
+let hubScroll = 0, hubSheet = null, wellJustRose = false, hubToast = 0, hubToastMsg = '', hubBtns = [];
+
+let diaryOpen = null, diaryPage = 0;   // null = chapter list; else the open chapter index
+let sparks = [];   // absorb-flourish particles (fire streaming from a saved villager into you)
+let onTitle = true;   // boot on the title/start screen; first tap dismisses it into the game
+let ghost = false;   // test-only: player passes through cells without triggering contact
+let god = false;     // test-only: fuse refills instead of POPping, so long-run arena state is measurable
+
+// ---- THE OPP: a rival built from how you played last session (persistent)
+let runBuf = [], snipe = null, snipeFuse = null, snipeUsed = false,
+    introT = 0, introKind = 'keith', callout = null, oppScarred = false, gotSniped = false;
+let boss = null, duelActive = false, won = false, slagThisRun = 0, nextRiserAt = 0;
+let powerups = [], surgeT = 0, mergeT = 0;
+let loreT = 0;   // drip timer for Keith's reason-lore callouts
+let overloadCd = 0;   // i-frame timer after a hunter overloads a lit player
+let intro = null;   // { phase:'walkin'|'talk', i, lineT }  (null = not running)
+
+
+function reset(seed){
+  if(seed !== undefined){ SEED = seed; }
+  rnd = mulberry32(SEED);
+  cells = []; slag = []; trail = []; rings = []; hist = [];
+  score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
+  mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
+  boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
+  runEmbers = 0; applyUpgrades();      // META: fresh run-ember tally + apply purchased upgrades to this run
+  runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Keith LV)
+  runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Keith rises
+  powerups = []; surgeT = 0; mergeT = 0;
+  hitstop = 0; slowmo = 0; flash = 0;
+  hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
+  demons = []; ventSwarmT = 0; demonSpawnT = 0;
+  arson = []; arsonT = 0; intercepts = 0; edge = 0; arsonSeen = false;
+  husks = []; huskSeen = false; edgePop = 0;
+  shots = []; wake = []; pulses = []; allies = []; demonKillSeen = false; pendCall = null;
+  player = {
+    x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
+    spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
+    venting: false, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
+    bracing: false, r: K.R_PLAYER,
+    lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
+    heat: 0,                              // ABSORBER: fires currently carried (0..HEAT_MAX)
+    hp: 1,                                // HEALTH (0..1): burns down while carrying fire, recovers when clear
+    passeeId: 0, passT: 999, passVal: 0,
+  };
+  setupOpp();                                 // grudge wall + snipe, before crowd so they avoid it
+  for(let i=0;i<K.CROWD_START;i++) spawnCrowd(true);
+  // state the objective plainly on run start (the intro's dialogue box covers the very first boot)
+  if(!intro) callout = { text:'SAVE THE VILLAGERS — run into the burning ones', t:0, life:3.4, good:null };
+  if(typeof CG!=='undefined') CG.start();     // CrazyGames: a run begins
+}
+
+function spawnCrowd(initial){
+  let x, y, tries = 0;
+  do{
+    x = 40 + rnd()*(VW-80);
+    y = 90 + rnd()*(VH-180);
+    tries++;
+  } while(tries < 30 && (dist(x,y,player.x,player.y) < (initial?170:260) || nearSlag(x,y,K.R_CELL+6) || nearObstacle(x,y,K.R_CELL+8)));
+  cells.push({
+    id: nextId++, x, y, vx:0, vy:0, hunter:false, fuse:0, grace:0, born:elapsed,
+    ph: rnd()*Math.PI*2, ps: 0.5 + rnd()*0.7, dir: rnd()*Math.PI*2,
+  });
+}
+
+// ---------------------------------------------------------------- helpers
+function dist(ax,ay,bx,by){ let dx = wrapDX(ax-bx), dy = ay-by; return Math.hypot(dx,dy); }
+function wrapDX(dx){ return dx; }   // arena is enclosed (solid side walls) — no horizontal wrap
+function nearSlag(x,y,r){ for(const s of slag){ if(dist(x,y,s.x,s.y) < r + K.R_SLAG) return true; } return false; }
+
+// ---- STATIC MAP OBSTACLES: the props baked into the Makko backdrop (well, wagon, barrels, crates) are SOLID,
+// like the border walls. Coords are in game space (720x1280), tuned to line up with the art.
+// circle prop: {x,y,r}; box prop: {x,y,w,h} with x,y = top-left. (window.OBS_DEBUG draws them for tuning.)
+const OBSTACLES = [
+  { x:0,   y:26,   w:193, h:182, label:'crates-TL' },    // two-crate stack, top-left — both boxes, wider right; stops above the floor gap
+  { x:10,  y:296,  w:120, h:182, label:'barrels-L' },    // barrel cluster, upper-left (below the gap)
+  { x:480, y:285,  w:220, h:222, label:'wagon-R' },      // broken wagon, right — covers the raised end + left planks/shovel
+  { x:600, y:512,  w:100, h:95,  label:'crates-R' },     // pot/sack below the wagon (3px taller at top)
+  { x:133, y:1117, r:90,  label:'well-BL' },             // the well, bottom-left — big enough to cover the whole stone rim
+  { x:470, y:1028, w:230, h:204, label:'crates-BR' },    // crate + plank pile, bottom-right (under the mobile HEAL/vent button)
+];
+// Push a circle entity (radius er) out of every obstacle it overlaps. Records the last surface normal on
+// e._nx/e._ny (for deflecting a heading). Returns true if it corrected anything.
+function collideObstacles(e, er){
+  let hit = false;
+  for(const o of OBSTACLES){
+    if(o.r != null){                                     // circle prop
+      const dx = e.x-o.x, dy = e.y-o.y, d = Math.hypot(dx,dy), min = er+o.r;
+      if(d < min && d > 0.001){ e.x = o.x+dx/d*min; e.y = o.y+dy/d*min; e._nx = dx/d; e._ny = dy/d; hit = true; }
+    } else {                                             // box prop: resolve against nearest point
+      const cx = Math.max(o.x, Math.min(e.x, o.x+o.w)), cy = Math.max(o.y, Math.min(e.y, o.y+o.h));
+      const dx = e.x-cx, dy = e.y-cy, d = Math.hypot(dx,dy);
+      if(d < er){
+        if(d > 0.001){ e.x = cx+dx/d*er; e.y = cy+dy/d*er; e._nx = dx/d; e._ny = dy/d; }
+        else {                                           // center inside: eject along the shallowest axis
+          const l = e.x-o.x, rgt = o.x+o.w-e.x, t = e.y-o.y, b = o.y+o.h-e.y, m = Math.min(l,rgt,t,b);
+          if(m===l){ e.x = o.x-er; e._nx=-1; e._ny=0; } else if(m===rgt){ e.x = o.x+o.w+er; e._nx=1; e._ny=0; }
+          else if(m===t){ e.y = o.y-er; e._nx=0; e._ny=-1; } else { e.y = o.y+o.h+er; e._nx=0; e._ny=1; }
+        }
+        hit = true;
+      }
+    }
+  }
+  return hit;
+}
+function nearObstacle(x,y,r){ const e={x,y}; return collideObstacles(e, r); }   // (mutates a throwaway; ok for spawn tests)
+function hunters(){ return cells.filter(c=>c.hunter); }                 // flaming villagers
+function crowd(){ return cells.filter(c=>!c.hunter && !c.saving); }     // calm, still-present villagers
+function ring(x,y,r0,r1,col,life){ rings.push({x,y,r0,r1,col,t:0,life:life||0.35}); }
+// ring() calls now render as soft GLOW POPS (see the render loop) — no more hard flashing circles.
+function hexRGB(h){ if(typeof h!=='string' || h[0]!=='#') return '255,210,150';
+  h=h.slice(1); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const n=parseInt(h,16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); }
+
+
+// ---------------------------------------------------------------- step
+function step(){
+  frame++;
+  if(onTitle) return;                                // title screen: only animate (frame++), no sim
+  if(hitstop > 0){ hitstop -= DT; return; }          // hitstop freezes the sim
+  if(mode !== 'play') return;
+  if(introT > 0){ introT -= DT; if(introT < 0) introT = 0; return; }  // cold-open reveal, sim frozen
+
+  // ---- LIVE intro: sim runs the whole time. During 'walkin' the player auto-walks up as a human;
+  // during 'talk' the dialogue box advances line by line over normal gameplay.
+  const introWalk = intro && intro.phase === 'walkin';
+  if(intro){
+    intro.lineT += DT;
+    if(intro.phase === 'talk'){
+      const line = STORY.intro[intro.i];
+      if(!line){ intro = null; }
+      else {
+        const full = line.text.length * INTRO.CHAR;
+        const hold = INTRO.HOLD + line.text.length*0.012;
+        if(intro.lineT >= full + hold){
+          intro.i++; intro.lineT = 0;
+          if(intro.i >= STORY.intro.length) intro = null;   // done -> pure gameplay
+        }
+      }
+    }
+  }
+
+  const scale = slowmo > 0 ? K.SLOWMO_SCALE : 1;
+  const dt = DT * scale;
+  if(slowmo > 0) slowmo -= DT;
+  if(surgeT > 0) surgeT -= dt;
+  elapsed += dt;
+  if(flash > 0) flash -= DT;
+
+  // (vent is triggered only by the VENT button or SPACE — never by a stray hold — so it can't misfire)
+
+  // ---- player
+  const p = player;
+  if(p.dashCd > 0) p.dashCd -= dt;
+  if(p.hurtCd > 0) p.hurtCd -= dt;
+  if(p.ventCd > 0) p.ventCd -= dt;
+  if(p.ventFlash > 0) p.ventFlash -= dt;
+  // DASH CHARGES recharge over time (max + speed set by The Forge upgrades)
+  if(dashPop > 0) dashPop -= dt*2.2;
+  if(edgePop > 0) edgePop -= dt*2.0;
+  if(p.charges < RUN_MAX_CHARGES){ p.chargeT += dt;
+    while(p.chargeT >= RUN_CHARGE_REFILL && p.charges < RUN_MAX_CHARGES){ p.chargeT -= RUN_CHARGE_REFILL; p.charges++; dashPop = 0.55; } }
+  else p.chargeT = 0;
+
+  // AUTO-RUN: you never stop. Heading persists; with no steering you WEAVE on your own, and the weave
+  // gets wilder as you burn (frantic, harder to control). You DASH to send yourself where you want.
+  const burn = Math.max(0, Math.min(1, 1 - (p.hp!=null ? p.hp : 1)));   // 0 healthy .. 1 near death
+  if(p.lunge <= 0 && !introWalk){
+    const v = heldVec();
+    if(v){ p.hx = v[0]; p.hy = v[1]; }                                  // WASD nudges your heading (desktop)
+    else { const w = (K.WEAVE + burn*K.WEAVE_BURN) * Math.sin(frame*0.05 + p.wph) * dt;
+      const a = Math.atan2(p.hy, p.hx) + w; p.hx = Math.cos(a); p.hy = Math.sin(a); }
+  }
+  if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
+  else { const run = K.RUN * (1 + burn*K.FRANTIC_SPD);                  // frantic = faster as you burn
+    p.spd = p.spd > run ? Math.max(run, p.spd - 1600*dt) : run; }       // ease down from a dash, never below run
+  if(p.venting) p.spd = 0;                                              // venting ROOTS you — exposed while you heal
+  p.r = K.R_PLAYER;
+  if(introWalk){ p.hx = 0; p.hy = -1; p.spd = INTRO.WALK; p.venting = false; }  // scripted entrance
+
+  p.x += p.hx*p.spd*dt;
+  p.y += p.hy*p.spd*dt;
+  if(p.x < K.EDGE){ p.x = K.EDGE; p.hx = Math.abs(p.hx); }        // bounce off the LEFT/RIGHT walls too
+  if(p.x > VW-K.EDGE){ p.x = VW-K.EDGE; p.hx = -Math.abs(p.hx); }
+  if(p.y < 40){ p.y = 40; p.hy = Math.abs(p.hy); }
+  if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
+  if(collideObstacles(p, p.r)){                                   // props are solid like the borders
+    if(p._nx!=null){ p.hx = p._nx; p.hy = p._ny; }               // deflect the auto-run heading off the prop
+    if(p.lunge > 0){ p.lunge = 0; p.spd = 0; }                    // a dash into a prop stops dead (like slag)
+  }
+  if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
+
+  // ---- VENT (HOLD): purge your heat, then heal hearts a half at a time. Rooted + exposed while you hold,
+  // and fire demons pour out of you. The only real way to get hearts back — but it costs you the town.
+  if(p.venting) ventHold(); else { p.ventPurge = 0; p.ventHealAcc = 0; }
+  stepHusks(dt);                                         // failed villagers: rekindle / shove / crack into wraiths
+  stepDemons(dt);                                        // demons live/attack (and linger after you release)
+  if(mode !== 'play') return;                            // a demon (or purge) may have ended the run
+  if(p.heat > 0){ p.trailT = (p.trailT||0) + dt;         // heat trail (ember wisps) while carrying
+    while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); } }
+  p.lit = p.heat > 0;                                   // legacy flag some draws read
+  // ---- HEALTH: carrying fire burns you down (faster the more you hold). Venting heals (in ventHold);
+  // otherwise only a faint idle trickle. So you MUST vent to recover — and eat the demons.
+  if(god || intro){ p.hp = 1; }
+  else if(p.venting){ /* healing handled in ventHold(); no burn while purging it out */ }
+  else if(p.heat > 0){ p.hp -= dt * p.heat * K.HP_DRAIN * (5/maxHearts);   // more hearts -> burn slower
+    if(p.hp <= 0){ p.hp = 0; pop('burned up'); return; } }
+  else { p.hp = Math.min(1, p.hp + dt * RUN_HP_REGEN); }   // faint idle trickle only
+  p.passT += dt;
+
+  // ---- SHATTER: a lunge into slag destroys it, terminates the burst
+  if(p.lunge > 0){
+    for(let i=slag.length-1;i>=0;i--){
+      const s = slag[i];
+      if(dist(p.x,p.y,s.x,s.y) < p.r + K.R_SLAG){
+        slag.splice(i,1);
+        p.lunge = 0; p.spd = 0;                       // you stop dead at the block
+        if(p.lit) p.fuse = Math.max(0.001, p.fuse - K.SHATTER_COST);
+        ring(s.x,s.y,K.R_SLAG,44,'#7c8496',0.30);
+        hitstop = K.HITSTOP*0.6;
+        break;
+      }
+    }
+  } else {
+    // not lunging: slag is solid, push out
+    for(const s of slag){
+      const dx = wrapDX(p.x-s.x), dy = p.y-s.y, d = Math.hypot(dx,dy), min = p.r + K.R_SLAG;
+      if(d < min && d > 0.001){
+        p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d);
+        p.hx = dx/d; p.hy = dy/d;                     // deflect off the wall you made
+      }
+    }
+  }
+
+  // ---- player position history (hunter reaction lag)
+  hist.push({x:p.x,y:p.y});
+  const histMax = Math.ceil(K.HUNTER_LAG/DT)+2;
+  while(hist.length > histMax) hist.shift();
+  const lag = hist[0] || p;
+
+  // ---- cells
+  for(const c of cells){
+    if(c.grace > 0) c.grace -= dt;
+    if(c.hunter){
+      // FLAMING villager: burns down to a wall if you don't reach them; PANICS (catchable); spreads.
+      c.fuse -= dt;
+      if(c.fuse <= 0){ becomeHusk(c); continue; }      // too slow -> the fire finishes them into a husk
+      c.ph += c.ps*2.2*dt;
+      const ang = c.dir + Math.sin(c.ph)*2.2 + Math.sin(c.ph*0.37)*1.1;
+      c.vx = Math.cos(ang)*K.PANIC_SPD; c.vy = Math.sin(ang)*K.PANIC_SPD;
+      c.spreadT = (c.spreadT||0) + dt;                 // fire jumps to a nearby calm villager
+      if(c.spreadT >= K.SPREAD_EVERY){ c.spreadT = 0;
+        for(const o of cells){ if(!o.hunter && o.grace<=0 && !o.saving &&
+          dist(c.x,c.y,o.x,o.y) < K.SPREAD_R && rnd() < K.SPREAD_CHANCE){ ignite(o,'spread'); break; } }
+      }
+    } else {
+      // calm villager: wander, shy away from a nearby flame (or a 'saved' one sprints off-screen)
+      if(c.saving){ c.vx = 0; c.vy = 0;                // TELEPORT: frozen while the save animation plays out
+        c.saveT = (c.saveT||0)+dt; if(c.saveT > K.SAVE_ANIM_DUR) c.dead = true; }
+      else {
+        let fx = 0, fy = 0, fleeing = false;
+        for(const o of cells){ if(o.hunter){ const dx = wrapDX(c.x-o.x), dy = c.y-o.y, d = Math.hypot(dx,dy)||1;
+          if(d < K.FLEE_RANGE*0.7){ fx += dx/d; fy += dy/d; fleeing = true; } } }
+        if(fleeing){ const m = Math.hypot(fx,fy)||1; c.vx = fx/m*K.FLEE_SPD; c.vy = fy/m*K.FLEE_SPD; }
+        else{
+          c.ph += c.ps*dt;
+          c.wanderT = (c.wanderT||0)+dt;                  // scurry: pick a new heading every ~1-2s = running around
+          if(c.wanderT > (c.wanderNext||0)){ c.dir = rnd()*Math.PI*2; c.wanderT = 0; c.wanderNext = 0.7+rnd()*1.6; }
+          c.vx = Math.cos(c.dir + Math.sin(c.ph)*0.7)*K.WANDER_SPD;
+          c.vy = Math.sin(c.dir + Math.sin(c.ph)*0.7)*K.WANDER_SPD;
+        }
+      }
+    }
+    c.x += c.vx*dt; c.y += c.vy*dt;
+    if(c.x < K.EDGE){ c.x = K.EDGE; c.vx = Math.abs(c.vx); c.dir = Math.PI - c.dir; }
+    if(c.x > VW-K.EDGE){ c.x = VW-K.EDGE; c.vx = -Math.abs(c.vx); c.dir = Math.PI - c.dir; }
+    if(c.y < 40){ c.y = 40; c.vy = Math.abs(c.vy); c.dir = -c.dir; }
+    if(c.y > VH-40){ c.y = VH-40; c.vy = -Math.abs(c.vy); c.dir = -c.dir; }
+    // slag is solid for cells too
+    for(const s of slag){
+      const dx = wrapDX(c.x-s.x), dy = c.y-s.y, d = Math.hypot(dx,dy), min = K.R_CELL + K.R_SLAG;
+      if(d < min && d > 0.001){ c.x += (dx/d)*(min-d); c.y += (dy/d)*(min-d); c.dir += 2.2; }
+    }
+    if(!c.saving && collideObstacles(c, K.R_CELL)){ c.dir += 2.4; }   // props are solid for villagers too
+  }
+  cells = cells.filter(c=>!c.dead);
+
+  // ---- boss update (riser or apex Keith)
+  if(boss && mode === 'play'){
+    const b = boss;
+    if(b.state === 'rising' || b.state === 'stagger'){
+      b.t -= dt; if(b.t <= 0) b.state = 'idle';
+    } else {
+      if(b.state === 'lit'){
+        b.fuse -= dt;
+        if(b.fuse <= 0){ bossDown(); }
+        else if(b.kind === 'keith'){
+          // lit Keith hunts YOU to shed it back — pursue your lagged position, ramping speed
+          const t = 1 - b.fuse/K.KEITH_FUSE;
+          const spd = K.KEITH_PUR0 + (K.KEITH_PUR1-K.KEITH_PUR0)*t;
+          const dx = wrapDX(lag.x-b.x), dy = lag.y-b.y, dd = Math.hypot(dx,dy)||1;
+          b.vx = dx/dd*spd; b.vy = dy/dd*spd;
+        } else {
+          // lit riser does what everyone in this world does: sheds onto the nearest body
+          const pool = crowd(); let tgt = null, bd = 1e9;
+          for(const c of pool){ const d = dist(b.x,b.y,c.x,c.y); if(d < bd){ bd = d; tgt = c; } }
+          const gx = tgt ? tgt.x : p.x, gy = tgt ? tgt.y : p.y;
+          const dx = wrapDX(gx-b.x), dy = gy-b.y, dd = Math.hypot(dx,dy)||1;
+          b.vx = dx/dd*165; b.vy = dy/dd*165;
+          if(tgt && bd < b.r + K.R_CELL){
+            ignite(tgt, 'riser'); b.state = 'idle'; b.fuse = 0;
+            callout = { text: STORY.riser.shed, t:0, life:1.2, good:false };
+          }
+        }
+      } else {                                        // unlit
+        if(b.kind === 'keith'){
+          const ctl = stepKeithMoves(b, dt);          // movesets drive him during a move
+          if(!ctl){                                    // otherwise he evades — herding him is the offense
+            const dx = wrapDX(b.x-p.x), dy = b.y-p.y, dd = Math.hypot(dx,dy)||1;
+            if(dd < 300){ b.vx = dx/dd*K.KEITH_FLEE; b.vy = dy/dd*K.KEITH_FLEE; }
+            else { b.vx *= 0.9; b.vy *= 0.9; }
+          }
+        } else {
+          // riser hunts the crowd, tagging them lit — the fire spreading on its own
+          b.tagCd -= dt;
+          const pool = crowd(); let tgt = null, bd = 1e9;
+          for(const c of pool){ const d = dist(b.x,b.y,c.x,c.y); if(d < bd){ bd = d; tgt = c; } }
+          if(tgt){
+            const dx = wrapDX(tgt.x-b.x), dy = tgt.y-b.y, dd = Math.hypot(dx,dy)||1;
+            b.vx = dx/dd*K.RISER_SPD; b.vy = dy/dd*K.RISER_SPD;
+            if(bd < b.r + K.R_CELL && b.tagCd <= 0){
+              ignite(tgt, 'riser'); b.tagCd = K.RISER_TAG_CD;
+              ring(tgt.x, tgt.y, 8, 44, '#ff6a2e', 0.3);
+            }
+          } else { b.vx *= 0.9; b.vy *= 0.9; }
+        }
+      }
+      b.x += b.vx*dt; b.y += b.vy*dt;
+      if(b.x < K.EDGE){ b.x = K.EDGE; b.vx = Math.abs(b.vx); } if(b.x > VW-K.EDGE){ b.x = VW-K.EDGE; b.vx = -Math.abs(b.vx); }
+      if(b.y < 40) b.y = 40; if(b.y > VH-40) b.y = VH-40;
+      // slag is solid for bosses too — cornering Keith against your walls IS the fight
+      for(const s of slag){
+        const dx = wrapDX(b.x-s.x), dy = b.y-s.y, d = Math.hypot(dx,dy), min = b.r + K.R_SLAG;
+        if(d < min && d > 0.001){ b.x += (dx/d)*(min-d); b.y += (dy/d)*(min-d); }
+      }
+      collideObstacles(b, b.r);                                     // props corner Keith too
+      // player contact: DUMP the fire you're carrying into Keith (he lit it; he can hold it).
+      // Corner him against your walls, unload your heat. Enough dumped -> he yields.
+      if(!ghost && p.heat > 0 && dist(p.x,p.y,b.x,b.y) < p.r + b.r && !b.shield){
+        dumped += p.heat; b.downs = dumped;                 // reuse downs as the dumped-heat tally
+        ring(b.x, b.y, b.r+6, 120, '#ff9a2e', 0.6); ring(b.x, b.y, b.r, 80, '#ffd18a', 0.5);
+        p.heat = 0; heatCoolT = 0; overloadT = 0;
+        score += 150; hitstop = K.HITSTOP; flash = DT*2;
+        b.move = null; b.moveTele = 0;                       // a solid dump interrupts whatever he was winding up
+        callout = { text: STORY.duel.tag[(dumped) % STORY.duel.tag.length], t:0, life:1.3, good:true };
+        b.state = 'stagger'; b.t = 0.5; b.moveCd = Math.max(b.moveCd, 1.2);   // he reels
+        if(dumped >= (b.dumpNeeded||K.DUEL_DUMP)){ winDuel(); }
+      }
+    }
+  }
+
+  if(duelActive && boss && mode === 'play') stepDuelFX(dt);   // Keith's projectiles / wake / pulses / your allies
+
+  // ---- trail (heat wisps; no longer ignites anyone — you carry fire OUT, not around)
+  for(const t of trail) t.t += dt;
+  trail = trail.filter(t=>t.t < K.TRAIL_LIFE);
+
+  // ---- absorb-flourish sparks: fire streaming into you (home on the player, curling in)
+  for(const s of sparks){ s.t += dt; const k = s.t/s.life;
+    if(s.out){ const drag = 1 - Math.min(0.9, dt*3.4);        // VENT: blast outward, decelerate
+      s.x += s.vx*dt; s.y += s.vy*dt; s.vx*=drag; s.vy*=drag; continue; }
+    const dx = wrapDX(p.x - s.x), dy = p.y - s.y, d = Math.hypot(dx,dy)||1;
+    const pull = 6 + 22*k;                                    // accelerate inward
+    s.x += (dx/d)*pull + (-dy/d)*s.sw*(1-k);                  // + tangential swirl that eases out
+    s.y += (dy/d)*pull + (dx/d)*s.sw*(1-k); }
+  sparks = sparks.filter(s => s.t < s.life);
+  if(p.absorbPop) p.absorbPop = Math.max(0, p.absorbPop - dt*1.6);
+  if(saveIconPop) saveIconPop = Math.max(0, saveIconPop - dt*2.2);
+
+  // ---- contact: run into a FLAMING villager and ABSORB their fire (save them, take the heat)
+  for(const c of (ghost ? [] : cells)){
+    if(!c.hunter || c.grace > 0 || c.saving) continue;
+    if(dist(p.x,p.y,c.x,c.y) > p.r + K.R_CELL) continue;
+    absorb(c); break;
+  }
+
+  // ---- Keith no longer ignites villagers from thin air: he SENDS fire imps in from the edges, each flying to a
+  // chosen villager to torch it. Cut the imp off (run/dash into it) to INTERCEPT — eat its fire, mint embers, bank
+  // an edge against Keith. Miss it, and the villager catches. (Sends speed up as the run wears on.)
+  if(!introWalk && !duelActive){
+    arsonT += dt;
+    const cadence = Math.max(K.ARSON_MIN, K.ARSON_EVERY - elapsed*0.012 - (runDistrict-1)*0.22);
+    if(arsonT >= cadence){ arsonT = 0; spawnArson(); }
+  }
+  stepArson(dt);
+  respawnT += dt;
+  if(respawnT >= K.CROWD_RESPAWN){ respawnT = 0;
+    if(crowd().length + hunters().length < K.CROWD_CAP) spawnCrowd(false);
+  }
+
+  // ---- THE FINALE: save enough of the town and Keith rises to be dealt with
+  if(!duelActive && !won && saved >= runQuota){ startDuel(); }
+
+  const hn = hunters().length;
+  if(hn > peakHunters) peakHunters = hn;
+
+  // ---- walls fuse into powerups; collect for a SURGE
+  if(!duelActive){
+    mergeT += dt;
+    if(mergeT >= K.MERGE_EVERY){ mergeT = 0; mergeCheck(); }
+  }
+  for(const pu of powerups) pu.t += dt;
+  for(let i=powerups.length-1;i>=0;i--){
+    if(dist(p.x,p.y,powerups[i].x,powerups[i].y) < p.r + K.POWERUP_R){ collectPowerup(powerups[i]); powerups.splice(i,1); }
+  }
+
+  // ---- THE OPP: snipe your habitual late-hold.
+  // Fires ~0.3s of fuse-time BEFORE your median dump — punishing greed at your favorite moment.
+  // Beat it by passing (going dark) before impact, or dashing clear of the lead point.
+  if(snipeFuse != null && !snipeUsed && p.lit && p.fuse <= snipeFuse) fireSnipe();
+  if(snipe && !snipe.done){
+    snipe.t += dt;
+    if(snipe.t >= K.OPP_SNIPE_TELE){
+      snipe.done = true;
+      if(p.lit && dist(p.x, p.y, snipe.tx, snipe.ty) < K.OPP_SNIPE_R){
+        p.lit = false; p.fuse = 0; p.passeeId = 0; p.passT = 0;   // SNUFFED: put out early, no pass credit
+        gotSniped = true;
+        ring(p.x, p.y, 10, 80, '#ff3d7a', 0.6);
+        callout = { text: lineFor('sniped'), t:0, life:1.4, good:false }; flash = DT*2; hitstop = K.HITSTOP;
+      } else {
+        oppScarred = true;                                        // read broken, scar the grudge wall
+        ring(snipe.tx, snipe.ty, K.OPP_SNIPE_R, 6, '#7fe8ff', 0.4);
+        callout = { text: lineFor('broken'), t:0, life:1.4, good:true };
+      }
+    }
+  } else if(snipe && snipe.done){ snipe.lt += dt; if(snipe.lt > 0.5) snipe = null; }
+  if(callout){ callout.t += dt; if(callout.t >= callout.life) callout = null; }
+  if(pendCall){ pendCall.t -= dt; if(pendCall.t <= 0){ callout = { text:pendCall.text, t:0, life:1.8, good:pendCall.good }; pendCall = null; } }
+
+  // ---- Keith drip-feeds THE REASON, one line at a time, when the field is momentarily quiet
+  if(mode==='play' && introT<=0 && !duelActive && opp.loreIdx < STORY.lore.length){
+    loreT += dt;
+    if(loreT >= 8.5 && !callout){
+      callout = { text: STORY.lore[opp.loreIdx], t:0, life:3.6, lore:true, good:null };
+      opp.loreIdx++; saveOpp(); loreT = 0;
+    }
+  }
+
+  // ---- rings
+  for(const r of rings) r.t += dt;
+  rings = rings.filter(r=>r.t < r.life);
+}
+
+// ---------------------------------------------------------------- events
+function doPass(c){
+  const p = player;
+  // THE OPP records the DECISION, never the score: how late (fuse) + where (grid cell).
+  if(mode === 'play'){
+    let col = Math.floor((((c.x%VW)+VW)%VW) / (VW/K.OPP_COLS));
+    let row = Math.floor(Math.max(0, Math.min(VH-1, c.y)) / (VH/K.OPP_ROWS));
+    col = Math.max(0, Math.min(K.OPP_COLS-1, col));
+    row = Math.max(0, Math.min(K.OPP_ROWS-1, row));
+    runBuf.push({ lateness: p.fuse, col, row });
+  }
+  const val = Math.round(60 + 340*(1 - p.fuse/K.FUSE_MAX));
+  const clutch = p.fuse < K.CLUTCH_FUSE;
+  score += val;
+  p.lit = false; p.fuse = 0;
+  p.passeeId = c.id; p.passT = 0; p.passVal = val;
+  ignite(c, 'pass');
+  ring(c.x,c.y,10,72,'#ff9a2e',0.36);
+  hitstop = K.HITSTOP; flash = DT*2;
+  if(clutch) slowmo = K.SLOWMO_T;
+}
+
+function doEat(c){
+  const p = player;
+  const backpass = (c.id === p.passeeId && p.passT >= K.IMMUNE && p.passT <= K.BACKPASS_END);
+  p.lit = true;
+  p.fuse = Math.min(c.fuse, K.FUSE_MAX);
+  c.hunter = false; c.fuse = 0; c.dir = rnd()*Math.PI*2;    // reverts to a dark crowd body
+  c.grace = K.GRACE;                                        // ...but you can't instantly dump back into it
+  if(backpass){ score += Math.round(p.passVal * K.BACKPASS_MULT); ring(c.x,c.y,10,110,'#ffe66d',0.5); }
+  else ring(c.x,c.y,10,58,'#5fd4ff',0.30);
+  p.passeeId = 0;
+  hitstop = K.HITSTOP; flash = DT*2;
+}
+
+// a hunter catching a LIT player shoves its burn onto you: fuse jumps toward the pop.
+// the hunter spends itself doing it (reverts to a dark body), and you get brief i-frames.
+function overloadHit(c){
+  const p = player;
+  overloadCd = K.OVERLOAD_IFRAME;
+  hitstop = K.HITSTOP; flash = DT*2;
+  ring(p.x, p.y, p.r+4, 90, '#ff3d2e', 0.55);
+  p.fuse -= K.OVERLOAD_PENALTY;
+  becomeSlag(c);          // it poured its fire into you and collapsed into a wall (solid -> shoves you off, no glue-loop)
+  if(p.fuse <= 0){ p.fuse = 0; if(!god){ pop('the fire took you'); return; } p.fuse = K.CLUTCH_FUSE; }
+  callout = { text: STORY.overload[Math.floor(rnd()*STORY.overload.length)], t:0, life:1.3, good:false };
+}
+
+function ignite(c, why){
+  if(hunters().length >= K.HUNTER_CAP){ becomeHusk(c); return; }   // cap simultaneous fires; extra collapses to a husk
+  c.hunter = true; c.fuse = hunterFuse; c.grace = K.GRACE; c.saving = false; c.spreadT = 0;
+  ring(c.x,c.y,8,44,'#ff6a2e',0.30);
+}
+
+// ABSORB: pull the fire off a flaming villager. They flash free and sprint away (saved); you take
+// their heat. Holding at max heat cooks you (handled in step). This is the core verb now.
+// Save ONE villager (the teleport-to-light rescue). chained=true = swept up by a hot chain (no extra heat gain).
+function saveCell(c, chained){
+  const p = player;
+  if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Keith's shield
+    if(boss.shieldN <= 0){ boss.shield = false; callout = { text:'SHIELD BROKEN — DUMP NOW!', t:0, life:1.2, good:true }; } }
+  c.hunter = false; c.fuse = 0; c.grace = K.GRACE;
+  c.saving = true; c.saveT = 0; c.dir = 0; c.svx = 0; c.svy = 0;   // freeze in place — the anim lifts them into the light
+  saved++;
+  const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're carrying, the bigger the save
+  score += Math.round(K.SAVE_SCORE * blaze);
+  if(blaze > META.bestBlaze) META.bestBlaze = blaze;
+  let em = Math.round(K.EMBER_BASE * blaze);
+  em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
+  runEmbers += em; META.saved++;
+  for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
+    sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
+  saveIconPop = 0.6; ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);
+  edge += chained ? 0.5 : (K.SAVE_EDGE + p.heat*K.SAVE_EDGE_HEAT);   // THE EDGE: hotter saves win more of the town
+  edgePop = 0.5;
+  if(!chained){ p.heat = Math.min(K.HEAT_MAX, p.heat + 1);   // ONE +1 heat per absorb (not per chained villager)
+    p.absorbPop = 0.28; ring(p.x, p.y, p.r+6, 80, '#ffcf7a', 0.55); hitstop = K.HITSTOP*0.8; flash = DT*1.5; }
+}
+// ABSORB: run into a flaming villager. The fire you ALREADY carry arcs to nearby flaming villagers and saves
+// up to floor(heat) more in the same beat — so holding heat = pop a whole burning cluster at once.
+function absorb(c){
+  const p = player, reach = Math.floor(p.heat);
+  saveCell(c, false);
+  let chained = 0;
+  if(reach > 0){
+    const near = cells.filter(o=>o!==c && o.hunter && o.grace<=0 && !o.saving && dist(o.x,o.y,c.x,c.y)<=K.CHAIN_R)
+                      .sort((a,b)=>dist(a.x,a.y,c.x,c.y)-dist(b.x,b.y,c.x,c.y));
+    for(const o of near){ if(chained>=reach) break; saveCell(o, true); chained++;
+      ring((c.x+o.x)/2,(c.y+o.y)/2, 6, K.R_CELL*3.2, '#ffd27a', 0.35); }   // arc of fire to the chained villager
+  }
+  callout = chained>0 ? { text:(chained+1)+' SAVED!', t:0, life:1.0, good:true }
+                      : { text: SAVE_LINES[Math.floor(rnd()*SAVE_LINES.length)], t:0, life:0.9, good:true };
+}
+const SAVE_LINES = ['SAVED!', 'GO! RUN!', 'GOT YOU!', 'CLEAR!'];
+
+// VENT (held): first PURGE your heat to 0 (no heal yet — the tax on hoarding), then HEAL hearts a half at a
+// time. You're rooted while you hold it, and stepDemons() breeds fire demons that hunt you and the town.
+function ventHold(){
+  const p = player;
+  p.ventFlash = 0.3;
+  if(p.heat > 0){ p.ventPurge = (p.ventPurge||0) + DT;
+    while(p.ventPurge >= K.VENT_PURGE && p.heat > 0){ p.ventPurge -= K.VENT_PURGE; p.heat = Math.max(0, p.heat-1); } }
+  else { p.ventHealAcc = (p.ventHealAcc||0) + DT;
+    while(p.ventHealAcc >= K.VENT_HEAL_T && p.hp < 1){ p.ventHealAcc -= K.VENT_HEAL_T;
+      p.hp = Math.min(1, p.hp + 0.5/maxHearts);                          // +HALF a heart
+      flash = DT*2;                                                       // a green heal 'ding' = upward motes, no ring
+      for(let i=0;i<5;i++){ const a=-Math.PI/2+(rnd()-0.5)*1.2; sparks.push({x:p.x,y:p.y,t:0,life:0.4+rnd()*0.2,out:true,vx:Math.cos(a)*70,vy:Math.sin(a)*70-30,hue:150}); }
+      callout = { text: HEAL_LINES[Math.floor(rnd()*HEAL_LINES.length)], t:0, life:0.5, good:true }; } }
+}
+const HEAL_LINES = ['+HEART', 'BREATHE', 'MENDING'];
+
+// FIRE DEMONS — bred while you hold VENT; they hunt you (contact damage) and the town (re-ignite calm, wall
+// flaming). A dash outruns them; they linger a moment after you release, then collapse.
+function stepDemons(dt){
+  const p = player;
+  ventSwarmT = p.venting ? Math.min(12, ventSwarmT + dt) : Math.max(0, ventSwarmT - dt*0.6);   // swarm memory (anti tap-spam)
+  // DEMON CAP = 2 per heart of CURRENT health. At 1 heart you face 2 (true at ANY maxHearts, since
+  // currentHearts = hp*maxHearts), so venting when desperate is always survivable; the swarm grows only
+  // as you recover, and scales up for tankier late-game builds that earn more hearts through the meta.
+  const demonCap = Math.max(2, Math.round(2 * p.hp * maxHearts));
+  if(p.venting && ventSwarmT >= K.VENT_SUMMON && demons.length < demonCap){
+    demonSpawnT += dt;
+    const interval = Math.max(K.DEMON_INT_MIN, K.DEMON_INT0 - K.DEMON_INT_STEP*Math.max(0, ventSwarmT-K.VENT_SUMMON));
+    if(demonSpawnT >= interval){ demonSpawnT = 0; const a=rnd()*Math.PI*2;
+      demons.push({ x:p.x, y:p.y, t:0, ttl:K.DEMON_LIFE, hitCd:0, huntVill: rnd()<K.DEMON_TGT_VILL, ph:rnd()*7, tgt:null }); }
+  } else demonSpawnT = 0;
+  if(!demons.length) return;
+  // only the nearest ~2 demons to the player can land a hit (so 1-2 out = heal wins, a full swarm loses)
+  const order = demons.map((d,i)=>({i,dd:dist(d.x,d.y,p.x,p.y)})).sort((a,b)=>a.dd-b.dd);
+  const canHit = new Set(order.slice(0,2).map(o=>o.i));
+  for(let i=demons.length-1;i>=0;i--){ const d=demons[i]; d.t+=dt; if(d.hitCd>0) d.hitCd-=dt; if(d.fresh!=null) d.fresh+=dt;
+    // DASH-KILL: dash through ANY fire monster to shatter it for heat + embers (your reward for clearing them).
+    // You can't while venting (rooted) — so vent to heal, then dash the swarm down.
+    if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){ killDemon(d); demons.splice(i,1); continue; }
+    // lifecycle: TOWN wraiths persist until killed/duel; VENT/KEITH demons linger then collapse when unsustained
+    if(d.source !== 'town' && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
+        for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
+        demons.splice(i,1); continue; } }
+    let tx=p.x, ty=p.y; d.tgt=null;
+    if(d.huntVill){ let best=null,bd=1e9; for(const c of cells){ if(c.saving||c.dead) continue; const dd=dist(c.x,c.y,d.x,d.y); if(dd<bd){bd=dd;best=c;} }
+      if(best){ tx=best.x; ty=best.y; d.tgt=best; } }
+    const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
+    d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
+    if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
+    collideObstacles(d, K.DEMON_R);                                 // fire monsters can't phase through props
+    if(canHit.has(i) && d.hitCd<=0 && p.hurtCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
+      p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
+      if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
+    if(d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
+      if(d.tgt.hunter) becomeHusk(d.tgt);                              // flaming -> the fire finishes them into a husk
+      else if(!d.tgt.saving && d.tgt.grace<=0) ignite(d.tgt,'demon');   // calm -> re-ignited
+      d.tgt=null; }
+  }
+}
+
+// ---- ARSON IMPS: Keith's messengers of fire. Spawn at an edge, hover a beat (telegraph), then fly to a marked
+// villager and torch it. The player's counter-play: intercept before it lands.
+function spawnArson(){
+  if(arson.length >= K.ARSON_MAX) return;
+  const calm = crowd().filter(c => !arson.some(a => a.tgt === c));   // don't double-book the same villager
+  if(!calm.length) return;
+  const c = calm[Math.floor(rnd()*calm.length)];
+  // enter from the edge nearest the mark, so it reads as arriving from outside
+  const cand = [ {x:K.EDGE, y:c.y}, {x:VW-K.EDGE, y:c.y}, {x:c.x, y:40}, {x:c.x, y:VH-40} ];
+  const e = cand.reduce((b,p)=> dist(p.x,p.y,c.x,c.y) < dist(b.x,b.y,c.x,c.y) ? p : b);
+  arson.push({ x:e.x, y:e.y, tgt:c, t:0, warn:K.ARSON_WARN, ph:rnd()*7 });
+  if(!arsonSeen){ arsonSeen = true; callout = { text:'KEITH SENDS A FIRE IMP — CUT IT OFF', t:0, life:1.9, good:false }; }
+}
+function stepArson(dt){
+  if(!arson.length) return;
+  const p = player;
+  for(let i=arson.length-1;i>=0;i--){ const a = arson[i]; a.t += dt;
+    // the mark left the pool (saved/burning/gone) -> retarget to the nearest calm one, or wink out
+    if(!a.tgt || a.tgt.dead || a.tgt.hunter || a.tgt.saving){
+      const calm = crowd();
+      a.tgt = calm.length ? calm.reduce((b,c)=> dist(c.x,c.y,a.x,a.y) < dist(b.x,b.y,a.x,a.y) ? c : b) : null;
+      if(!a.tgt){ arson.splice(i,1); continue; }
+    }
+    if(!god && dist(a.x,a.y,p.x,p.y) <= K.ARSON_R + p.r){ interceptArson(a); arson.splice(i,1); continue; }   // INTERCEPT
+    if(a.warn > 0){ a.warn -= dt; continue; }                    // telegraph hover at the edge
+    const dx = wrapDX(a.tgt.x-a.x), dy = a.tgt.y-a.y, m = Math.hypot(dx,dy)||1;
+    a.x += (dx/m)*K.ARSON_SPD*dt; a.y += (dy/m)*K.ARSON_SPD*dt;
+    if(dist(a.x,a.y,a.tgt.x,a.tgt.y) <= K.ARSON_R + K.R_CELL){    // it lands -> torch the villager
+      if(!a.tgt.saving && a.tgt.grace <= 0 && !a.tgt.hunter) ignite(a.tgt,'arson');
+      arson.splice(i,1);
+    }
+  }
+}
+function interceptArson(a){
+  const p = player;
+  intercepts++; edge += K.ARSON_EDGE_PER; edgePop = 0.5;
+  const dashing = p.lunge > 0;
+  p.heat = Math.min(K.HEAT_MAX, p.heat + K.ARSON_HEAT);
+  let em = Math.round(K.ARSON_EMBERS * (dashing ? 1.5 : 1));
+  em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
+  runEmbers += em;
+  p.absorbPop = 0.3; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
+  ring(a.x, a.y, 4, 52, '#ffd27a', 0.5);
+  for(let k=0;k<11;k++){ const ang=rnd()*7; sparks.push({x:a.x,y:a.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(ang)*150,vy:Math.sin(ang)*150,hue:22+rnd()*30}); }
+  callout = { text: dashing ? 'INTERCEPTED! +EDGE' : 'CUT OFF! +EDGE', t:0, life:0.9, good:true };
+}
+
+function becomeSlag(c){
+  slag.push({x:c.x,y:c.y});
+  c.dead = true; slagThisRun++;
+  ring(c.x,c.y,K.R_CELL,50,'#4a5162',0.42);
+  maybeRise();
+}
+
+// ---------------------------------------------------------------- HUSK / ASH WRAITH
+// A villager you failed to save. Not a permanent wall — a temporary, ember-veined coal that STILL shoves you
+// (cornering role survives), then CRACKS into a roaming ash wraith that hunts the town and bites you. The loss
+// literally stands up and walks. Always reclaimable: touch it with heat to REKINDLE (spend fire, save them).
+function becomeHusk(c){
+  c.dead = true;
+  husks.push({ x:c.x, y:c.y, t:0, heatAt: player.heat, ph: rnd()*7 });
+  edge -= K.LOSS_EDGE + player.heat*K.LOSS_EDGE_HEAT;   // THE EDGE swings toward Keith when the town burns
+  edgePop = 0.5;
+  ring(c.x, c.y, K.R_CELL, 50, '#8a5a2e', 0.42);
+  if(!huskSeen){ huskSeen = true; callout = { text:'A VILLAGER IS LOST — REKINDLE THEM (touch w/ fire) BEFORE THEY TURN', t:0, life:2.4, good:false }; }
+}
+function stepHusks(dt){
+  const p = player;
+  for(let i=husks.length-1;i>=0;i--){ const h = husks[i]; h.t += dt;
+    // REKINDLE: pour your own fire back in (spend heat) to still save them — the mirror of absorb
+    if(!god && p.heat >= K.REKINDLE_COST && dist(h.x,h.y,p.x,p.y) <= p.r + K.HUSK_R + 2){
+      rekindleHusk(h); husks.splice(i,1); continue; }
+    // soft-solid: shove the player off (keeps the wall's cornering role, but temporary)
+    { const dx = wrapDX(p.x-h.x), dy = p.y-h.y, d = Math.hypot(dx,dy), min = p.r + K.HUSK_R;
+      if(d < min && d > 0.001 && p.lunge <= 0){ p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d); p.hx = dx/d; p.hy = dy/d; } }
+    // CRACK -> rise as a persistent town-wraith (unless the roam is already full)
+    if(h.t >= K.HUSK_CRACK_T){
+      const town = demons.filter(d=>d.source==='town').length;
+      if(town < K.WRAITH_CAP){
+        demons.push({ x:h.x, y:h.y, t:0, ttl:1e9, hitCd:0, huntVill: rnd()<0.7, ph:rnd()*7, tgt:null,
+                      source:'town', fresh:0 });
+        ring(h.x, h.y, K.HUSK_R, 80, '#b06a5a', 0.6);
+        if(!META.flags) META.flags={}; if(!META.flags.sawWraith){ META.flags.sawWraith=true; saveMeta(); }   // opens a diary page
+      }
+      husks.splice(i,1);
+    }
+  }
+}
+function rekindleHusk(h){
+  const p = player;
+  p.heat = Math.max(0, p.heat - K.REKINDLE_COST);      // spend YOUR fire (inverse of absorb's +1)
+  cells.push({ id: nextId++, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
+               hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
+  saved++; META.saved++;
+  edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
+  const em = Math.max(0, Math.min(Math.round(K.EMBER_BASE*0.5), K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  score += Math.round(K.SAVE_SCORE*0.5);
+  saveIconPop = 0.6; p.absorbPop = 0.28; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
+  ring(h.x, h.y, K.R_CELL+2, 90, '#8affc1', 0.6);
+  for(let k=0;k<10;k++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);
+    sparks.push({ x:h.x+Math.cos(a)*r, y:h.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:150 }); }
+  callout = { text:'REKINDLED!', t:0, life:1.0, good:true };
+}
+let demonKillSeen = false;
+function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat you can bank + embers to spend
+  const p = player;
+  const town = d.source === 'town';
+  p.heat = Math.min(K.HEAT_MAX, p.heat + K.WRAITH_KILL_HEAT);
+  const em = Math.max(0, Math.min(K.DEMON_KILL_EMBERS, K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  edge += 0.25; edgePop = 0.5;                                   // clearing them nudges the town war your way
+  p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
+  ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
+  for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:town?285:24}); }
+  if(!demonKillSeen){ demonKillSeen = true; callout = { text:'DASH THROUGH FIRE MONSTERS TO SHATTER THEM · +HEAT +EMBERS', t:0, life:2.3, good:true }; }
+  else callout = { text:'SHATTERED! +EMBERS', t:0, life:0.7, good:true };
+}
+
+// ---------------------------------------------------------------- LEVELED KEITH: movesets + duel FX
+function angDiff(a,b){ let d=(a-b)%(Math.PI*2); if(d>Math.PI)d-=Math.PI*2; if(d<-Math.PI)d+=Math.PI*2; return d; }
+// A saved villager fighting beside you body-blocks ONE incoming attack, then is spent.
+function allyBlock(x,y){
+  if(!allies.length) return false;
+  const a = allies.shift();
+  ring((a.x+x)/2, (a.y+y)/2, 6, 42, '#8affc1', 0.5);
+  for(let k=0;k<9;k++){ const ang=rnd()*7; sparks.push({x:a.x,y:a.y,t:0,life:0.32,out:true,vx:Math.cos(ang)*120,vy:Math.sin(ang)*120,hue:150}); }
+  callout = { text:'AN ALLY TOOK THE HIT!', t:0, life:0.8, good:true };
+  return true;
+}
+function keithHitPlayer(x,y){
+  const p = player;
+  if(allyBlock(x,y)) return;                 // an ally eats it
+  if(god || p.hurtCd > 0) return;            // i-frames
+  p.hp -= K.KEITH_HIT / maxHearts;           // half a heart
+  p.hurtCd = K.HURT_IFRAME; flash = DT*2; hitstop = K.HITSTOP*0.6;
+  ring(p.x, p.y, p.r+4, 60, '#ff5a4a', 0.5);
+  if(p.hp <= 0){ p.hp = 0; pop('keith got you'); }
+}
+function startKeithMove(b, key){
+  b.move = key; b.moveT = 0; b.moveTele = K.KEITH_TELE; b.moveData = {};
+  b.vx = 0; b.vy = 0;
+  const p = player;
+  if(key === 'charge' || key === 'wake'){
+    const dx = wrapDX(p.x-b.x), dy = p.y-b.y, m = Math.hypot(dx,dy)||1;   // aim at you (locked at telegraph end)
+    b.moveData.dir = { x:dx/m, y:dy/m };
+  }
+  const names = { charge:'KEITH WINDS UP A CHARGE', spit:'KEITH SPITS EMBERS', wake:'KEITH TRAILS FIRE',
+                  demon:'KEITH CALLS HIS MONSTERS', siphon:'KEITH SIPHONS THE ASH' };
+  callout = { text: names[key]||'', t:0, life:0.9, good:false };
+}
+// Returns true while a move is DRIVING Keith (so the default evade is suppressed).
+function runKeithMove(b, dt){
+  const p = player;
+  if(b.moveTele > 0){                         // wind-up: he plants, telegraph shows
+    b.moveTele -= dt; b.vx = 0; b.vy = 0;
+    if(b.moveTele <= 0) execKeithMove(b);     // fire on the beat
+    return true;
+  }
+  // post-execution behaviour per move
+  if(b.move === 'charge'){
+    const d = b.moveData.dir; b.vx = d.x*440; b.vy = d.y*440;   // barrel forward
+    if(dist(b.x,b.y,p.x,p.y) < b.r + p.r + 4) keithHitPlayer(b.x, b.y);
+    if(b.moveT > K.KEITH_TELE + 0.55){ endKeithMove(b); }
+    return true;
+  }
+  if(b.move === 'wake'){
+    const d = b.moveData.dir; b.vx = d.x*K.WAKE_SPD; b.vy = d.y*K.WAKE_SPD;
+    b.moveData.segT = (b.moveData.segT||0) + dt;
+    while(b.moveData.segT >= K.WAKE_SEG_EVERY){ b.moveData.segT -= K.WAKE_SEG_EVERY;
+      wake.push({ x:b.x, y:b.y, t:0, ph:rnd()*7 }); }
+    if(b.moveT > K.KEITH_TELE + 0.7){ endKeithMove(b); }
+    return true;
+  }
+  if(b.move === 'siphon'){
+    b.moveData.pulseT = (b.moveData.pulseT||0) + dt;
+    if(b.moveData.pulseT >= 1.1){ b.moveData.pulseT = 0;
+      pulses.push({ x:b.x, y:b.y, r:20, t:0, gapAng:rnd()*Math.PI*2, hit:false }); }
+    b.vx *= 0.9; b.vy *= 0.9;
+    const broken = b.shieldBreakable && (b.shieldN||0) <= 0;   // saved the siphoned -> shield falls early
+    if(broken || b.moveT > K.KEITH_TELE + 4.2){ b.shield = false; endKeithMove(b); }
+    return true;
+  }
+  // spit / demon fire once and finish after a short recovery
+  if(b.moveT > K.KEITH_TELE + 0.35){ endKeithMove(b); }
+  b.vx *= 0.86; b.vy *= 0.86;
+  return true;
+}
+function execKeithMove(b){
+  const p = player;
+  if(b.move === 'spit'){
+    const base = Math.atan2((lastLag().y)-b.y, wrapDX((lastLag().x)-b.x));
+    for(let i=0;i<K.SPIT_N;i++){ const a = base + (i-(K.SPIT_N-1)/2)*K.SPIT_SPREAD;
+      shots.push({ x:b.x, y:b.y, vx:Math.cos(a)*K.SPIT_SPD, vy:Math.sin(a)*K.SPIT_SPD, t:0, ph:rnd()*7 }); }
+    ring(b.x,b.y,4,40,'#ff9a2e',0.4);
+  } else if(b.move === 'demon'){
+    for(let i=0;i<K.KEITH_DEMONS;i++){ const a=rnd()*Math.PI*2;
+      demons.push({ x:b.x+Math.cos(a)*30, y:b.y+Math.sin(a)*30, t:0, ttl:K.KEITH_DEMON_TTL, hitCd:0,
+                    huntVill:false, ph:rnd()*7, tgt:null, source:'keith' }); }
+    ring(b.x,b.y,6,60,'#ff5a2e',0.5);
+  } else if(b.move === 'siphon'){
+    // pull nearby villagers into an orbiting shield; save them to strip it (timed out otherwise)
+    const pool = crowd().slice(0, K.SIPHON_PULL); b.shield = true; b.shieldN = 0;
+    for(const c of pool){ c.hunter = true; c.fuse = hunterFuse; c.siphon = true; c.grace = 0; b.shieldN++; }
+    b.shieldBreakable = b.shieldN > 0;   // villagers pulled -> save them to break it; none -> purely a timed shield
+    ring(b.x,b.y,10,K.SIPHON_R,'#c79be0',0.6);
+  }
+  // charge/wake don't 'exec' — their post-tele branch drives them
+}
+function endKeithMove(b){
+  b.move = null; b.moveT = 0; b.moveData = null;
+  b.moveCd = Math.max(K.KEITH_MOVE_CD_MIN, K.KEITH_MOVE_CD0 - (b.level-1)*0.3);
+}
+function stepKeithMoves(b, dt){
+  if(b.move){ b.moveT += dt; return runKeithMove(b, dt); }
+  b.moveCd -= dt;
+  if(b.moveCd > 0 || !b.moves.length) return false;
+  startKeithMove(b, b.moves[Math.floor(rnd()*b.moves.length)]);
+  return true;
+}
+function lastLag(){ return (typeof hist!=='undefined' && hist.length) ? hist[0] : player; }
+// Duel projectiles / wake / pulses / allies — stepped each frame while a Keith duel is live.
+function stepDuelFX(dt){
+  const p = player;
+  for(let i=shots.length-1;i>=0;i--){ const s=shots[i]; s.t+=dt; s.x+=s.vx*dt; s.y+=s.vy*dt;
+    if(s.x<-20||s.x>VW+20||s.y<-20||s.y>VH+20||s.t>4){ shots.splice(i,1); continue; }
+    if(collideObstacles(s, K.SPIT_R)){ shots.splice(i,1); continue; }
+    if(dist(s.x,s.y,p.x,p.y) < K.SPIT_R+p.r){ keithHitPlayer(s.x,s.y); shots.splice(i,1); continue; }
+  }
+  for(let i=wake.length-1;i>=0;i--){ const w=wake[i]; w.t+=dt;
+    if(w.t>K.WAKE_LIFE){ wake.splice(i,1); continue; }
+    if(p.heat<K.HEAT_MAX && dist(w.x,w.y,p.x,p.y) < K.WAKE_R+p.r){     // absorb the trail for dump fuel
+      p.heat = Math.min(K.HEAT_MAX, p.heat+1); p.absorbPop=0.2;
+      for(let k=0;k<5;k++){ const a=rnd()*7; sparks.push({x:w.x,y:w.y,t:0,life:0.3,sw:(rnd()-0.5)*6,hue:24}); }
+      wake.splice(i,1); }
+  }
+  for(let i=pulses.length-1;i>=0;i--){ const pu=pulses[i]; pu.t+=dt; pu.r += K.SIPHON_PULSE_SPD*dt;
+    if(pu.r > 760){ pulses.splice(i,1); continue; }
+    const dd = dist(p.x,p.y,pu.x,pu.y), ang = Math.atan2(p.y-pu.y, wrapDX(p.x-pu.x));
+    if(!pu.hit && Math.abs(dd-pu.r) < 24 && Math.abs(angDiff(ang, pu.gapAng)) > K.SIPHON_GAP && p.lunge<=0){
+      pu.hit = true; keithHitPlayer(p.x,p.y); }
+  }
+  for(const a of allies){ a.ph += dt; const dx=p.x-a.x, dy=p.y-a.y, d=Math.hypot(dx,dy)||1;   // trail near you
+    const want = 60 + 30*Math.sin(a.ph*0.6); if(d>want){ a.x += dx/d*95*dt; a.y += dy/d*95*dt; } }
+}
+
+// ---------------------------------------------------------------- bosses
+// One contact law everywhere: fire transfers on touch. Bosses go DOWN instead of slagging.
+// RISER (miniboss): a wall you made gets back up and spreads fire through the crowd.
+// KEITH APEX (the win): the emptied floor is the boss arena; he uses your own moves.
+function maybeRise(){
+  if(boss || duelActive || won || mode !== 'play') return;
+  if(slagThisRun < nextRiserAt) return;
+  const i = slag.findIndex(s => !s.grudge);          // the oldest wall that isn't Keith's
+  if(i < 0) return;
+  const s = slag.splice(i,1)[0];
+  nextRiserAt += K.RISER_EVERY;
+  boss = { kind:'riser', x:s.x, y:s.y, r:K.RISER_R, state:'rising', t:K.BOSS_RISE_T,
+           fuse:0, downs:0, tagCd:1.0, vx:0, vy:0 };
+  ring(s.x, s.y, K.R_SLAG, 90, '#c2364f', 0.6);
+  callout = { text: STORY.riser.rise, t:0, life:1.6, good:false };
+}
+
+function startDuel(){
+  if(boss && boss.kind === 'riser'){ slag.push({x:boss.x, y:boss.y}); }   // riser sits back down
+  duelActive = true; snipeUsed = true; snipe = null;
+  if(!META.flags) META.flags={}; if(!META.flags.reachedDuel){ META.flags.reachedDuel=true; saveMeta(); }   // opens a diary page
+  const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
+  slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
+  arson = []; husks = [];                            // imps stand down + coals go cold for the duel
+  demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (they become Keith's reinforcements below)
+  shots = []; wake = []; pulses = [];
+  // Keith's LEVEL is the district you're in (deeper district = more movesets). Movesets are cumulative.
+  const level = Math.min(5, runDistrict);
+  const roster = ['charge','spit','wake','demon','siphon'];   // unlocked one-per-level, cumulative
+  const moves = roster.slice(0, level);
+  // THE EDGE is cashed here: a lead pre-fills your dump progress; a deficit makes him demand more.
+  const headStart = Math.min(K.EDGE_HEADSTART_CAP, Math.max(0, Math.floor(edge / K.EDGE_PER_DOWN)));
+  const deficit   = Math.min(K.EDGE_EXTRA_CAP,     Math.max(0, Math.floor(-edge / K.EDGE_PER_DOWN)));
+  const dumpNeeded = K.DUEL_DUMP + (level-1)*K.DUMP_PER_LEVEL + deficit*3;
+  dumped = Math.min(dumpNeeded-1, headStart*3);              // banked edge = a running start (never an instant win)
+  boss = { kind:'keith', x:gx, y:gy, r:K.KEITH_R + (level-1)*2, state:'rising', t:K.BOSS_RISE_T,
+           fuse:0, downs:0, tagCd:0, vx:0, vy:0, level, moves, dumpNeeded,
+           move:null, moveT:0, moveTele:0, moveData:null,
+           moveCd: Math.max(K.KEITH_MOVE_CD_MIN+0.6, K.KEITH_MOVE_CD0 - (level-1)*0.3) };
+  // ALLIES: rescued villagers fight beside you — each body-blocks one incoming attack.
+  const allyN = Math.min(K.ALLY_MAX, Math.floor(saved / K.ALLY_PER_SAVED));
+  for(let i=0;i<allyN;i++){ const a=i/Math.max(1,allyN)*Math.PI*2;
+    allies.push({ x: gx + Math.cos(a)*140, y: gy + Math.sin(a)*140 + 200, ph: rnd()*7, used:false }); }
+  ring(gx, gy, K.R_SLAG, 140, '#ff3d7a', 0.8);
+  const taunt = STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length];
+  let riseTxt = 'KEITH LV.' + level + (level>1 ? ' — NEW TRICKS' : '');
+  if(headStart > 0) riseTxt += ' · you start ' + dumped + ' ahead';
+  else if(deficit > 0) riseTxt += ' · the ash fuels him';
+  else riseTxt = taunt;
+  callout = { text: riseTxt, t:0, life:2.3, good: headStart > 0 };
+  if(allyN > 0) setDelayedCallout(allyN + ' SAVED VILLAGERS STAND WITH YOU', 1.6, true);
+  flash = DT*2;
+}
+// a tiny one-shot delayed callout (fixed-step safe — no setTimeout)
+let pendCall = null;
+function setDelayedCallout(text, delay, good){ pendCall = { text, t:delay, good:!!good }; }
+
+function winDuel(){
+  won = true; mode = 'over'; popCause = 'he yielded';
+  CG.stop(); CG.happy();                       // CrazyGames: round ended, a win
+  score += K.DUEL_BONUS;
+  opp.duelWins = (opp.duelWins||0) + 1;
+  // DISTRICT progression: clearing your deepest district opens the next (the ember bounty scales at line ~481).
+  districtCleared = false;
+  if(runDistrict >= (META.district||1) && (META.district||1) < 5){ META.district = runDistrict + 1; districtCleared = true; }
+  saveMeta();
+  foldOpp();
+  ring(boss.x, boss.y, 20, 320, '#8affc1', 1.0);
+  flash = DT*3;
+}
+let districtCleared = false;   // set on a win that unlocked a new district (for the game-over banner)
+
+function bossDown(){
+  const b = boss;
+  if(b.kind === 'riser'){
+    slag.push({x:b.x, y:b.y});                       // dead for good this time
+    score += K.RISER_BONUS;
+    ring(b.x, b.y, K.RISER_R, 90, '#7fe8ff', 0.5);
+    callout = { text: STORY.riser.dead, t:0, life:1.4, good:true };
+    boss = null;
+  } else {
+    b.downs++;
+    const need = b.needed || K.KEITH_DOWNS;
+    if(b.downs >= need){ winDuel(); return; }
+    b.state = 'stagger'; b.t = K.BOSS_STAGGER_T; b.fuse = 0;
+    ring(b.x, b.y, b.r, 110, '#7fe8ff', 0.6);
+    callout = { text: 'KEITH BURNED DOWN · ' + b.downs + '/' + need, t:0, life:1.6, good:true };
+    hitstop = K.HITSTOP;
+  }
+}
+
+// dense clusters of walls fuse into a POWERUP — rewards the pileup and self-cleans the floor
+function mergeCheck(){
+  return;   // DISABLED: the "floating gem" SURGE pickups (fused from wall clusters) are legacy — removed
+  const box = [];
+  for(let i=0;i<slag.length;i++){ if(!slag[i].grudge) box.push(i); }
+  if(box.length < K.MERGE_MIN || powerups.length >= K.POWERUP_CAP) return;
+  const seen = new Set();
+  for(let a=0;a<box.length;a++){
+    if(seen.has(a)) continue;
+    const comp = [a], stack = [a]; seen.add(a);
+    while(stack.length){ const u = stack.pop();
+      for(let v=0;v<box.length;v++){ if(!seen.has(v)){
+        const dx = wrapDX(slag[box[u]].x - slag[box[v]].x), dy = slag[box[u]].y - slag[box[v]].y;
+        if(Math.hypot(dx,dy) < K.MERGE_LINK){ seen.add(v); comp.push(v); stack.push(v); }
+      }}
+    }
+    if(comp.length >= K.MERGE_MIN){
+      const base = slag[box[comp[0]]]; let sx = 0, sy = 0; const rm = new Set();
+      for(const ci of comp){ const s = slag[box[ci]]; sx += wrapDX(s.x-base.x); sy += s.y; rm.add(box[ci]); }
+      let cx = ((base.x + sx/comp.length)%VW+VW)%VW, cy = sy/comp.length;
+      slag = slag.filter((s,i)=>!rm.has(i));
+      powerups.push({ x:cx, y:cy, t:0, n:comp.length });
+      ring(cx,cy,10,110,'#ffe08a',0.7); ring(cx,cy,24,80,'#7fe8ff',0.6); flash = DT*2;
+      callout = { text:'THE WALLS FUSED', t:0, life:1.3, good:true };
+      return;                                        // one merge per tick
+    }
+  }
+}
+
+function collectPowerup(pu){
+  surgeT = K.SURGE_T;
+  player.charges = RUN_MAX_CHARGES;
+  if(player.lit) player.fuse = K.FUSE_START;
+  score += K.SURGE_BONUS;
+  ring(pu.x,pu.y,10,150,'#ffe08a',0.8); ring(player.x,player.y,14,120,'#7fe8ff',0.7);
+  flash = DT*3; hitstop = K.HITSTOP;
+  callout = { text:'SURGE!', t:0, life:1.5, good:true };
+}
+
+function cooldown(){
+  cooldowns++;
+  peakHunters = 0; armed = false;
+  hunterFuse = Math.max(5.0, hunterFuse - 0.5);   // re-escalate: walls form faster
+  score += 500;
+  ring(player.x,player.y,20,260,'#8affc1',0.9);
+  flash = DT*3;
+  // the fire answers: each cooldown ignites more of the crowd at once.
+  // Multiple taggers, always traced to the player's own feat — never free-running spread.
+  const n = Math.min(1 + cooldowns, 5);
+  const pool = crowd().filter(c => c.grace <= 0);
+  for(let i = 0; i < n && pool.length; i++){
+    const c = pool.splice(Math.floor(rnd()*pool.length), 1)[0];
+    ignite(c, 'surge');
+    ring(c.x, c.y, 8, 60, '#ff9a2e', 0.4);
+  }
+}
+
+function pop(cause){
+  mode = 'over'; popCause = cause;
+  CG.stop();                                    // CrazyGames: round ended
+  foldOpp();                                    // this run's decisions teach the opp
+  ring(player.x,player.y,10,180,'#ff4d3d',0.8);
+  flash = DT*3;
+}
