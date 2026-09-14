@@ -370,41 +370,41 @@ let selDistrict = 1, runDistrict = 1, runQuota = 12;
 // Each chapter unlocks off a milestone you'd hit naturally. `art` = a sprite key used as the illustration
 // (bespoke scene art swaps in by the same key). Keep pages short — a diary, not a novel.
 const DIARY = [
-  { id:'stranger', title:'THE STRANGER', art:'hero', teaser:'they say you beat him once…',
+  { id:'stranger', title:'THE RECORD OPENS', art:'hero', teaser:'nineteen names against your account…',
     when:()=>true, hint:'',
-    pages:[ 'They say you beat him once, in the ring, years ago.',
-            'You took the win and walked out the door — never looked back.',
-            'You never saw what losing did to him.' ] },
-  { id:'first', title:'FIRST LIGHT', art:'happy', teaser:'the first one wouldn\'t stop shaking…',
+    pages:[ 'You died in a fire you did not start. The System does not care whose fault it was.',
+            'It opened an account in your name and wrote one number at the top: what you owe.',
+            'Nineteen lives. You will not be told all their names at once — you earn them back, one at a time, or not at all.' ] },
+  { id:'first', title:'FIRST CREDIT', art:'happy', teaser:'balance reduced by one…',
     when:()=>META.saved>=1, hint:'save 1 villager',
-    pages:[ 'The first one you pulled from the fire couldn\'t stop shaking.',
-            '"You came back," she said. You didn\'t answer.',
-            'You were already running to the next.' ] },
-  { id:'forge', title:'THE FORGE', art:'fire', teaser:'iron for the road…',
+    pages:[ 'The first one you pulled from the fire could not stop shaking.',
+            '"You came back," she said. You did not answer — you were already running to the next.',
+            'The System noted it: one life preserved at personal risk. Balance reduced by one. It does not say well done. It never does.' ] },
+  { id:'forge', title:'IRON FOR THE ROAD', art:'fire', teaser:'the account notes the gift…',
     when:()=>META.buildings&&META.buildings.forge&&META.buildings.forge.built, hint:'raise The Forge (25 saves)',
-    pages:[ 'The forge breathes again. Old Bram works the bellows.',
+    pages:[ 'Old Bram lights the forge again. He asks no one\'s permission; the System records that too.',
             '"For the road," he says, and presses iron into your hands.',
-            'You move quicker now. You\'ll need to.' ] },
-  { id:'coals', title:'THE COALS THAT WALK', art:'firedemon', teaser:'the ones you don\'t reach get up…',
+            'You move quicker now. The account notes the gift. The account notes everything.' ] },
+  { id:'coals', title:'WHAT THE FIRE LEAVES', art:'firedemon', teaser:'the record gets up and walks…',
     when:()=>META.flags&&META.flags.sawWraith, hint:'let a villager burn to a wraith',
-    pages:[ 'The ones you don\'t reach in time don\'t simply die.',
-            'The fire finishes them — and what\'s left of them stands up.',
-            'It remembers your face. It comes looking.' ] },
-  { id:'grudge', title:"KEITH'S GRUDGE", art:'keith', teaser:'nobody makes him hold it…',
+    pages:[ 'A life you fail to reach in time does not simply end.',
+            'The record stays open — and the record gets up, and walks, and remembers your face.',
+            '"Nothing here persists," the System notes, as it always does. "Everything here counts."' ] },
+  { id:'grudge', title:"KEITH'S LEDGER", art:'keith', teaser:'he pays his debt the cheap way…',
     when:()=>META.flags&&META.flags.reachedDuel, hint:'reach a duel with Keith',
-    pages:[ 'He held the fire you put in him for years, and it never cooled.',
-            '"Nobody makes me hold it," he told the empty ring.',
-            'So he gave it to everyone you ever walked past.' ] },
-  { id:'well', title:'THE WELL', art:'beacon', teaser:'a child made a wish…',
+    pages:[ 'Keith carries a debt of his own. He chose to pay it the cheap way.',
+            'Burn what another would save, and your balance clears faster. The System permits it. It permits almost everything.',
+            '"Nobody makes me hold it," he told the empty court — and handed his fire to everyone you ever walked past.' ] },
+  { id:'well', title:'THE WELL', art:'beacon', teaser:'a wish it cannot bill her for…',
     when:()=>META.buildings&&META.buildings.well&&META.buildings.well.built, hint:'raise The Well (6 saves)',
-    pages:[ 'Ashford drinks clean water again.',
-            'A child threw a coin in the well and made a wish.',
-            'She wished you\'d stop looking so tired.' ] },
-  { id:'stands', title:'ASHFORD STANDS', art:'ashford', teaser:'five quarters, five yields…',
+    pages:[ 'Ashford drinks clean water again. The System records the town\'s name, restored.',
+            'A child drops a coin in the well and makes a wish it cannot bill her for.',
+            'She wishes you would stop looking so tired. The account has no field for that.' ] },
+  { id:'stands', title:'THE CLAIM HOLDS', art:'ashford', teaser:'five contests, five yields…',
     when:()=>(META.district||1)>=5, hint:'push through to Keith\'s House',
-    pages:[ 'Five quarters. Five times he rose. Five times he yielded.',
-            'The town has a name again — not just a word for what burned.',
-            'Somewhere, Keith is quiet. For now.' ] },
+    pages:[ 'Five quarters. Five contests. Five times the fire yielded.',
+            'The System enters the ruling, in the smallest print it owns: the claim holds.',
+            'Nineteen names. A balance still owed. But tonight the account is quiet — and quiet, from the System, is as close to mercy as the record allows.' ] },
 ];
 function diaryUnlocked(e){ try{ return !!e.when(); }catch(_){ return false; } }
 function diaryIsRead(id){ return META.diary && META.diary.read && META.diary.read.indexOf(id)>=0; }
@@ -2668,7 +2668,7 @@ function drawDiarySheet(ctx){
     // ---- CHAPTER LIST
     ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+46);
     ctx.fillStyle='rgba(210,195,235,0.65)'; ctx.font='italic 500 15px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('told by the town you save — read it or skip it, it costs nothing', VW/2, y+70);
+    ctx.fillText('the account the System keeps on you — read it or skip it, it costs nothing', VW/2, y+70);
     const rowH=58, x0=30, rw=VW-60; let ry=y+90;
     for(let i=0;i<DIARY.length;i++){ const e=DIARY[i], ok=diaryUnlocked(e), fresh=ok&&!diaryIsRead(e.id);
       panel(ctx, x0, ry, rw, rowH-8, 12, ok?'rgba(40,30,58,0.7)':'rgba(20,18,28,0.6)', ok?'rgba(201,160,255,0.45)':'rgba(90,84,110,0.35)');
@@ -2697,8 +2697,10 @@ function drawDiarySheet(ctx){
     panel(ctx, 24, y+22, 118, 40, 10, 'rgba(40,30,58,0.8)', 'rgba(201,160,255,0.45)');
     ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText('‹ BACK', 83, y+48);
     hubB(24, y+22, 118, 40, 'diaryback');
-    // title
-    ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 28px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.title, VW/2, y+52);
+    // title (shrink to fit)
+    ctx.textAlign='center'; let ts=28; ctx.font='800 28px "Pixelify",system-ui,sans-serif';
+    while(ctx.measureText(e.title).width > VW-160 && ts>15){ ts-=2; ctx.font='800 '+ts+'px "Pixelify",system-ui,sans-serif'; }
+    ctx.fillStyle='#c9a0ff'; ctx.fillText(e.title, VW/2, y+52);
     // illustration
     const iy=y+92, ih=210;
     panel(ctx, 40, iy, VW-80, ih, 14, 'rgba(10,8,16,0.6)', 'rgba(201,160,255,0.28)');
