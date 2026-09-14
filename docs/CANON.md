@@ -1,6 +1,6 @@
 # Fwoosh canon — story interview in progress
 
-Tony's explicit decisions supersede contradictory prototype text. This record captures decisions; it does not mean the runtime story has been rewritten.
+Tony's explicit decisions supersede contradictory prototype text. This record distinguishes confirmed decisions from implementation. See the latest story implementation checkpoint below.
 
 ## Confirmed by Tony
 
@@ -52,3 +52,9 @@ Do not invent answers to these questions or implement a new favor/release system
 - A missable Ratkin character can join the RPG after Duy returns having rebuilt ratkin society.
 - The conversion rate, collection/budget definition, redemption rules, reward tables and conditions for missing the recruit are not specified. Do not invent or implement these values before the interview resolves them.
 - Tony authorized integrating and publishing the immediate Fwoosh release, then deploying each major completed change to the live website for his testing. This supersedes earlier instructions to leave everything in draft pending release permission. Continue checking changes before deployment and preserve saves.
+
+## First-run direction and story implementation
+
+Tony clarified: Duy initially understands almost nothing. He has just died and is dropped into action. Keith speaks DURING gameplay, vaguely explaining punishment, relieving ratkin suffering, and repeated death. More is revealed with progress. No upfront death/massacre explanation.
+
+Story release 2026-09-14-story-1 implements that direction: direct control with Keith narration; fixes title boot consuming the intro; replays the new intro once without resetting progress; keeps the mobile vent HUD exposed. Later dialogue, diary, title and victory text now align with rebuilding/favor and ratkin judgment. The Shrine records rescues without declaring a nineteen-rescue debt payoff. City construction, favor judgment, resurrection and Invoice redemption remain unimplemented pending their detailed interview.

@@ -25,3 +25,7 @@ Rescues update lifetime saved and pending embers in memory. `foldOpp()` banks pe
 - Test in a separate origin or in-memory fixtures; never reset the player's real saves.
 
 The simulation stops the frame after terminal boss outcomes so a later rescue cannot change run totals after settlement. Regression checks compare the displayed run tally with banked embers and reloaded rescue counts.
+
+## Intro revision 3
+
+The revised live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. Older players see revision 3 once. This preserves ember balances, district completion, upgrades and diary read state. No city/Invoice save fields are added by this story release.

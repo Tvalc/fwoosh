@@ -448,10 +448,10 @@ const SKINS = {
       for(let i=0;i<16;i++){ const x=(i*151)%VW, y=(i*97+frame*1.4)%VH;
         aSparkle(ctx, x, y, 3+2*Math.sin(frame*0.06+i), 'rgba(210,255,230,0.5)'); }
       ctx.textAlign='center';
-      if(!drawTextFit(ctx, 'KEITH YIELDS.', VW/2, VH*0.135, 58, VW*0.9)){
+      if(!drawTextFit(ctx, 'DISTRICT CLEARED.', VW/2, VH*0.135, 58, VW*0.9)){
         ctx.font='900 66px "Pixelify",system-ui,sans-serif';
-        ctx.lineWidth=12; ctx.strokeStyle='#08120c'; ctx.strokeText('KEITH YIELDS.', VW/2, VH*0.15);
-        ctx.fillStyle='#8affc1'; ctx.fillText('KEITH YIELDS.', VW/2, VH*0.15); }
+        ctx.lineWidth=12; ctx.strokeStyle='#08120c'; ctx.strokeText('DISTRICT CLEARED.', VW/2, VH*0.15);
+        ctx.fillStyle='#8affc1'; ctx.fillText('DISTRICT CLEARED.', VW/2, VH*0.15); }
       ctx.font='600 25px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#e7ecf5';
       STORY.duel.yieldSub.forEach((ln,i)=>{ ctx.lineWidth=6; ctx.strokeStyle='rgba(6,11,9,0.9)';
         ctx.strokeText(ln, VW/2, VH*0.15+44+i*32); ctx.fillText(ln, VW/2, VH*0.15+44+i*32); });
@@ -774,10 +774,10 @@ const SKINS = {
       for(let i=0;i<16;i++){ const x=(i*151)%VW, y=(i*97+frame*1.4)%VH;
         aSparkle(ctx, x, y, 3+2*Math.sin(frame*0.06+i), 'rgba(210,255,230,0.5)'); }
       ctx.textAlign='center';
-      if(!drawTextFit(ctx, 'KEITH YIELDS.', VW/2, VH*0.135, 58, VW*0.9)){
+      if(!drawTextFit(ctx, 'DISTRICT CLEARED.', VW/2, VH*0.135, 58, VW*0.9)){
         ctx.font='900 66px "Pixelify",system-ui,sans-serif';
-        ctx.lineWidth=12; ctx.strokeStyle='#08120c'; ctx.strokeText('KEITH YIELDS.', VW/2, VH*0.15);
-        ctx.fillStyle='#8affc1'; ctx.fillText('KEITH YIELDS.', VW/2, VH*0.15); }
+        ctx.lineWidth=12; ctx.strokeStyle='#08120c'; ctx.strokeText('DISTRICT CLEARED.', VW/2, VH*0.15);
+        ctx.fillStyle='#8affc1'; ctx.fillText('DISTRICT CLEARED.', VW/2, VH*0.15); }
       ctx.font='600 25px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#e7ecf5';
       STORY.duel.yieldSub.forEach((ln,i)=>{ ctx.lineWidth=6; ctx.strokeStyle='rgba(6,11,9,0.9)';
         ctx.strokeText(ln, VW/2, VH*0.15+44+i*32); ctx.fillText(ln, VW/2, VH*0.15+44+i*32); });
@@ -823,7 +823,7 @@ function drawDialogue(ctx){
   const full = line.text.length;
   const shown = intro.phase==='walkin' ? full : Math.min(full, Math.floor(intro.lineT/INTRO.CHAR));
   const talking = shown < full;
-  const bx=14, bw=VW-28, bh=196, by=VH-bh-22;
+  const bx=14, bw=VW-28, bh=196, by=VH-bh-250; // leave dash pips and the mobile vent target exposed
   ctx.save();
   roundRectPath(ctx,bx,by,bw,bh,16);
   ctx.fillStyle='rgba(10,8,14,0.9)'; ctx.fill();
@@ -947,7 +947,7 @@ function drawHub(ctx){
   ctx.fillStyle='rgba(255,240,220,0.92)'; ctx.font='800 15px "Pixelify",system-ui,sans-serif';
   ctx.fillText('DISTRICT '+selDistrict+' / 5  ·  KEITH LV.'+selDistrict, VW/2, pbY+26);
   if(!drawTextFit(ctx,DISTRICTS[selDistrict-1], VW/2, pbY+56, 30, pbW*0.66)){ ctx.fillStyle='#fff'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillText(DISTRICTS[selDistrict-1], VW/2, pbY+58); }
-  const foot = (selDistrict===unlocked && unlocked<5) ? 'beat Keith to open the next district' : (isTouch?'tap to enter':'SPACE / click to enter');
+  const foot = (selDistrict===unlocked && unlocked<5) ? 'clear this district to open the next' : (isTouch?'tap to enter':'SPACE / click to enter');
   ctx.fillStyle='rgba(255,240,220,0.8)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(foot, VW/2, pbY+78);
   // arrows
   ctx.font='800 40px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center';
@@ -1021,14 +1021,12 @@ function drawShrineSheet(ctx){
   ctx.fillStyle='rgba(210,195,235,0.72)'; ctx.font='italic 500 15px "Pixelify",system-ui,sans-serif';
   ctx.fillText('the System keeps one line for every soul. this is yours.', VW/2, y+72);
 
-  const debt=19, repaid=Math.min(debt, META.saved||0), settled=repaid>=debt;
-  // ---- THE BLOOD DEBT: nineteen tally marks, filled as you carry them back
-  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE BLOOD DEBT', 44, y+112);
-  const mx=44, my=y+126, mw=(VW-88)/debt;
-  for(let i=0;i<debt;i++){ const cx=mx+i*mw+mw/2; ctx.strokeStyle = i<repaid ? '#8affc1' : 'rgba(255,157,189,0.45)'; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.moveTo(cx, my); ctx.lineTo(cx, my+26); ctx.stroke(); }
-  ctx.textAlign='right'; ctx.fillStyle = settled ? '#8affc1' : '#ffb14d'; ctx.font='700 16px "Pixelify",system-ui,sans-serif';
-  ctx.fillText(settled ? 'the debt is settled. the sentence is not.' : repaid+' of 19 carried back from the fire', VW-44, y+178);
+  // Rescue count records progress; it is not a debt balance or a release threshold.
+  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('THE RATKIN REMEMBER', 44, y+112);
+  ctx.fillStyle='#efe4ff'; ctx.font='500 18px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('A rescue is a beginning. Their society must be rebuilt.', 44, y+148);
+  ctx.fillText('Their favor must be earned. Their judgment grants release.', 44, y+180);
 
   // ---- record rows
   const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
@@ -1042,7 +1040,7 @@ function drawShrineSheet(ctx){
   const bY=y+h-92, bX=60, bW=VW-120, bH=66, fresh=diaryFreshCount();
   panel(ctx, bX, bY, bW, bH, 14, 'rgba(40,30,58,0.9)', 'rgba(201,160,255,0.6)');
   ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='800 23px "Pixelify",system-ui,sans-serif'; ctx.fillText('READ THE RECORD', VW/2, bY+34);
-  ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(fresh>0 ? fresh+' new to read' : 'the story, told by the town you save', VW/2, bY+54);
+  ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(fresh>0 ? fresh+' new to read' : "Duy's account of how he got here", VW/2, bY+54);
   if(fresh>0){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bX+bW-26, bY+24, 12, 0, 7); ctx.fill(); ctx.fillStyle='#0a0710'; ctx.font='800 15px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(fresh), bX+bW-26, bY+29); }
   hubB(bX, bY, bW, bH, 'diary');
   ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
@@ -1152,7 +1150,7 @@ function drawTitle(ctx){
   if(!drawTextFit(ctx,'FWOOSH', VW/2, ty+bob, 140, VW*0.92)){
     ctx.fillStyle='#ffb04d'; ctx.font='900 120px "Pixelify",system-ui,sans-serif'; ctx.fillText('FWOOSH', VW/2, ty+bob); }
   ctx.fillStyle='#ffd0a0'; ctx.font='600 26px "Pixelify",system-ui,sans-serif';
-  ctx.fillText('save the town — burn down keith', VW/2, VH*0.335);
+  ctx.fillText('carry their fire', VW/2, VH*0.335);
   const blink=0.35+0.55*(0.5+0.5*Math.sin(frame*0.12));
   ctx.fillStyle='rgba(255,255,255,'+blink.toFixed(2)+')'; ctx.font='700 30px "Pixelify",system-ui,sans-serif';
   ctx.fillText('TAP TO START', VW/2, VH*0.90);
@@ -1397,7 +1395,7 @@ function render(){
   }
 
   // ---- HUD (clean: hearts for health, gold score, one-line objective; hidden on title/intro/over)
-  const hudOn = mode === 'play' && !onTitle && introT <= 0 && !intro;
+  const hudOn = mode === 'play' && !onTitle && introT <= 0 && (!intro || intro.phase==='talk');
   if(hudOn){
     // SCORE — gold Makko display font, top-center
     ctx.textAlign='center';
@@ -1500,13 +1498,13 @@ function render(){
   // ---- LIVE intro dialogue box (Keith narrates over gameplay)
   drawDialogue(ctx);
 
-  // ---- first-boot premise card: plain statement of what is going on. Concrete, no mystery.
+  // ---- legacy premise preview only; first play uses live dialogue instead.
   if(introT > 0 && introKind === 'premise'){
     ctx.fillStyle = 'rgba(7,7,11,0.82)'; ctx.fillRect(0,0,VW,VH);
     ctx.textAlign = 'center';
-    if(!drawTextFit(ctx, 'YOU BEAT KEITH ONCE.', VW/2, VH*0.155, 46, VW*0.92)){
+    if(!drawTextFit(ctx, 'YOU WOKE IN THE FIRE.', VW/2, VH*0.155, 46, VW*0.92)){
       ctx.fillStyle = '#ffb04d'; ctx.font = '800 48px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('YOU BEAT KEITH ONCE.', VW/2, VH*0.165); }
+      ctx.fillText('YOU WOKE IN THE FIRE.', VW/2, VH*0.165); }
     ctx.fillStyle = '#e7ecf5'; ctx.font = '500 23px "Pixelify",system-ui,sans-serif';
     STORY.premise.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH*0.20 + 66 + i*40));
     if(!drawTextFit(ctx, "DON'T END UP A WALL.", VW/2, VH*0.20 + 66 + STORY.premise.length*40 + 42, 34, VW*0.92)){
@@ -1551,7 +1549,7 @@ function render(){
     ctx.fillStyle = 'rgba(7,7,11,0.82)'; ctx.fillRect(0,0,VW,VH);
     ctx.fillStyle = '#8affc1'; ctx.textAlign = 'center';
     ctx.font = '800 74px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('KEITH YIELDS.', VW/2, VH/2 - 110);
+    ctx.fillText('DISTRICT CLEARED.', VW/2, VH/2 - 110);
     ctx.fillStyle = '#e7ecf5'; ctx.font = '500 26px "Pixelify",system-ui,sans-serif';
     STORY.duel.yieldSub.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH/2 - 56 + i*36));
     ctx.fillStyle = '#fff'; ctx.font = '700 66px "Pixelify",system-ui,sans-serif';

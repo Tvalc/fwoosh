@@ -21,7 +21,9 @@ function game(saved = {}) {
   const drawnText = [];
   const listeners = {};
   const listen = (type, fn) => (listeners[type] ||= []).push(fn);
+  const gradient = () => ({addColorStop: noop});
   const context2d = new Proxy({setTransform: noop, fillText: text => drawnText.push(String(text)),
+    createRadialGradient: gradient, createLinearGradient: gradient,
     measureText: text => ({width:String(text).length*10})}, {get: (o, k) => o[k] || noop});
   const canvas = {style: {}, getContext: () => context2d, addEventListener: listen,
     getBoundingClientRect: () => ({left: 0, top: 0})};
@@ -307,6 +309,43 @@ test('Winning contact ends the frame before another rescue can change settled re
   assert.equal(g.run('won'),true);
   assert.equal(g.run('META.embers'),g.run('runEmbers'),'Run-end total changed after currency was already banked');
   const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.saved'),g.run('META.saved'));
+});
+
+test('Title boot does not consume the live intro; first start gives control during Keith dialogue', () => {
+  const g=game();
+  assert.notEqual(g.run('opp.introVer'),g.run('INTRO_VERSION'));
+  g.run('onDown(360,1100)');
+  assert.equal(g.run('intro.phase'),'talk');
+  assert.equal(g.run('intro.i'),0);
+  assert.equal(g.run('introT'),0);
+  g.dispatch('keydown',{key:'d'});
+  const x=g.run('player.x');g.run('step()');
+  assert.ok(g.run('player.x')>x,'Player must move while Keith speaks');
+  g.dispatch('keydown',{key:'Shift',repeat:false});
+  assert.equal(g.run('player.charges'),2,'Dialogue must not block dashing');
+  g.dispatch('keydown',{key:' ',repeat:false});
+  assert.equal(g.run('player.venting'),true,'Dialogue must not block venting');
+});
+
+test('Updated intro replays once for an older save while preserving progression and diary reads', () => {
+  const g=game();g.run('META.embers=432;META.district=4;META.clearedDistricts=3;diaryMarkRead("morning");saveMeta();opp.introVer=2;saveOpp()');
+  const before=g.storage.get('fwoosh.meta');
+  const reload=game(Object.fromEntries(g.storage));
+  assert.equal(reload.storage.get('fwoosh.meta'),before);
+  reload.run('onDown(360,1100)');
+  assert.equal(reload.run('intro.phase'),'talk');
+  assert.equal(reload.run('META.embers'),432);
+  assert.equal(reload.run('META.district'),4);
+  const again=game(Object.fromEntries(reload.storage));again.run('onDown(360,1100)');
+  assert.equal(again.run('intro'),null,'Do not replay the opening on every visit');
+});
+
+test('Mobile vent HUD remains visible and usable during the live intro', () => {
+  const g=game();g.run('onDown(360,1100);isTouch=true;var ventDraws=0;drawVentButton=()=>ventDraws++;render()');
+  assert.equal(g.run('ventDraws'),1);
+  g.run('var vb=ventBtn();onDown(vb.x,vb.y)');
+  assert.equal(g.run('player.venting'),true);g.run('onUp()');
+  assert.equal(g.run('player.venting'),false);
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',

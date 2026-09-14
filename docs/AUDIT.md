@@ -49,3 +49,7 @@ The 47-file release ZIP was CRC-checked, compared byte-for-byte to source, extra
 ## Release verification — after Cursor 2d9316c
 
 38 gameplay/input checks pass; 11 asset checks pass over 43 local references and nine atlases. The removed ratkin explains the reduced asset count. The integrated title opens gameplay in the browser with the original Makko townsfolk. Package byte integrity is verified separately. These are automated/browser checks; Tony will test balance and physical-phone feel on the live deployment. The cinder visual improvement remains open after restoring the original sheet.
+
+## Story pass
+
+41 state/input checks pass. Three additional regressions verify title-to-intro lifecycle with immediate controls, old-save progress retained across one-time intro replay, and mobile vent HUD/action during dialogue. Browser inspection confirms Keith dialogue over the running game. Runtime media is unchanged from the released Makko correction.
