@@ -76,6 +76,7 @@ const K = {
   MAX_DEMONS: 6, DEMON_SPD: 135,    // slower than RUN(170) so a dash always escapes
   DEMON_TGT_VILL: 0.6,              // 60% of demons hunt villagers, 40% hunt you
   DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,  // only the nearest ~2 demons land hits -> 1-2 out = heal wins, full swarm loses
+  HURT_IFRAME: 0.5,                 // after ANY demon bite, brief invuln so a swarm can't burst you while you break free
   DEMON_LIFE: 2.5, DEMON_R: 16,     // linger after you release, then collapse
   CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
   VENT_ANIM_SC_F: 0.86,             // fire-man vent-anim cell height as a fraction of PHp (so the character matches the form)
@@ -484,7 +485,7 @@ function reset(seed){
   demons = []; ventSwarmT = 0; demonSpawnT = 0;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
-    spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0,
+    spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
     venting: false, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
@@ -541,12 +542,12 @@ let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (nav
 
 function lungeDir(dx,dy){
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
-  if(mode !== 'play' || player.venting || player.charges <= 0 || player.dashCd > 0) return;   // no dashing while venting (rooted); dashes are rechargeable
+  if(mode !== 'play' || player.charges <= 0 || player.dashCd > 0) return;   // dashes are rechargeable
   if(intro && intro.phase === 'walkin') return;          // no control during the scripted entrance
   player.hx = dx/m; player.hy = dy/m;
   player.lunge = K.LUNGE_T;
   player.charges--; player.dashCd = K.DASH_CD;   // spend a charge (+ a tiny gap so one swipe can't double-fire)
-  player.venting = false;
+  player.venting = false;                        // a DASH CANCELS a vent — always an escape, never stunlocked
 }
 
 function onDown(x,y){
@@ -613,6 +614,7 @@ function step(){
   // ---- player
   const p = player;
   if(p.dashCd > 0) p.dashCd -= dt;
+  if(p.hurtCd > 0) p.hurtCd -= dt;
   if(p.ventCd > 0) p.ventCd -= dt;
   if(p.ventFlash > 0) p.ventFlash -= dt;
   // DASH CHARGES recharge over time (max + speed set by The Forge upgrades)
@@ -1027,8 +1029,8 @@ function stepDemons(dt){
     const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
     d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
     if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
-    if(canHit.has(i) && d.hitCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
-      p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; flash = DT*2;
+    if(canHit.has(i) && d.hitCd<=0 && p.hurtCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
+      p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
       if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
     if(d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
       if(d.tgt.hunter) becomeSlag(d.tgt);                               // flaming -> instant WALL (lost forever)
@@ -2584,8 +2586,9 @@ window.addEventListener('keydown', e=>{
       lungeDir(v[0], v[1]); hinted = true;
     }
   }
-  // VENT on SPACE — hold to keep blasting fire off you.
-  if(k === ' '){ e.preventDefault(); player.venting = true; hinted = true; }
+  // VENT on SPACE — hold to keep blasting fire off you. Only on a FRESH press: OS key-repeat must not
+  // re-arm the vent right after a dash cancels it (that was the desktop "stunlock").
+  if(k === ' ' && !e.repeat){ e.preventDefault(); player.venting = true; hinted = true; }
 });
 window.addEventListener('keyup', e=>{
   const k = e.key.toLowerCase();
@@ -2612,6 +2615,7 @@ window.__fwoosh = {
     x:Math.round(player.x), y:Math.round(player.y),
     crowd:crowd().length, hunters:hunters().length, slag:slag.length,
     heat:player.heat, hp:+(player.hp!=null?player.hp:1).toFixed(3), saved, dumped,
+    venting:player.venting, demons:demons.length, hurtCd:+(player.hurtCd||0).toFixed(3),
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
     passeeId:player.passeeId, passT:+player.passT.toFixed(3), hitstop:+hitstop.toFixed(3),
@@ -2657,6 +2661,7 @@ window.__fwoosh = {
     runs:0, readsBroken:0, timesSniped:0, seenIntro:false, duelWins:0, loreIdx:0 };
     try{ localStorage.removeItem('fwoosh.opp'); }catch(e){} return this.oppState(); },
   skipIntro(){ introT = 0; return true; },
+  clearIntro(){ onTitle = false; intro = null; introT = 0; return this.state(); },   // dismiss title + LIVE walk-in/talk instantly (test setup)
   setIntro(t, kind){ introT = t; if(kind) introKind = kind; return introT; },  // hold a screen for preview
   forcePop(){ pop('test'); return this.oppState(); },
   // narration the render would show right now, for verifying the arc
