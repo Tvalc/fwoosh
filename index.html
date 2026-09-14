@@ -370,42 +370,59 @@ let selDistrict = 1, runDistrict = 1, runQuota = 12;
 // Each chapter unlocks off a milestone you'd hit naturally. `art` = a sprite key used as the illustration
 // (bespoke scene art swaps in by the same key). Keep pages short — a diary, not a novel.
 const DIARY = [
-  { id:'stranger', title:'THE LOUD ONE', art:'duy_gate', teaser:'you held a gate.',
+  { id:'stranger', title:'The Loud One', art:'duy_gate', teaser:'A young cop. A held gate. A debt he woke up owing.',
     when:()=>true, hint:'',
-    pages:[ 'You were Duy Duong. Cuong\'s partner since the academy. You talked so the rest of them did not have to.',
-            'At the gate you had one good hand and a ruined arm, and the warden started lifting the iron off its back.',
-            'You went back under it. The record does not show a decision. The record shows where you were standing.',
-            'Companion Duy: deceased. This entry is permanent. The court extends no condolences. It has none to extend.' ] },
-  { id:'first', title:'THE FIRST NAME', art:'duy_save', teaser:'balance reduced by one.',
+    pages:[ 'Duy Duong was a cop. Young, and the loud one, the man who put a joke into a room so his partner Cuong did not have to. Cuong and Diep were the two people he trusted with his life.',
+            'The day the fighting reached them, Duy held a gate shut so Cuong and Diep could get clear. He kept it shut with a torn arm until they were gone. Then the gate came down on him, and he died.',
+            'There is an afterlife. Nobody warns you it comes with a front desk. This one is run by something called the System, and it talks like a clerk who has seen his kind before.',
+            'The System keeps a ledger, one line for every soul. Duy\'s line has a debt on it. He owes nineteen lives.',
+            'A debt like that is paid one way. Save nineteen lives, one at a time, at real risk to your own. So the System set a town on fire in daylight and put Duy in the middle of it.',
+            'His job is to run into the fire and pull people out before they burn. Nineteen of them. Why nineteen, and why fire, is the part he has been trying not to think about.' ] },
+  { id:'first', title:'The First One', art:'duy_save', teaser:'The first one out of the fire. Nineteen becomes eighteen.',
     when:()=>META.saved>=1, hint:'save 1 villager',
-    pages:[ 'The first one you pulled from the fire was small, and gray at the muzzle, and weighed almost nothing.',
-            'The account moved. One life preserved at personal risk. Balance reduced by one.',
-            'It did not credit a number. It credited a name. There are eighteen more.' ] },
-  { id:'forge', title:'THE DARK ROOM', art:'dark_cell', teaser:'you could not tell a spear from a hand.',
+    pages:[ 'The first one Duy carried out was small. Fur, whiskers, a tail, and hands shaped like his own. The town calls them ratkin.',
+            'She was on fire and running the wrong way, deeper in. He caught her, beat the fire off her, and pointed her at the open street. She ran and did not look back.',
+            'The System noticed. It does not clap. It moved the number. Nineteen became eighteen.',
+            'That is the whole job. Take the fire off them, send them running, watch the debt drop by one. Do it eighteen more times and Duy is square.',
+            'He does not know these people yet. He is starting to think he might, though. She had looked up at him like she had seen him somewhere before.' ] },
+  { id:'forge', title:'The Dark Cell', art:'dark_cell', teaser:'The dark, the shapes, the nineteen. This is why.',
     when:()=>META.buildings&&META.buildings.forge&&META.buildings.forge.built, hint:'raise The Forge (25 saves)',
-    pages:[ 'You remember the cell. The dark. The shapes that came across it fast, and the sound they made.',
-            'You fired. In the muzzle-flash you could not tell a spear from a hand held up.',
-            'Nineteen of them had been running the other way. The System reclassified them non-combatant. It did not change the award.' ] },
-  { id:'coals', title:'WHAT THE DARK KEEPS', art:'wraith', teaser:'they know your face.',
+    pages:[ 'This is the part Duy does not talk about. It happened before he died, in the first days after two worlds crashed into each other. People would call that the merge later.',
+            'The merge threw everything loose. Duy and his friends woke up locked in a prison cell that was not theirs, packed in with the prison\'s own people. The lights were dead. It was dark like a shut box, no window, no light under the door.',
+            'Something moved in the dark. Then a lot of somethings, low and fast, rushing toward them. They were cops with guns and nothing to aim at but the noise.',
+            'So they fired. All of them. They kept firing until nothing moved and someone found the lights.',
+            'Nineteen ratkin lay on the floor. Small, thin, prisoners like them, not a weapon among them. The cell door had come open behind Duy, and they had been running for it. He had been standing in the way.',
+            'He killed nineteen people for trying to get out of the dark. He never set that down. That is the debt, and that is why the System built him a fire he can see, in daylight, full of the same small faces, and sends him in to carry them out.' ] },
+  { id:'coals', title:'The Ones He Misses', art:'wraith', teaser:'The ones he does not reach come back. They remember him.',
     when:()=>META.flags&&META.flags.sawWraith, hint:'let a villager burn to a wraith',
-    pages:[ 'The ones you do not reach in time do not stay down.',
-            'They come back up out of the ash, the way they came across the cell, and they know your face.',
-            'The court keeps better records than you do. It kept these.' ] },
-  { id:'grudge', title:'THE ENFORCER', art:'keith_enforcer', teaser:'the office that keeps debtors.',
+    pages:[ 'Sometimes Duy is too slow. Someone burns before he reaches them. They go down, and they do not stay down.',
+            'They come back up out of the ash. Burned black, still standing, and they come for him.',
+            'They come low and fast, the way the shapes came across the cell. This time there is light. This time he can see who it was, and they remember him.',
+            'Every one he lets burn is one more he has to fight instead of save. The dark cost him nineteen at once. This town costs him one at a time, one for every person he misses.',
+            'He does not get to be afraid of them. He made them. He can at least look at them.' ] },
+  { id:'grudge', title:'The Enforcer', art:'keith_enforcer', teaser:'Meet Keith. His whole job is keeping Duy here.',
     when:()=>META.flags&&META.flags.reachedDuel, hint:'reach a duel with Keith',
-    pages:[ 'Keith is not a debtor. Keith is the office that keeps them.',
-            'He burns what you would save. A sentence that pays too fast is a sentence badly kept.',
-            'He is the court\'s, and the court is never in a hurry.' ] },
-  { id:'well', title:'THE WALL OF NAMES', art:'wall_names', teaser:'nineteen marks, in one night.',
+    pages:[ 'There is a man who walks through the fire and does not burn. He carries a torch he has no need for. His name is Keith.',
+            'Keith works for the System. Every prison needs someone to keep the door shut. Keith is that man, and Duy\'s sentence is his to keep.',
+            'So Keith starts the fires. When Duy pulls a family out of one street, Keith lights the next. A debt that pays off fast would put him out of a job.',
+            'He is not cruel about it and he is not in a hurry. Keeping Duy here is just work to him. That is the part that gets under Duy\'s skin.',
+            'The debt will not clear with Keith standing there relighting it. Nineteen saves is only half the sentence. The other half is Keith.' ] },
+  { id:'well', title:'The Wall of Names', art:'wall_names', teaser:'Who the ratkin were. The wall where they keep their dead.',
     when:()=>META.buildings&&META.buildings.well&&META.buildings.well.built, hint:'raise The Well (6 saves)',
-    pages:[ 'The ratkin draw their dead on a wall. Not the face. The thing the person made, or carried, or was good at.',
-            'A fishing line. A knot that never slipped. A grinding stone. Nineteen marks, in one night, in a row.',
-            'You are paying them back in the order the wall lists them. The wall is patient. So are they.' ] },
-  { id:'stands', title:'THE WAY BACK', art:'the_gate_back', teaser:'balance satisfied.',
+    pages:[ 'The town does not only burn. Save enough of them and the ratkin start to build. The first thing they raise again is the well.',
+            'They are not scenery. They fished and hauled and cooked and kept up long arguments over card games, the same as anyone. The merge locked them up the same way it locked up Duy, for standing on the wrong ground when the worlds hit. They had done nothing.',
+            'The ratkin keep a wall for their dead. They do not draw the face. They draw the one thing the person was good at.',
+            'A fishing line, drawn tight and straight. Beside it a knot that never slipped. The wall goes on that way, one small skill at a time.',
+            'Nineteen of those marks went up in a single night, in one long row. That night was Duy\'s.',
+            'The rebuilt town does not pay down his debt. Only pulling them from the fire does that. The town is where he learns who the nineteen were, one skill at a time. It is a better record than the System keeps.' ] },
+  { id:'stands', title:'The Way Back', art:'the_gate_back', teaser:'Pay the last one. Put Keith down. Go home.',
     when:()=>(META.district||1)>=5, hint:'push through to Keith\'s House',
-    pages:[ 'Pay the nineteen and the record reopens the one door it closed.',
-            'On the far side are the ones who buried you. Diep. Cuong. The bananas Diep still owes you.',
-            'The account does not say welcome back. It says balance satisfied. From the System, that is the whole of mercy.' ] },
+    pages:[ 'The town narrows to its last few streets. Fewer people left to reach, and Keith waiting at the end of them. This is the last of it.',
+            'Duy carries out the nineteenth one. The System moves the number to zero. It does not congratulate him. It says the balance is clear, in the same flat voice it uses for everything.',
+            'Then he puts Keith down. Not dead. Keith does not really work that way. Just done, stepped aside, out of a job for the first time.',
+            'The System closed one door the day Duy died, the door back to his own life. Clear the debt and beat the jailer, and it opens that door again. That was the deal the whole time, down in the fine print.',
+            'On the other side are the two people he held the gate for. Cuong. Diep. They buried him, and they never got to say goodbye to the loud one.',
+            'He held the gate and did not make it through. This time he makes it through. He gets to be the one who lived.' ] },
 ];
 function diaryUnlocked(e){ try{ return !!e.when(); }catch(_){ return false; } }
 function diaryIsRead(id){ return META.diary && META.diary.read && META.diary.read.indexOf(id)>=0; }
@@ -2660,8 +2677,8 @@ function drawShopSheet(ctx, bld){
 }
 
 function drawDiarySheet(ctx){
-  const h=490, y=VH-h;
-  ctx.fillStyle='rgba(6,5,11,0.72)'; ctx.fillRect(0,0,VW,VH);
+  ctx.fillStyle= diaryOpen===null ? 'rgba(6,5,11,0.72)' : 'rgba(6,5,11,0.92)'; ctx.fillRect(0,0,VW,VH);
+  const h = diaryOpen===null ? 490 : (VH-96), y = VH-h;
   panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.99)', 'rgba(201,160,255,0.5)');
   if(diaryOpen===null) hubB(0,0,VW,y,'close');            // tap above closes (list mode only)
 
@@ -2692,39 +2709,39 @@ function drawDiarySheet(ctx){
     }
     ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
   } else {
-    // ---- READER
+    // ---- READER (tall, story-friendly)
     const e = DIARY[diaryOpen], pg = Math.max(0, Math.min(diaryPage, e.pages.length-1));
     // back
-    panel(ctx, 24, y+22, 118, 40, 10, 'rgba(40,30,58,0.8)', 'rgba(201,160,255,0.45)');
-    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText('‹ BACK', 83, y+48);
-    hubB(24, y+22, 118, 40, 'diaryback');
+    panel(ctx, 24, y+22, 120, 42, 10, 'rgba(40,30,58,0.85)', 'rgba(201,160,255,0.45)');
+    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText('‹ BACK', 84, y+49);
+    hubB(24, y+22, 120, 42, 'diaryback');
     // title (shrink to fit)
-    ctx.textAlign='center'; let ts=28; ctx.font='800 28px "Pixelify",system-ui,sans-serif';
-    while(ctx.measureText(e.title).width > VW-160 && ts>15){ ts-=2; ctx.font='800 '+ts+'px "Pixelify",system-ui,sans-serif'; }
-    ctx.fillStyle='#c9a0ff'; ctx.fillText(e.title, VW/2, y+52);
+    ctx.textAlign='center'; let ts=30; ctx.font='800 30px "Pixelify",system-ui,sans-serif';
+    while(ctx.measureText(e.title).width > VW-180 && ts>16){ ts-=2; ctx.font='800 '+ts+'px "Pixelify",system-ui,sans-serif'; }
+    ctx.fillStyle='#c9a0ff'; ctx.fillText(e.title, VW/2, y+54);
     // illustration
-    const iy=y+92, ih=210;
+    const iy=y+80, ih=248;
     panel(ctx, 40, iy, VW-80, ih, 14, 'rgba(10,8,16,0.6)', 'rgba(201,160,255,0.28)');
     ctx.save(); roundRectPath(ctx, 40, iy, VW-80, ih, 14); ctx.clip();
     if(e.art==='ashford' && sprReady('ashford')){ const im=MAKKO_IMG['ashford'], sc=Math.max((VW-80)/im.naturalWidth, ih/im.naturalHeight), w=im.naturalWidth*sc, hh=im.naturalHeight*sc; ctx.globalAlpha=0.9; ctx.drawImage(im, VW/2-w/2, iy+ih/2-hh/2, w, hh); }
     else if(e.art==='fire'){ drawFlame(ctx, VW/2, iy+ih*0.86, ih*0.8, frame*0.4, 0.95); }
-    else if(sprReady(e.art)) drawSpr(ctx, e.art, VW/2, iy+ih/2, ih*0.82, {});
-    else { ctx.fillStyle='#2a2636'; ctx.fillRect(40,iy,VW-80,ih); }
+    else if(sprReady(e.art)) drawSpr(ctx, e.art, VW/2, iy+ih/2, ih*0.86, {});
+    else { const g=ctx.createLinearGradient(0,iy,0,iy+ih); g.addColorStop(0,'#241c30'); g.addColorStop(1,'#15111d'); ctx.fillStyle=g; ctx.fillRect(40,iy,VW-80,ih);
+      ctx.fillStyle='rgba(201,160,255,0.25)'; ctx.font='700 16px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText('· '+e.title+' ·', VW/2, iy+ih/2); }
     ctx.restore();
-    // prose
-    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='500 22px "Pixelify",system-ui,sans-serif';
-    wrapText(ctx, e.pages[pg], VW/2, iy+ih+48, VW-120, 32);
-    // page dots
-    const dotY=VH-70, n=e.pages.length, dw=16; const dx0=VW/2-((n-1)*dw)/2;
-    for(let i=0;i<n;i++){ ctx.fillStyle = i===pg ? '#c9a0ff' : 'rgba(201,160,255,0.3)'; ctx.beginPath(); ctx.arc(dx0+i*dw, dotY, 5, 0, 7); ctx.fill(); }
-    // nav
-    ctx.textAlign='center'; ctx.font='800 34px "Pixelify",system-ui,sans-serif';
-    ctx.fillStyle = pg>0 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('‹', 60, dotY+12);
-    ctx.fillStyle = pg<n-1 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('›', VW-60, dotY+12);
-    if(pg>0) hubB(24, dotY-30, 90, 70, 'diaryprev');
-    hubB(120, dotY-30, VW-240, 70, pg<n-1 ? 'diarynext' : 'diaryback');   // center advances, or closes on last page
-    if(pg<n-1) hubB(VW-114, dotY-30, 90, 70, 'diarynext');
-    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(pg<n-1?'tap to turn the page':'tap to close the chapter', VW/2, VH-12);
+    // prose (roomy)
+    ctx.textAlign='center'; ctx.fillStyle='#eadffb'; ctx.font='500 25px "Pixelify",system-ui,sans-serif';
+    wrapText(ctx, e.pages[pg], VW/2, iy+ih+56, VW-110, 36);
+    // page dots + nav pinned to the bottom
+    const dotY=VH-58, n=e.pages.length, dw=18; const dx0=VW/2-((n-1)*dw)/2;
+    for(let i=0;i<n;i++){ ctx.fillStyle = i===pg ? '#c9a0ff' : 'rgba(201,160,255,0.3)'; ctx.beginPath(); ctx.arc(dx0+i*dw, dotY-14, 5, 0, 7); ctx.fill(); }
+    ctx.textAlign='center'; ctx.font='800 38px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = pg>0 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('‹', 58, dotY+8);
+    ctx.fillStyle = pg<n-1 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('›', VW-58, dotY+8);
+    if(pg>0) hubB(20, dotY-40, 96, 80, 'diaryprev');
+    hubB(120, dotY-40, VW-240, 80, pg<n-1 ? 'diarynext' : 'diaryback');   // center advances, or closes on last page
+    if(pg<n-1) hubB(VW-116, dotY-40, 96, 80, 'diarynext');
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(pg<n-1?'tap to turn the page':'tap to close the chapter', VW/2, VH-14);
   }
 }
 
