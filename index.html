@@ -365,6 +365,53 @@ let hubScroll = 0, hubSheet = null, wellJustRose = false, hubToast = 0, hubToast
 // selDistrict = the one you're about to play (pick any unlocked); runDistrict = the one this run IS.
 const DISTRICTS = ['MARKET ROW', 'THE ROWHOUSES', 'THE OLD MILL', 'THE CHAPEL', "KEITH'S HOUSE"];
 let selDistrict = 1, runDistrict = 1, runQuota = 12;
+
+// THE DIARY — optional lore, told by the town you save, paid off with Makko art. Pays nothing, gates nothing.
+// Each chapter unlocks off a milestone you'd hit naturally. `art` = a sprite key used as the illustration
+// (bespoke scene art swaps in by the same key). Keep pages short — a diary, not a novel.
+const DIARY = [
+  { id:'stranger', title:'THE STRANGER', art:'hero', teaser:'they say you beat him once…',
+    when:()=>true, hint:'',
+    pages:[ 'They say you beat him once, in the ring, years ago.',
+            'You took the win and walked out the door — never looked back.',
+            'You never saw what losing did to him.' ] },
+  { id:'first', title:'FIRST LIGHT', art:'happy', teaser:'the first one wouldn\'t stop shaking…',
+    when:()=>META.saved>=1, hint:'save 1 villager',
+    pages:[ 'The first one you pulled from the fire couldn\'t stop shaking.',
+            '"You came back," she said. You didn\'t answer.',
+            'You were already running to the next.' ] },
+  { id:'forge', title:'THE FORGE', art:'fire', teaser:'iron for the road…',
+    when:()=>META.buildings&&META.buildings.forge&&META.buildings.forge.built, hint:'raise The Forge (25 saves)',
+    pages:[ 'The forge breathes again. Old Bram works the bellows.',
+            '"For the road," he says, and presses iron into your hands.',
+            'You move quicker now. You\'ll need to.' ] },
+  { id:'coals', title:'THE COALS THAT WALK', art:'firedemon', teaser:'the ones you don\'t reach get up…',
+    when:()=>META.flags&&META.flags.sawWraith, hint:'let a villager burn to a wraith',
+    pages:[ 'The ones you don\'t reach in time don\'t simply die.',
+            'The fire finishes them — and what\'s left of them stands up.',
+            'It remembers your face. It comes looking.' ] },
+  { id:'grudge', title:"KEITH'S GRUDGE", art:'keith', teaser:'nobody makes him hold it…',
+    when:()=>META.flags&&META.flags.reachedDuel, hint:'reach a duel with Keith',
+    pages:[ 'He held the fire you put in him for years, and it never cooled.',
+            '"Nobody makes me hold it," he told the empty ring.',
+            'So he gave it to everyone you ever walked past.' ] },
+  { id:'well', title:'THE WELL', art:'beacon', teaser:'a child made a wish…',
+    when:()=>META.buildings&&META.buildings.well&&META.buildings.well.built, hint:'raise The Well (6 saves)',
+    pages:[ 'Ashford drinks clean water again.',
+            'A child threw a coin in the well and made a wish.',
+            'She wished you\'d stop looking so tired.' ] },
+  { id:'stands', title:'ASHFORD STANDS', art:'ashford', teaser:'five quarters, five yields…',
+    when:()=>(META.district||1)>=5, hint:'push through to Keith\'s House',
+    pages:[ 'Five quarters. Five times he rose. Five times he yielded.',
+            'The town has a name again — not just a word for what burned.',
+            'Somewhere, Keith is quiet. For now.' ] },
+];
+function diaryUnlocked(e){ try{ return !!e.when(); }catch(_){ return false; } }
+function diaryIsRead(id){ return META.diary && META.diary.read && META.diary.read.indexOf(id)>=0; }
+function diaryMarkRead(id){ if(!META.diary) META.diary={read:[]}; if(!META.diary.read) META.diary.read=[];
+  if(META.diary.read.indexOf(id)<0){ META.diary.read.push(id); saveMeta(); } }
+function diaryFreshCount(){ return DIARY.filter(e=>diaryUnlocked(e) && !diaryIsRead(e.id)).length; }
+let diaryOpen = null, diaryPage = 0;   // null = chapter list; else the open chapter index
 let sparks = [];   // absorb-flourish particles (fire streaming from a saved villager into you)
 let onTitle = true;   // boot on the title/start screen; first tap dismisses it into the game
 let ghost = false;   // test-only: player passes through cells without triggering contact
@@ -1258,6 +1305,7 @@ function stepHusks(dt){
         demons.push({ x:h.x, y:h.y, t:0, ttl:1e9, hitCd:0, huntVill: rnd()<0.7, ph:rnd()*7, tgt:null,
                       source:'town', fresh:0 });
         ring(h.x, h.y, K.HUSK_R, 80, '#b06a5a', 0.6);
+        if(!META.flags) META.flags={}; if(!META.flags.sawWraith){ META.flags.sawWraith=true; saveMeta(); }   // opens a diary page
       }
       husks.splice(i,1);
     }
@@ -1439,6 +1487,7 @@ function maybeRise(){
 function startDuel(){
   if(boss && boss.kind === 'riser'){ slag.push({x:boss.x, y:boss.y}); }   // riser sits back down
   duelActive = true; snipeUsed = true; snipe = null;
+  if(!META.flags) META.flags={}; if(!META.flags.reachedDuel){ META.flags.reachedDuel=true; saveMeta(); }   // opens a diary page
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
   slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
   arson = []; husks = [];                            // imps stand down + coals go cold for the duel
@@ -2466,8 +2515,12 @@ function hubAct(a){
   if(a==='play'){ reset(); return; }
   if(a==='dprev'){ selDistrict = Math.max(1, selDistrict-1); return; }
   if(a==='dnext'){ selDistrict = Math.min(Math.min(5,META.district||1), selDistrict+1); return; }
-  if(a==='diary'){ hubSheet='diary'; return; }
-  if(a==='close'){ hubSheet=null; return; }
+  if(a==='diary'){ hubSheet='diary'; diaryOpen=null; diaryPage=0; return; }
+  if(a==='diaryback'){ diaryOpen=null; diaryPage=0; return; }
+  if(a.indexOf('diaryopen:')===0){ diaryOpen=parseInt(a.split(':')[1],10); diaryPage=0; const e=DIARY[diaryOpen]; if(e) diaryMarkRead(e.id); return; }
+  if(a==='diaryprev'){ diaryPage=Math.max(0,diaryPage-1); return; }
+  if(a==='diarynext'){ const e=DIARY[diaryOpen]; if(e) diaryPage=Math.min(e.pages.length-1, diaryPage+1); return; }
+  if(a==='close'){ hubSheet=null; diaryOpen=null; return; }
   if(a==='well'||a==='forge'){ hubSheet = META.buildings[a].built ? a : null; return; }
   if(a.indexOf('buy:')===0){ const p=a.split(':'); buy(p[1],p[2]); return; }
 }
@@ -2516,7 +2569,10 @@ function drawHub(ctx){
     forgeBuilt ? 'dash upgrades' : (K.FORGE_RISE-META.saved)+' more saves',
     forgeBuilt ? '#ff9a45' : '#ffb14d', forgeBuilt, 'forge', 'fire');
   drawBuildingCard(ctx, 40, cardY+cardH+gap, cw, cardH, 'HERO: BRAM', 'rebuild coming', '#8a93a7', false, null, 'happy');
-  drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', 'story — optional', '#c9a0ff', true, 'diary', null);
+  const dFresh = diaryFreshCount();
+  drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', dFresh>0 ? dFresh+' new to read' : 'story — optional', '#c9a0ff', true, 'diary', null);
+  if(dFresh>0){ const bx=40+cw+gap+cw-22, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
+    ctx.fillStyle='#0a0710'; ctx.font='800 15px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(dFresh), bx, by+5); }
 
   // --- NEXT chip (always a visible next goal)
   const nextUp=(bld)=>{ const b=META.buildings[bld], sh=SHOPS[bld]; for(const it of sh.items){ if((b[it.track]||0)<it.costs.length) return {cost:it.costs[b[it.track]||0], name:it.name, tier:(b[it.track]||0)+1}; } return null; };
@@ -2603,17 +2659,70 @@ function drawShopSheet(ctx, bld){
 }
 
 function drawDiarySheet(ctx){
-  const h=420, y=VH-h; ctx.fillStyle='rgba(6,5,11,0.6)'; ctx.fillRect(0,0,VW,VH);
-  panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.98)', 'rgba(201,160,255,0.5)');
-  hubB(0,0,VW,y,'close');
-  ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+48);
-  ctx.fillStyle='rgba(210,195,235,0.7)'; ctx.font='italic 500 16px "Pixelify",system-ui,sans-serif';
-  ctx.fillText('the story is yours to read or skip — never needed to win', VW/2, y+74);
-  // a few lore lines the saved villagers have shared (optional flavour, pays nothing)
-  const lines = (typeof STORY!=='undefined' && STORY.lore) ? STORY.lore.slice(0,6) : ['You beat Keith once, and left.','His hatred caught fire.','It spread to everyone.','You came back.'];
-  ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='500 20px "Pixelify",system-ui,sans-serif';
-  lines.forEach((ln,i)=> ctx.fillText('"'+ln+'"', VW/2, y+124+i*40));
-  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
+  const h=490, y=VH-h;
+  ctx.fillStyle='rgba(6,5,11,0.72)'; ctx.fillRect(0,0,VW,VH);
+  panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.99)', 'rgba(201,160,255,0.5)');
+  if(diaryOpen===null) hubB(0,0,VW,y,'close');            // tap above closes (list mode only)
+
+  if(diaryOpen===null){
+    // ---- CHAPTER LIST
+    ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+46);
+    ctx.fillStyle='rgba(210,195,235,0.65)'; ctx.font='italic 500 15px "Pixelify",system-ui,sans-serif';
+    ctx.fillText('told by the town you save — read it or skip it, it costs nothing', VW/2, y+70);
+    const rowH=58, x0=30, rw=VW-60; let ry=y+90;
+    for(let i=0;i<DIARY.length;i++){ const e=DIARY[i], ok=diaryUnlocked(e), fresh=ok&&!diaryIsRead(e.id);
+      panel(ctx, x0, ry, rw, rowH-8, 12, ok?'rgba(40,30,58,0.7)':'rgba(20,18,28,0.6)', ok?'rgba(201,160,255,0.45)':'rgba(90,84,110,0.35)');
+      ctx.save(); if(!ok) ctx.globalAlpha=0.6;
+      // thumbnail
+      const ty0=ry+(rowH-8)/2;
+      if(ok && e.art==='fire') drawFlame(ctx, x0+32, ty0+16, 34, frame*0.4, 0.95);
+      else if(ok && e.art==='ashford' && sprReady('ashford')){ ctx.save(); ctx.beginPath(); ctx.arc(x0+32,ty0,17,0,7); ctx.clip(); const im=MAKKO_IMG['ashford']; ctx.drawImage(im, x0+32-17, ty0-17, 34, 34); ctx.restore(); }
+      else if(ok && sprReady(e.art)) drawSpr(ctx, e.art, x0+32, ty0, 38, {});
+      else { ctx.fillStyle=ok?'#3a2f52':'#2a2636'; ctx.beginPath(); ctx.arc(x0+32, ty0, 17, 0, 7); ctx.fill(); }
+      ctx.textAlign='left';
+      if(ok){ ctx.fillStyle='#efe4ff'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.title, x0+62, ry+22);
+        ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='italic 500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.teaser, x0+62, ry+40); }
+      else { ctx.fillStyle='#8a84a0'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('LOCKED', x0+62, ry+22);
+        ctx.fillStyle='rgba(160,154,180,0.7)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.hint, x0+62, ry+40); }
+      ctx.restore();
+      if(fresh){ ctx.fillStyle='#8affc1'; ctx.font='800 14px "Pixelify",system-ui,sans-serif'; ctx.textAlign='right'; ctx.fillText('NEW', x0+rw-16, ry+30); }
+      if(ok) hubB(x0, ry, rw, rowH-8, 'diaryopen:'+i);
+      ry += rowH;
+    }
+    ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
+  } else {
+    // ---- READER
+    const e = DIARY[diaryOpen], pg = Math.max(0, Math.min(diaryPage, e.pages.length-1));
+    // back
+    panel(ctx, 24, y+22, 118, 40, 10, 'rgba(40,30,58,0.8)', 'rgba(201,160,255,0.45)');
+    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText('‹ BACK', 83, y+48);
+    hubB(24, y+22, 118, 40, 'diaryback');
+    // title
+    ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 28px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.title, VW/2, y+52);
+    // illustration
+    const iy=y+92, ih=210;
+    panel(ctx, 40, iy, VW-80, ih, 14, 'rgba(10,8,16,0.6)', 'rgba(201,160,255,0.28)');
+    ctx.save(); roundRectPath(ctx, 40, iy, VW-80, ih, 14); ctx.clip();
+    if(e.art==='ashford' && sprReady('ashford')){ const im=MAKKO_IMG['ashford'], sc=Math.max((VW-80)/im.naturalWidth, ih/im.naturalHeight), w=im.naturalWidth*sc, hh=im.naturalHeight*sc; ctx.globalAlpha=0.9; ctx.drawImage(im, VW/2-w/2, iy+ih/2-hh/2, w, hh); }
+    else if(e.art==='fire'){ drawFlame(ctx, VW/2, iy+ih*0.86, ih*0.8, frame*0.4, 0.95); }
+    else if(sprReady(e.art)) drawSpr(ctx, e.art, VW/2, iy+ih/2, ih*0.82, {});
+    else { ctx.fillStyle='#2a2636'; ctx.fillRect(40,iy,VW-80,ih); }
+    ctx.restore();
+    // prose
+    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='500 22px "Pixelify",system-ui,sans-serif';
+    wrapText(ctx, e.pages[pg], VW/2, iy+ih+48, VW-120, 32);
+    // page dots
+    const dotY=VH-70, n=e.pages.length, dw=16; const dx0=VW/2-((n-1)*dw)/2;
+    for(let i=0;i<n;i++){ ctx.fillStyle = i===pg ? '#c9a0ff' : 'rgba(201,160,255,0.3)'; ctx.beginPath(); ctx.arc(dx0+i*dw, dotY, 5, 0, 7); ctx.fill(); }
+    // nav
+    ctx.textAlign='center'; ctx.font='800 34px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = pg>0 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('‹', 60, dotY+12);
+    ctx.fillStyle = pg<n-1 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('›', VW-60, dotY+12);
+    if(pg>0) hubB(24, dotY-30, 90, 70, 'diaryprev');
+    hubB(120, dotY-30, VW-240, 70, pg<n-1 ? 'diarynext' : 'diaryback');   // center advances, or closes on last page
+    if(pg<n-1) hubB(VW-114, dotY-30, 90, 70, 'diarynext');
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(pg<n-1?'tap to turn the page':'tap to close the chapter', VW/2, VH-12);
+  }
 }
 
 function drawTitle(ctx){
@@ -3245,6 +3354,8 @@ window.__fwoosh = {
   forceDuel(){ startDuel(); return this.bossState(); },
   setWins(n){ opp.duelWins = n; return { duelWins:opp.duelWins }; },
   setDistrict(sel, unlocked){ selDistrict = sel||1; if(unlocked!=null){ META.district = unlocked; saveMeta(); } return { selDistrict, metaDistrict:META.district }; },
+  openDiary(i){ onTitle=false; intro=null; mode='hub'; hubSheet='diary'; diaryOpen = (i==null?null:i); diaryPage=0; if(i!=null&&DIARY[i]) diaryMarkRead(DIARY[i].id); return { fresh:diaryFreshCount() }; },
+  diaryPage(n){ diaryPage=n; return diaryPage; },
   keithMove(k){ if(boss&&boss.kind==='keith'){ boss.move=null; boss.moveCd=0; startKeithMove(boss,k); } return { move:boss&&boss.move }; },
   duelFX(){ return { shots:shots.length, wake:wake.length, pulses:pulses.length, demons:demons.length, allies:allies.length, move:boss&&boss.move, shield:boss&&!!boss.shield }; },
   riseNow(){ slagThisRun = nextRiserAt; maybeRise(); return this.bossState(); },
