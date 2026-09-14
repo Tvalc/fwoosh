@@ -158,6 +158,16 @@ const K = {
   // slag
   R_SLAG: 11,                       // 22px across, 32 fit the arena width
 
+  // HUSK / ASH WRAITH — the fate of a villager you FAIL to save. No more permanent charcoal wall: the fire
+  // finishes them into a temporary husk that shoves like a wall but self-clears by CRACKING into a roaming
+  // ash wraith. Always reclaimable: pour your own heat back in (REKINDLE) to still save them.
+  HUSK_CRACK_T: 8.0,                // husk life before it cracks into a wraith
+  HUSK_R: 12,                       // soft-solid radius (inherits the wall's cornering role, temporarily)
+  CRACK_TELE: 0.9,                  // convulsion telegraph before the wraith rises
+  REKINDLE_COST: 1,                 // heat you SPEND to pour fire back into a husk and save them (mirror of absorb)
+  WRAITH_CAP: 5,                    // persistent town-wraiths roaming at once (over-cap cracks don't add a body)
+  WRAITH_KILL_HEAT: 0.5,           // dash-kill a risen wraith: a little heat + denied fuel
+
   // trail
   TRAIL_EVERY: 0.06,
   TRAIL_LIFE: 1.2,
@@ -305,10 +315,11 @@ let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager wh
 let dashPop = 0;     // flourish pop when a dash charge finishes recharging
 let demons = [];     // fire demons summoned while venting (attack player + villagers)
 let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
+let husks = [];      // villagers you failed to save: temporary soft-solid coals that crack into roaming wraiths
 let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
 let arsonT = 0;      // send-cadence timer
 let intercepts = 0, runEdge = 0;   // imps you cut off this run + the duel edge they bank (spent at startDuel)
-let arsonSeen = false;   // first-imp teach line fires once
+let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines fire once
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
@@ -500,6 +511,7 @@ function reset(seed){
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
   demons = []; ventSwarmT = 0; demonSpawnT = 0;
   arson = []; arsonT = 0; intercepts = 0; runEdge = 0; arsonSeen = false;
+  husks = []; huskSeen = false;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
@@ -667,6 +679,7 @@ function step(){
   // ---- VENT (HOLD): purge your heat, then heal hearts a half at a time. Rooted + exposed while you hold,
   // and fire demons pour out of you. The only real way to get hearts back — but it costs you the town.
   if(p.venting) ventHold(); else { p.ventPurge = 0; p.ventHealAcc = 0; }
+  stepHusks(dt);                                         // failed villagers: rekindle / shove / crack into wraiths
   stepDemons(dt);                                        // demons live/attack (and linger after you release)
   if(mode !== 'play') return;                            // a demon (or purge) may have ended the run
   if(p.heat > 0){ p.trailT = (p.trailT||0) + dt;         // heat trail (ember wisps) while carrying
@@ -717,7 +730,7 @@ function step(){
     if(c.hunter){
       // FLAMING villager: burns down to a wall if you don't reach them; PANICS (catchable); spreads.
       c.fuse -= dt;
-      if(c.fuse <= 0){ becomeSlag(c); continue; }      // too slow -> they're a wall now
+      if(c.fuse <= 0){ becomeHusk(c); continue; }      // too slow -> the fire finishes them into a husk
       c.ph += c.ps*2.2*dt;
       const ang = c.dir + Math.sin(c.ph)*2.2 + Math.sin(c.ph*0.37)*1.1;
       c.vx = Math.cos(ang)*K.PANIC_SPD; c.vy = Math.sin(ang)*K.PANIC_SPD;
@@ -965,7 +978,7 @@ function overloadHit(c){
 }
 
 function ignite(c, why){
-  if(hunters().length >= K.HUNTER_CAP){ becomeSlag(c); return; }   // cap simultaneous fires; extra = wall
+  if(hunters().length >= K.HUNTER_CAP){ becomeHusk(c); return; }   // cap simultaneous fires; extra collapses to a husk
   c.hunter = true; c.fuse = hunterFuse; c.grace = K.GRACE; c.saving = false; c.spreadT = 0;
   ring(c.x,c.y,8,44,'#ff6a2e',0.30);
 }
@@ -1038,8 +1051,12 @@ function stepDemons(dt){
   // only the nearest ~2 demons to the player can land a hit (so 1-2 out = heal wins, a full swarm loses)
   const order = demons.map((d,i)=>({i,dd:dist(d.x,d.y,p.x,p.y)})).sort((a,b)=>a.dd-b.dd);
   const canHit = new Set(order.slice(0,2).map(o=>o.i));
-  for(let i=demons.length-1;i>=0;i--){ const d=demons[i]; d.t+=dt; if(d.hitCd>0) d.hitCd-=dt;
-    if(!p.venting){ d.ttl -= dt; if(d.ttl<=0){                          // released -> linger then collapse to sparks
+  for(let i=demons.length-1;i>=0;i--){ const d=demons[i]; d.t+=dt; if(d.hitCd>0) d.hitCd-=dt; if(d.fresh!=null) d.fresh+=dt;
+    // TOWN wraiths (cracked from husks) PERSIST until killed or the duel; VENT demons linger then collapse on release
+    if(d.source === 'town'){
+      if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){   // DASH-KILL a risen wraith
+        killWraith(d); demons.splice(i,1); continue; }
+    } else if(!p.venting){ d.ttl -= dt; if(d.ttl<=0){                     // released -> linger then collapse to sparks
         for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
         demons.splice(i,1); continue; } }
     let tx=p.x, ty=p.y; d.tgt=null;
@@ -1052,7 +1069,7 @@ function stepDemons(dt){
       p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
       if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
     if(d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
-      if(d.tgt.hunter) becomeSlag(d.tgt);                               // flaming -> instant WALL (lost forever)
+      if(d.tgt.hunter) becomeHusk(d.tgt);                              // flaming -> the fire finishes them into a husk
       else if(!d.tgt.saving && d.tgt.grace<=0) ignite(d.tgt,'demon');   // calm -> re-ignited
       d.tgt=null; }
   }
@@ -1112,6 +1129,59 @@ function becomeSlag(c){
   maybeRise();
 }
 
+// ---------------------------------------------------------------- HUSK / ASH WRAITH
+// A villager you failed to save. Not a permanent wall — a temporary, ember-veined coal that STILL shoves you
+// (cornering role survives), then CRACKS into a roaming ash wraith that hunts the town and bites you. The loss
+// literally stands up and walks. Always reclaimable: touch it with heat to REKINDLE (spend fire, save them).
+function becomeHusk(c){
+  c.dead = true;
+  husks.push({ x:c.x, y:c.y, t:0, heatAt: player.heat, ph: rnd()*7 });
+  ring(c.x, c.y, K.R_CELL, 50, '#8a5a2e', 0.42);
+  if(!huskSeen){ huskSeen = true; callout = { text:'A VILLAGER IS LOST — REKINDLE THEM (touch w/ fire) BEFORE THEY TURN', t:0, life:2.4, good:false }; }
+}
+function stepHusks(dt){
+  const p = player;
+  for(let i=husks.length-1;i>=0;i--){ const h = husks[i]; h.t += dt;
+    // REKINDLE: pour your own fire back in (spend heat) to still save them — the mirror of absorb
+    if(!god && p.heat >= K.REKINDLE_COST && dist(h.x,h.y,p.x,p.y) <= p.r + K.HUSK_R + 2){
+      rekindleHusk(h); husks.splice(i,1); continue; }
+    // soft-solid: shove the player off (keeps the wall's cornering role, but temporary)
+    { const dx = wrapDX(p.x-h.x), dy = p.y-h.y, d = Math.hypot(dx,dy), min = p.r + K.HUSK_R;
+      if(d < min && d > 0.001 && p.lunge <= 0){ p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d); p.hx = dx/d; p.hy = dy/d; } }
+    // CRACK -> rise as a persistent town-wraith (unless the roam is already full)
+    if(h.t >= K.HUSK_CRACK_T){
+      const town = demons.filter(d=>d.source==='town').length;
+      if(town < K.WRAITH_CAP){
+        demons.push({ x:h.x, y:h.y, t:0, ttl:1e9, hitCd:0, huntVill: rnd()<0.7, ph:rnd()*7, tgt:null,
+                      source:'town', fresh:0 });
+        ring(h.x, h.y, K.HUSK_R, 80, '#b06a5a', 0.6);
+      }
+      husks.splice(i,1);
+    }
+  }
+}
+function rekindleHusk(h){
+  const p = player;
+  p.heat = Math.max(0, p.heat - K.REKINDLE_COST);      // spend YOUR fire (inverse of absorb's +1)
+  cells.push({ id: nextId++, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
+               hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
+  saved++; META.saved++;
+  const em = Math.max(0, Math.min(Math.round(K.EMBER_BASE*0.5), K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  score += Math.round(K.SAVE_SCORE*0.5);
+  saveIconPop = 0.6; p.absorbPop = 0.28; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
+  ring(h.x, h.y, K.R_CELL+2, 90, '#8affc1', 0.6);
+  for(let k=0;k<10;k++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);
+    sparks.push({ x:h.x+Math.cos(a)*r, y:h.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:150 }); }
+  callout = { text:'REKINDLED!', t:0, life:1.0, good:true };
+}
+function killWraith(d){   // dash into a risen town-wraith: destroy it, take a little heat, deny Keith the fuel
+  const p = player;
+  p.heat = Math.min(K.HEAT_MAX, p.heat + K.WRAITH_KILL_HEAT);
+  p.absorbPop = 0.24; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
+  ring(d.x, d.y, 6, 46, '#b0d8ff', 0.5);
+  for(let k=0;k<8;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.2,out:true,vx:Math.cos(a)*130,vy:Math.sin(a)*130,hue:210}); }
+}
+
 // ---------------------------------------------------------------- bosses
 // One contact law everywhere: fire transfers on touch. Bosses go DOWN instead of slagging.
 // RISER (miniboss): a wall you made gets back up and spreads fire through the crowd.
@@ -1134,7 +1204,8 @@ function startDuel(){
   duelActive = true; snipeUsed = true; snipe = null;
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
   slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
-  arson = [];                                        // imps stand down for the duel
+  arson = []; husks = [];                            // imps stand down + coals go cold for the duel
+  demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (Phase 3: they become Keith's reinforcements)
   const edge = Math.min(1, Math.floor(runEdge));     // the intercepts you banked = a head-start on Keith (capped)
   boss = { kind:'keith', x:gx, y:gy, r:K.KEITH_R, state:'rising', t:K.BOSS_RISE_T,
            fuse:0, downs:edge, tagCd:0, vx:0, vy:0 };
@@ -2310,6 +2381,39 @@ function render(){
     wrapDraw(s.x, X=> SK.wall(ctx, X, s.y, s.grudge, oppScarred));
   }
 
+  // ---- HUSKS: villagers you failed to save. Ember-veined coals that brighten + shudder as they near cracking.
+  for(const h of husks){
+    const near = h.t / K.HUSK_CRACK_T;                         // 0 fresh .. 1 about to crack
+    const cracking = h.t >= K.HUSK_CRACK_T - K.CRACK_TELE;
+    const shake = cracking ? (2.4*Math.sin(frame*1.3+(h.ph||0))) : 0;
+    wrapDraw(h.x, X=>{
+      const gx = X + shake;
+      // ember glow underneath, hotter as it nears crack
+      const gr = K.HUSK_R*1.6 + 4*near + 2*Math.sin(frame*0.3+(h.ph||0));
+      const g = ctx.createRadialGradient(gx, h.y, 1, gx, h.y, gr);
+      const gi = (0.30 + 0.45*near).toFixed(2);
+      g.addColorStop(0, 'rgba(255,120,40,'+gi+')'); g.addColorStop(1, 'rgba(255,80,30,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(gx, h.y, gr, 0, 7); ctx.fill();
+      groundShadow(ctx, gx, h.y + K.HUSK_R*0.9, K.HUSK_R*1.0, K.HUSK_R*0.32);
+      // the coal body: the cinder-imp silhouette, darkened
+      ctx.save();
+      ctx.globalAlpha = cracking ? (0.7 + 0.3*Math.abs(Math.sin(frame*1.3))) : 1;
+      if(!drawAnim(ctx,'ashimp', gx, h.y, K.HUSK_R*2.6, {fps:6}) &&
+         !drawSpr(ctx,'ashimp', gx, h.y, K.HUSK_R*2.5, {})){
+        ctx.fillStyle = '#3a2a24'; ctx.beginPath(); ctx.ellipse(gx, h.y, K.HUSK_R, K.HUSK_R*1.15, 0, 0, 7); ctx.fill();
+        ctx.fillStyle = 'rgba(255,120,50,'+(0.5+0.4*near).toFixed(2)+')';   // ember veins
+        for(let v=0;v<3;v++){ const a=(h.ph+v*2.1); ctx.beginPath();
+          ctx.arc(gx+Math.cos(a)*K.HUSK_R*0.4, h.y+Math.sin(a)*K.HUSK_R*0.5, 1.6, 0, 7); ctx.fill(); }
+      }
+      ctx.restore();
+      // a REKINDLE prompt ring when you're carrying fire and close-ish
+      if(player.heat >= K.REKINDLE_COST && dist(h.x,h.y,player.x,player.y) < 130){
+        ctx.globalAlpha = 0.35+0.25*Math.sin(frame*0.25); ctx.strokeStyle='#8affc1'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.arc(gx, h.y, K.HUSK_R+8, 0, 7); ctx.stroke(); ctx.globalAlpha=1;
+      }
+    });
+  }
+
   // ---- cells (crowd + hunters), distant ones dimmed
   for(const c of cells){
     const far = dist(c.x,c.y,p.x,p.y) > 300;
@@ -2324,18 +2428,23 @@ function render(){
     ctx.globalAlpha = 1;
   }
 
-  // ---- FIRE DEMONS (bred by venting) — the firedemon Makko anim + a fiery glow; fade as they collapse
+  // ---- FIRE DEMONS: vent-bred (orange, temporary) and TOWN wraiths (ashen-violet, persistent, dash to kill)
   for(const d of demons){
+    const town = d.source === 'town';
     wrapDraw(d.x, X=>{
       const gr=K.DEMON_R*1.7+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
-      g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)');
+      if(town){ g.addColorStop(0,'rgba(180,110,150,0.6)'); g.addColorStop(1,'rgba(140,90,140,0)'); }
+      else { g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)'); }
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,d.y,gr,0,7); ctx.fill();
       groundShadow(ctx, X, d.y+K.DEMON_R*1.2, K.DEMON_R*1.0, K.DEMON_R*0.34);
       const flip = (d.tgt ? d.tgt.x<d.x : player.x<d.x);
-      ctx.globalAlpha = (!player.venting) ? Math.min(1, (d.ttl||0)/0.6) : 1;   // collapse fade
+      ctx.globalAlpha = (!player.venting && !town) ? Math.min(1, (d.ttl||0)/0.6) : (town?0.94:1);   // vent-demon collapse fade
       if(!drawAnim(ctx,'firedemon', X, d.y, K.DEMON_R*3.2, {fps:12, flip}) &&
          !drawSpr(ctx,'firedemon', X, d.y, K.DEMON_R*3.0, {flip})){
-        ctx.fillStyle='#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
+        ctx.fillStyle= town?'#b06a8a':'#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
+      // town wraith: a cool violet rim so it reads as the walking dead + "dash to kill", no per-sprite filter cost
+      if(town){ ctx.globalAlpha=0.5+0.2*Math.sin(frame*0.2+(d.ph||0)); ctx.strokeStyle='#c79be0'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R+3,0,7); ctx.stroke(); }
       ctx.globalAlpha = 1;
     });
   }
@@ -2715,6 +2824,7 @@ window.__fwoosh = {
     heat:player.heat, hp:+(player.hp!=null?player.hp:1).toFixed(3), saved, dumped,
     venting:player.venting, demons:demons.length, hurtCd:+(player.hurtCd||0).toFixed(3),
     arson:arson.length, intercepts, runEdge:+runEdge.toFixed(2),
+    husks:husks.length, wraiths:demons.filter(d=>d.source==='town').length,
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
     passeeId:player.passeeId, passT:+player.passT.toFixed(3), hitstop:+hitstop.toFixed(3),
@@ -2787,6 +2897,8 @@ window.__fwoosh = {
   setHeat(n){ player.heat = Math.max(0, Math.min(K.HEAT_MAX, n)); return this.state(); },
   spawnArson(){ spawnArson(); return { arson: arson.map(a=>({x:Math.round(a.x),y:Math.round(a.y),warn:+a.warn.toFixed(2),tgt:a.tgt&&a.tgt.id})) }; },
   arson(){ return arson.map(a=>({x:Math.round(a.x),y:Math.round(a.y),warn:+a.warn.toFixed(2),tgtId:a.tgt&&a.tgt.id})); },
+  husks(){ return husks.map(h=>({x:Math.round(h.x),y:Math.round(h.y),t:+h.t.toFixed(2),heatAt:h.heatAt})); },
+  makeHusk(){ const c=crowd()[0]; if(c){ c.hunter=true; c.fuse=hunterFuse; becomeHusk(c); } return { husks:husks.length }; },
   vent(v){ player.venting = v===undefined?true:!!v; return { venting:player.venting, heat:player.heat, hp:+player.hp.toFixed(3), demons:demons.length }; },
   setHp(v){ player.hp = Math.max(0, Math.min(1, v)); return this.state(); },
   setHearts(n){ maxHearts = Math.max(1, Math.round(n)); return { maxHearts }; },
