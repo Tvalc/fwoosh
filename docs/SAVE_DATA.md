@@ -41,3 +41,7 @@ Build 2026-09-14-economy-1 retains v1 and normalizes missing/null flags. Existin
 ## Recent run history — loop-1
 
 v1 `fwoosh.meta.recentRuns` retains at most 20 completed attempts. Each record contains seconds (one decimal), district, rescued, earned (including win bounty), starterBonus (separate) and won. Missing/non-array values normalize to an empty array; extra old entries are trimmed. The existing settlement guard prevents duplicates. It is local only, is not a lifetime ledger, and does not change existing balances, tiers or starter flags. Price changes apply to future purchases only; owned effects remain intact.
+
+## Prose revision
+
+prose-1 changes INTRO_VERSION from 3 to 4, using the existing one-time replay mechanism. Diary IDs and read flags are preserved; rewritten entries remain accessible at their existing unlocks. No new save fields, grants, economy changes or migration. The existing loreIdx is retained.
