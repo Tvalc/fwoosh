@@ -1,5 +1,10 @@
 # Fwoosh status — September 14, 2026
 
+## Clean control labels — 2026-09-15-clean-hud-1
+
+Removed the persistent WASD/SHIFT and swipe instructions, desktop HOLD SPACE/VENT/HEAL prompt, and DASH text beside the charge icons. Mobile keeps the Makko VENT/HEAL button; dash pips and active gameplay feedback remain. Input bindings are unchanged. Tony requested this simplification on September 15. All 97 existing checks pass. Local browser fixtures verify desktop has no control instructions and touch mode retains its VENT button. Issue #1 records deployment.
+
+
 ## Sharper UI typography — 2026-09-15-type-1
 
 Tony requested a sharper, more legible font in the same visual family. Compared Pixelify, Chakra Petch and Oxanium at phone text sizes; selected Chakra Petch Medium/Bold for its squared forms and clearer numerals. HUD, dialogue, diary, shops and counters now use Chakra Petch. Large decorative Makko titles remain. Small image-atlas labels use real text. Both font weights are bundled locally and preloaded; no Google Fonts runtime request is required. Original fonts and artwork are preserved.

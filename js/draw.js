@@ -299,7 +299,6 @@ function drawVentButton(ctx){
   if(!drawText(ctx,label, b.x, b.y+R+24, 26)){
     ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Chakra Petch",system-ui,sans-serif';
     ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText(label, b.x, b.y+R+24); ctx.fillText(label, b.x, b.y+R+24); }
-  if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
   ctx.restore();
 }
 
@@ -1558,9 +1557,9 @@ function render(){
     if(!intro && !presentDialogue){
       ctx.save();ctx.textAlign='left';ctx.fillStyle='#dfd8c9';ctx.font='600 25px "Chakra Petch",system-ui,sans-serif';
       const goal=upgradeGoal();if(goal)ctx.fillText(goal.name+' · '+Math.floor(goalAmount(goal))+' / '+goal.cost,18,1139);
-      const status=callout?callout.text:isTouch?'Swipe to dash · Hold VENT to cool':'WASD steer · SHIFT dash';
+      const status=callout?callout.text:'';
       ctx.fillStyle=callout&&callout.good===false?'#ff9dbd':'#d7cedd';ctx.font='600 24px "Chakra Petch",system-ui,sans-serif';
-      wrapText(ctx,status,18,1175,516,27);
+      if(status)wrapText(ctx,status,18,1175,516,27);
       if(player.ventUnit){
         const u=player.ventUnit;ctx.fillStyle='#ffe0a2';ctx.font='700 24px "Chakra Petch",system-ui,sans-serif';
         ctx.fillText((u.kind==='heat'?'VENT 1 HEAT':'HEAL 1 HEART')+(player.ventHeld?' · HOLD':' · FINISHING'),18,1228);
@@ -1593,13 +1592,7 @@ function render(){
       }
     }
     if(isTouch)drawVentButton(ctx);
-    else {
-      ctx.textAlign='center';ctx.fillStyle='#ffcf80';ctx.font='700 26px "Chakra Petch",system-ui,sans-serif';
-      ctx.fillText('HOLD',633,1160);ctx.fillText('SPACE',633,1192);
-      ctx.font='600 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText(player.heat>0?'VENT':'HEAL',633,1224);
-    }
     ctx.textAlign='left';ctx.fillStyle='#b4a7ba';ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
-    ctx.fillText('DASH',170,1267);
     if(intro||presentDialogue)ctx.fillText('AUTO · Diary → Conversations',248,1267);
   }
 
