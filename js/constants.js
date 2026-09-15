@@ -23,11 +23,11 @@ const K = {
   CINDER_EAT_T: 0.65,              // warning window: shatter demon or rekindle husk to interrupt
   CINDER_BLAST_R: 120,
   CINDER_BLAST_HEARTS: 1,
-  MAX_DEMONS: 6, DEMON_SPD: 135,    // legacy Keith cap; vent units always release their demon
+  MAX_DEMONS: 6, DEMON_SPD: 135,    // legacy Khet-Tak-Tor cap; vent units always release their demon
   DEMON_TGT_VILL: 0.6,
   DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,
   HURT_IFRAME: 0.5,
-  DEMON_LIFE: 2.5, DEMON_R: 16,     // expiry remains only for Keith's temporary summons
+  DEMON_LIFE: 2.5, DEMON_R: 16,     // expiry remains only for Khet-Tak-Tor's temporary summons
   CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
   VENT_ANIM_SC_F: 1.20,             // fire-man vent-anim: 280px cell (body at bottom, tall tapered flame up top) — keeps body size, flame reaches high without clipping
   VENT_ANIM_SC_C: 1.23,             // cinder-man vent-anim scale
@@ -47,14 +47,14 @@ const K = {
   FUSE_MAX: 3.20,                   // also the inherit cap on EAT
   HUNTER_FUSE: 8.0,
 
-  // ABSORBER loop: Keith's fire spreads through the town; you pull it off villagers to save them.
+  // ABSORBER loop: Khet-Tak-Tor's fire spreads through the town; you pull it off villagers to save them.
   HEAT_MAX: 6,                      // fires you can carry at once
   HEAT_VENT: 0.30,                  // sec per heat shed while BRACING (running does NOT cool — fire persists)
-  SPARK_EVERY: 2.6,                 // Keith ignites a fresh villager this often
-  // ARSON IMPS — Keith no longer ignites villagers out of thin air. He SENDS a fire imp in from an edge that
+  SPARK_EVERY: 2.6,                 // Khet-Tak-Tor ignites a fresh villager this often
+  // ARSON IMPS — Khet-Tak-Tor no longer ignites villagers out of thin air. He SENDS a fire imp in from an edge that
   // flies to a chosen villager and torches it on contact. DASH/run into the imp first to INTERCEPT it:
-  // you eat its fire (+heat), it mints bonus embers, and it banks an edge you cash in against Keith at the duel.
-  ARSON_EVERY: 2.6,                 // how often Keith sends an imp (scales down as the town heats up)
+  // you eat its fire (+heat), it mints bonus embers, and it banks an edge you cash in against Khet-Tak-Tor at the duel.
+  ARSON_EVERY: 2.6,                 // how often Khet-Tak-Tor sends an imp (scales down as the town heats up)
   ARSON_MIN: 1.4,                   // fastest send cadence
   ARSON_SPD: 156,                   // imp flight speed toward its mark (a hair faster than you run, so cut the angle)
   ARSON_MAX: 4,                     // imps in flight at once
@@ -65,9 +65,9 @@ const K = {
   ARSON_EDGE_PER: 1.0,             // EDGE banked per intercept — cutting off an imp = a villager saved before it lit
 
   // THE EDGE — one running tally of who is winning the town. Saves/rekindles/intercepts push it toward YOU;
-  // villagers lost push it toward Keith. Cashed at the duel: a strong lead starts Keith already down; a deficit
+  // villagers lost push it toward Khet-Tak-Tor. Cashed at the duel: a strong lead starts Khet-Tak-Tor already down; a deficit
   // makes him demand extra downs. (Read once at the duel as text + a thin HUD bar — never a loud mid-run meter.)
-  EDGE_PER_DOWN: 10,                // EDGE per free Keith down (positive) / per extra down he demands (negative)
+  EDGE_PER_DOWN: 10,                // EDGE per free Khet-Tak-Tor down (positive) / per extra down he demands (negative)
   SAVE_EDGE: 1.0, SAVE_EDGE_HEAT: 0.4,   // save: EDGE += 1 + heat*0.4 (a chained save adds a flat +0.5)
   LOSS_EDGE: 1.0, LOSS_EDGE_HEAT: 0.3,   // loss: EDGE -= 1 + heatAtIgnition*0.3
   EDGE_HEADSTART_CAP: 2,            // most free downs a lead can buy (always leave 1 to fight)
@@ -83,14 +83,14 @@ const K = {
   VENT_IGNITE_R: 82,                // vent blasts fire OUTWARD — calm villagers this close get RE-IGNITED
   // META: the villagers you SAVE are the root of everything. Saves mint EMBERS (currency) + raise the town.
   EMBER_BASE: 3,                    // embers per save, before the blaze multiplier
-  WIN_EMBERS: 25,                   // KEITH YIELDS bounty
+  WIN_EMBERS: 25,                   // ARBITER YIELDS bounty
   WELL_RISE: 6,                     // cumulative lifetime saves to raise The Well from rubble
   FORGE_RISE: 16,                   // cumulative lifetime saves to raise The Forge (dash upgrades)
   // HEALTH: carrying fire burns your health down, faster the more you hold; empty of fire, you recover.
   HP_DRAIN: 0.035,                  // health/sec lost PER unit of heat carried (heat 6 -> ~0.21/s)
   HP_REGEN: 0.04,                   // idle trickle only — real healing now comes from HOLDING VENT (the risky heal)
-  SAVE_QUOTA: 12,                   // save this many villagers and Keith rises for the finale
-  DUEL_DUMP: 8,                     // total heat you must dump into Keith to make him yield
+  SAVE_QUOTA: 12,                   // save this many villagers and Khet-Tak-Tor rises for the finale
+  DUEL_DUMP: 8,                     // total heat you must dump into Khet-Tak-Tor to make him yield
 
   // crowd
   R_CELL: 13,
@@ -138,29 +138,29 @@ const K = {
   SLOWMO_SCALE: 0.25,
   CLUTCH_FUSE: 0.40,                // sub-0.40s pass earns the slowmo
 
-  // bosses: the apex duel (Keith, the win) + risers (minibosses)
-  DUEL_CROWD: 3,                    // crowd below this late-run = Keith gets up
+  // bosses: the apex duel (Khet-Tak-Tor, the win) + risers (minibosses)
+  DUEL_CROWD: 3,                    // crowd below this late-run = Khet-Tak-Tor gets up
   DUEL_MIN_T: 20,                   // never before 20s in
   DUEL_ARSON_EVERY: 3.2,            // boss fight keeps the rescue/heat loop alive at a readable pace
   DUEL_ARSON_MIN: 2.2,              // deeper districts accelerate it slightly, never to town-run spam speed
-  KEITH_R: 20, KEITH_FUSE: 4.0, KEITH_DOWNS: 3,
-  KEITH_FLEE: 130,                  // unlit Keith evades like crowd: herding is the offense
-  KEITH_PUR0: 190, KEITH_PUR1: 310, // lit Keith hunts you to shed it back
+  ARBITER_R: 20, ARBITER_FUSE: 4.0, ARBITER_DOWNS: 3,
+  ARBITER_FLEE: 130,                  // unlit Khet-Tak-Tor evades like crowd: herding is the offense
+  ARBITER_PUR0: 190, ARBITER_PUR1: 310, // lit Khet-Tak-Tor hunts you to shed it back
   BOSS_RISE_T: 0.8, BOSS_STAGGER_T: 2.2,
 
-  // LEVELED KEITH — each duel win escalates him; movesets are CUMULATIVE, one active at a time (capped
+  // LEVELED ARBITER — each duel win escalates him; movesets are CUMULATIVE, one active at a time (capped
   // concurrency), gated behind a telegraph. No screen shake.
   DUMP_PER_LEVEL: 2,                // heat you must dump grows per level (L1..L5: 8,10,12,14,16)
-  KEITH_MOVE_CD0: 3.4,             // gap before his first/again move (shrinks with level)
-  KEITH_MOVE_CD_MIN: 1.7,          // never spam faster than this (concurrency guard)
-  KEITH_TELE: 0.8,                 // wind-up telegraph before any move fires
-  KEITH_HIT: 0.5,                  // a move that connects costs you HALF A HEART (scaled by maxHearts)
+  ARBITER_MOVE_CD0: 3.4,             // gap before his first/again move (shrinks with level)
+  ARBITER_MOVE_CD_MIN: 1.7,          // never spam faster than this (concurrency guard)
+  ARBITER_TELE: 0.8,                 // wind-up telegraph before any move fires
+  ARBITER_HIT: 0.5,                  // a move that connects costs you HALF A HEART (scaled by maxHearts)
   // L2 EMBER SPIT: fireballs at your lagged spot
   SPIT_N: 3, SPIT_SPD: 250, SPIT_R: 12, SPIT_SPREAD: 0.34,
-  // L3 WAKE OF FIRE: Keith dash-line; the laid trail is ABSORBABLE fire (fuel your dump)
+  // L3 WAKE OF FIRE: Khet-Tak-Tor dash-line; the laid trail is ABSORBABLE fire (fuel your dump)
   WAKE_SPD: 560, WAKE_SEG_EVERY: 0.03, WAKE_LIFE: 2.4, WAKE_R: 20, WAKE_HEAT_CAP: 2,
   // L4 DEMON CALL: he summons fire monsters that hunt you (dash-kill for dump fuel)
-  KEITH_DEMONS: 3, KEITH_DEMON_TTL: 7.0,
+  ARBITER_DEMONS: 3, ARBITER_DEMON_TTL: 7.0,
   // L5 SIPHON MELTDOWN: villager shield + expanding pulse with a safe gap
   SIPHON_PULL: 4, SIPHON_R: 96, SIPHON_PULSE_SPD: 240, SIPHON_GAP: 0.9,
   // allies: rescued villagers that each body-block one incoming attack

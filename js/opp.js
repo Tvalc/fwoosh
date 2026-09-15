@@ -11,7 +11,7 @@ function loadOpp(){
            readsBroken: 0, timesSniped: 0, seenIntro: false, duelWins: 0, loreIdx: 0 };
 }
 
-// where the feud stands -> which register Keith speaks in. The arc: he learns you (smug),
+// where the feud stands -> which register Khet-Tak-Tor speaks in. The arc: he learns you (smug),
 // over-invests (obsessed), then can't read you anymore and respects it (respect).
 function feudStage(){
   if((opp.runs||0) <= 1) return 'debut';
@@ -77,7 +77,7 @@ function setupOpp(){
   for(let i=0;i<opp.terr.length;i++){ if(opp.terr[i] > best){ best = opp.terr[i]; bi = i; } }
   opp.grudge = bi >= 0 ? cellCenter(bi) : null;
   if(opp.grudge) slag.push({ x:opp.grudge.x, y:opp.grudge.y, grudge:true });
-  // Once Keith has enough current or legacy observations, the beacon reads the next vent.
+  // Once Khet-Tak-Tor has enough current or legacy observations, the beacon reads the next vent.
   if(opp.lat.length >= K.OPP_MIN_PASSES){
     opp.medianLat = median(opp.lat);
     snipeArmed = !!opp.grudge;
@@ -89,7 +89,7 @@ function setupOpp(){
     slag = slag.filter(s => !s.grudge); snipeArmed = false; snipe = null;
     if(!onTitle){ opp.introVer = INTRO_VERSION; opp.seenIntro = true; saveOpp(); }
   }
-  // otherwise, on a return run, the Keith cold-open reacts to how you played
+  // otherwise, on a return run, the Khet-Tak-Tor cold-open reacts to how you played
   // Returning players keep control; later exchanges run over the active street.
 }
 // the player reaches the middle and the fire is forced on them: become lit, hand over control,
@@ -113,7 +113,7 @@ function fireSnipe(){
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : 60;
   const tx = p.x, ty = p.y;                                  // vent roots Duy; mark the committed spot
   snipe = { ox:gx, oy:gy, tx:((tx%VW)+VW)%VW, ty, t:0, done:false, lt:0 };
-  speakKeith(lineFor('fired'));
+  speakArbiter(lineFor('fired'));
 }
 
 let opp = loadOpp();

@@ -87,9 +87,9 @@ function aEyes(ctx,x,y,r,mood,iris){
     ctx.moveTo(x+dx-R*0.85,ey-R*1.02); ctx.lineTo(x+dx+R*0.85,ey-R*1.2); ctx.stroke(); }
 }
 
-// A drawn anime KEITH — the rival, as an actual character. Used big on the cold-open / win.
+// A drawn anime ARBITER — the rival, as an actual character. Used big on the cold-open / win.
 // cx,cy = face center; s = head half-height. mood: 'glare' | 'yield'.
-function keithFace(ctx, cx, cy, s, mood){
+function arbiterFace(ctx, cx, cy, s, mood){
   const L='#360c1f', yieldM=(mood==='yield');
   ctx.save(); ctx.lineJoin='round'; ctx.lineCap='round';
 
@@ -419,17 +419,17 @@ const SKINS = {
       if(b.state==='lit'){ const g=ctx.createRadialGradient(X,y,2,X,y,rr*3.4);
         g.addColorStop(0,'rgba(255,150,50,0.5)'); g.addColorStop(1,'rgba(255,110,40,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,rr*3.4,0,7); ctx.fill(); }
-      const col=b.kind==='keith'?(flat?'#7a2447':'#ff3d7a'):(flat?'#5e1f2c':'#c2364f');
-      if(b.kind==='keith'&&!flat){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X,y,rr,0,7); ctx.fill(); }
+      const col=b.kind==='arbiter'?(flat?'#7a2447':'#ff3d7a'):(flat?'#5e1f2c':'#c2364f');
+      if(b.kind==='arbiter'&&!flat){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X,y,rr,0,7); ctx.fill(); }
       else { ctx.fillStyle=col; const h=flat?rr*0.55:rr; ctx.fillRect(X-rr,y-h,rr*2,h*2); }
       ctx.fillStyle=b.state==='lit'?'#fff':'#ffd7e6'; ctx.beginPath(); ctx.arc(X,y-(flat?0:rr*0.1),5.4*grow,0,7); ctx.fill();
       ctx.fillStyle='#160a11'; ctx.beginPath(); ctx.arc(X,y-(flat?0:rr*0.1),2.4*grow,0,7); ctx.fill();
-      if(b.state==='lit'){ const fmax=b.kind==='keith'?K.KEITH_FUSE:K.RISER_FUSE; const k=Math.max(0,b.fuse/fmax);
+      if(b.state==='lit'){ const fmax=b.kind==='arbiter'?K.ARBITER_FUSE:K.RISER_FUSE; const k=Math.max(0,b.fuse/fmax);
         ctx.strokeStyle='#ffd36a'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(X,y,rr+10,-Math.PI/2,-Math.PI/2+k*Math.PI*2); ctx.stroke(); } },
   },
 
   anime: {
-    // the cold-open is a manga splash: Keith, big and glaring, calling you out
+    // the cold-open is a manga splash: Khet-Tak-Tor, big and glaring, calling you out
     coldOpen(ctx, greet){
       ctx.fillStyle='rgba(9,7,18,0.98)'; ctx.fillRect(0,0,VW,VH);
       const cx=VW*0.5, cy=VH*0.58, N=30, ph=frame*0.02;               // radial action lines
@@ -442,7 +442,7 @@ const SKINS = {
       ctx.moveTo(cx-300, VH*1.0); ctx.quadraticCurveTo(cx-150, VH*0.68, cx-72, VH*0.66);
       ctx.lineTo(cx+72, VH*0.66); ctx.quadraticCurveTo(cx+150, VH*0.68, cx+300, VH*1.0); ctx.closePath(); ctx.fill();
       ctx.lineWidth=4; ctx.strokeStyle='#1a0f16'; ctx.stroke();
-      keithFace(ctx, cx, VH*0.5, 152, 'glare');
+      arbiterFace(ctx, cx, VH*0.5, 152, 'glare');
       ctx.textAlign='center';                                          // manga shout
       ctx.font='900 58px "Chakra Petch",system-ui,sans-serif';
       ctx.lineWidth=11; ctx.strokeStyle='#1a0f16'; ctx.strokeText(greet.big, VW/2, VH*0.155);
@@ -453,7 +453,7 @@ const SKINS = {
       ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText('tap to begin', VW/2, VH*0.955);
     },
-    // the win is a manga finish: Keith beaten, and for once impressed
+    // the win is a manga finish: Khet-Tak-Tor beaten, and for once impressed
     winScreen(ctx){
       ctx.fillStyle='rgba(6,11,9,0.97)'; ctx.fillRect(0,0,VW,VH);
       const cx=VW*0.5, cy=VH*0.58, N=30, ph=frame*0.02;
@@ -465,7 +465,7 @@ const SKINS = {
       ctx.fillStyle='#5a1030'; ctx.beginPath();
       ctx.moveTo(cx-300, VH*1.0); ctx.quadraticCurveTo(cx-150, VH*0.82, cx-72, VH*0.8);
       ctx.lineTo(cx+72, VH*0.8); ctx.quadraticCurveTo(cx+150, VH*0.82, cx+300, VH*1.0); ctx.closePath(); ctx.fill();
-      keithFace(ctx, cx, VH*0.62, 140, 'yield');
+      arbiterFace(ctx, cx, VH*0.62, 140, 'yield');
       for(let i=0;i<16;i++){ const x=(i*151)%VW, y=(i*97+frame*1.4)%VH;
         aSparkle(ctx, x, y, 3+2*Math.sin(frame*0.06+i), 'rgba(210,255,230,0.5)'); }
       ctx.textAlign='center';
@@ -586,24 +586,24 @@ const SKINS = {
         ctx.lineWidth=4; ctx.beginPath(); ctx.arc(X,y,r+11,-Math.PI/2,-Math.PI/2+k*Math.PI*2); ctx.stroke(); }
       if(p.bracing){ ctx.strokeStyle='rgba(180,230,255,0.5)'; ctx.lineWidth=2;
         ctx.beginPath(); ctx.arc(X,y,r+22,0,7); ctx.stroke(); } },
-    boss(ctx,X,b,grow,rr,flat){ const y=b.y, keith=b.kind==='keith';
+    boss(ctx,X,b,grow,rr,flat){ const y=b.y, arbiter=b.kind==='arbiter';
       if(b.state==='lit'){ const g=ctx.createRadialGradient(X,y,2,X,y,rr*3.2);
         g.addColorStop(0,'rgba(255,170,60,0.5)'); g.addColorStop(1,'rgba(255,110,40,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,rr*3.2,0,7); ctx.fill(); aFlame(ctx,X,y,rr,frame*0.12); }
-      if(keith&&!flat){ ctx.fillStyle='#b81f57'; ctx.beginPath();   // rival hair spikes behind
+      if(arbiter&&!flat){ ctx.fillStyle='#b81f57'; ctx.beginPath();   // rival hair spikes behind
         for(let i=-2;i<=2;i++){ const sx=X+i*rr*0.42;
           ctx.moveTo(sx-rr*0.22,y-rr*0.72); ctx.lineTo(sx,y-rr*1.42); ctx.lineTo(sx+rr*0.22,y-rr*0.72); } ctx.fill();
         glossyOrb(ctx,X,y,rr,'#ff9dc0','#c31f5a');
         aEyes(ctx,X,y+rr*0.05,rr*0.9,b.state==='lit'?'determined':'rival','#ffd0e2');
       } else { const h=flat?rr*0.55:rr;
         const g=ctx.createLinearGradient(X-rr,y-h,X+rr*0.5,y+h);
-        g.addColorStop(0, keith?'#ff7aa6':'#ef6a80'); g.addColorStop(1, keith?(flat?'#6e2334':'#a83358'):(flat?'#5a1c28':'#a5324a'));
+        g.addColorStop(0, arbiter?'#ff7aa6':'#ef6a80'); g.addColorStop(1, arbiter?(flat?'#6e2334':'#a83358'):(flat?'#5a1c28':'#a5324a'));
         rrect(ctx,X-rr,y-h,rr*2,h*2,rr*0.32); ctx.fillStyle=g; ctx.fill();
         ctx.save(); rrect(ctx,X-rr,y-h,rr*2,h*2,rr*0.32); ctx.clip();
         ctx.fillStyle='rgba(255,255,255,0.22)'; ctx.beginPath(); ctx.ellipse(X-rr*0.35,y-h*0.5,rr*0.7,h*0.32,-0.4,0,7); ctx.fill(); ctx.restore();
         ctx.lineWidth=Math.max(1.7,rr*0.16); ctx.strokeStyle=INK; rrect(ctx,X-rr,y-h,rr*2,h*2,rr*0.32); ctx.stroke();
         aEyes(ctx,X,y-(flat?0:h*0.1)+rr*0.05,rr*0.82,flat?'dizzy':'angry','#ffd0e2'); }
-      if(b.state==='lit'){ const fmax=keith?K.KEITH_FUSE:K.RISER_FUSE; const k=Math.max(0,b.fuse/fmax);
+      if(b.state==='lit'){ const fmax=arbiter?K.ARBITER_FUSE:K.RISER_FUSE; const k=Math.max(0,b.fuse/fmax);
         ctx.strokeStyle='#ffd36a'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(X,y,rr+10,-Math.PI/2,-Math.PI/2+k*Math.PI*2); ctx.stroke(); } },
   },
 
@@ -640,7 +640,7 @@ const SKINS = {
       if(!drawSpr(ctx,'powerup',X,y+bob,r*3.0,{sy:1+0.05*Math.sin(pu.t*6)}))
         SKINS.vector.powerup(ctx,X,y,pu); },
     wall(ctx,X,y,grudge,scarred){ const H=K.R_SLAG*3.4, R=K.R_SLAG;
-      if(grudge){                                          // Keith's claimed spot: the Makko beacon marks it
+      if(grudge){                                          // Khet-Tak-Tor's claimed spot: the Makko beacon marks it
         const pulse = scarred ? 0 : (0.5+0.5*Math.sin(frame*0.10));
         const gR = R*5.6;                                  // rune-circle footprint (telegraph, bigger than the hitbox)
         ctx.fillStyle='rgba(0,0,0,0.28)';                  // flat ground shadow under the rune circle
@@ -746,19 +746,19 @@ const SKINS = {
         drawFlame(ctx, DX-r*0.95, DY+r*1.3, r*2.7, frame*0.5+5, 0.72);
         drawFlame(ctx, DX+r*0.95, DY+r*1.3, r*2.7, frame*0.5+11, 0.72);
       } },
-    boss(ctx,X,b,grow,rr,flat){ const y=b.y, keith=b.kind==='keith', H=rr*(keith?4.7:4.3);
+    boss(ctx,X,b,grow,rr,flat){ const y=b.y, arbiter=b.kind==='arbiter', H=rr*(arbiter?4.7:4.3);
       groundShadow(ctx, X, y+rr*1.5, rr*1.7, rr*0.5);
-      if(b.state==='lit'){ const fmax=keith?K.KEITH_FUSE:K.RISER_FUSE, k=Math.max(0,b.fuse/fmax);
+      if(b.state==='lit'){ const fmax=arbiter?K.ARBITER_FUSE:K.RISER_FUSE, k=Math.max(0,b.fuse/fmax);
         const gr=rr*(1.0+k*2.2), g=ctx.createRadialGradient(X,y,2,X,y,gr);   // glow + flames contract to the sprite as fuse burns = timer
         g.addColorStop(0,'rgba(255,175,65,0.55)'); g.addColorStop(1,'rgba(255,110,40,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill(); aFlame(ctx,X,y,rr*(0.45+0.55*k),frame*0.12); }
-      const key=keith?'keith':'firedemon';
-      if(flat || !drawAnim(ctx,key,X,y,H,{fps:keith?8:11})){   // defeated boss = static squashed sprite
+      const key=arbiter?'keith':'firedemon';
+      if(flat || !drawAnim(ctx,key,X,y,H,{fps:arbiter?8:11})){   // defeated boss = static squashed sprite
         const opt={ dy: flat?H*0.14:Math.sin(frame*0.14)*2, sy: flat?0.66:1, sx: flat?1.18:1 };
         if(!drawSpr(ctx,key,X,y,H,opt)) return SKINS.vector.boss(ctx,X,b,grow,rr,flat);
       }
       },
-    // cold-open: KEITH himself, drawn big, calling you out
+    // cold-open: ARBITER himself, drawn big, calling you out
     coldOpen(ctx, greet){
       ctx.fillStyle='rgba(9,7,18,0.97)'; ctx.fillRect(0,0,VW,VH);
       const cx=VW*0.5, cy=VH*0.6, N=30, ph=frame*0.02;
@@ -768,7 +768,7 @@ const SKINS = {
         ctx.lineTo(cx+Math.cos(a-hw)*1800, cy+Math.sin(a-hw)*1800);
         ctx.lineTo(cx+Math.cos(a+hw)*1800, cy+Math.sin(a+hw)*1800); ctx.closePath(); ctx.fill(); }
       if(!drawSpr(ctx,'keith',cx,VH*0.56,VH*0.5,{sy:1+0.02*Math.sin(frame*0.1)}))
-        keithFace(ctx, cx, VH*0.5, 152, 'glare');
+        arbiterFace(ctx, cx, VH*0.5, 152, 'glare');
       ctx.textAlign='center';
       if(!drawTextFit(ctx, greet.big, VW/2, VH*0.145, 52, VW*0.9)){
         ctx.font='900 58px "Chakra Petch",system-ui,sans-serif';
@@ -780,7 +780,7 @@ const SKINS = {
       ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText('tap to begin', VW/2, VH*0.955);
     },
-    // win: KEITH beaten, embers settling
+    // win: ARBITER beaten, embers settling
     winScreen(ctx){
       ctx.fillStyle='rgba(6,11,9,0.97)'; ctx.fillRect(0,0,VW,VH);
       const cx=VW*0.5, cy=VH*0.6, N=30, ph=frame*0.02;
@@ -790,7 +790,7 @@ const SKINS = {
         ctx.lineTo(cx+Math.cos(a-hw)*1800, cy+Math.sin(a-hw)*1800);
         ctx.lineTo(cx+Math.cos(a+hw)*1800, cy+Math.sin(a+hw)*1800); ctx.closePath(); ctx.fill(); }
       ctx.save(); ctx.globalAlpha=0.85;
-      if(!drawSpr(ctx,'keith',cx,VH*0.6,VH*0.44,{rot:0.12, sy:0.9})) keithFace(ctx, cx, VH*0.62, 140, 'yield');
+      if(!drawSpr(ctx,'keith',cx,VH*0.6,VH*0.44,{rot:0.12, sy:0.9})) arbiterFace(ctx, cx, VH*0.62, 140, 'yield');
       ctx.restore();
       for(let i=0;i<16;i++){ const x=(i*151)%VW, y=(i*97+frame*1.4)%VH;
         aSparkle(ctx, x, y, 3+2*Math.sin(frame*0.06+i), 'rgba(210,255,230,0.5)'); }
@@ -855,7 +855,7 @@ function drawRunMeters(ctx){
   ctx.fillText('RUN +'+runEmbers+' EMBERS',VW-18,89);
   ctx.textAlign='left';ctx.font='600 22px "Chakra Petch",system-ui,sans-serif';
   ctx.fillStyle=duelActive?'#ff9dbd':'#c2b6c8';
-  ctx.fillText(duelActive?'KEITH '+Math.floor(dumped)+' / '+((boss&&boss.dumpNeeded)||K.DUEL_DUMP):'EDGE '+(edge>0?'+':'')+Math.round(edge),18,118);
+  ctx.fillText(duelActive?'KHET-TAK-TOR '+Math.floor(dumped)+' / '+((boss&&boss.dumpNeeded)||K.DUEL_DUMP):'EDGE '+(edge>0?'+':'')+Math.round(edge),18,118);
   ctx.textAlign='right';ctx.fillStyle=rescueReward?'#b0ffd8':'#b4a7ba';
   ctx.fillText(rescueReward?rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS':'SCORE '+score,VW-18,118);
   ctx.restore();
@@ -916,7 +916,7 @@ function drawConversationSheet(ctx){
   }
 }
 
-// ---- TITLE / START SCREEN: FWOOSH logo, Keith looming, the hero below, the town ablaze
+// ---- TITLE / START SCREEN: FWOOSH logo, Khet-Tak-Tor looming, the hero below, the town ablaze
 // ---------------------------------------------------------------- THE TOWN HUB (meta home base)
 function hubB(x,y,w,h,act,enabled){ hubBtns.push({x,y,w,h,act,enabled:enabled!==false}); }
 function hubClick(x,y){
@@ -976,10 +976,10 @@ function drawHub(ctx){
   ctx.textAlign='center';
   if(!drawTextFit(ctx,'ASHFORD', VW/2, 178, 60, VW*0.7)){ ctx.fillStyle='#ffb04d'; ctx.font='900 58px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('ASHFORD', VW/2, 178); }
 
-  // --- Keith feud banner
+  // --- Khet-Tak-Tor feud banner
   panel(ctx, 40, 220, VW-80, 54, 12, 'rgba(50,12,28,0.66)', 'rgba(255,61,122,0.55)');
   if(sprReady('keith')) drawSpr(ctx,'keith', 76, 247, 58, {});
-  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='700 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('KEITH: '+feudStage().toUpperCase(), 112, 244);
+  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='700 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('KHET-TAK-TOR: '+feudStage().toUpperCase(), 112, 244);
   ctx.fillStyle='rgba(255,157,189,0.72)'; ctx.font='500 15px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('he watches you rebuild', 112, 264);
 
   // --- building cards, translucent over the scene. The Shrine returns when Ratkin
@@ -1016,7 +1016,7 @@ function drawHub(ctx){
   ctx.textAlign='center';
   // district line
   ctx.fillStyle='rgba(255,240,220,0.92)'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif';
-  ctx.fillText('DISTRICT '+selDistrict+' / 5  ·  KEITH LV.'+selDistrict, VW/2, pbY+26);
+  ctx.fillText('DISTRICT '+selDistrict+' / 5  ·  ARBITER LV.'+selDistrict, VW/2, pbY+26);
   if(!drawTextFit(ctx,DISTRICTS[selDistrict-1], VW/2, pbY+56, 30, pbW*0.66)){ ctx.fillStyle='#fff'; ctx.font='800 30px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(DISTRICTS[selDistrict-1], VW/2, pbY+58); }
   const foot = (selDistrict===unlocked && unlocked<5) ? 'clear this district to open the next' : (isTouch?'tap to enter':'SPACE / click to enter');
   ctx.fillStyle='rgba(255,240,220,0.8)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(foot, VW/2, pbY+78);
@@ -1166,14 +1166,14 @@ function drawShrineSheet(ctx){
   ctx.fillText('THE RATKIN REMEMBER', 44, y+112);
   ctx.fillStyle='#efe4ff'; ctx.font='500 18px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('You got them out. Their homes are still here.', 44, y+148);
-  ctx.fillText('Keith watches. The ratkin have the last word.', 44, y+180);
+  ctx.fillText('Khet-Tak-Tor watches. The ratkin have the last word.', 44, y+180);
 
   // ---- record rows
   const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
     ctx.textAlign='right'; ctx.fillStyle=col||'#efe4ff'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(val, VW-44, yy); };
   row('LIVES CARRIED OUT, ALL TOLD', String(META.saved||0), y+218, '#8affc1');
   row('QUARTERS OF ASHFORD RECLAIMED', (META.clearedDistricts||0)+' / 5', y+254, '#ffcf8a');
-  row('THE JAILER, KEITH', feudStage().toUpperCase(), y+290, '#ff9dbd');
+  row('KHET-TAK-TOR · ARBITER', feudStage().toUpperCase(), y+290, '#ff9dbd');
   row('EMBERS BANKED', String(META.embers||0), y+326, '#ffb14d');
 
   // ---- read-the-record button -> the diary
@@ -1270,7 +1270,7 @@ function drawTitle(ctx){
   const fg=ctx.createLinearGradient(0,VH,0,VH*0.5);       // the town burning below
   fg.addColorStop(0,'rgba(255,120,35,0.6)'); fg.addColorStop(1,'rgba(255,90,25,0)');
   ctx.fillStyle=fg; ctx.fillRect(0,VH*0.5,VW,VH*0.5);
-  // Keith looms with pink rays
+  // Khet-Tak-Tor looms with pink rays
   const kx=VW*0.5, ky=VH*0.54;
   for(let i=0;i<26;i++){ const a=i/26*Math.PI*2, hw=0.02*(0.7+0.4*Math.sin(frame*0.02+i));
     ctx.fillStyle=i%2?'rgba(255,61,122,0.10)':'rgba(255,61,122,0.05)';
@@ -1438,7 +1438,7 @@ function render(){
     });
   }
 
-  // ---- ARSON IMPS: Keith's fire messengers + a telegraph to their mark, so you can read the threat and cut it off
+  // ---- ARSON IMPS: Khet-Tak-Tor's fire messengers + a telegraph to their mark, so you can read the threat and cut it off
   for(const a of arson){
     // telegraph: a faint dashed FUSE LINE to the mark (a line, not a ring) + a warning GLOW on the villager
     if(a.tgt){
@@ -1524,7 +1524,7 @@ function render(){
       ctx.fillStyle='rgba(255,244,200,0.95)'; ctx.beginPath(); ctx.arc(X,s.y,K.SPIT_R*0.55,0,7); ctx.fill(); }); }
   }
 
-  // ---- boss (riser or apex Keith)
+  // ---- boss (riser or apex Khet-Tak-Tor)
   if(boss){
     const b = boss;
     const grow = b.state === 'rising' ? Math.max(0.2, 1 - b.t/K.BOSS_RISE_T) : 1;
@@ -1535,7 +1535,7 @@ function render(){
       g.addColorStop(0,'rgba(200,140,235,0)'); g.addColorStop(0.7,'rgba(200,140,235,0.28)'); g.addColorStop(1,'rgba(180,120,220,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,b.y,sr+rr,0,7); ctx.fill(); }); }
     // wind-up telegraph: a growing glow + an aim line for charge/wake
-    if(b.move && b.moveTele > 0){ const k=1-b.moveTele/K.KEITH_TELE; wrapDraw(b.x, X=>{
+    if(b.move && b.moveTele > 0){ const k=1-b.moveTele/K.ARBITER_TELE; wrapDraw(b.x, X=>{
       const tr=rr*(1.2+k*0.9), g=ctx.createRadialGradient(X,b.y,rr*0.5,X,b.y,tr);
       g.addColorStop(0,'rgba(255,80,60,0)'); g.addColorStop(0.7,'rgba(255,80,60,'+(0.35*k).toFixed(3)+')'); g.addColorStop(1,'rgba(255,60,40,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,b.y,tr,0,7); ctx.fill();
@@ -1626,7 +1626,7 @@ function render(){
     if(intro||presentDialogue)ctx.fillText('AUTO · Diary → Conversations',248,1267);
   }
 
-  // ---- LIVE intro dialogue box (Keith narrates over gameplay)
+  // ---- LIVE intro dialogue box (Khet-Tak-Tor narrates over gameplay)
   drawDialogue(ctx);
 
   // ---- legacy premise preview only; first play uses live dialogue instead.

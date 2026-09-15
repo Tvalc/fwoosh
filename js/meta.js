@@ -1,6 +1,6 @@
-// DISTRICTS: 5 escalating quarters of Ashford. Clearing one (beating its Keith) unlocks the next.
+// DISTRICTS: 5 escalating quarters of Ashford. Clearing one (facing its Arbiter) unlocks the next.
 // selDistrict = the one you're about to play (pick any unlocked); runDistrict = the one this run IS.
-const DISTRICTS = ['MARKET ROW', 'THE ROWHOUSES', 'THE OLD MILL', 'THE CHAPEL', "KEITH'S HOUSE"];
+const DISTRICTS = ['MARKET ROW', 'THE ROWHOUSES', 'THE OLD MILL', 'THE CHAPEL', "THE ARBITER'S GATE"];
 let selDistrict = 1, runDistrict = 1, runQuota = 12;
 
 // ---- META: persistent progression, all minted by SAVING villagers. Separate key from opp; per-field

@@ -216,7 +216,7 @@ test('A dash at an idle boundary spends one charge', () => {
 test('All five boss move handlers can advance without a simulation exception', () => {
   const g=game();
   for(const move of ['charge','spit','wake','demon','siphon']){
-    g.run(`selDistrict=5; reset(100); onTitle=false; intro=null; god=true; startDuel(); boss.state='evade'; startKeithMove(boss,${JSON.stringify(move)}); for(let i=0;i<360;i++){boss.moveT+=DT; runKeithMove(boss,DT)}`);
+    g.run(`selDistrict=5; reset(100); onTitle=false; intro=null; god=true; startDuel(); boss.state='evade'; startArbiterMove(boss,${JSON.stringify(move)}); for(let i=0;i<360;i++){boss.moveT+=DT; runArbiterMove(boss,DT)}`);
   }
 });
 
@@ -283,14 +283,14 @@ test('Every upgrade track caps correctly and reload applies the completed build'
   assert.equal(reload.run('RUN_HP_REGEN'),g.run('K.HP_REGEN'));
   assert.equal(reload.run('RUN_VENT_HEAL_T'),0.4);
 });
-test('Keith duel keeps valid villagers and a renewable fire source',()=>{
+test('Khet-Tak-Tor duel keeps valid villagers and a renewable fire source',()=>{
  const g=game();g.run('onTitle=false;intro=null;god=true;cells=[];startDuel()');
  assert.ok(g.run('crowd().length>=K.DUEL_CROWD'),'The duel began with no villagers available for ignition.');
  g.run('boss.state="rising";arsonT=K.DUEL_ARSON_EVERY;step()');assert.ok(g.run('arson.length>0'),'The duel disabled the fire-imp scheduler and left no renewable heat.');
  g.run('arson[0].warn=0;arson[0].x=arson[0].tgt.x;arson[0].y=arson[0].tgt.y;stepArson(DT)');
  assert.ok(g.run('hunters().length>0'),'A missed duel imp did not ignite its target.');
 });
-test('Duel fire can be intercepted for heat and dumped into Keith',()=>{
+test('Duel fire can be intercepted for heat and dumped into Khet-Tak-Tor',()=>{
  const g=game();g.run('onTitle=false;intro=null;cells=[];startDuel();boss.state="idle";const target=crowd()[0];arson=[{x:player.x,y:player.y,tgt:target,t:0,warn:0,ph:0}];stepArson(DT)');
  const heat=g.run('K.ARSON_HEAT');assert.equal(g.run('player.heat'),heat);const before=g.run('dumped');g.run('hitstop=0;boss.x=player.x;boss.y=player.y;step()');assert.equal(g.run('dumped'),before+heat);
 });
@@ -344,7 +344,7 @@ test('Winning contact ends the frame before another rescue can change settled re
   const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.saved'),g.run('META.saved'));
 });
 
-test('Title boot does not consume the live intro; first start gives control during Keith dialogue', () => {
+test('Title boot does not consume the live intro; first start gives control during Khet-Tak-Tor dialogue', () => {
   const g=game();
   assert.notEqual(g.run('opp.introVer'),g.run('INTRO_VERSION'));
   g.run('onDown(360,1100)');
@@ -353,7 +353,7 @@ test('Title boot does not consume the live intro; first start gives control duri
   assert.equal(g.run('introT'),0);
   g.dispatch('keydown',{key:'d'});
   const x=g.run('player.x');g.run('step()');
-  assert.ok(g.run('player.x')>x,'Player must move while Keith speaks');
+  assert.ok(g.run('player.x')>x,'Player must move while Khet-Tak-Tor speaks');
   g.dispatch('keydown',{key:'Shift',repeat:false});
   assert.equal(g.run('player.charges'),2,'Dialogue must not block dashing');
   g.run('player.heat=1');g.dispatch('keydown',{key:' ',repeat:false});
@@ -418,7 +418,7 @@ test('Venting roots actual movement until the released unit finishes', () => {
   g.run('for(let i=0;i<50;i++)step()');assert.ok(g.run('player.y')<640);
   assert.equal(g.run('demons.length'),1);
 });
-test('Vent demons persist after release and into Keith encounter; new run clears them', () => {
+test('Vent demons persist after release and into Khet-Tak-Tor encounter; new run clears them', () => {
   const g=game();g.run('onTitle=false;intro=null;god=true;husks=[];spawnVentDemon();setVentHeld(false);for(let i=0;i<1000;i++)stepDemons(DT)');
   assert.equal(g.run('demons.length'),1);g.run('startDuel()');assert.equal(g.run('demons.length'),1);
   g.run('reset()');assert.equal(g.run('demons.length'),0);assert.equal(g.run('player.ventUnit'),null);
@@ -670,7 +670,7 @@ test('Assumed event profiles exercise real rewards and expose initial price cade
   function profile(rescues,hot){const g=game();g.run('onTitle=false;intro=null');
     for(let i=0;i<rescues;i++)g.run(`player.heat=${(hot?3:1)+i%2};spawnCrowd(true);saveCell(cells[cells.length-1],true)`);
     g.run(`player.lunge=${hot?'.1':'0'};interceptArson({x:300,y:400});player.heat=1;rekindleHusk({x:300,y:400})`);
-    if(hot)g.run('killDemon({source:"town",x:300,y:400});killDemon({source:"keith",x:300,y:400})');
+    if(hot)g.run('killDemon({source:"town",x:300,y:400});killDemon({source:"arbiter",x:300,y:400})');
     return g.run('runEmbers');}
   const ordinary=[7,8,9].map(n=>profile(n,false)),skilled=[9,10,11].map(n=>profile(n,true));
   assert.deepEqual(ordinary,[44,50,55]);assert.deepEqual(skilled,[88,97,105]);
@@ -706,7 +706,7 @@ test('Heat observation needs rescue knowledge and follows current heat',()=>{
  g.run("dialogueSave().seen.push('rescue');tickPresentDialogue(DT)");assert.equal(g.run('presentDialogue.id'),'heat');
 });
 test('Run dialogue budget suppresses extra exchanges and combat cannot interrupt',()=>{
- const g=game();g.run("onTitle=false;reset();intro=null;elapsed=20;startPresentDialogue('rescue');speakKeith('No interruption')");
+ const g=game();g.run("onTitle=false;reset();intro=null;elapsed=20;startPresentDialogue('rescue');speakArbiter('No interruption')");
  assert.equal(g.run('presentDialogue.id'),'rescue');g.run("presentDialogue=null;presentCount=2;notePresentEvent('rescue');tickPresentDialogue(DT)");assert.equal(g.run('presentDialogue'),null);
 });
 test('Return after death is not delivered after a win and never freezes the street',()=>{
@@ -721,9 +721,16 @@ test('Conversation archive excludes unrevealed text and tolerates old malformed 
  assert.ok(!g.drawnText.includes(g.run('PRESENT.release[1].text')));
  g.run("rememberDialogue(PRESENT.rescue[0]);drawConversationSheet(ctx)");assert.ok(g.drawnText.includes(g.run('PRESENT.rescue[0].text')));
 });
+test('Legacy Keith dialogue records display under Khet-Tak-Tor without losing text',()=>{
+ const old={v:1,dialogue:{seen:['rescue'],history:[{who:'KEITH',emotion:'stern',text:'Keep moving.'}]}};
+ const g=game({'fwoosh.meta':JSON.stringify(old)});g.run('dialogueSave();saveMeta()');
+ assert.equal(g.run('META.dialogue.history[0].who'),'KHET-TAK-TOR');
+ assert.equal(g.run('META.dialogue.history[0].text'),'Keep moving.');
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('dialogueSave().history[0].who'),'KHET-TAK-TOR');
+});
 test('Present dialogue contains no past-life reveals and all templates use named speakers',()=>{
  const g=game();const lines=g.run('Object.values(PRESENT).flat()');
- assert.ok(lines.every(l=>['DUY','KEITH'].includes(l.who)&&l.emotion&&l.text.length<100));
+ assert.ok(lines.every(l=>['DUY','KHET-TAK-TOR'].includes(l.who)&&l.emotion&&l.text.length<100));
  assert.ok(lines.every(l=>!(/Mei|Cuong|Diep|nineteen|brother|Adonai|Odin|gunman|gate/i.test(l.text))));
  assert.equal(g.run('STORY.lore.length'),0);
 });
