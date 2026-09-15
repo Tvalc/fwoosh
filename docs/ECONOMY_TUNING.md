@@ -1,4 +1,4 @@
-# First-upgrade economy — 2026-09-14-economy-1
+# Ember economy — 2026-09-14-economy-2
 
 Tony approved removing ember payouts from vent-created demons and making a meaningful permanent upgrade affordable after the first completed run, even a short loss. The opening choice is survivability versus mobility, at equal prices. Later upgrades should take longer. The 20-ember price and one-time top-up are initial implementation values for playtesting, not a completed economy balance pass.
 
@@ -13,7 +13,7 @@ Tony approved removing ember payouts from vent-created demons and making a meani
 
 ## Vent-created enemies
 
-Defeating a demon tagged `source: 'vent'` awards zero embers. It still returns heat and affects Edge. Town, Keith and legacy untagged demons retain their existing ember reward and run cap. This removes the direct ember reward for creating and killing your own demons; it does not claim that all indirect rescue/heat/Edge incentives have been eliminated.
+Defeating a demon tagged `source: 'vent'` awards zero embers. It still returns heat and affects Edge. Town, Keith and legacy untagged demons retain their existing per-kill ember reward, without a run cap. This removes the direct ember reward for creating and killing your own demons; it does not claim that all indirect rescue/heat/Edge incentives have been eliminated.
 
 ## Save and deployment
 
@@ -24,3 +24,13 @@ Version-1 saves remain compatible. `fwoosh.meta.flags` gains starterChecked, sta
 ## Next interview
 
 Set the desired cadence of later purchases, then tune earning sources, prices and effects against actual runs. Do not present unchanged shop prices as newly balanced. Embers will never be sold for money. City rebuilding, favor, Invoice and RPG spending remain deferred and require explicit accounting decisions, including whether this starter bonus counts as collected embers for cross-game rewards.
+
+## Uncapped earnings — approved and implemented
+
+Tony confirmed removing the 160-ember run cap. In economy-2, ordinary rewards continue at their full existing rates: rescues (including Blaze/chain effects), walking/dashing imp interceptions, rekindling, and eligible demon kills. Crossing the old boundary no longer truncates a payout; there is no replacement soft cap. Vent-created demon kills still pay zero. The district-clear bounty is added normally, and losses still bank earned embers. Existing saves, starter eligibility/top-up, upgrade tiers and prices are unchanged. No rewards previously lost to the old cap are reconstructed.
+
+70 gameplay/input checks pass (reports/uncapped-embers-state.json). Added checks cover all reward sources at 159, 160 and 500, source-specific demon rewards, a 240-ember earned run, loss-result text, exactly-once settlement, reload with existing upgrades, and district bounty on top of uncapped earnings. This update does not change drawing or art. Live deployment verification is tracked in issue #1.
+
+## Approved pacing targets; tuning still ahead
+
+After the opening purchase, an ordinary player should afford a useful early upgrade every 2–3 runs; higher tiers take longer. Skilled players should progress roughly twice as fast through stronger high-heat rescues and district-clear earnings. This is a performance-earned balancing target, not a fixed player multiplier. Removing the cap supports it but does not prove it is met. Current earning rates and later prices still need calibration against representative ordinary/skilled runs. Next scope: which upgrades provide worthwhile choices and how long higher tiers should take. City expansion remains deferred. Embers are never sold for money.

@@ -1,4 +1,10 @@
 # Fwoosh — complete remaining backlog
+
+## Latest checkpoint: uncapped ember release
+
+Economy-1 was deployed through PR #13 at main 0c264d8d046807693be468695a28707c52bf9b4c. Candidate 2026-09-14-economy-2 removes the 160-ember cap from all ordinary reward sources while keeping vent-created demons at zero. All 70 gameplay/input checks pass; saves, prices, starter purchases and art are preserved. Issue #1 records the final deployment verification. Approved next targets are 2–3 ordinary runs per useful early upgrade and roughly twice-as-fast skilled progression, with higher tiers slower. Price/effect/rate tuning remains open; city expansion stays deferred. See ECONOMY_TUNING.md.
+
+The sections below include earlier feature checkpoints; the paragraph above and issue #1 take precedence for current status.
 Reviewed September 14, 2026 against this conversation, current source, the older combat/meta roadmaps, art records, and GitHub issues.
 
 ## Implemented and deployed baseline

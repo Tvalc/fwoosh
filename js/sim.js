@@ -569,8 +569,7 @@ function saveCell(c, chained){
   const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're carrying, the bigger the save
   score += Math.round(K.SAVE_SCORE * blaze);
   if(blaze > META.bestBlaze) META.bestBlaze = blaze;
-  let em = Math.round(K.EMBER_BASE * blaze);
-  em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
+  const em = Math.round(K.EMBER_BASE * blaze);
   runEmbers += em; META.saved++;
   for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
     sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
@@ -746,8 +745,7 @@ function interceptArson(a){
   intercepts++; edge += K.ARSON_EDGE_PER; edgePop = 0.5;
   const dashing = p.lunge > 0;
   p.heat = Math.min(K.HEAT_MAX, p.heat + K.ARSON_HEAT);
-  let em = Math.round(K.ARSON_EMBERS * (dashing ? 1.5 : 1));
-  em = Math.max(0, Math.min(em, K.EMBER_RUN_CAP - runEmbers));
+  const em = Math.round(K.ARSON_EMBERS * (dashing ? 1.5 : 1));
   runEmbers += em;
   p.absorbPop = 0.3; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
   ring(a.x, a.y, 4, 52, '#ffd27a', 0.5);
@@ -803,7 +801,7 @@ function rekindleHusk(h){
                hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
   saved++; META.saved++;
   edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
-  const em = Math.max(0, Math.min(Math.round(K.EMBER_BASE*0.5), K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  const em = Math.round(K.EMBER_BASE*0.5); runEmbers += em;
   score += Math.round(K.SAVE_SCORE*0.5);
   saveIconPop = 0.6; p.absorbPop = 0.28; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
   ring(h.x, h.y, K.R_CELL+2, 90, '#8affc1', 0.6);
@@ -816,7 +814,7 @@ function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat yo
   const p = player;
   const town = d.source === 'town';
   p.heat = Math.min(K.HEAT_MAX, p.heat + K.WRAITH_KILL_HEAT);
-  const em = d.source==='vent'?0:Math.max(0, Math.min(K.DEMON_KILL_EMBERS, K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  const em = d.source==='vent'?0:K.DEMON_KILL_EMBERS; runEmbers += em;
   edge += 0.25; edgePop = 0.5;                                   // clearing them nudges the town war your way
   p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
   ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
