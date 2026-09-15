@@ -5,6 +5,7 @@ function loadOpp(){
     if(s && Array.isArray(s.terr) && s.terr.length === N){
       s.readsBroken = s.readsBroken||0; s.timesSniped = s.timesSniped||0; s.seenIntro = !!s.seenIntro;
       s.duelWins = s.duelWins||0; s.loreIdx = s.loreIdx||0;
+      s.lat = Array.isArray(s.lat) ? s.lat : [];
       return s; } }catch(e){}
   return { terr: new Array(N).fill(0), lat: [], grudge: null, medianLat: null, runs: 0,
            readsBroken: 0, timesSniped: 0, seenIntro: false, duelWins: 0, loreIdx: 0 };
@@ -32,6 +33,15 @@ function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
 function cellCenter(i){ const col = i%K.OPP_COLS, row = Math.floor(i/K.OPP_COLS);
   return { x:(col+0.5)*(VW/K.OPP_COLS), y:(row+0.5)*(VH/K.OPP_ROWS) }; }
 
+// Current-loop read: remember where direct rescues happen and how much heat Duy carried into them.
+// The old save field is retained so existing opponent history remains compatible.
+function recordOppRescue(c,heat){
+  if(mode!=='play')return;
+  const col=Math.max(0,Math.min(K.OPP_COLS-1,Math.floor(c.x/(VW/K.OPP_COLS))));
+  const row=Math.max(0,Math.min(K.OPP_ROWS-1,Math.floor(c.y/(VH/K.OPP_ROWS))));
+  runBuf.push({heat:Math.max(0,Math.min(K.HEAT_MAX,Number(heat)||0)),col,row});
+}
+
 // fold this run's records into the opp, then persist. Called once, at pop().
 function foldOpp(){
   if(runSettled) return;
@@ -39,7 +49,8 @@ function foldOpp(){
   for(const r of runBuf){
     const idx = r.row*K.OPP_COLS + r.col;
     if(idx >= 0 && idx < opp.terr.length) opp.terr[idx]++;
-    opp.lat.push(r.lateness);
+    const read=Number(r.heat!=null?r.heat:r.lateness);
+    if(Number.isFinite(read))opp.lat.push(read);
   }
   while(opp.lat.length > K.OPP_LAT_CAP) opp.lat.shift();
   opp.runs++;
@@ -56,26 +67,26 @@ function foldOpp(){
   saveMeta();
 }
 
-// place the grudge wall + arm the snipe from accumulated reads. Called from reset().
+// Place the grudge beacon + arm its vent read from accumulated rescues. Called from reset().
 function setupOpp(){
   runBuf = []; snipe = null; snipeUsed = false; oppScarred = false; gotSniped = false;
-  snipeFuse = null; callout = null; introT = 0; loreT = 0; overloadCd = 0; intro = null;
+  snipeArmed = false; callout = null; introT = 0; loreT = 0; overloadCd = 0; intro = null;
   resetPresentDialogue();
   // TERRITORY: hottest cell -> grudge wall
   let best = 0, bi = -1;
   for(let i=0;i<opp.terr.length;i++){ if(opp.terr[i] > best){ best = opp.terr[i]; bi = i; } }
   opp.grudge = bi >= 0 ? cellCenter(bi) : null;
   if(opp.grudge) slag.push({ x:opp.grudge.x, y:opp.grudge.y, grudge:true });
-  // LATENESS: arm the snipe just before your habitual dump-fuse
+  // Once Keith has enough current or legacy observations, the beacon reads the next vent.
   if(opp.lat.length >= K.OPP_MIN_PASSES){
     opp.medianLat = median(opp.lat);
-    snipeFuse = Math.max(0.5, Math.min(K.FUSE_START-0.2, opp.medianLat + K.OPP_SNIPE_LEAD));
+    snipeArmed = !!opp.grudge;
   }
   // The title boot must not consume the intro. Begin narration with control on the first actual run.
   if(opp.introVer !== INTRO_VERSION){
     intro = { phase:'talk', i:0, lineT:0 };
     player.lit = false; player.fuse = 0;
-    slag = slag.filter(s => !s.grudge); snipeFuse = null; snipe = null;
+    slag = slag.filter(s => !s.grudge); snipeArmed = false; snipe = null;
     if(!onTitle){ opp.introVer = INTRO_VERSION; opp.seenIntro = true; saveOpp(); }
   }
   // otherwise, on a return run, the Keith cold-open reacts to how you played
@@ -98,10 +109,9 @@ function igniteIntro(){
 
 function fireSnipe(){
   const p = player;
-  snipeUsed = true;
+  snipeUsed = true; snipeArmed = false;
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : 60;
-  const tx = p.x + p.hx*p.spd*K.OPP_SNIPE_TELE;              // lead your drift
-  const ty = Math.max(40, Math.min(VH-40, p.y + p.hy*p.spd*K.OPP_SNIPE_TELE));
+  const tx = p.x, ty = p.y;                                  // vent roots Duy; mark the committed spot
   snipe = { ox:gx, oy:gy, tx:((tx%VW)+VW)%VW, ty, t:0, done:false, lt:0 };
   speakKeith(lineFor('fired'));
 }

@@ -1,5 +1,15 @@
 # Fwoosh status — September 15, 2026
 
+## Adaptive grudge beacon — 2026-09-15-beacon-1
+
+Tony reported that the separate magenta well/beacon sprite in the run was inert until collision. It is the opponent's grudge beacon, not the stone well baked into the arena background. Its recording and attack were still connected to the retired pass/fuse loop. Direct rescues now teach its territory model and preserve heat-at-rescue observations in the compatible opponent save. From the next sufficiently observed run, the beacon appears in the busiest rescue area and fires one telegraphed attack when Duy begins venting.
+
+The telegraph lasts 0.9 seconds: releasing finishes the committed unit, and a queued or immediate dash clears the marked spot. Remaining there costs one heart. Dashing through the beacon first destroys it and disarms the attack. First-run dialogue suppresses the system. Existing opponent histories still arm it; no save reset or schema change is required.
+
+107 actual-script checks pass, including current rescue recording, next-run arming, vent activation, one-heart impact, queued-dash evasion, proactive destruction, legacy/first-run behavior and the prior game suite. A local rendered fixture verified the dormant, mid-telegraph and impact states with no console warnings/errors. This is a mechanic repair, not a completed balance playtest.
+
+Issue #36 tracks both halves of Tony's request. This release keeps the current verified Makko beacon art in the run. Cursor owns two distinct replacement Makko icons for The Well and The Shrine town cards under issues #31/#36; the same beacon icon remains on those cards until that art is approved and integrated.
+
 ## Project-management consolidation — September 15, 2026
 
 No game code or live build changed. `docs/ROADMAP.md` is now the concise source of truth for unfinished work; shipped chronology remains in this file and superseded proposals remain under `docs/archive/`. GitHub issue #1 is a current work board. Issues #26–#33 separately track arcade/economy tuning, city foundation, city logistics, favor/ending, Ledger integration, Makko art production, audio/release readiness, and records/source backup. The completed foundation issue #2 is closed; stale mixed Cursor issue #3 is closed as superseded by the current Makko tracker #31.

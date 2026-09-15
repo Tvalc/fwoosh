@@ -8,17 +8,18 @@ Build `2026-09-15-debug-1` is live. The arcade loop, committed vent units, persi
 
 ## Active now
 
-1. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Keith pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
-2. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, cinder vent correction and diary art. Every visual asset must come from Makko.
-3. [#33 Consolidate records, provenance and off-device source backup](https://github.com/Tvalc/fwoosh/issues/33) — **Codex**. Records were consolidated in PR #34; an off-device destination still requires Tony's choice.
+1. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Codex gameplay; Cursor Makko art**. Restore its current-loop attack; replace the shared Well/Shrine menu image with two distinct Makko sprites.
+2. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Keith pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
+3. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, cinder vent correction and diary art. Every visual asset must come from Makko.
+4. [#33 Consolidate records, provenance and off-device source backup](https://github.com/Tvalc/fwoosh/issues/33) — **Codex**. Records were consolidated in PR #34; an off-device destination still requires Tony's choice.
 
 ## Next development sequence
 
-4. [#27 Build the playable ratkin city foundation slice](https://github.com/Tvalc/fwoosh/issues/27) — place roads, a home and production building; spend embers on the foundation; build over time/offline; seal before operation.
-5. [#28 Implement ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — food, materials, housing, workers, storage, physical deliveries, distance/congestion and automatic priorities with optional optimization.
-6. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — restoration milestones, favor, ratkin judgment, release and resurrection. Keith is the jailer, never the authority that frees Duy.
-7. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
-8. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
+5. [#27 Build the playable ratkin city foundation slice](https://github.com/Tvalc/fwoosh/issues/27) — place roads, a home and production building; spend embers on the foundation; build over time/offline; seal before operation.
+6. [#28 Implement ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — food, materials, housing, workers, storage, physical deliveries, distance/congestion and automatic priorities with optional optimization.
+7. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — restoration milestones, favor, ratkin judgment, release and resurrection. Keith is the jailer, never the authority that frees Duy.
+8. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
+9. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
 
 ## Locked product decisions
 
