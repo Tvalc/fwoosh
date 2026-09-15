@@ -1,11 +1,13 @@
-// Keith is Duy's jailer. Immediate danger is clear; the larger story is discovered in optional memories.
+// Khet-Tak-Tor is Duy's jailer and the Ratkin Arbiter. Immediate danger is clear;
+// the larger story is discovered in optional memories.
+const ARBITER_NAME = 'KHET-TAK-TOR';
 const STORY = {
   // Legacy preview card only. Normal first play starts directly with live dialogue.
   premise: [
     'The street is burning. Someone is calling your name.',
     'Run into the burning ratkin. Take their fire.',
     'Too much to carry? Hold VENT or SPACE.',
-    'Keith says you have been here before.',
+    'Khet-Tak-Tor says you have been here before.',
   ],
   greet: {
     debut: { big:'ON YOUR FEET.', sub:['there you are.', 'take the fire off them.'] },
@@ -33,16 +35,16 @@ const STORY = {
           back:['TRY AGAIN.','STILL CARRYING IT?'],
           yieldSub:['DISTRICT CLEARED', 'Rescue rewards banked.'] },
   riser: { rise:'FIRE WALL RISING', shed:'FIRE SHED', dead:'FIRE WALL DESTROYED' },
-  study: { debut:['Keith watches where you stop.'],
-           smug:['Keith checks something in his notes.','Keith was waiting at that corner.'],
-           obsessed:['Keith turns back a page.','Keith crosses something out.'],
-           respect:['Keith looks up from his notes.','For a moment, Keith has nothing to add.'] },
+  study: { debut:['Khet-Tak-Tor watches where you stop.'],
+           smug:['Khet-Tak-Tor checks something in his notes.','Khet-Tak-Tor was waiting at that corner.'],
+           obsessed:['Khet-Tak-Tor turns back a page.','Khet-Tak-Tor crosses something out.'],
+           respect:['Khet-Tak-Tor looks up from his notes.','For a moment, Khet-Tak-Tor has nothing to add.'] },
   // Short observations, not a chronological briefing. Diary chapters carry the deeper revelations.
   lore: [], // Present dialogue is now paced by witnessed events, not a lore timer.
   overload: ['MORE FIRE!', 'IT JUMPED TO YOU!', 'TOO MUCH!', 'IT PUSHED THROUGH!'],
   // First run: instructions and fragments, delivered during fully controllable action.
   intro: [
-    { who:"KEITH", emotion:"stern", text:"On your feet, Duy. Take the fire off them." },
+    { who:ARBITER_NAME, emotion:"stern", text:"On your feet, Duy. Take the fire off them." },
   ],
 };
 
@@ -122,7 +124,7 @@ const DIARY = [
     pages:[
   "The last thing I remembered was holding an iron gate while my friends escaped. I had stayed behind to stop the jailer following them. Then the weight came down, and I died. Now I was lying in a street, coughing on smoke. I pushed myself up and looked for Cuong and Diep. Neither of them was there. Houses were burning on both sides of the street, and small figures were running between them. Through the smoke I could make out their ears and tails. Ratkin.",
   "One of them staggered toward me with fire climbing their back. I reached out to help. The flames left their clothes and swept up my arm. Pain shot through it, sharp enough that I cried out and tried to pull away. The heat was already spreading into my chest. The ratkin stopped screaming. Their shoulders relaxed, and light gathered around them. I watched their feet lift off the stones. They rose through the smoke and disappeared into the light. I stood clutching my arm. The flames were gone from them, but I could still feel the burning inside me.",
-  "“Duy. Get the next one.” I turned toward the voice. “What happened? Where are the others?” “My name is Keith. I'm your jailer.” Someone screamed farther down the street. I looked toward the sound, then back toward Keith. “These people are suffering,” he said. “You're here to help them.” “I died.” “You did. You'll die here too. And you'll come back. Keep moving.”",
+  "“Duy. Get the next one.” I turned toward the voice. “What happened? Where are the others?” “Khet-Tak-Tor. Your jailer.” Someone screamed farther down the street. I looked toward the sound, then back toward him. “These people are suffering,” he said. “You're here to help them.” “I died.” “You did. You'll die here too. And you'll come back. Keep moving.”",
   "I wanted to stay and make him explain. Instead I ran toward the scream. There was another ratkin trying to put out the fire on their clothes. This time I knew what reaching for them would do. I reached for them. Fresh heat poured into the places that already hurt. My knees buckled, and I had to fight to stay upright. The second ratkin rose into the light while I stood below, trying to catch my breath.",
   "The first rescue had hurt. The second left me shaking. Taking more fire meant adding to the heat I was still carrying; the pain grew with it. Farther down the street, another ratkin was burning. I started toward them, afraid of what the next touch would feel like. I still didn't know where my friends were, or why I had been brought here. But I could get the fire off these people. For the moment, that gave me something to do."
 ] },
@@ -132,17 +134,17 @@ const DIARY = [
   "In the burning streets, I can't always reach everyone. Sometimes I see a ratkin fall while I'm still trying to get through the crowd. I keep moving toward them, hoping there is time. If I reach the cinder they leave while I am carrying fire, I can still help. I have seen one rise into the light afterward. I look for them among the things the fires leave behind.",
   "But sometimes the shape on the ground changes before I get there. It begins to move on its own, black along the limbs and bright in the cracks. Then it comes toward me, and I have to get out of its way. Now I watch the ground as well as the people running. When I see someone fall, I have a little time to decide how to reach them. Hesitating can use all of it."
 ] },
-  { id:"keith", title:"Keith", art:"", teaser:"Keith watches how I move.",
-    when:()=>((META.flags&&META.flags.reachedDuel)||META.saved>=34), hint:"face Keith in a duel",
+  { id:"keith", title:"Khet-Tak-Tor", art:"", teaser:"The Ratkin Arbiter watches how I move.",
+    when:()=>((META.flags&&META.flags.reachedDuel)||META.saved>=34), hint:"face the Arbiter in a duel",
     pages:[
-  "Keith finds me whenever I return to the streets. He calls me by name and tells me to keep moving. He is the jailer here. I have stopped expecting him to let me catch my breath before the fires start. He watches where I go. After I stopped at the same corner too often, he was waiting for me there. I changed my route. The next time I passed, I saw him checking his notes.",
+  "Khet-Tak-Tor finds me whenever I return to the streets. He calls me by name and tells me to keep moving. He is the jailer here, and an Arbiter among the ratkin. I have stopped expecting him to let me catch my breath before the fires start. He watches where I go. After I stopped at the same corner too often, he was waiting for me there. I changed my route. The next time I passed, I saw him checking his notes.",
   "I can force him to give ground. When that happens, I want it to mean I've earned a way out. But he is still there when I return, watching for the next place I will stop. He has told me who decides whether I leave: the ratkin. I can get through one of his attacks and still owe them help. Knowing that changes what I am trying to accomplish when I go back into the street."
 ] },
   { id:"home", title:"The Door", art:"", teaser:"I want to see my friends again.",
-    when:()=>(((META.district||1)>=5)||META.saved>=40), hint:"reach Keith's House",
+    when:()=>(((META.district||1)>=5)||META.saved>=40), hint:"reach the Arbiter's district",
     pages:[
   "Sometimes I think about what I would say if I found Cuong and Diep waiting for me. I would ask whether they got clear of the prison. Then I would probably say something foolish because I couldn't bear to stand there saying nothing. I wonder about Miss Hue too, with her new face and the same fierce expression. And Mei. The things she told us in the waiting room have stayed with me. I still don't know what I would say to her.",
-  "Keith says the ratkin decide when I am released. Helping them escape the flames is part of what I owe. They have also lost homes and the work and ordinary routines that made this a town. I have to help them rebuild their society and earn their favor. I want that work to end with a way back to life. I want to see my friends. But I cannot decide for the ratkin that I have done enough. For now, when I return to the street, there is usually someone calling for help."
+  "Khet-Tak-Tor says the ratkin decide when I am released. Helping them escape the flames is part of what I owe. They have also lost homes and the work and ordinary routines that made this a town. I have to help them rebuild their society and earn their favor. I want that work to end with a way back to life. I want to see my friends. But I cannot decide for the ratkin that I have done enough. For now, when I return to the street, there is usually someone calling for help."
 ] },
 
 ];
@@ -161,25 +163,25 @@ const INTRO_VERSION = 5;   // bump to replay the intro once for everyone after a
 const PRESENT = {
   rescue:[
     {who:'DUY',emotion:'pain',text:'The fire went into me. It hurts!'},
-    {who:'KEITH',emotion:'stern',text:"Look. They're free of it. Get the next one."}],
+    {who:ARBITER_NAME,emotion:'stern',text:"Look. They're free of it. Get the next one."}],
   heat:[
     {who:'DUY',emotion:'pain',text:"Every one hurts more. I can barely hold it."},
-    {who:'KEITH',emotion:'stern',text:'Let some heat out. Watch what comes out with it.'}],
+    {who:ARBITER_NAME,emotion:'stern',text:'Let some heat out. Watch what comes out with it.'}],
   vent:[
     {who:'DUY',emotion:'startled',text:'That thing came out of me?'},
-    {who:'KEITH',emotion:'dry',text:'You let the heat loose. Now deal with it.'}],
+    {who:ARBITER_NAME,emotion:'dry',text:'You let the heat loose. Now deal with it.'}],
   return:[
     {who:'DUY',emotion:'startled',text:'I died. How am I here?'},
-    {who:'KEITH',emotion:'stern',text:"You'll come back every time. They're still burning."}],
+    {who:ARBITER_NAME,emotion:'stern',text:"You'll come back every time. They're still burning."}],
   jailer:[
     {who:'DUY',emotion:'questioning',text:'What do you want from me?'},
-    {who:'KEITH',emotion:'stern',text:"I'm your jailer. Help the ratkin. That's your punishment."}],
+    {who:ARBITER_NAME,emotion:'stern',text:"I'm your jailer and their Arbiter. Help the ratkin. That's your punishment."}],
   release:[
     {who:'DUY',emotion:'questioning',text:'If I get past you, can I leave?'},
-    {who:'KEITH',emotion:'stern',text:"I keep you here. The ratkin decide when you've done enough."}],
+    {who:ARBITER_NAME,emotion:'stern',text:"I keep you here. The ratkin decide when you've done enough."}],
   rebuild:[
     {who:'DUY',emotion:'concerned',text:'Their homes are gone. What do they have to go back to?'},
-    {who:'KEITH',emotion:'stern',text:"That's part of what you owe them. Help them rebuild."}]
+    {who:ARBITER_NAME,emotion:'stern',text:"That's part of what you owe them. Help them rebuild."}]
 };
 let presentDialogue=null, presentGap=0, presentCount=0, presentTaunts=0, presentEvents={};
 let dialogueHistoryPage=0;
@@ -188,7 +190,7 @@ function dialogueSave(){
   if(!d || typeof d!=='object' || Array.isArray(d)) META.dialogue={};
   const out=META.dialogue;
   out.seen=Array.isArray(out.seen)?out.seen.filter(x=>typeof x==='string').slice(-32):[];
-  out.history=Array.isArray(out.history)?out.history.filter(x=>x && typeof x.text==='string' && ['DUY','KEITH'].includes(x.who)).slice(-100):[];
+  out.history=Array.isArray(out.history)?out.history.filter(x=>x && typeof x.text==='string' && ['DUY','KEITH',ARBITER_NAME].includes(x.who)).map(x=>x.who==='KEITH'?{...x,who:ARBITER_NAME}:x).slice(-100):[];
   return out;
 }
 function rememberDialogue(line){
@@ -207,10 +209,10 @@ function startPresentDialogue(id){
   if(!PRESENT[id] || presentSeen(id) || presentDialogue || intro) return false;
   presentDialogue={id,lines:PRESENT[id],i:0,t:0,recorded:false};presentCount++;return true;
 }
-function speakKeith(text,emotion='dry'){
+function speakArbiter(text,emotion='dry'){
   // Combat never queues speech behind an exchange or restarts a line already being read.
   if(mode!=='play' || onTitle || intro || presentDialogue || presentGap>0 || presentTaunts>=1 || elapsed<12) return;
-  presentDialogue={id:null,lines:[{who:'KEITH',emotion,text}],i:0,t:0,recorded:false};presentTaunts++;
+  presentDialogue={id:null,lines:[{who:ARBITER_NAME,emotion,text}],i:0,t:0,recorded:false};presentTaunts++;
 }
 function tickPresentDialogue(dt){
   if(mode!=='play' || onTitle) return;

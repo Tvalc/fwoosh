@@ -6,7 +6,7 @@ Earlier local proposal preserved in docs/archive/COMBAT_ROADMAP-proposal.md. Evi
 |---|---|
 | Vent + demons + chain rescues | Implemented. Half-heart interval 0.30s; cap max(2, round(2 × current hearts)), replacing the old flat six ceiling. |
 | Resolve / rescue advantage | Implemented differently as Edge. Do not introduce a second currency. |
-| Leveled Keith + allies | Implemented: charge, spit, wake, demon call, siphon. Base required heat 8/10/12/14/16 before Edge. |
+| Leveled Khet-Tak-Tor + allies | Implemented: charge, spit, wake, demon call, siphon. Base required heat 8/10/12/14/16 before Edge. |
 | Arson interception | Implemented. Draft alternating direct-torch behavior is not assumed complete. |
 | Husks/wraiths/rekindling/demon rewards | Implemented; replaces the permanent-wall core loop. |
 | Five districts + rewards | Implemented; final completion #4 fixed on Codex review branch. |

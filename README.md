@@ -1,6 +1,6 @@
 # FWOOSH
 
-A portrait fire-rescue game: absorb fire from villagers, manage the heat you carry, vent to heal, and turn rescues into an advantage against Khet-Tak-Tor, the Ratkin Arbiter. Duy wakes in a burning ratkin town after death. The current live build still calls Khet-Tak-Tor Keith; that deprecated name and human presentation are being replaced while save-compatible internal keys remain stable.
+A portrait fire-rescue game: absorb fire from villagers, manage the heat you carry, vent to heal, and turn rescues into an advantage against Khet-Tak-Tor, the Ratkin Arbiter. Duy wakes in a burning ratkin town after death. Save-compatible `keith` media and diary identifiers remain until Cursor's approved Ratkin Makko replacement is integrated.
 
 ## Checkpoint
 

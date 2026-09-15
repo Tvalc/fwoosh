@@ -14,7 +14,7 @@ Tony's September 14 instruction: if background stripping contaminates a sprite's
 
 Do not add drawn charge, blast-radius or countdown circles around fire demons. Tony rejected those overlays on September 15. Keep the Makko demon animation during windup; cinder-eating danger uses a straight threat tether, compact countdown bar and the existing Makko flame animation.
 
-Rescue burning villagers by absorbing their fire. Heat raises rewards and chain reach but drains health. The player transforms person → fire-man → cinder-man. Vent purges heat then heals, releasing demons. Keith sends interceptable imps; failed rescues become husks and wraiths. Rescues contribute to Edge and allied help against Keith.
+Rescue burning villagers by absorbing their fire. Heat raises rewards and chain reach but drains health. The player transforms person → fire-man → cinder-man. Vent purges heat then heals, releasing demons. Khet-Tak-Tor sends interceptable imps; failed rescues become husks and wraiths. Rescues contribute to Edge and allied help against the Arbiter.
 
 Preserve the established style and terrified villager expression. Distinguish safe/burning villagers, hostile demons/imps, inert husks and player at phone size. Keep gauges legible and sprite body scale/feet anchors stable across frames and forms. No screen shake.
 
@@ -22,7 +22,7 @@ The arena is 720 × 1280 virtual pixels with four solid boundaries and collision
 
 ## Existing art
 
-Actors/forms, townsfolk, Keith, imps/demons, husks, rescue/happy sprites; arena and Ashford backdrops; hearts, dash charge/pips, digits/letters, Pixelify font; flame, rescue and vent effects.
+Actors/forms, townsfolk, the legacy jailer placeholder for Khet-Tak-Tor, imps/demons, husks, rescue/happy sprites; arena and Ashford backdrops; hearts, dash charge/pips, digits/letters, Pixelify font; flame, rescue and vent effects.
 
 | Animation key | Frames | Cell width × height |
 |---|---:|---:|
@@ -42,7 +42,7 @@ An existing sheet is not proof that requested locomotion is finished. The ratkin
 
 Assigned: The Gate → duy_gate; The Town on Fire → duy_save; The Ones I Drop → wraith.
 
-Unassigned (12): The Last Morning; Cuong; Two Bags of Spring Rolls; The White Shirts; The Knife; The Last Joke; The Waiting Room; The Job Offer; The Dark Cell; The Debt; Keith; The Door.
+Unassigned (12): The Last Morning; Cuong; Two Bags of Spring Rolls; The White Shirts; The Knife; The Last Joke; The Waiting Room; The Job Offer; The Dark Cell; The Debt; Khet-Tak-Tor; The Door.
 
 Four image keys exist: duy_gate, duy_save, dark_cell, wraith. **dark_cell exists but is not assigned**; evaluate reuse before commissioning another image. Settle canon and scene briefs before batch generation.
 

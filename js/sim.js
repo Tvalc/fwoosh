@@ -33,13 +33,13 @@ let edgePop = 0;     // brief pulse on the EDGE bar when it shifts
 let demons = [];     // fire demons summoned while venting (attack player + villagers)
 let cinderBlasts = []; // short-lived presentation of resolved cinder explosions
 let husks = [];      // villagers you failed to save: temporary soft-solid coals that crack into roaming wraiths
-let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
-let shots = [];      // Keith's ember-spit fireballs (duel)
-let wake = [];       // Keith's wake-of-fire segments (duel) — absorbable heat
-let pulses = [];     // Keith's siphon-meltdown ring pulses (duel)
+let arson = [];      // Khet-Tak-Tor's fire imps in flight toward villagers — intercept them
+let shots = [];      // Khet-Tak-Tor's ember-spit fireballs (duel)
+let wake = [];       // Khet-Tak-Tor's wake-of-fire segments (duel) — absorbable heat
+let pulses = [];     // Khet-Tak-Tor's siphon-meltdown ring pulses (duel)
 let allies = [];     // rescued villagers fighting at your side in the duel — each blocks one attack
 let arsonT = 0;      // send-cadence timer
-let intercepts = 0, edge = 0;   // imps you cut off this run + THE EDGE (town war balance; + you, - Keith)
+let intercepts = 0, edge = 0;   // imps you cut off this run + THE EDGE (town war balance; + you, - Khet-Tak-Tor)
 let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines fire once
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
@@ -61,10 +61,10 @@ let god = false;     // test-only: fuse refills instead of POPping, so long-run 
 
 // ---- THE OPP: a rival built from how you played last session (persistent)
 let runBuf = [], snipe = null, snipeArmed = false, snipeUsed = false,
-    introT = 0, introKind = 'keith', callout = null, oppScarred = false, gotSniped = false;
+    introT = 0, introKind = 'arbiter', callout = null, oppScarred = false, gotSniped = false;
 let boss = null, duelActive = false, won = false, slagThisRun = 0, nextRiserAt = 0;
 let powerups = [], surgeT = 0, mergeT = 0;
-let loreT = 0;   // drip timer for Keith's reason-lore callouts
+let loreT = 0;   // drip timer for Khet-Tak-Tor's reason-lore callouts
 let overloadCd = 0;   // i-frame timer after a hunter overloads a lit player
 let intro = null;   // { phase:'walkin'|'talk', i, lineT }  (null = not running)
 
@@ -78,8 +78,8 @@ function reset(seed){
   boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
   rescueReward=null;
   runEmbers = 0; runStarterBonus = 0; runSettled = false; applyUpgrades();      // fresh tally/settlement + purchased upgrades
-  runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Keith LV)
-  runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Keith rises
+  runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Khet-Tak-Tor LV)
+  runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Khet-Tak-Tor rises
   powerups = []; surgeT = 0; mergeT = 0;
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
@@ -308,7 +308,7 @@ function step(){
         hitstop = K.HITSTOP*0.6;
         if(s.grudge){
           snipeArmed=false;snipeUsed=true;oppScarred=true;
-          speakKeith(lineFor('broken'),'strained');
+          speakArbiter(lineFor('broken'),'strained');
         }
         break;
       }
@@ -377,7 +377,7 @@ function step(){
   }
   cells = cells.filter(c=>!c.dead);
 
-  // ---- boss update (riser or apex Keith)
+  // ---- boss update (riser or apex Khet-Tak-Tor)
   if(boss && mode === 'play'){
     const b = boss;
     if(b.state === 'rising' || b.state === 'stagger'){
@@ -386,10 +386,10 @@ function step(){
       if(b.state === 'lit'){
         b.fuse -= dt;
         if(b.fuse <= 0){ bossDown(); }
-        else if(b.kind === 'keith'){
-          // lit Keith hunts YOU to shed it back — pursue your lagged position, ramping speed
-          const t = 1 - b.fuse/K.KEITH_FUSE;
-          const spd = K.KEITH_PUR0 + (K.KEITH_PUR1-K.KEITH_PUR0)*t;
+        else if(b.kind === 'arbiter'){
+          // lit Khet-Tak-Tor hunts YOU to shed it back — pursue your lagged position, ramping speed
+          const t = 1 - b.fuse/K.ARBITER_FUSE;
+          const spd = K.ARBITER_PUR0 + (K.ARBITER_PUR1-K.ARBITER_PUR0)*t;
           const dx = wrapDX(lag.x-b.x), dy = lag.y-b.y, dd = Math.hypot(dx,dy)||1;
           b.vx = dx/dd*spd; b.vy = dy/dd*spd;
         } else {
@@ -405,11 +405,11 @@ function step(){
           }
         }
       } else {                                        // unlit
-        if(b.kind === 'keith'){
-          const ctl = stepKeithMoves(b, dt);          // movesets drive him during a move
+        if(b.kind === 'arbiter'){
+          const ctl = stepArbiterMoves(b, dt);          // movesets drive him during a move
           if(!ctl){                                    // otherwise he evades — herding him is the offense
             const dx = wrapDX(b.x-p.x), dy = b.y-p.y, dd = Math.hypot(dx,dy)||1;
-            if(dd < 300){ b.vx = dx/dd*K.KEITH_FLEE; b.vy = dy/dd*K.KEITH_FLEE; }
+            if(dd < 300){ b.vx = dx/dd*K.ARBITER_FLEE; b.vy = dy/dd*K.ARBITER_FLEE; }
             else { b.vx *= 0.9; b.vy *= 0.9; }
           }
         } else {
@@ -430,13 +430,13 @@ function step(){
       b.x += b.vx*dt; b.y += b.vy*dt;
       if(b.x < K.EDGE){ b.x = K.EDGE; b.vx = Math.abs(b.vx); } if(b.x > VW-K.EDGE){ b.x = VW-K.EDGE; b.vx = -Math.abs(b.vx); }
       if(b.y < 40) b.y = 40; if(b.y > VH-40) b.y = VH-40;
-      // slag is solid for bosses too — cornering Keith against your walls IS the fight
+      // slag is solid for bosses too — cornering Khet-Tak-Tor against your walls IS the fight
       for(const s of slag){
         const dx = wrapDX(b.x-s.x), dy = b.y-s.y, d = Math.hypot(dx,dy), min = b.r + K.R_SLAG;
         if(d < min && d > 0.001){ b.x += (dx/d)*(min-d); b.y += (dy/d)*(min-d); }
       }
-      collideObstacles(b, b.r);                                     // props corner Keith too
-      // player contact: DUMP the fire you're carrying into Keith (he lit it; he can hold it).
+      collideObstacles(b, b.r);                                     // props corner Khet-Tak-Tor too
+      // player contact: DUMP the fire you're carrying into Khet-Tak-Tor (he lit it; he can hold it).
       // Corner him against your walls, unload your heat. Enough dumped -> he yields.
       if(!ghost && p.heat > 0 && dist(p.x,p.y,b.x,b.y) < p.r + b.r && !b.shield){
         dumped += p.heat; b.downs = dumped;                 // reuse downs as the dumped-heat tally
@@ -444,14 +444,14 @@ function step(){
         p.heat = 0; heatCoolT = 0; overloadT = 0;
         score += 150; hitstop = K.HITSTOP; flash = DT*2;
         b.move = null; b.moveTele = 0;                       // a solid dump interrupts whatever he was winding up
-        speakKeith(STORY.duel.tag[(dumped) % STORY.duel.tag.length],'strained');
+        speakArbiter(STORY.duel.tag[(dumped) % STORY.duel.tag.length],'strained');
         b.state = 'stagger'; b.t = 0.5; b.moveCd = Math.max(b.moveCd, 1.2);   // he reels
         if(dumped >= (b.dumpNeeded||K.DUEL_DUMP)){ winDuel(); }
       }
     }
   }
 
-  if(duelActive && boss && mode === 'play') stepDuelFX(dt);   // Keith's projectiles / wake / pulses / your allies
+  if(duelActive && boss && mode === 'play') stepDuelFX(dt);   // Khet-Tak-Tor's projectiles / wake / pulses / your allies
   if(mode !== 'play') return;   // victory or a lethal boss hit already banked this run; stop earning/mutating it
 
   // ---- trail (heat wisps; no longer ignites anyone — you carry fire OUT, not around)
@@ -478,9 +478,9 @@ function step(){
     absorb(c); break;
   }
 
-  // ---- Keith no longer ignites villagers from thin air: he SENDS fire imps in from the edges, each flying to a
+  // ---- Khet-Tak-Tor no longer ignites villagers from thin air: he SENDS fire imps in from the edges, each flying to a
   // chosen villager to torch it. Cut the imp off (run/dash into it) to INTERCEPT — eat its fire, mint embers, bank
-  // an edge against Keith. Miss it, and the villager catches. The duel keeps a slower stream alive because rescues
+  // an edge against Khet-Tak-Tor. Miss it, and the villager catches. The duel keeps a slower stream alive because rescues
   // and interceptions are the heat supply required to hurt him; stopping them can make the fight unwinnable.
   if(!introWalk){
     arsonT += dt;
@@ -495,7 +495,7 @@ function step(){
     if(crowd().length + hunters().length < K.CROWD_CAP) spawnCrowd(false);
   }
 
-  // ---- THE FINALE: save enough of the town and Keith rises to be dealt with
+  // ---- THE FINALE: save enough of the town and Khet-Tak-Tor rises to be dealt with
   if(!duelActive && !won && saved >= runQuota){ startDuel(); }
 
   const hn = hunters().length;
@@ -521,12 +521,12 @@ function step(){
         p.hp=Math.max(0,p.hp-K.OPP_SNIPE_HEARTS/maxHearts);p.hurtCd=K.HURT_IFRAME;
         gotSniped = true;
         ring(p.x, p.y, 10, 80, '#ff3d7a', 0.6);
-        speakKeith(lineFor('sniped')); flash = DT*2; hitstop = K.HITSTOP;
-        if(p.hp<=0){pop('Keith read your vent');return;}
+        speakArbiter(lineFor('sniped')); flash = DT*2; hitstop = K.HITSTOP;
+        if(p.hp<=0){pop('Khet-Tak-Tor read your vent');return;}
       } else {
         oppScarred = true;                                        // read broken, scar the grudge wall
         ring(snipe.tx, snipe.ty, K.OPP_SNIPE_R, 6, '#7fe8ff', 0.4);
-        speakKeith(lineFor('broken'),'strained');
+        speakArbiter(lineFor('broken'),'strained');
       }
     }
   } else if(snipe && snipe.done){ snipe.lt += dt; if(snipe.lt > 0.5) snipe = null; }
@@ -605,7 +605,7 @@ function showRescueReward(embers){
 function saveCell(c, chained){
   const p = player;
   if(!chained) recordOppRescue(c,p.heat);
-  if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Keith's shield
+  if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Khet-Tak-Tor's shield
     if(boss.shieldN <= 0){ boss.shield = false; callout = { text:'SHIELD BROKEN — DUMP NOW!', t:0, life:1.2, good:true }; } }
   c.hunter = false; c.fuse = 0; c.grace = K.GRACE;
   c.saving = true; c.saveT = 0; c.dir = 0; c.svx = 0; c.svy = 0;   // freeze in place — the anim lifts them into the light
@@ -732,7 +732,7 @@ function stepDemons(dt){
     // DASH-KILL: dash through ANY fire monster to shatter it for heat + embers (your reward for clearing them).
     // You can't while venting (rooted) — so vent to heal, then dash the swarm down.
     if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){ killDemon(d); demons.splice(i,1); continue; }
-    // Only Keith summons expire; vent demons persist until killed or cinder consumption.
+    // Only Khet-Tak-Tor summons expire; vent demons persist until killed or cinder consumption.
     if(d.source !== 'town' && d.source !== 'vent' && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
         for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
         demons.splice(i,1); continue; } }
@@ -775,7 +775,7 @@ function stepDemons(dt){
   }
 }
 
-// ---- ARSON IMPS: Keith's messengers of fire. Spawn at an edge, hover a beat (telegraph), then fly to a marked
+// ---- ARSON IMPS: Khet-Tak-Tor's messengers of fire. Spawn at an edge, hover a beat (telegraph), then fly to a marked
 // villager and torch it. The player's counter-play: intercept before it lands.
 function spawnArson(){
   if(arson.length >= K.ARSON_MAX) return;
@@ -786,7 +786,7 @@ function spawnArson(){
   const cand = [ {x:K.EDGE, y:c.y}, {x:VW-K.EDGE, y:c.y}, {x:c.x, y:40}, {x:c.x, y:VH-40} ];
   const e = cand.reduce((b,p)=> dist(p.x,p.y,c.x,c.y) < dist(b.x,b.y,c.x,c.y) ? p : b);
   arson.push({ x:e.x, y:e.y, tgt:c, t:0, warn:K.ARSON_WARN, ph:rnd()*7 });
-  if(!arsonSeen){ arsonSeen = true; callout = { text:'KEITH SENDS A FIRE IMP — CUT IT OFF', t:0, life:1.9, good:false }; }
+  if(!arsonSeen){ arsonSeen = true; callout = { text:'THE ARBITER SENDS A FIRE IMP — CUT IT OFF', t:0, life:1.9, good:false }; }
 }
 function stepArson(dt){
   if(!arson.length) return;
@@ -835,7 +835,7 @@ function becomeSlag(c){
 function becomeHusk(c){
   c.dead = true;
   husks.push({ x:c.x, y:c.y, t:0, heatAt: player.heat, ph: rnd()*7 });
-  edge -= K.LOSS_EDGE + player.heat*K.LOSS_EDGE_HEAT;   // THE EDGE swings toward Keith when the town burns
+  edge -= K.LOSS_EDGE + player.heat*K.LOSS_EDGE_HEAT;   // THE EDGE swings toward Khet-Tak-Tor when the town burns
   edgePop = 0.5;
   ring(c.x, c.y, K.R_CELL, 50, '#8a5a2e', 0.42);
   if(!huskSeen){ huskSeen = true; callout = { text:'A VILLAGER IS LOST — REKINDLE THEM (touch w/ fire) BEFORE THEY TURN', t:0, life:2.4, good:false }; }
@@ -892,7 +892,7 @@ function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat yo
   else callout = { text:em>0?'SHATTERED! +EMBERS':'SHATTERED! +HEAT', t:0, life:0.7, good:true };
 }
 
-// ---------------------------------------------------------------- LEVELED KEITH: movesets + duel FX
+// ---------------------------------------------------------------- LEVELED ARBITER: movesets + duel FX
 function angDiff(a,b){ let d=(a-b)%(Math.PI*2); if(d>Math.PI)d-=Math.PI*2; if(d<-Math.PI)d+=Math.PI*2; return d; }
 // A saved villager fighting beside you body-blocks ONE incoming attack, then is spent.
 function allyBlock(x,y){
@@ -903,40 +903,40 @@ function allyBlock(x,y){
   callout = { text:'AN ALLY TOOK THE HIT!', t:0, life:0.8, good:true };
   return true;
 }
-function keithHitPlayer(x,y){
+function arbiterHitPlayer(x,y){
   const p = player;
   if(allyBlock(x,y)) return;                 // an ally eats it
   if(god || p.hurtCd > 0) return;            // i-frames
-  p.hp -= K.KEITH_HIT / maxHearts;           // half a heart
+  p.hp -= K.ARBITER_HIT / maxHearts;           // half a heart
   p.hurtCd = K.HURT_IFRAME; flash = DT*2; hitstop = K.HITSTOP*0.6;
   ring(p.x, p.y, p.r+4, 60, '#ff5a4a', 0.5);
-  if(p.hp <= 0){ p.hp = 0; pop('keith got you'); }
+  if(p.hp <= 0){ p.hp = 0; pop('the Arbiter got you'); }
 }
-function startKeithMove(b, key){
-  b.move = key; b.moveT = 0; b.moveTele = K.KEITH_TELE; b.moveData = {};
+function startArbiterMove(b, key){
+  b.move = key; b.moveT = 0; b.moveTele = K.ARBITER_TELE; b.moveData = {};
   b.vx = 0; b.vy = 0;
   const p = player;
   if(key === 'charge' || key === 'wake'){
     const dx = wrapDX(p.x-b.x), dy = p.y-b.y, m = Math.hypot(dx,dy)||1;   // aim at you (locked at telegraph end)
     b.moveData.dir = { x:dx/m, y:dy/m };
   }
-  const names = { charge:'KEITH WINDS UP A CHARGE', spit:'KEITH SPITS EMBERS', wake:'KEITH TRAILS FIRE',
-                  demon:'KEITH CALLS HIS MONSTERS', siphon:'KEITH SIPHONS THE ASH' };
+  const names = { charge:'THE ARBITER WINDS UP A CHARGE', spit:'THE ARBITER SPITS EMBERS', wake:'THE ARBITER TRAILS FIRE',
+                  demon:'THE ARBITER CALLS HIS MONSTERS', siphon:'THE ARBITER SIPHONS THE ASH' };
   callout = { text: names[key]||'', t:0, life:0.9, good:false };
 }
-// Returns true while a move is DRIVING Keith (so the default evade is suppressed).
-function runKeithMove(b, dt){
+// Returns true while a move is DRIVING Khet-Tak-Tor (so the default evade is suppressed).
+function runArbiterMove(b, dt){
   const p = player;
   if(b.moveTele > 0){                         // wind-up: he plants, telegraph shows
     b.moveTele -= dt; b.vx = 0; b.vy = 0;
-    if(b.moveTele <= 0) execKeithMove(b);     // fire on the beat
+    if(b.moveTele <= 0) execArbiterMove(b);     // fire on the beat
     return true;
   }
   // post-execution behaviour per move
   if(b.move === 'charge'){
     const d = b.moveData.dir; b.vx = d.x*440; b.vy = d.y*440;   // barrel forward
-    if(dist(b.x,b.y,p.x,p.y) < b.r + p.r + 4) keithHitPlayer(b.x, b.y);
-    if(b.moveT > K.KEITH_TELE + 0.55){ endKeithMove(b); }
+    if(dist(b.x,b.y,p.x,p.y) < b.r + p.r + 4) arbiterHitPlayer(b.x, b.y);
+    if(b.moveT > K.ARBITER_TELE + 0.55){ endArbiterMove(b); }
     return true;
   }
   if(b.move === 'wake'){
@@ -944,7 +944,7 @@ function runKeithMove(b, dt){
     b.moveData.segT = (b.moveData.segT||0) + dt;
     while(b.moveData.segT >= K.WAKE_SEG_EVERY){ b.moveData.segT -= K.WAKE_SEG_EVERY;
       wake.push({ x:b.x, y:b.y, t:0, ph:rnd()*7 }); }
-    if(b.moveT > K.KEITH_TELE + 0.7){ endKeithMove(b); }
+    if(b.moveT > K.ARBITER_TELE + 0.7){ endArbiterMove(b); }
     return true;
   }
   if(b.move === 'siphon'){
@@ -953,15 +953,15 @@ function runKeithMove(b, dt){
       pulses.push({ x:b.x, y:b.y, r:20, t:0, gapAng:rnd()*Math.PI*2, hit:false }); }
     b.vx *= 0.9; b.vy *= 0.9;
     const broken = b.shieldBreakable && (b.shieldN||0) <= 0;   // saved the siphoned -> shield falls early
-    if(broken || b.moveT > K.KEITH_TELE + 4.2){ b.shield = false; endKeithMove(b); }
+    if(broken || b.moveT > K.ARBITER_TELE + 4.2){ b.shield = false; endArbiterMove(b); }
     return true;
   }
   // spit / demon fire once and finish after a short recovery
-  if(b.moveT > K.KEITH_TELE + 0.35){ endKeithMove(b); }
+  if(b.moveT > K.ARBITER_TELE + 0.35){ endArbiterMove(b); }
   b.vx *= 0.86; b.vy *= 0.86;
   return true;
 }
-function execKeithMove(b){
+function execArbiterMove(b){
   const p = player;
   if(b.move === 'spit'){
     const base = Math.atan2((lastLag().y)-b.y, wrapDX((lastLag().x)-b.x));
@@ -969,9 +969,9 @@ function execKeithMove(b){
       shots.push({ x:b.x, y:b.y, vx:Math.cos(a)*K.SPIT_SPD, vy:Math.sin(a)*K.SPIT_SPD, t:0, ph:rnd()*7 }); }
     ring(b.x,b.y,4,40,'#ff9a2e',0.4);
   } else if(b.move === 'demon'){
-    for(let i=0;i<K.KEITH_DEMONS;i++){ const a=rnd()*Math.PI*2;
-      demons.push({ x:b.x+Math.cos(a)*30, y:b.y+Math.sin(a)*30, t:0, ttl:K.KEITH_DEMON_TTL, hitCd:0,
-                    huntVill:false, ph:rnd()*7, tgt:null, source:'keith' }); }
+    for(let i=0;i<K.ARBITER_DEMONS;i++){ const a=rnd()*Math.PI*2;
+      demons.push({ x:b.x+Math.cos(a)*30, y:b.y+Math.sin(a)*30, t:0, ttl:K.ARBITER_DEMON_TTL, hitCd:0,
+                    huntVill:false, ph:rnd()*7, tgt:null, source:'arbiter' }); }
     ring(b.x,b.y,6,60,'#ff5a2e',0.5);
   } else if(b.move === 'siphon'){
     // pull nearby villagers into an orbiting shield; save them to strip it (timed out otherwise)
@@ -982,25 +982,25 @@ function execKeithMove(b){
   }
   // charge/wake don't 'exec' — their post-tele branch drives them
 }
-function endKeithMove(b){
+function endArbiterMove(b){
   b.move = null; b.moveT = 0; b.moveData = null;
-  b.moveCd = Math.max(K.KEITH_MOVE_CD_MIN, K.KEITH_MOVE_CD0 - (b.level-1)*0.3);
+  b.moveCd = Math.max(K.ARBITER_MOVE_CD_MIN, K.ARBITER_MOVE_CD0 - (b.level-1)*0.3);
 }
-function stepKeithMoves(b, dt){
-  if(b.move){ b.moveT += dt; return runKeithMove(b, dt); }
+function stepArbiterMoves(b, dt){
+  if(b.move){ b.moveT += dt; return runArbiterMove(b, dt); }
   b.moveCd -= dt;
   if(b.moveCd > 0 || !b.moves.length) return false;
-  startKeithMove(b, b.moves[Math.floor(rnd()*b.moves.length)]);
+  startArbiterMove(b, b.moves[Math.floor(rnd()*b.moves.length)]);
   return true;
 }
 function lastLag(){ return (typeof hist!=='undefined' && hist.length) ? hist[0] : player; }
-// Duel projectiles / wake / pulses / allies — stepped each frame while a Keith duel is live.
+// Duel projectiles / wake / pulses / allies — stepped each frame while a Khet-Tak-Tor duel is live.
 function stepDuelFX(dt){
   const p = player;
   for(let i=shots.length-1;i>=0;i--){ const s=shots[i]; s.t+=dt; s.x+=s.vx*dt; s.y+=s.vy*dt;
     if(s.x<-20||s.x>VW+20||s.y<-20||s.y>VH+20||s.t>4){ shots.splice(i,1); continue; }
     if(collideObstacles(s, K.SPIT_R)){ shots.splice(i,1); continue; }
-    if(dist(s.x,s.y,p.x,p.y) < K.SPIT_R+p.r){ keithHitPlayer(s.x,s.y); shots.splice(i,1); continue; }
+    if(dist(s.x,s.y,p.x,p.y) < K.SPIT_R+p.r){ arbiterHitPlayer(s.x,s.y); shots.splice(i,1); continue; }
   }
   for(let i=wake.length-1;i>=0;i--){ const w=wake[i]; w.t+=dt;
     if(w.t>K.WAKE_LIFE){ wake.splice(i,1); continue; }
@@ -1013,7 +1013,7 @@ function stepDuelFX(dt){
     if(pu.r > 760){ pulses.splice(i,1); continue; }
     const dd = dist(p.x,p.y,pu.x,pu.y), ang = Math.atan2(p.y-pu.y, wrapDX(p.x-pu.x));
     if(!pu.hit && Math.abs(dd-pu.r) < 24 && Math.abs(angDiff(ang, pu.gapAng)) > K.SIPHON_GAP && p.lunge<=0){
-      pu.hit = true; keithHitPlayer(p.x,p.y); }
+      pu.hit = true; arbiterHitPlayer(p.x,p.y); }
   }
   for(const a of allies){ a.ph += dt; const dx=p.x-a.x, dy=p.y-a.y, d=Math.hypot(dx,dy)||1;   // trail near you
     const want = 60 + 30*Math.sin(a.ph*0.6); if(d>want){ a.x += dx/d*95*dt; a.y += dy/d*95*dt; } }
@@ -1022,11 +1022,11 @@ function stepDuelFX(dt){
 // ---------------------------------------------------------------- bosses
 // One contact law everywhere: fire transfers on touch. Bosses go DOWN instead of slagging.
 // RISER (miniboss): a wall you made gets back up and spreads fire through the crowd.
-// KEITH APEX (the win): the emptied floor is the boss arena; he uses your own moves.
+// ARBITER APEX (the win): the emptied floor is the boss arena; he uses your own moves.
 function maybeRise(){
   if(boss || duelActive || won || mode !== 'play') return;
   if(slagThisRun < nextRiserAt) return;
-  const i = slag.findIndex(s => !s.grudge);          // the oldest wall that isn't Keith's
+  const i = slag.findIndex(s => !s.grudge);          // the oldest wall that isn't Khet-Tak-Tor's
   if(i < 0) return;
   const s = slag.splice(i,1)[0];
   nextRiserAt += K.RISER_EVERY;
@@ -1041,13 +1041,13 @@ function startDuel(){
   duelActive = true; snipeUsed = true; snipe = null;
   if(!META.flags) META.flags={}; if(!META.flags.reachedDuel){ META.flags.reachedDuel=true; saveMeta(); }   // opens a diary page
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
-  slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
+  slag = slag.filter(s => !s.grudge);                // Khet-Tak-Tor is UP: his wall is him
   arson = []; husks = [];                            // clear old threats; the duel begins its own readable fire cadence
   while(crowd().length < K.DUEL_CROWD) spawnCrowd(false); // never enter a heat-powered fight without valid fire targets
   arsonT = Math.max(0, K.DUEL_ARSON_EVERY-0.8);      // first duel source arrives promptly, then uses the slower cadence
-  demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (they become Keith's reinforcements below)
+  demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (they become Khet-Tak-Tor's reinforcements below)
   shots = []; wake = []; pulses = [];
-  // Keith's LEVEL is the district you're in (deeper district = more movesets). Movesets are cumulative.
+  // Khet-Tak-Tor's LEVEL is the district you're in (deeper district = more movesets). Movesets are cumulative.
   const level = Math.min(5, runDistrict);
   const roster = ['charge','spit','wake','demon','siphon'];   // unlocked one-per-level, cumulative
   const moves = roster.slice(0, level);
@@ -1056,20 +1056,20 @@ function startDuel(){
   const deficit   = Math.min(K.EDGE_EXTRA_CAP,     Math.max(0, Math.floor(-edge / K.EDGE_PER_DOWN)));
   const dumpNeeded = K.DUEL_DUMP + (level-1)*K.DUMP_PER_LEVEL + deficit*3;
   dumped = Math.min(dumpNeeded-1, headStart*3);              // banked edge = a running start (never an instant win)
-  boss = { kind:'keith', x:gx, y:gy, r:K.KEITH_R + (level-1)*2, state:'rising', t:K.BOSS_RISE_T,
+  boss = { kind:'arbiter', x:gx, y:gy, r:K.ARBITER_R + (level-1)*2, state:'rising', t:K.BOSS_RISE_T,
            fuse:0, downs:0, tagCd:0, vx:0, vy:0, level, moves, dumpNeeded,
            move:null, moveT:0, moveTele:0, moveData:null,
-           moveCd: Math.max(K.KEITH_MOVE_CD_MIN+0.6, K.KEITH_MOVE_CD0 - (level-1)*0.3) };
+           moveCd: Math.max(K.ARBITER_MOVE_CD_MIN+0.6, K.ARBITER_MOVE_CD0 - (level-1)*0.3) };
   // ALLIES: rescued villagers fight beside you — each body-blocks one incoming attack.
   const allyN = Math.min(K.ALLY_MAX, Math.floor(saved / K.ALLY_PER_SAVED));
   for(let i=0;i<allyN;i++){ const a=i/Math.max(1,allyN)*Math.PI*2;
     allies.push({ x: gx + Math.cos(a)*140, y: gy + Math.sin(a)*140 + 200, ph: rnd()*7, used:false }); }
   ring(gx, gy, K.R_SLAG, 140, '#ff3d7a', 0.8);
   const taunt = STORY.duel.rise[(opp.runs||0) % STORY.duel.rise.length];
-  let riseTxt = 'KEITH LV.' + level + (level>1 ? ' — NEW TRICKS' : '');
+  let riseTxt = 'KHET-TAK-TOR LV.' + level + (level>1 ? ' — NEW TRICKS' : '');
   if(headStart > 0) riseTxt += ' · you start ' + dumped + ' ahead';
   else if(deficit > 0) riseTxt += ' · the ash fuels him';
-  else speakKeith(taunt,'stern');
+  else speakArbiter(taunt,'stern');
   callout = { text: riseTxt, t:0, life:2.3, good: headStart > 0 };
   if(allyN > 0) setDelayedCallout(allyN + ' SAVED VILLAGERS STAND WITH YOU', 1.6, true);
   flash = DT*2;
@@ -1105,11 +1105,11 @@ function bossDown(){
     boss = null;
   } else {
     b.downs++;
-    const need = b.needed || K.KEITH_DOWNS;
+    const need = b.needed || K.ARBITER_DOWNS;
     if(b.downs >= need){ winDuel(); return; }
     b.state = 'stagger'; b.t = K.BOSS_STAGGER_T; b.fuse = 0;
     ring(b.x, b.y, b.r, 110, '#7fe8ff', 0.6);
-    callout = { text: 'KEITH BURNED DOWN · ' + b.downs + '/' + need, t:0, life:1.6, good:true };
+    callout = { text: 'ARBITER YIELDED · ' + b.downs + '/' + need, t:0, life:1.6, good:true };
     hitstop = K.HITSTOP;
   }
 }

@@ -2,21 +2,21 @@
 
 Tony's direction, September 15: present events belong in Final Fantasy-style bottom-screen text boxes with simple Makko talking/emotional portraits. Past revelations belong mostly in the optional diary. Duy arrives in an ongoing emergency; the world does not wait for him to understand.
 
-Canon update: the character currently called Keith is **Khet-Tak-Tor**, the Ratkin Arbiter, and will receive a Ratkin Makko design under issue #39. Current-runtime references below describe the deployed build, not the approved final identity.
+The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He will receive a Ratkin Makko design under issue #39; the current human Makko art remains temporarily behind the compatibility key `keith`.
 
 ## Current runtime
 
 - A single brief arrival line, with movement, dash and vent available immediately.
 - Rescue, carried heat and completed vent units trigger short exchanges about something the player has witnessed. An event expires after six seconds rather than joining a queue of stale explanations.
-- At most two story exchanges per run. Each has two short lines, auto-typed with a reading hold. Sixteen seconds of silence follow an exchange. One optional Keith combat reaction per run shares the same box and cannot interrupt an exchange.
-- Death/return, Keith's role, ratkin judgment and the rebuild obligation unfold on separate later runs. Return explanations have a short opening window; the ratkin/freedom exchange requires at least four completed runs, rebuilding six plus sixteen lifetime rescues. These are initial pacing values for playtesting.
+- At most two story exchanges per run. Each has two short lines, auto-typed with a reading hold. Sixteen seconds of silence follow an exchange. One optional Khet-Tak-Tor combat reaction per run shares the same box and cannot interrupt an exchange.
+- Death/return, Khet-Tak-Tor's role, ratkin judgment and the rebuild obligation unfold on separate later runs. Return explanations have a short opening window; the ratkin/freedom exchange requires at least four completed runs, rebuilding six plus sixteen lifetime rescues. These are initial pacing values for playtesting.
 - The street continues during all dialogue. No dismiss button shares the vent input. On touch devices the box sits above the vent target and dash indicators. Ordinary tactical HUD labels remain near gameplay; they are not character speech.
 - Diary → Conversations repeats only lines already delivered. Speech history and completed exchanges survive reloads without altering purchases, read flags or chapter unlocks. Interrupted exchanges can be encountered again; no lore backlog follows death.
 - Fifteen optional diary chapters retain their identities, unlock rules and art assignments. Fourteen chapters were rewritten for orientation and cause/effect; the approved painful-heat/ascending-ratkin scene is preserved. Mei's motive is revealed at her confession, not at the stabbing. No new explanation for Duy's separate five-life debt is invented.
 
 ## Makko portrait handoff — Cursor art lane
 
-Status: **requested; dedicated clips are not yet generated or integrated in this build.** Runtime currently displays static crops of the existing verified Makko hero/Keith sprites. Cursor is replacing Keith with Khet-Tak-Tor before the three non-Duy dialogue performances are finalized. The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
+Status: **requested; dedicated clips are not yet generated or integrated in this build.** Runtime currently displays static crops of the existing verified Makko hero and legacy jailer sprites. Cursor is producing Khet-Tak-Tor's Ratkin replacement before the three non-Duy dialogue performances are finalized. The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
 
 Use the established Duy reference and Khet-Tak-Tor's Tony-approved Ratkin reference, not Cuong's Sunday-morning sprite or the deprecated human Keith reference. FWOOSH collection: https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277. Preserve raw sources and record actual Makko asset links and export settings. Tony must approve Khet-Tak-Tor's visual reference before the portrait set is integrated.
 

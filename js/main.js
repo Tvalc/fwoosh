@@ -32,7 +32,7 @@ window.__fwoosh = {
     arson:arson.length, intercepts, edge:+edge.toFixed(2),
     husks:husks.length, wraiths:demons.filter(d=>d.source==='town').length,
     runDistrict, runQuota, metaDistrict:META.district,
-    keithLv:boss&&boss.level, keithMove:boss&&boss.move, dumpNeeded:boss&&boss.dumpNeeded,
+    arbiterLv:boss&&boss.level, arbiterMove:boss&&boss.move, dumpNeeded:boss&&boss.dumpNeeded,
     allies:allies.length, shots:shots.length, wake:wake.length, pulses:pulses.length, shield:boss&&!!boss.shield,
     duel:duelActive, won, slagThisRun, surge:+surgeT.toFixed(2), powerups:powerups.length,
     trail:trail.length, hunterFuse:+hunterFuse.toFixed(2), armed,
@@ -103,7 +103,7 @@ window.__fwoosh = {
   cityAct(action){cityAction(action);return {sheet:hubSheet,view:cityView,tool:cityTool,message:cityMessage,city:this.city()};},
   cityAdvance(seconds){cityAdvance(META.city.lastAt+Math.max(0,Number(seconds)||0)*1000,true);return this.city();},
   diaryPage(n){ diaryPage=n; return diaryPage; },
-  keithMove(k){ if(boss&&boss.kind==='keith'){ boss.move=null; boss.moveCd=0; startKeithMove(boss,k); } return { move:boss&&boss.move }; },
+  arbiterMove(k){ if(boss&&boss.kind==='arbiter'){ boss.move=null; boss.moveCd=0; startArbiterMove(boss,k); } return { move:boss&&boss.move }; },
   duelFX(){ return { shots:shots.length, wake:wake.length, pulses:pulses.length, demons:demons.length, allies:allies.length, move:boss&&boss.move, shield:boss&&!!boss.shield }; },
   riseNow(){ slagThisRun = nextRiserAt; maybeRise(); return this.bossState(); },
   killCrowd(n){ let k = 0;

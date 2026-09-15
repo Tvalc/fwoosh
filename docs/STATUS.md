@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Khet-Tak-Tor runtime migration — 2026-09-15-arbiter-1
+
+The jailer is now Khet-Tak-Tor, the Ratkin Arbiter, everywhere the player sees or hears his identity: live dialogue, archived conversations, diary, town feud banner, district launcher, combat HUD, tactical callouts and final district name. The combat runtime now uses Arbiter terminology for boss state, moves and summoned threats. His existing behavior and tuning are unchanged.
+
+Older saves remain compatible. The diary chapter keeps its historical `keith` identifier, archived speaker records migrate from `KEITH` to `KHET-TAK-TOR`, and the existing verified Makko sprite and animation remain temporarily under the `keith` media key. Cursor's Ratkin Makko replacement is still required under issue #39; this release adds no generated or substitute artwork.
+
+139 actual-script checks pass, including a new regression that preserves and relabels legacy conversation history across reload. Favor, judgment and resurrection thresholds remain intentionally unimplemented until Tony chooses the restoration criteria required by canon.
+
 ## Renewable duel fire — 2026-09-15-duel-fire-1
 
 Tony found a level-one boss soft lock: entering the Keith encounter without enough carried heat left no way to earn the eight heat required to win. The ordinary fire-imp scheduler explicitly stopped when `duelActive` began, while level one has no separate heat-producing move.
