@@ -922,9 +922,11 @@ function hubB(x,y,w,h,act,enabled){ hubBtns.push({x,y,w,h,act,enabled:enabled!==
 function hubClick(x,y){
   for(let i=hubBtns.length-1;i>=0;i--){ const b=hubBtns[i];         // topmost (drawn last) wins
     if(b.enabled && x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h){ hubAct(b.act); return; } }
-  if(hubSheet) hubSheet=null;                                       // tap outside an open sheet closes it
+  if(hubSheet==='city')cityAction('cityclose');
+  else if(hubSheet) hubSheet=null;                                  // tap outside an open sheet closes it
 }
 function hubAct(a){
+  if(cityAction(a))return;
   if(a==='play'){ reset(); return; }
   if(a==='nextupgrade'){openNextUpgrade();return;}
   if(a==='dprev'){ selDistrict = Math.max(1, selDistrict-1); return; }
@@ -989,9 +991,10 @@ function drawHub(ctx){
   drawBuildingCard(ctx, 40+cw+gap, cardY, cw, cardH, 'THE FORGE',
     forgeBuilt ? 'dash upgrades' : (K.FORGE_RISE-META.saved)+' more saves',
     forgeBuilt ? '#ff9a45' : '#ffb14d', forgeBuilt, 'forge', 'fire');
+  drawBuildingCard(ctx,40,cardY+cardH+gap,cw,cardH,'RATKIN QUARTER',cityData().materials+' materials · '+cityWorkerCapacity()+' workers','#8affc1',true,'city',null);
   const dFresh = diaryFreshCount();
-  drawBuildingCard(ctx, 40, cardY+cardH+gap, VW-80, cardH, 'THE DIARY', dFresh>0 ? dFresh+' new to read' : 'Duy’s memories · optional', '#c9a0ff', true, 'diary', null);
-  if(dFresh>0){ const bx=VW-62, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
+  drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', dFresh>0 ? dFresh+' new to read' : 'Duy’s memories · optional', '#c9a0ff', true, 'diary', null);
+  if(dFresh>0){ const bx=40+cw+gap+cw-22, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
     ctx.fillStyle='#0a0710'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(dFresh), bx, by+5); }
 
   if(starterAvailable()){
@@ -1027,6 +1030,7 @@ function drawHub(ctx){
 
   // --- sheets
   if(hubSheet==='starter'){drawStarterSheet(ctx);return;}
+  if(hubSheet==='city'){drawCitySheet(ctx);return;}
   if(hubSheet==='well'||hubSheet==='forge') drawShopSheet(ctx, hubSheet);
   else if(hubSheet==='diary') drawDiarySheet(ctx);
   else if(hubSheet==='conversations') drawConversationSheet(ctx);

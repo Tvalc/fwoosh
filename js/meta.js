@@ -9,7 +9,7 @@ function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
   const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1, clearedDistricts:0,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
-    hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[] };
+    hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh() };
   if(!s || s.v!==1) return d;
   // Old saves prove only the districts BEFORE the highest unlocked one were cleared.
   // Keep v1 saves compatible; district 5 being unlocked does not prove it was beaten.
@@ -23,6 +23,7 @@ function loadMeta(){
   s.flags = Object.assign({}, s.flags||{});
   s.recentRuns = Array.isArray(s.recentRuns) ? s.recentRuns.slice(-20) : [];
   s.diary = Object.assign({}, d.diary, s.diary||{});
+  s.city = cityNormalize(s.city);
   return Object.assign({}, d, s);
 }
 function saveMeta(){ try{ localStorage.setItem('fwoosh.meta', JSON.stringify(META)); }catch(e){} }
@@ -108,6 +109,7 @@ function openNextUpgrade(){const goal=upgradeGoal();if(goal && goal.act)hubAct(g
 function enterHub(){
   presentDialogue=null;
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
+  cityAdvance(Date.now(),true);
   selDistrict = Math.min(5, Math.max(1, META.district||1));   // default the picker to your deepest unlocked
   if(districtCleared){ hubToast=3.4; hubToastMsg=DISTRICTS[Math.min(4,(META.district||1)-1)]+' UNLOCKED'; districtCleared=false; }
   const raised = [];

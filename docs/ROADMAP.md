@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-well-2` is the release candidate. The arcade loop, assisted pursuit, faster burning runners, committed vent units, persistent vent demons, distant vent spawns, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The Well now owns survivability; its Deep Draught tiers shorten committed vent-healing. Shrine is hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-city-1` is the release candidate. The arcade loop, assisted pursuit, committed vent units, persistent vent demons, adaptive beacon, uncapped ember rewards, starter upgrade choice, retry/reward flow, five districts, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The first Ratkin Quarter slice adds persistent freeform roads, placed Burrows and Salvage Yards, offline construction, ember acceleration, mandatory sealing, automatic worker assignment and distance-adjusted material production. Shrine remains hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
@@ -16,8 +16,8 @@ Build `2026-09-15-well-2` is the release candidate. The arcade loop, assisted pu
 
 ## Next development sequence
 
-6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — retain a player-designed exterior with roads and placed buildings, then reuse and improve Wayfarer's proven worker/workstation/request/crafting/handoff presentation inside each building. Spend embers on the foundation; build over time/offline; seal before operation.
-7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — connect food, materials, housing, workers and storage to physical road deliveries; buildings operate automatically while station views explain work, bottlenecks and player priorities.
+6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **release candidate complete**. The exterior, first two buildings, offline timers, sealing, worker assignment, material production and explanatory station view are implemented. Tony's phone playtest and approved Makko replacements remain.
+7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **next Codex item**. Add visible physical deliveries, food, storage and congestion; keep automatic assignment as the default and add optional player priorities.
 8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — restoration milestones, favor, Ratkin judgment, release and resurrection. The Arbiter administers the process; beating him never grants release by itself.
 9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
 10. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
@@ -36,9 +36,16 @@ Build `2026-09-15-well-2` is the release candidate. The arcade loop, assisted pu
 - Fwoosh must have a comprehensible standalone ending and later support Duy's return in the larger RPG.
 - All artwork is Makko artwork with preserved provenance.
 
+## Initial city tuning now under playtest
+
+- 5×5 plan with a fixed gate road; roads are free and must extend from the connected gate.
+- Burrow: 40-ember foundation, 90 seconds, 20-ember seal; each sealed connected copy supplies one worker.
+- Salvage Yard: 60-ember foundation, 150 seconds, 30-ember seal; one material per 45 seconds on the shortest route.
+- Five embers accelerate construction by 30 seconds. Offline work is capped at eight hours.
+- Later copies cost two materials for a Burrow or three for a Yard. Distance beyond two road steps adds five seconds per production cycle.
+
 ## Decisions still required
 
-- City footprint/grid rules, starting plots, first Ratkin building pair, costs, timers and offline cap.
 - Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
 - Complete-restoration criteria, favor actions and release thresholds.
