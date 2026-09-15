@@ -45,3 +45,7 @@ v1 `fwoosh.meta.recentRuns` retains at most 20 completed attempts. Each record c
 ## Prose revision
 
 prose-1 changes INTRO_VERSION from 3 to 4, using the existing one-time replay mechanism. Diary IDs and read flags are preserved; rewritten entries remain accessible at their existing unlocks. No new save fields, grants, economy changes or migration. The existing loreIdx is retained.
+
+## Present dialogue history
+
+dialogue-1 retains meta save version 1 and adds optional `dialogue: {seen: string[], history: {who,text,emotion}[]}`. Old/malformed values normalize on first use. Seen exchange IDs are capped at 32; delivered text at 100 unique recent lines. Only a completed exchange is marked seen. A line enters the archive when it has finished typing; an interrupted unread line is not archived. No wallet grants or chapter-unlock changes accompany this addition. INTRO_VERSION changes from 4 to 5 for the one-time short opening. The old `opp.loreIdx` is left intact but its timer has been removed.

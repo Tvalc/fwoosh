@@ -865,40 +865,58 @@ function drawRunMeters(ctx){
 // ---- VN-style dialogue box (lower third): Keith narrates over LIVE gameplay during the intro.
 // Square portrait on the left animates (bob + scale) while the line is still typing out.
 function drawDialogue(ctx){
-  if(!intro || mode !== 'play') return;
-  const line = STORY.intro[intro.i]; if(!line) return;
-  const full = line.text.length;
-  const shown = intro.phase==='walkin' ? full : Math.min(full, Math.floor(intro.lineT/INTRO.CHAR));
-  const talking = shown < full;
-  const bx=14, bw=VW-28, bh=196, by=VH-bh-250; // leave dash pips and the mobile vent target exposed
-  ctx.save();
-  roundRectPath(ctx,bx,by,bw,bh,16);
-  ctx.fillStyle='rgba(10,8,14,0.9)'; ctx.fill();
-  ctx.lineWidth=3.5; ctx.strokeStyle='rgba(255,140,70,0.6)'; ctx.stroke();
-  // portrait holder (square)
-  const pad=16, ps=bh-pad*2, pxx=bx+pad, pyy=by+pad;
-  ctx.save(); roundRectPath(ctx,pxx,pyy,ps,ps,12);
-  ctx.fillStyle='rgba(40,14,28,0.96)'; ctx.fill(); ctx.clip();
-  const bob = talking ? Math.sin(frame*0.45)*4 : Math.sin(frame*0.09)*1.5;
-  const sc  = talking ? 1+0.03*Math.sin(frame*0.45) : 1;
-  if(!drawSpr(ctx,'keith', pxx+ps/2, pyy+ps*0.98+bob, ps*1.85*sc, {})){
-    ctx.fillStyle='#ff5d94'; ctx.textAlign='center';
-    ctx.font='800 46px "Pixelify",system-ui,sans-serif'; ctx.fillText('K', pxx+ps/2, pyy+ps*0.64); }
-  ctx.restore();
-  roundRectPath(ctx,pxx,pyy,ps,ps,12); ctx.lineWidth=3; ctx.strokeStyle='rgba(255,90,150,0.75)'; ctx.stroke();
-  // text
-  const tx=pxx+ps+pad, ty=by+pad+8, tw=bx+bw-pad-tx;
-  ctx.textAlign='left';
-  ctx.fillStyle='#ff6a9c'; ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillText(line.who, tx, ty+14);
-  ctx.fillStyle='#eef1f8'; ctx.font='500 24px "Pixelify",system-ui,sans-serif';
-  wrapText(ctx, line.text.slice(0,shown), tx, ty+52, tw, 33);
-  // blinking advance triangle once the line is fully shown
-  if(!talking && intro.phase==='talk'){
-    const a=(0.35+0.4*Math.sin(frame*0.18)).toFixed(2), cx=bx+bw-pad-4, cy=by+bh-pad-6;
-    ctx.fillStyle='rgba(255,209,138,'+a+')';
-    ctx.beginPath(); ctx.moveTo(cx-8,cy-8); ctx.lineTo(cx+4,cy-2); ctx.lineTo(cx-8,cy+4); ctx.closePath(); ctx.fill();
+  if(mode!=='play') return;
+  const d=presentDialogue;
+  const line=intro?STORY.intro[intro.i]:d?d.lines[d.i]:null;
+  if(!line) return;
+  const t=intro?intro.lineT:d.t,shown=Math.min(line.text.length,Math.floor(t/INTRO.CHAR));
+  const talking=shown<line.text.length;
+  // Bottom dialogue strip stays above the mobile vent circle and dash-charge row.
+  const bx=14,bw=VW-28,bh=180,by=VH-bh-240,pad=14,ps=128;
+  ctx.save();panel(ctx,bx,by,bw,bh,10,'rgba(13,20,45,0.96)','rgba(185,200,239,0.95)');
+  const px=bx+pad,py=by+pad;
+  ctx.save();roundRectPath(ctx,px,py,ps,ps,6);ctx.fillStyle='#151323';ctx.fill();ctx.clip();
+  const actor=line.who==='DUY'?'duy':'keith';
+  const clip='dialogue_'+actor+'_'+(line.emotion||'stern');
+  // Atlas frame 0 is a listening pose; remaining frames are the Makko talking loop.
+  const im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
+  if(im && im.complete && im.naturalWidth && meta){
+    const f=talking && meta.frames>1?1+(Math.floor(t*8)%(meta.frames-1)):0;
+    ctx.drawImage(im,f*meta.fw,0,meta.fw,meta.fh,px,py,ps,ps);
+  } else {
+    // Existing verified Makko sprite until Cursor's dedicated portrait clips are integrated.
+    // No fake lip movement or procedural replacement art.
+    drawSpr(ctx,actor==='duy'?'hero':'keith',px+ps/2,py+ps*0.78,ps*1.5,{});
   }
   ctx.restore();
+  const tx=px+ps+16,tw=bx+bw-pad-tx;
+  ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';
+  ctx.font='800 22px "Pixelify",system-ui,sans-serif';ctx.fillText(line.who,tx,by+32);
+  ctx.fillStyle='#f2f3ff';ctx.font='500 26px "Pixelify",system-ui,sans-serif';
+  wrapText(ctx,line.text.slice(0,shown),tx,by+66,tw,31);
+  ctx.fillStyle='#9faac6';ctx.font='500 14px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('AUTO · Read again in Diary → Conversations',tx,by+bh-12);
+  ctx.restore();
+}
+
+function drawConversationSheet(ctx){
+  panel(ctx,0,96,VW,VH,18,'rgba(16,12,24,0.99)','rgba(201,160,255,0.5)');
+  const h=dialogueSave().history;
+  dialogueHistoryPage=Math.max(0,Math.min(dialogueHistoryPage,h.length-1));
+  const line=h[dialogueHistoryPage];
+  ctx.textAlign='center';ctx.fillStyle='#c9a0ff';ctx.font='800 30px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('CONVERSATIONS',VW/2,154);
+  ctx.font='500 20px "Pixelify",system-ui,sans-serif';ctx.fillText('Only words you have already heard.',VW/2,190);
+  if(line){
+    ctx.fillStyle='#f3d7f1';ctx.font='800 28px "Pixelify",system-ui,sans-serif';ctx.fillText(line.who,VW/2,340);
+    ctx.fillStyle='#efe5fa';ctx.font='500 30px "Pixelify",system-ui,sans-serif';wrapText(ctx,line.text,VW/2,405,VW-100,42);
+    ctx.font='500 22px "Pixelify",system-ui,sans-serif';ctx.fillText((dialogueHistoryPage+1)+' / '+h.length,VW/2,VH-150);
+  } else {ctx.fillText('Conversations will appear here as you hear them.',VW/2,380);}
+  for(const [x,label,act,ok] of [[24,'‹ PREV','talkprev',dialogueHistoryPage>0],[250,'DIARY','diary',true],[476,'NEXT ›','talknext',dialogueHistoryPage<h.length-1]]){
+    panel(ctx,x,VH-115,220,66,10,'#252039',ok?'#b8a0d7':'#554963');
+    ctx.fillStyle=ok?'#eee1ff':'#716581';ctx.font='700 22px "Pixelify",system-ui,sans-serif';ctx.fillText(label,x+110,VH-73);
+    hubB(x,VH-115,220,66,act,ok);
+  }
 }
 
 // ---- TITLE / START SCREEN: FWOOSH logo, Keith looming, the hero below, the town ablaze
@@ -918,6 +936,9 @@ function hubAct(a){
   if(a.indexOf('starterbuy:')===0){buyStarter(a.split(':')[1]);return;}
   if(a==='diary'){ hubSheet='diary'; diaryOpen=null; diaryPage=0; return; }
   if(a==='shrine'){ hubSheet='shrine'; return; }
+  if(a==='conversations'){hubSheet='conversations';dialogueHistoryPage=Math.max(0,dialogueSave().history.length-1);return;}
+  if(a==='talkprev'){dialogueHistoryPage=Math.max(0,dialogueHistoryPage-1);return;}
+  if(a==='talknext'){dialogueHistoryPage=Math.min(dialogueSave().history.length-1,dialogueHistoryPage+1);return;}
   if(a==='diaryback'){ diaryOpen=null; diaryPage=0; return; }
   if(a.indexOf('diaryopen:')===0){ diaryOpen=parseInt(a.split(':')[1],10); diaryPage=0; const e=DIARY[diaryOpen]; if(e) diaryMarkRead(e.id); return; }
   if(a==='diaryprev'){ diaryPage=Math.max(0,diaryPage-1); return; }
@@ -1011,6 +1032,7 @@ function drawHub(ctx){
   if(hubSheet==='starter'){drawStarterSheet(ctx);return;}
   if(hubSheet==='well'||hubSheet==='forge') drawShopSheet(ctx, hubSheet);
   else if(hubSheet==='diary') drawDiarySheet(ctx);
+  else if(hubSheet==='conversations') drawConversationSheet(ctx);
   else if(hubSheet==='shrine') drawShrineSheet(ctx);
 
   // --- toast (build/purchase feedback)
@@ -1194,6 +1216,9 @@ function drawDiarySheet(ctx){
       if(ok) hubB(x0, ry, rw, rowH-8, 'diaryopen:'+i);
       ry += rowH;
     }
+    panel(ctx,30,VH-145,VW-60,60,10,'#252039','#b8a0d7');
+    ctx.textAlign='center';ctx.fillStyle='#eee1ff';ctx.font='700 23px "Pixelify",system-ui,sans-serif';ctx.fillText('CONVERSATIONS · Read again',VW/2,VH-108);
+    hubB(30,VH-145,VW-60,60,'conversations');
     ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap the top to close', VW/2, VH-12);
   } else {
     // ---- READER (tall, story-friendly)

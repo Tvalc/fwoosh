@@ -1,0 +1,15 @@
+{
+  "chapters": 15,
+  "pages": 35,
+  "identitiesArtHintsUnlocksUnchanged": true,
+  "approvedFireScenePreserved": true,
+  "browser": {
+    "width": 320,
+    "diaryMaxBaseline": 980,
+    "diaryLimit": 1160,
+    "dialogueMaxBaseline": 957,
+    "dialogueLimit": 1015,
+    "pass": true
+  },
+  "art": "Existing Makko static portraits; seven dedicated emotion/speech clips requested from Cursor, not yet integrated."
+}

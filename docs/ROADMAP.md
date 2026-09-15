@@ -1,5 +1,17 @@
 # Fwoosh — complete remaining backlog
 
+## Present dialogue and diary rewrite — 2026-09-15-dialogue-1
+
+Tony approved clear present-tense exchanges in bottom-screen text boxes and backstory primarily in the optional diary. The live opening is one short instruction. Rescue, rising carried heat and vent completion prompt brief reactions; later returns introduce repeated death, Keith's role, ratkin judgment and rebuilding. At most two story exchanges per run, sixteen seconds between exchanges, no stale lore queue, no frozen return card. One optional combat reaction shares the same box and cannot interrupt. Dialogue remains automatic while movement, dash and vent stay available. Diary → Conversations rereads delivered words without revealing future lines.
+
+Fourteen diary chapters were rewritten as connected prose; the approved painful heat/ascending ratkin chapter is retained. There are 15 chapters and 35 pages. Identities, art references, hints, unlock predicates, purchases and existing read flags are unchanged. The market betrayal does not reveal Mei's motive before her confession; no new explanation for Duy's five-life balance is introduced.
+
+90 state/input checks pass, including nine new event pacing, interruption, persistence and history checks. Loaded-font browser measurement: all 35 diary pages fit (maximum baseline 980, limit 1160); all story dialogue fits (maximum 957, limit 1015). Phone-size visual checks cover the bottom box/control clearance, conversation navigation and the longest diary page. No human reading-speed or story-comprehension test has been claimed.
+
+**Art still pending:** this release uses static crops of the existing verified Makko Duy/Keith sprites. Seven dedicated talking/emotion clips are requested on Cursor issue #3, with prompts, source requirements and atlas integration in docs/DIALOGUE.md. They are not generated or integrated, and Cursor acknowledgment has not been verified. No other art generator is used. Codex owns this scoped runtime/story/history change; Cursor retains the art lane. Release/PR verification is recorded on issue #1.
+
+Earlier checkpoints below are historical.
+
 ## Prose discovery rewrite — 2026-09-15-prose-1
 
 Tony requested a complete prose rewrite following the author-craft research and confirmed that players should feel disoriented, under pressure and gradually discover what happened. The deeper story remains optional.
