@@ -1136,14 +1136,14 @@ function drawShrineSheet(ctx){
   ctx.textAlign='center';
   ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE SHRINE', VW/2, y+48);
   ctx.fillStyle='rgba(210,195,235,0.72)'; ctx.font='italic 500 15px "Pixelify",system-ui,sans-serif';
-  ctx.fillText('the System keeps one line for every soul. this is yours.', VW/2, y+72);
+  ctx.fillText('someone has been keeping count.', VW/2, y+72);
 
   // Rescue count records progress; it is not a debt balance or a release threshold.
   ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Pixelify",system-ui,sans-serif';
   ctx.fillText('THE RATKIN REMEMBER', 44, y+112);
   ctx.fillStyle='#efe4ff'; ctx.font='500 18px "Pixelify",system-ui,sans-serif';
-  ctx.fillText('A rescue is a beginning. Their society must be rebuilt.', 44, y+148);
-  ctx.fillText('Their favor must be earned. Their judgment grants release.', 44, y+180);
+  ctx.fillText('You got them out. Their homes are still here.', 44, y+148);
+  ctx.fillText('Keith watches. The ratkin have the last word.', 44, y+180);
 
   // ---- record rows
   const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
@@ -1173,7 +1173,7 @@ function drawDiarySheet(ctx){
     // ---- CHAPTER LIST
     ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+40);
     ctx.fillStyle='rgba(210,195,235,0.65)'; ctx.font='italic 500 14px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('Duy\'s account, told to you as you carry the debt', VW/2, y+62);
+    ctx.fillText('Memories, when you have a moment. Reading is optional.', VW/2, y+62);
     const rowH=54, x0=30, rw=VW-60; let ry=y+80;
     for(let i=0;i<DIARY.length;i++){ const e=DIARY[i], ok=diaryUnlocked(e), fresh=ok&&!diaryIsRead(e.id);
       panel(ctx, x0, ry, rw, rowH-8, 12, ok?'rgba(40,30,58,0.7)':'rgba(20,18,28,0.6)', ok?'rgba(201,160,255,0.45)':'rgba(90,84,110,0.35)');

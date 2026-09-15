@@ -1,122 +1,213 @@
-// Keith is Duy's jailer. The first run explains little; later dialogue and Duy's diary reveal the sentence.
+// Keith is Duy's jailer. Immediate danger is clear; the larger story is discovered in optional memories.
 const STORY = {
   // Legacy preview card only. Normal first play starts directly with live dialogue.
   premise: [
-    'you died. then you woke in the fire.',
-    'the ratkin are burning. take the fire off them.',
-    'Keith calls this punishment.',
-    'dying again will not end it.',
+    'The street is burning. Someone is calling your name.',
+    'Run into the burning ratkin. Take their fire.',
+    'Too much to carry? Hold VENT or SPACE.',
+    'Keith says you have been here before.',
   ],
   greet: {
-    debut: { big:'BACK ON YOUR FEET.', sub:['still here. so are they.', "take the fire off them."] },
+    debut: { big:'ON YOUR FEET.', sub:['there you are.', 'take the fire off them.'] },
     smug: [
-      { big:'YOU AGAIN.',    sub:['you run to the same spot every time.', "i'm standing on it."] },
-      { big:'PREDICTABLE.',  sub:['i know where you go.', "i've always known."] },
+      { big:'SAME TURN?', sub:['you went that way last time.', 'i was waiting.'] },
+      { big:'THERE YOU ARE.', sub:['i left room for you.', 'right where you always go.'] },
     ],
     obsessed: [
-      { big:'I HAVE NOTES.', sub:['on every run.', 'you keep giving me more.'] },
-      { big:"I DON'T BURN.", sub:["keeping the fire going is my job.", 'yours is getting them out.'] },
+      { big:'AGAIN.', sub:['you changed your route.', 'i noticed.'] },
+      { big:'STILL HERE.', sub:['yes, i keep the fires going.', 'watch the street.'] },
     ],
     respect: [
-      { big:"I CAN'T READ YOU.", sub:['you keep changing.', 'i keep taking notes.'] },
-      { big:'GO ON THEN.',        sub:["i've got nothing.", 'first time for everything.'] },
+      { big:'ALL RIGHT.', sub:['a different route.', "let's see it."] },
+      { big:'KEEP GOING.', sub:['you made it through.', "they're still out there."] },
     ],
   },
-  fired:  { smug:['KNEW IT.','TOO SLOW.'], obsessed:['RIGHT ON SCHEDULE.','SAME AS ALWAYS.'],
-            respect:["...LET'S SEE.",'SURPRISE ME.'] },
-  sniped: { smug:['PREDICTABLE.','TOLD YOU.'], obsessed:['EVERY. TIME.','I HAD IT WRITTEN DOWN.'],
-            respect:['huh. still got you.','old habits. even yours.'] },
-  broken: { smug:["...that's new.",'wait.'], obsessed:['STOP IMPROVING.','WHO TAUGHT YOU THAT.'],
-            respect:['beautiful. again.',"didn't see that coming. good."] },
-  duel:   { rise:["IT'S JUST US NOW.",'MY TURN.'],
-            tag:["FINE. I'LL HOLD IT.",'GIVE IT HERE THEN.'],
-            back:['NOT TODAY.','RETURN TO SENDER.'],
-            yieldSub:['this street is clear.','your sentence is not.'] },
-  riser:  { rise:'ONE OF YOUR WALLS IS UP.', shed:'IT SHED THE BURN.', dead:'BACK DOWN. STAY DOWN.' },
-  study:  { debut:['Keith is taking notes.'],
-            smug:['Keith logged this run. Keith remembers.','Keith has your number.'],
-            obsessed:['Keith watched every second of that.','Keith is not okay about you.'],
-            respect:["Keith isn't sure what to write anymore.",'Keith respects you. he hates that.'] },
-  // Later run dialogue reveals more; the jailer does not decide release.
+  fired: { smug:['THAT WAY, THEN.','LATE.'], obsessed:['I KNOW THAT TURN.','THERE.'],
+           respect:['KEEP MOVING.','SHOW ME.'] },
+  sniped: { smug:['SAME CORNER.','SAW YOU COMING.'], obsessed:['YOU STOPPED AGAIN.','I WAS WAITING.'],
+            respect:['still caught you.','watch your next step.'] },
+  broken: { smug:['oh.','you got through.'], obsessed:['AGAIN?','YOU CHANGED SOMETHING.'],
+            respect:['good. keep moving.','i missed that.'] },
+  duel: { rise:['MY TURN.','COME THROUGH ME.'],
+          tag:['GIVE IT HERE.','FELT THAT.'],
+          back:['TRY AGAIN.','STILL CARRYING IT?'],
+          yieldSub:['clear. catch your breath.', 'there are more streets.'] },
+  riser: { rise:'THAT WALL IS MOVING.', shed:'THE FIRE CAME OFF IT.', dead:'DOWN. KEEP MOVING.' },
+  study: { debut:['Keith watches where you stop.'],
+           smug:['Keith checks something in his notes.','Keith was waiting at that corner.'],
+           obsessed:['Keith turns back a page.','Keith crosses something out.'],
+           respect:['Keith looks up from his notes.','For a moment, Keith has nothing to add.'] },
+  // Short observations, not a chronological briefing. Diary chapters carry the deeper revelations.
   lore: [
-    "punishment is the easy word. keep running. you'll find the rest.",
-    "they have names. start remembering them.",
-    "taking the fire off is a beginning. look at what they've lost.",
-    "a rescued family still needs somewhere to sleep.",
-    "the embers you bring back can help rebuild this place.",
-    "i keep the sentence running. the ratkin decide when you're done.",
-    "you can put me down. that doesn't buy your release.",
-    "clear a street. then help make it a home again.",
-    "they need their society back, Duy. not a victory speech.",
-    "you don't get to tell them when they've forgiven you.",
-    "your partner is still carrying an account out there.",
-    "what you do here can reach further than this town.",
-    "keep the embers. you haven't learned everything they're for.",
-    "earn their favor. they're the ones who have to live with what comes next.",
+    'yes, i know your name. watch the fire.',
+    'they can feel it too, Duy. get them out.',
+    'look where they go when you let them go.',
+    'that was a home. before you saw it burning.',
+    'keep the embers. take them back to town.',
+    'you keep looking for someone. keep moving.',
+    'the same street. yes. i know.',
+    'catch your breath while you can.',
+    'they still have to sleep somewhere tonight.',
+    'you can be angry with me and keep running.',
+    'ask them what they need, when you get back.',
+    "you want a date. i don't have one for you.",
+    'i keep you here. they decide when you leave.',
+    'when they let you help, listen.',
   ],
-  // a hunter catching you while LIT shoves its fire onto you
-  overload: ['IT PILED ON!', 'THE FIRE JUMPED TO YOU!', 'TOO MUCH FIRE!', 'IT SHOVED IT BACK!'],
-  // FIRST RUN: Duy is disoriented; Keith speaks during fully controllable action.
+  overload: ['MORE FIRE!', 'IT JUMPED TO YOU!', 'TOO MUCH!', 'IT PUSHED THROUGH!'],
+  // First run: instructions and fragments, delivered during fully controllable action.
   intro: [
-    { who:'KEITH', text:"Up. You're dead, Duy. This is the part after." },
-    { who:'KEITH', text:'See them burning? Run into them. Take the fire off.' },
-    { who:'KEITH', text:'Ratkin. You owe them more than an apology.' },
-    { who:'KEITH', text:"I'm Keith. Your jailer. Yes, this is a punishment." },
-    { who:'KEITH', text:'Too much fire? Vent it. Then get back to them.' },
-    { who:'KEITH', text:"You'll die here. A lot. Doesn't mean you're done." },
-    { who:'KEITH', text:"Less staring at me. They're still suffering." },
+    { who:'KEITH', text:'Duy. Up. The fire is moving.' },
+    { who:'KEITH', text:'Run into the burning ratkin. Take their fire.' },
+    { who:'KEITH', text:"Yes, you died. Keep moving. They can still feel it." },
+    { who:'KEITH', text:"Keith. I keep you here. You help them. That's the sentence." },
+    { who:'KEITH', text:'Hold VENT or SPACE. Finish the breath you start.' },
+    { who:'KEITH', text:"You'll die again. Get up again. As often as it takes." },
+    { who:'KEITH', text:"Watch how much you carry. I'll still be here." },
   ],
 };
 
-// THE DIARY — optional lore in Duy's voice, illustrated with Makko art. Pays nothing, gates nothing.
-// Each chapter unlocks off a milestone you'd hit naturally. `art` = a sprite key used as the illustration
-// (bespoke scene art swaps in by the same key). Keep pages short — a diary, not a novel.
+// Optional memories in Duy's voice. No currency reward and no progression requirement.
+// Preserve chapter IDs, unlock predicates, read flags and Makko asset references across prose revisions.
 const DIARY = [
-  { id:"morning", title:"The Last Morning", art:"", teaser:"A Saturday shift. Nothing special. I did not know.",
+  { id:"morning", title:"The Last Morning", art:"", teaser:"I can remember the fan. The rest takes longer.",
     when:()=>true, hint:"",
-    pages:[ "The fan was broken. It turned halfway, gave up, and turned back. I lay there and let it lose.", "My apartment was one room. A bed, a hotplate, a window that looked at another window. Nobody else lived there. Nobody ever had.", "I was twenty-five. An orphan, a cop, and late for a Saturday shift. I ate cold rice over the sink and called it breakfast.", "I put on the uniform and winked at myself in the mirror, because someone in that room had to.", "It was an ordinary morning. I did not know it was the last one I would ever wake up alive." ] },
-  { id:"walk", title:"Cuong", art:"", teaser:"My partner. The steady one. I did the talking for both of us.",
+    pages:[
+  "The fan kept catching halfway round. Click, turn, click. I knew that sound before I could remember the room.",
+  "A bed against the wall. A hotplate by the sink. Through the window, somebody else's window, still shut. I used to lie there until the fan clicked again, then give myself another minute.",
+  "Saturday. I had a shift. There was cold rice in a bowl and no time to warm it. I ate standing up, trying to keep it off my uniform.",
+  "I was twenty-five and had lived alone long enough to talk to the mirror. Growing up without parents leaves you a few habits. I straightened my collar and gave myself a wink.",
+  "Cuong would already be waiting. I tried out an excuse on the stairs. It sounded unlikely even to me. I went with it anyway."
+] },
+  { id:"walk", title:"Cuong", art:"", teaser:"He was waiting on the corner.",
     when:()=>META.saved>=1, hint:"carry 1 life from the fire",
-    pages:[ "Cuong was already on the corner. He was always already there. He looked at his watch when he saw me and said nothing about it.", "We had been partners three years. He thought before he spoke. I spoke to find out what I thought. Between us we made one sensible man.", "We were police. We carried pistols and mostly used them to point at things while we argued.", "We were walking to the Phu Nhuan market. His little sister Diep was meeting us there. Nineteen, a martial arts champion, and she had put me on the ground twice, for fun.", "She was bringing corn for a party that night, and she still owed me a bag of it from a bet three days back. I told Cuong I planned to collect. The corner of his mouth moved. That was him laughing." ] },
-  { id:"vendor", title:"Two Bags of Spring Rolls", art:"", teaser:"One order, two bags. Everyone loved me. I made sure of it.",
+    pages:[
+  "Cuong looked at his watch when he saw me. I began my excuse while I was still crossing the road. He waited until I got to the part about the fan, then started walking.",
+  "Three years as partners. He knew when to let me talk. Sometimes he would wait through everything I had to say, then ask the one question I had hoped he wouldn't.",
+  "We were police. That morning our pistols stayed in their holsters. We were headed to Phu Nhuan market, and I was thinking about breakfast again.",
+  "His sister Diep was meeting us there. Nineteen years old, a martial arts champion, and pleased with herself for putting me on the ground twice. I had given her plenty of advice from down there.",
+  "She was bringing corn for a party that night. She owed me some from a bet. I reminded Cuong that I intended to collect. He looked straight ahead, but the corner of his mouth moved."
+] },
+  { id:"vendor", title:"Two Bags of Spring Rolls", art:"", teaser:"The second bag was already leaking.",
     when:()=>META.saved>=3, hint:"carry 3 lives from the fire",
-    pages:[ "The market was loud and wet and full of good smells fighting each other. I loved it there. I loved anywhere with that many people.", "There is an old auntie near the front who fries spring rolls. She pretends she cannot stand me. This is our game.", "I told her she looked younger than her own daughter. She called me a liar and a bad policeman. She handed me two bags anyway, hot and going greasy through the paper. One order, twice the rolls.", "I held them up over my head so Cuong could see across the lane. He shook his head. Diep laughed at me.", "It was a good minute. A man with too many spring rolls, waving at his friend. If you want to know who I was, it was that." ] },
-  { id:"gunfire", title:"The White Shirts", art:"", teaser:"Three men, guns, no warning. The market came apart.",
+    pages:[
+  "At the market I could hardly hear Cuong beside me. Sellers were calling across the lane. Water ran between the stalls. Somewhere close, spring rolls were coming out of the oil.",
+  "The auntie at the front saw me looking. I told her she looked younger than her daughter. She called me a liar, then a bad policeman, and reached for another bag.",
+  "I had ordered one. She gave me two. I tried thanking her and she waved me away before I could make a performance of it.",
+  "The paper was going dark with grease. I held both bags over my head to show Cuong across the lane. He shook his head. Beside him, Diep started laughing.",
+  "I can still see her face when she laughed. I try to stay with that part. The bags were hot against my fingers. I was about to call her over."
+] },
+  { id:"gunfire", title:"The White Shirts", art:"", teaser:"I remember the shirts before I remember the faces.",
     when:()=>META.saved>=5, hint:"carry 5 lives from the fire",
-    pages:[ "Three men in white tank tops stepped into the lane. They pulled guns from their waistbands. They started firing into the crowd.", "There was no shout and no reason. People I had smiled at a second before dropped where they stood. The noise was enormous, and everything went quiet under it.", "Miss Hue went down. She was our neighbor, a fierce old woman afraid of nothing. She was buying fish. The bullet was not even meant for her.", "Cuong took one through the shoulder and hit the ground. Something tore open in my hip and put me down too. My leg stopped being mine.", "I dragged myself behind a steel table and got my gun up one-handed and fired back, badly. Somewhere in there the grin came off my face. I do not know where it went." ] },
-  { id:"betrayal", title:"The Knife", art:"", teaser:"The knife was not there to save her.",
+    pages:[
+  "Three men came into the lane in white tank tops. Their hands went to their waistbands. By the time I understood what they were holding, the first shots had gone off.",
+  "People were falling where I had been looking for a way through them. I couldn't find Cuong. Every time I turned toward a voice, another shot drowned it out.",
+  "Miss Hue was beside the fish stall. Our neighbor. She had argued with nearly everyone on that street, and I had never seen her back away from anybody. She went down among the baskets.",
+  "Cuong took a bullet through the shoulder. I saw him hit the ground, tried to get to him, and lost my footing. There was something wrong with my hip. My leg wouldn't take my weight.",
+  "I dragged myself behind a steel table. I got my pistol out and fired around its edge with one hand. I couldn't tell where my shots were going."
+] },
+  { id:"betrayal", title:"The Knife", art:"", teaser:"Mei was kneeling beside her.",
     when:()=>META.saved>=7, hint:"carry 7 lives from the fire",
-    pages:[ "Cuong was flat on his back and still shooting. He killed two of them from the ground. My partner, the quiet one.", "I looked for Diep. I found her on the stones. Her roommate Mei was kneeling over her with a knife.", "I waited for Mei to help. She was not helping. She was pushing the knife in.", "She had sold us to the men in white. We learned the whole of it later. They had taken her brother and named her the price. She was nineteen too.", "Cuong saw it the same second I did. He shot Mei. His hand did not shake. A sound came out of me that did not sound like a person." ] },
-  { id:"death", title:"The Last Joke", art:"", teaser:"The third one walked out. I stood up anyway.",
+    pages:[
+  "Cuong was still firing from the ground. Two of the men fell. I kept looking between his shoulder and the lane beyond him, trying to count how many were left.",
+  "Then I found Diep. She was on the stones. Mei, her roommate, was kneeling over her. I thought she was helping. I remember being grateful for a moment.",
+  "There was a knife in Mei's hand. She brought it down. I watched her arm move and kept waiting for what I was seeing to make sense.",
+  "Cuong saw her. He turned his pistol toward Mei and fired. I tried to say Diep's name. I couldn't get enough air for it.",
+  "I knew nothing about Mei's brother then. That came afterward, from her own mouth. In the market I could only see the knife and Cuong trying to get up."
+] },
+  { id:"death", title:"The Last Joke", art:"", teaser:"There was still one man standing.",
     when:()=>META.saved>=9, hint:"carry 9 lives from the fire",
-    pages:[ "Two shooters were dead. One was left. He turned and walked toward the street, calm, like a man leaving a shop.", "Behind the table was the smart place to stay. I came up over it anyway, yelling, gun out. Loud to the end.", "He turned and shot me three times before I was clear of the table. My legs quit. I folded down against the steel and slid to the floor.", "It was cool against my cheek. That was nice. The market went far away, and Cuong was calling my name from somewhere.", "My last thought was a joke. Of course it was. Something about the corn Diep still owed me. I died before the punchline, twenty-five years old, on a floor that smelled like frying oil." ] },
-  { id:"void", title:"The Waiting Room", art:"", teaser:"Cold marble. No wounds. A line into the dark.",
+    pages:[
+  "The third gunman was walking toward the street. He stepped around the people on the ground. I remember how carefully he placed his feet.",
+  "I had the table between us. I pushed myself up against it and shouted. My pistol caught on the edge as I tried to bring it round.",
+  "He turned. Three shots. I slid down the table before I could get clear of it. My gun was somewhere beside me and I couldn't make my hand close on it.",
+  "The floor felt cool against my cheek. I could hear Cuong calling, though he sounded much farther away than he should have. I wanted to tell him I was right there.",
+  "Instead I thought of the corn Diep owed me. There was a joke in it. I had the beginning. I was still trying to find the rest when I couldn't hear Cuong anymore."
+] },
+  { id:"void", title:"The Waiting Room", art:"", teaser:"My shirt was clean.",
     when:()=>META.saved>=12, hint:"carry 12 lives from the fire",
-    pages:[ "I woke on cold marble, flat on my back. I sat up and patted myself down. My hip was whole. My shirt was clean. No blood anywhere.", "This was a problem. I had just died. You do not forget dying.", "They were all there. Diep. Miss Hue. Cuong. I do not know how Cuong died. I went first. He was already on this side when I arrived.", "Mei was there too, off to the edge, not looking at anyone. The woman who put the knife in Diep, standing on the same floor as the rest of us.", "It was not heaven. No light, no music, no soft old man with a book. It was a gray room, and it was enormous.", "A line ran out from where we stood and into the dark. It was full of the dead, waiting their turn, and I could not see the end of it. Nobody had to tell us what it was for." ] },
-  { id:"gods", title:"The Job Offer", art:"", teaser:"A tired god in a cowboy hat. Take the deal, or take the line.",
+    pages:[
+  "Cold stone under my palms. I sat up too quickly and reached for my hip. My fingers found cloth, then skin. I pressed harder. I couldn't find the wound.",
+  "Diep was there. I looked at her chest before I looked at her face. Cuong was there too, and Miss Hue. I wanted to ask how they had got here. I was afraid of what Cuong would say.",
+  "Mei stood apart from us. Nobody was holding her. There was no knife in her hand. I kept checking.",
+  "The room went farther than I could see. A line of people stretched into the dark. When it moved, everyone took a small step, then waited again.",
+  "I tried to remember getting off the market floor. There was nothing between that and the stone under my hands. I looked down the line, hoping to see where it led."
+] },
+  { id:"gods", title:"The Job Offer", art:"", teaser:"The man in the hat had an offer.",
     when:()=>META.saved>=15, hint:"carry 15 lives from the fire",
-    pages:[ "A man came out of the dark in a cowboy hat. He looked tired. Not sleepy. Worn all the way through. He said his name was Adonai, and that he was a god.", "He did not soften it. You are dead, he said. All of you. I am not here to judge you. I am here to offer you a job.", "Another one stood behind him. One eye, no patience, a face like weather. Odin, he was called. He offered nothing. He just watched.", "The job was a second life, on another world, as its champions. We would fight for the living there, since we could not fight for anyone here anymore.", "Mei confessed all of it out loud, in front of Diep. Her brother, the men, the price. Nobody forgave her. Nobody told her to stop, either.", "They put a hand on Miss Hue and she stood up young, sixty years falling off her, with something hard and terrible awake behind her eyes. Then we looked at the line, and we took the deal. That is not bravery. That is just not wanting to wait in that line." ] },
-  { id:"cell", title:"The Dark Cell", art:"", teaser:"Something rushed us in the black. We fired.",
+    pages:[
+  "The man who came over wore a cowboy hat. He introduced himself as Adonai and said he was a god. I looked at Cuong. Cuong was watching his hands.",
+  "Adonai told us we were dead. He gave us a moment with it. Behind him stood a man with one eye, called Odin. He waited without offering us anything to make it easier.",
+  "There was another world. They needed champions there. Adonai offered us another life if we went to fight for its people. I looked at Diep. She was listening to every word.",
+  "Mei began to talk. The gunmen had taken her brother. She had given us up to them, and the knife had been part of their price. She said it where Diep could hear. I wanted her to stop. I wanted the rest of it.",
+  "Nobody offered Mei forgiveness. We listened until she had finished. She was nineteen, the same age as Diep. I kept coming back to that and finding it helped me with nothing.",
+  "A hand touched Miss Hue. Her back straightened. The years went out of her face while I watched, until a young woman stood where our neighbor had been. I recognized her expression before anything else.",
+  "We accepted. I wish I could remember a better reason than the line behind us, still moving one step at a time."
+] },
+  { id:"cell", title:"The Dark Cell", art:"", teaser:"There was a door behind us.",
     when:()=>META.saved>=18, hint:"carry 18 lives from the fire",
-    pages:[ "The gods dropped us into a stone cell with no light in it at all. Not dim. Black. My open eyes were useless.", "Something moved in the dark. A lot of somethings, rushing at us, fast and low and all around.", "Cuong and I still had our pistols. We were cops. We were afraid. We fired at the noise until the noise stopped.", "Then the light came up.", "Nineteen small bodies on the floor. Rat-people, the world calls them, ratkin, no bigger than children. Not a weapon on any of them.", "There was an open door behind us. They had not been coming at us. They were running past us, for the door. That is all they were doing.", "I went down on my knees in it. Cuong could not lift me. I did not want to be lifted." ] },
-  { id:"debt", title:"The Debt", art:"", teaser:"The System keeps the accounts. I remember the numbers.",
+    pages:[
+  "The next place was so dark I held a hand in front of my eyes to check they were open. Stone underfoot. Cuong close enough that I could hear him breathe.",
+  "Something was moving. Small feet, many of them, coming fast. I reached for the pistol. It was still there. I heard Cuong draw his too.",
+  "We fired toward the sound. The shots lit pieces of the room too briefly for me to understand them. I kept firing until the movement stopped.",
+  "When the light came, I could see an open door behind us. The bodies lay between it and the far end of the cell. They had been trying to get past us.",
+  "Nineteen ratkin. Small enough that I had mistaken the first one for a child. I looked for a weapon beside each body, then looked again. There weren't any.",
+  "I knelt down. Cuong took hold of my arm. I couldn't get up. Every time I looked toward the door I could see the path they had been running."
+] },
+  { id:"debt", title:"The Debt", art:"", teaser:"The words stayed in the air.",
     when:()=>META.saved>=21, hint:"carry 21 lives from the fire",
-    pages:[ "There is a thing over that world that keeps the accounts. Cold, patient, everywhere at once. People there call it the System. It is not a person. It is more like a law that talks.", "Words came into the air in front of all of us. The System counted the bodies and made its ruling, the way a clerk stamps a form. Nineteen lives taken. Nineteen lives owed.", "Cuong's account began at nineteen. Mine carried a separate five. The System called my judgment Caedite Eos. Saving a life at personal risk could credit an account. Being sorry could not.", "Cuong holstered his gun and went quiet. He carries things by folding them small. I could not find the fold. I carried mine in both arms where everyone could see it." ] },
-  { id:"gate", title:"The Gate", art:"duy_gate", teaser:"The cell was a prison. Getting out cost me.",
+    pages:[
+  "Writing appeared above the floor. I moved my head and it stayed where it was, bright enough to read. Nineteen lives taken. Nineteen owed.",
+  "The ruling named Cuong's account: nineteen. Then mine, a separate five. Caedite Eos. I read those words more than once. Knowing the number didn't tell me what to do with my hands.",
+  "The System, they called it. It could give credit for saving a life at personal risk. I could understand that much. I kept looking from the writing to the people on the floor.",
+  "Cuong put his pistol away. I tried to do the same. I missed the holster the first time and had to look down to find it. When I looked up, the words were still there."
+] },
+  { id:"gate", title:"The Gate", art:"duy_gate", teaser:"The iron began to rise.",
     when:()=>META.saved>=24, hint:"carry 24 lives from the fire",
-    pages:[ "The cell was one room in a prison, and prisons have doors, and doors have guards. We ran for the way out.", "The guard was a jailer, a huge thing, more animal than man. It came after us down a tunnel with an iron gate hanging above it.", "We dropped the gate on it. Tons of old iron, straight down, pinning it to the floor. For one second we had won.", "Then the gate began to lift. The thing got its back under it and pushed, and the iron rose an inch at a time. The others were not clear yet.", "I threw myself back under and jammed my body into the gap the gate wanted. It stopped wanting it. The others ran.", "The gate came down. This time it came down on me. I was grinning. I told Diep she still owed me that corn, and she heard it. Then the gate was all there was. I thought that was the end." ] },
-  { id:"fire", title:"The Town on Fire", art:"duy_save", teaser:"I woke a third time. This one is my sentence to serve.",
+    pages:[
+  "Beyond the cell was more prison. We ran through it looking for a way out. A jailer came after us, huge enough to fill the passage. I could hear it behind the sound of our feet.",
+  "We brought an iron gate down on it. The impact went through the floor into my legs. For a moment it stayed pinned. The others were still getting clear.",
+  "Then I saw space beneath the iron. The jailer was pushing it up with its back. The gap widened. I looked past it toward my friends. There wasn't time for all of them.",
+  "I went back and forced myself into the gap. Iron pressed against me. I could see the others running through, one after another. I tried to keep looking at them.",
+  "Diep looked back. I grinned at her and shouted that she still owed me corn. This time I got the whole thing out. She heard me.",
+  "The gate shifted. I lost sight of her. There was weight everywhere, and then I was trying to draw a breath in a street full of smoke."
+] },
+  { id:"fire", title:"The Town on Fire", art:"duy_save", teaser:"I knew the shape of their hands.",
     when:()=>META.saved>=27, hint:"carry 27 lives from the fire",
-    pages:[ "I woke a third time. I am getting good at it. I do not recommend the practice.", "The others walked through a door into that champion world. I did not. I woke here instead. The debt was all of ours. The fire is only mine. I was the one who could not put it down.", "This place is a town, and the town is on fire. Not once. Always. It burns, and it burns again, and it never turns to ash.", "It is daylight here, and that is the whole point. In the cell it was dark and I could not see their faces. Here I see every single one.", "The streets are full of ratkin. Families, neighbors, people with names I do not know yet. They are screaming and trapped in the fire. I know what it is to hear that sound and do the wrong thing.", "In the dark, I fired at people I could not see. Here I have to look. I take the fire off them. I carry what I can. Then I see the homes they have lost, and I understand that getting them out is only the beginning.", "This is their society to rebuild, not my tally to finish. They need homes and work and a future that is not another fire. So I run in. That is where you found me." ] },
-  { id:"misses", title:"The Ones I Drop", art:"wraith", teaser:"The fire remembers the ones I could not reach.",
+    pages:[
+  "For a moment I was still braced against the gate. Then my hands were on paving stones. I pushed up, expecting the iron to come down with me.",
+  "Someone ran past, burning. I reached out before I had decided to. The fire came across to me. They stumbled clear and kept going. I stood there with it climbing my arms.",
+  "Ratkin. I knew the hands, the small faces. In the cell I had only seen them properly after the light came on. Here they were moving. One of them was looking straight at me.",
+  "I kept searching the smoke for Cuong. For Diep. The last I saw of them, they were getting clear. I couldn't see anyone I knew here. Keith kept calling me back to the street.",
+  "The fires return. I have cleared places I recognize and found them burning again. I don't know what happens to the street while I'm gone. I know where I left people.",
+  "Getting someone out leaves me with another question: where can they go? I look at the houses and try to remember what stood before the roof fell in."
+] },
+  { id:"misses", title:"The Ones I Drop", art:"wraith", teaser:"Sometimes the movement in the smoke comes toward me.",
     when:()=>((META.flags&&META.flags.sawWraith)||META.saved>=30), hint:"let a rescue burn to a wraith",
-    pages:[ "I do not save all of them. I am fast. I am not always fast enough. Some go down in the fire while I am still streets away with my arms full.", "They do not stay down. They get up burned, black and glowing along the seams, and they are not calling for help anymore.", "They come for me through the smoke. They know my face. They knew it for one second in a dark room, and they have not forgotten since.", "They say my name in a voice like paper catching. They do not say anything else. That is the worst part. I would take yelling. I am good at yelling.", "I do not run from them. That is the one rule I made for myself in here. I look at them first. Then I go find the next living one." ] },
-  { id:"keith", title:"Keith", art:"", teaser:"Someone keeps relighting the fire behind me.",
+    pages:[
+  "Sometimes I see someone fall before I can reach them. There are other people between us. I try to get through. By the time I do, the figure on the ground has stopped moving.",
+  "Then it moves again. Black along the limbs, bright in the cracks. I start toward it with my hand out and realize it is coming for me.",
+  "I hear my name through the smoke. I keep thinking I should recognize the voice. I can't tell whether I have heard it here before or somewhere I am trying not to remember.",
+  "I used to think getting there would be enough. Now I look for a sign that there is still someone I can reach. It is hard to make myself look closely. It is worse when I don't."
+] },
+  { id:"keith", title:"Keith", art:"", teaser:"He looked up when I called him a jailer.",
     when:()=>((META.flags&&META.flags.reachedDuel)||META.saved>=34), hint:"face Keith in a duel",
-    pages:[ "The fires should burn out. Every town runs out of things to burn. This one never does.", "There is a warden here. The System keeps him on to keep me honest. He goes by Keith, which is the least frightening name I have ever been afraid of.", "When I beat back a blaze and clear a street, Keith walks along behind me and lights it again. Every time.", "He is not cruel about it. That is the worst of it. He relights the town the way a man clocks in. Saturday was my shift once. This is his.", "I have shouted at Keith. I have thrown things at Keith. Keith relights the town. So I stopped arguing with the weather and started running faster than he can strike a match. Some days that is even true." ] },
-  { id:"home", title:"The Door", art:"", teaser:"The ratkin decide when I have earned my way back.",
+    pages:[
+  "Keith has no trouble finding me. I have come back in streets I didn't recognize and heard him before I saw him. He uses my name as if we have been introduced properly.",
+  "He keeps notes. At first I thought that was for show. Then he was waiting at the corner where I always stopped. I took another route. He noticed that too.",
+  "I asked him why he kept setting the fires. He told me to watch the street. There was someone burning behind me. By the time I turned back, I had lost the question I meant to ask next.",
+  "The System has a use for him here. I called him a jailer and he looked up. He seemed less interested in whether I hated him than in whether I would stand still to tell him.",
+  "I can make him give ground. I've seen it. I keep waiting for that to change something about the way he says my name the next time I wake up."
+] },
+  { id:"home", title:"The Door", art:"", teaser:"I have seen a door beyond the smoke.",
     when:()=>(((META.district||1)>=5)||META.saved>=40), hint:"reach Keith's House",
-    pages:[ "I used to think a count would tell me when I was finished. The ratkin have to live here after I leave. They need more than a number from me.", "At the end of it there is a door. I have seen it once, far off through the smoke. It is very plain. Doors that matter usually are.", "Behind it is the other world, the real one, the one they sent the rest of us to. Cuong is there, folding things small. Diep is there, still owing me corn. Miss Hue is there, young and terrible and ours. Even Mei is there somewhere, trying to be worth the second life.", "We took nineteen lives in that dark cell. I cannot call a cleared street repayment for a civilization. I have to help rebuild what they lost, earn their favor, and hear their judgment. Keith cannot give me that.", "I was Duy. The loud one. The joker. The guy who filled the room so nobody had to sit in the quiet. I am still him. I just fill it with running now.", "If the ratkin release me, I can return to life. Until then I carry one out, set them down where it is cool, and go back. I want to see my friends again. I want these people to have a home when I do." ] },
+    pages:[
+  "I saw a door once, far enough away that I couldn't make out the handle. I watched it until the smoke covered it again. Since then I catch myself looking in that direction while someone is calling from the other side of the street.",
+  "I want Cuong there when it opens. Diep too. Miss Hue with that new face and the same expression. I even wonder where Mei has ended up. I have questions for her that I couldn't ask on the marble floor.",
+  "I asked Keith how much longer. He said he couldn't release me. The ratkin would decide. I looked toward the people I had just brought out. I hadn't asked any of them anything.",
+  "I owe them a place they can live in. Homes, work, the things that made this a town before I knew it as a fire. I have to help rebuild their society and earn their favor. I don't know how to ask whether they will ever trust me.",
+  "If they release me, I can return to life. I think about that constantly. Then somebody needs help and I have to decide which way to run."
+] },
 ];
 function diaryUnlocked(e){ try{ return !!e.when(); }catch(_){ return false; } }
 function diaryIsRead(id){ return META.diary && META.diary.read && META.diary.read.indexOf(id)>=0; }
@@ -125,4 +216,4 @@ function diaryMarkRead(id){ if(!META.diary) META.diary={read:[]}; if(!META.diary
 function diaryFreshCount(){ return DIARY.filter(e=>diaryUnlocked(e) && !diaryIsRead(e.id)).length; }
 
 const INTRO = { WALK: 205, CHAR: 0.028, HOLD: 1.5, START_Y: 0.90, IGNITE_Y: 0.5 };
-const INTRO_VERSION = 3;   // bump to replay the intro once for everyone after an intro change
+const INTRO_VERSION = 4;   // bump to replay the intro once for everyone after an intro change

@@ -10,3 +10,9 @@ Tony explicitly requested our existing research, not a replacement recitation of
 Local exact-source references and extracted research are indexed in the workspace's outputs/Fwoosh-research-reference.md. The full third-party report is not republished here.
 
 Tony's accepted application: improve rescue feedback, retry friction and next-purchase visibility, then measure durations. Approved targets: first-run starter affordability, another useful early upgrade every 2–3 ordinary runs, skilled progression roughly twice as fast, uncapped embers and no real-money ember sales. loop-1 implements feedback/retry/progress and an initial price ladder; representative human pacing remains unverified.
+
+## Prose research and application
+
+Tony requested Sanderson's worldbuilding/magic craft, Salvatore's physical combat clarity and Martin's intrigue. Sources reviewed: Sanderson's First, Second and Third Law essays on brandonsanderson.com; Salvatore interviews on D&D Beyond (2018) and Apex; Martin's TIME interview (2011); NASA heat-transfer reference; original fencing studies (Sorel et al., 2019, doi:10.1371/journal.pone.0218959; Gutiérrez-Cruz et al., 2016, doi:10.1080/02640414.2015.1068434). Their general craft informs an original voice. Sports studies do not establish fantasy physics or prescribe game timing. Full source links, assessment and proposals are in the workspace's outputs/Fwoosh-prose-research-and-direction.md.
+
+Tony's controlling direction: the player is confused, barely hanging on and gradually discovers what happened; deeper story is optional. prose-1 applies this direction to existing canon. Immediate controls remain understandable. No fixed author voice is imitated and no new magic system is introduced.

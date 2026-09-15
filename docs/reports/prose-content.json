@@ -1,0 +1,16 @@
+{
+  "chapters": 15,
+  "pages": 78,
+  "idsTitlesArtUnlocksHints": "unchanged",
+  "storyShape": "unchanged",
+  "introVersion": 4,
+  "maxPageCharacters": 230,
+  "browser": {
+    "method": "Loaded Pixelify font; actual wrapText; local 320px fixtures and visual inspection",
+    "pages": 78,
+    "diaryMaxBaseline": 728,
+    "introMaxBaseline": 943,
+    "loreMaxWidth": 587.424560546875,
+    "pass": true
+  }
+}
