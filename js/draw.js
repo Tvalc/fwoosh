@@ -297,9 +297,9 @@ function drawVentButton(ctx){
   ctx.globalAlpha = hot ? 1 : 0.5;
   const label=player.heat>0?'VENT':'HEAL';
   if(!drawText(ctx,label, b.x, b.y+R+24, 26)){
-    ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Chakra Petch",system-ui,sans-serif';
     ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText(label, b.x, b.y+R+24); ctx.fillText(label, b.x, b.y+R+24); }
-  if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
+  if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
   ctx.restore();
 }
 
@@ -323,21 +323,23 @@ function animReady(k){ const im=MAKKO_ANIM_IMG[k]; return !!(im && im.complete &
 
 // Makko pixel score font (sliced digit atlas)
 function digitsReady(){ return !!(typeof MAKKO_DIGITS!=='undefined' && MAKKO_DIGITS_IMG.complete && MAKKO_DIGITS_IMG.naturalWidth>0); }
-// draw a number as Makko pixel digits, centred at (cx,cy), digit height h
-function drawNumber(ctx, val, cx, cy, h){
-  if(!digitsReady()) return false;
-  const m=MAKKO_DIGITS, sc=h/m.h, gap=Math.max(1,h*0.05), s=String(val), parts=[];
-  let total=0;
-  for(const ch of s){ const d=m.digits[ch.charCodeAt(0)-48]; if(!d) continue; parts.push(d); total+=d.w*sc+gap; }
-  total-=gap;
-  let x=cx-total/2; ctx.imageSmoothingEnabled=true;
-  for(const d of parts){ const w=d.w*sc; ctx.drawImage(MAKKO_DIGITS_IMG, d.x,0,d.w,m.h, x,cy-h/2, w,h); x+=w+gap; }
-  return true; }
+// Counters need clear 3/8/9 shapes, even when the canvas is fitted to a phone.
+function drawNumber(ctx,val,cx,cy,h){
+  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='700 '+Math.round(h*1.2)+'px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillStyle='#ffcf80';ctx.fillText(String(val),cx,cy);ctx.restore();return true;
+}
 
-// Makko DISPLAY FONT — full glyph atlas (0-9 A-Z + punctuation), for big words & the score.
+// Makko lettering stays on large decorative titles; small labels use the legible UI font.
 function glyphsReady(){ return !!(typeof MAKKO_GLYPHS!=='undefined' && MAKKO_GLYPH_IMG.complete && MAKKO_GLYPH_IMG.naturalWidth>0); }
 // draw `str` in the Makko font, centred at (cx,cy), cap-height h. opts: {alpha, spacing}
 function drawText(ctx, str, cx, cy, h, o){ o=o||{};
+  if(h<40){
+    ctx.save();if(o.alpha!=null)ctx.globalAlpha*=o.alpha;
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#ffd9a0';
+    ctx.font='700 '+Math.round(h*1.2)+'px "Chakra Petch",system-ui,sans-serif';
+    ctx.fillText(String(str),cx,cy);ctx.restore();return true;
+  }
   if(!glyphsReady()) return false;
   const m=MAKKO_GLYPHS, sc=h/m.h, sp=(o.spacing!=null?o.spacing:h*0.12), space=h*0.42;
   str=String(str).toUpperCase();
@@ -348,11 +350,16 @@ function drawText(ctx, str, cx, cy, h, o){ o=o||{};
   for(const g of items){ if(!g){ x+=space+sp; continue; } const w=g.w*sc; ctx.drawImage(MAKKO_GLYPH_IMG, g.x,0,g.w,m.h, x,cy-h/2, w,h); x+=w+sp; }
   ctx.restore(); return true; }
 // measured width of a Makko string at cap-height h (for layout)
-function textW(str, h){ if(!glyphsReady()) return 0; const m=MAKKO_GLYPHS, sc=h/m.h, sp=h*0.12, space=h*0.42;
+function textW(str, h){
+  if(h<40){ctx.save();ctx.font='700 '+Math.round(h*1.2)+'px "Chakra Petch",system-ui,sans-serif';const w=ctx.measureText(String(str)).width;ctx.restore();return w;}
+  if(!glyphsReady()) return 0; const m=MAKKO_GLYPHS, sc=h/m.h, sp=h*0.12, space=h*0.42;
   let t=0; for(const ch of String(str).toUpperCase()){ const g=m.map[ch]; t+=(g?g.w*sc:space)+sp; } return t-sp; }
 // draw Makko text, shrinking cap-height so it fits within maxW
-function drawTextFit(ctx, str, cx, cy, h, maxW, o){ if(!glyphsReady()) return false;
-  const w=textW(str,h); if(w>maxW) h=h*maxW/w; return drawText(ctx, str, cx, cy, h, o); }
+function drawTextFit(ctx, str, cx, cy, h, maxW, o){ if(h>=40 && !glyphsReady()) return false;
+  const w=textW(str,h); if(w>maxW) h=h*maxW/w;
+  // A title shrinking below the atlas cutoff switches to real text; remeasure that face.
+  while(h>8 && textW(str,h)>maxW)h-=0.5;
+  return drawText(ctx, str, cx, cy, h, o); }
 // draw the current frame of animation `key`, height=targetH, centred at (X,y).
 // step++ at 120Hz, so fps=o.fps advances o.fps frames/sec. o.t offsets the cycle.
 function drawAnim(ctx, key, X, y, targetH, o){ o=o||{};
@@ -438,13 +445,13 @@ const SKINS = {
       ctx.lineWidth=4; ctx.strokeStyle='#1a0f16'; ctx.stroke();
       keithFace(ctx, cx, VH*0.5, 152, 'glare');
       ctx.textAlign='center';                                          // manga shout
-      ctx.font='900 58px "Pixelify",system-ui,sans-serif';
+      ctx.font='900 58px "Chakra Petch",system-ui,sans-serif';
       ctx.lineWidth=11; ctx.strokeStyle='#1a0f16'; ctx.strokeText(greet.big, VW/2, VH*0.155);
       ctx.fillStyle='#fff'; ctx.fillText(greet.big, VW/2, VH*0.155);
-      ctx.font='600 25px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#ffd0e2';
+      ctx.font='600 25px "Chakra Petch",system-ui,sans-serif'; ctx.fillStyle='#ffd0e2';
       greet.sub.forEach((ln,i)=>{ ctx.lineWidth=6; ctx.strokeStyle='rgba(9,7,18,0.9)';
         ctx.strokeText(ln, VW/2, VH*0.155+46+i*33); ctx.fillText(ln, VW/2, VH*0.155+46+i*33); });
-      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 20px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText('tap to begin', VW/2, VH*0.955);
     },
     // the win is a manga finish: Keith beaten, and for once impressed
@@ -464,22 +471,22 @@ const SKINS = {
         aSparkle(ctx, x, y, 3+2*Math.sin(frame*0.06+i), 'rgba(210,255,230,0.5)'); }
       ctx.textAlign='center';
       if(!drawTextFit(ctx, 'DISTRICT CLEARED.', VW/2, VH*0.135, 58, VW*0.9)){
-        ctx.font='900 66px "Pixelify",system-ui,sans-serif';
+        ctx.font='900 66px "Chakra Petch",system-ui,sans-serif';
         ctx.lineWidth=12; ctx.strokeStyle='#08120c'; ctx.strokeText('DISTRICT CLEARED.', VW/2, VH*0.15);
         ctx.fillStyle='#8affc1'; ctx.fillText('DISTRICT CLEARED.', VW/2, VH*0.15); }
-      ctx.font='600 25px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#e7ecf5';
+      ctx.font='600 25px "Chakra Petch",system-ui,sans-serif'; ctx.fillStyle='#e7ecf5';
       STORY.duel.yieldSub.forEach((ln,i)=>{ ctx.lineWidth=6; ctx.strokeStyle='rgba(6,11,9,0.9)';
         ctx.strokeText(ln, VW/2, VH*0.15+44+i*32); ctx.fillText(ln, VW/2, VH*0.15+44+i*32); });
       if(!drawNumber(ctx, score, VW/2, VH*0.31, 60)){
-        ctx.fillStyle='#fff'; ctx.font='800 62px "Pixelify",system-ui,sans-serif';
+        ctx.fillStyle='#fff'; ctx.font='800 62px "Chakra Petch",system-ui,sans-serif';
         ctx.lineWidth=8; ctx.strokeStyle='#08120c'; ctx.strokeText(String(score), VW/2, VH*0.31); ctx.fillText(String(score), VW/2, VH*0.31); }
-      ctx.font='700 24px "Pixelify",system-ui,sans-serif'; ctx.lineWidth=6; ctx.strokeStyle='#08120c'; ctx.fillStyle='#ffcf6b';
+      ctx.font='700 24px "Chakra Petch",system-ui,sans-serif'; ctx.lineWidth=6; ctx.strokeStyle='#08120c'; ctx.fillStyle='#ffcf6b';
       const dl='+'+saved+' SAVED   ·   +'+runEmbers+' EMBERS';
       ctx.strokeText(dl, VW/2, VH*0.40); ctx.fillText(dl, VW/2, VH*0.40);
-      if(districtCleared){ ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#8affc1';
+      if(districtCleared){ ctx.font='800 22px "Chakra Petch",system-ui,sans-serif'; ctx.fillStyle='#8affc1';
         const nx='NEW DISTRICT: '+DISTRICTS[Math.min(4,(META.district||1)-1)];
         ctx.strokeText(nx, VW/2, VH*0.44); ctx.fillText(nx, VW/2, VH*0.44); }
-      ctx.fillStyle='#cbd3e0'; ctx.font='500 22px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle='#cbd3e0'; ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';
       ctx.lineWidth=5; ctx.strokeStyle='#08120c';
       const tl='DISTRICT '+runDistrict+'  ·  tap → back to Ashford';
       ctx.strokeText(tl, VW/2, VH*0.485); ctx.fillText(tl, VW/2, VH*0.485);
@@ -765,13 +772,13 @@ const SKINS = {
         keithFace(ctx, cx, VH*0.5, 152, 'glare');
       ctx.textAlign='center';
       if(!drawTextFit(ctx, greet.big, VW/2, VH*0.145, 52, VW*0.9)){
-        ctx.font='900 58px "Pixelify",system-ui,sans-serif';
+        ctx.font='900 58px "Chakra Petch",system-ui,sans-serif';
         ctx.lineWidth=11; ctx.strokeStyle='#1a0f16'; ctx.strokeText(greet.big, VW/2, VH*0.16);
         ctx.fillStyle='#fff'; ctx.fillText(greet.big, VW/2, VH*0.16); }
-      ctx.font='600 25px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#ffd0e2';
+      ctx.font='600 25px "Chakra Petch",system-ui,sans-serif'; ctx.fillStyle='#ffd0e2';
       greet.sub.forEach((ln,i)=>{ ctx.lineWidth=6; ctx.strokeStyle='rgba(9,7,18,0.9)';
         ctx.strokeText(ln, VW/2, VH*0.16+46+i*33); ctx.fillText(ln, VW/2, VH*0.16+46+i*33); });
-      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 20px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText('tap to begin', VW/2, VH*0.955);
     },
     // win: KEITH beaten, embers settling
@@ -790,22 +797,22 @@ const SKINS = {
         aSparkle(ctx, x, y, 3+2*Math.sin(frame*0.06+i), 'rgba(210,255,230,0.5)'); }
       ctx.textAlign='center';
       if(!drawTextFit(ctx, 'DISTRICT CLEARED.', VW/2, VH*0.135, 58, VW*0.9)){
-        ctx.font='900 66px "Pixelify",system-ui,sans-serif';
+        ctx.font='900 66px "Chakra Petch",system-ui,sans-serif';
         ctx.lineWidth=12; ctx.strokeStyle='#08120c'; ctx.strokeText('DISTRICT CLEARED.', VW/2, VH*0.15);
         ctx.fillStyle='#8affc1'; ctx.fillText('DISTRICT CLEARED.', VW/2, VH*0.15); }
-      ctx.font='600 25px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#e7ecf5';
+      ctx.font='600 25px "Chakra Petch",system-ui,sans-serif'; ctx.fillStyle='#e7ecf5';
       STORY.duel.yieldSub.forEach((ln,i)=>{ ctx.lineWidth=6; ctx.strokeStyle='rgba(6,11,9,0.9)';
         ctx.strokeText(ln, VW/2, VH*0.15+44+i*32); ctx.fillText(ln, VW/2, VH*0.15+44+i*32); });
       if(!drawNumber(ctx, score, VW/2, VH*0.31, 60)){
-        ctx.fillStyle='#fff'; ctx.font='800 62px "Pixelify",system-ui,sans-serif';
+        ctx.fillStyle='#fff'; ctx.font='800 62px "Chakra Petch",system-ui,sans-serif';
         ctx.lineWidth=8; ctx.strokeStyle='#08120c'; ctx.strokeText(String(score), VW/2, VH*0.31); ctx.fillText(String(score), VW/2, VH*0.31); }
-      ctx.font='700 24px "Pixelify",system-ui,sans-serif'; ctx.lineWidth=6; ctx.strokeStyle='#08120c'; ctx.fillStyle='#ffcf6b';
+      ctx.font='700 24px "Chakra Petch",system-ui,sans-serif'; ctx.lineWidth=6; ctx.strokeStyle='#08120c'; ctx.fillStyle='#ffcf6b';
       const dl='+'+saved+' SAVED   ·   +'+runEmbers+' EMBERS';
       ctx.strokeText(dl, VW/2, VH*0.40); ctx.fillText(dl, VW/2, VH*0.40);
-      if(districtCleared){ ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#8affc1';
+      if(districtCleared){ ctx.font='800 22px "Chakra Petch",system-ui,sans-serif'; ctx.fillStyle='#8affc1';
         const nx='NEW DISTRICT: '+DISTRICTS[Math.min(4,(META.district||1)-1)];
         ctx.strokeText(nx, VW/2, VH*0.44); ctx.fillText(nx, VW/2, VH*0.44); }
-      ctx.fillStyle='#cbd3e0'; ctx.font='500 22px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle='#cbd3e0'; ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';
       ctx.lineWidth=5; ctx.strokeStyle='#08120c';
       const tl='DISTRICT '+runDistrict+'  ·  tap → back to Ashford';
       ctx.strokeText(tl, VW/2, VH*0.485); ctx.fillText(tl, VW/2, VH*0.485);
@@ -833,9 +840,9 @@ function wrapText(ctx,str,x,y,maxW,lh){ const words=String(str).split(' '); let 
 // Live data gauges use canvas UI; character artwork remains the existing Makko assets.
 function drawRunMeters(ctx){
   const heat=Math.max(0,Math.min(K.HEAT_MAX,player.heat||0)),hot=heat>=K.HEAT_MAX-1;
-  ctx.save();ctx.textAlign='left';ctx.font='800 28px "Pixelify",system-ui,sans-serif';
+  ctx.save();ctx.textAlign='left';ctx.font='800 28px "Chakra Petch",system-ui,sans-serif';
   ctx.fillStyle=hot?'#ff7065':'#ffcf80';ctx.fillText('HEAT '+Math.round(heat*10)/10+'/'+K.HEAT_MAX,300,34);
-  ctx.textAlign='right';ctx.font='700 25px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='right';ctx.font='700 25px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('BLAZE x'+(1+heat*K.BLAZE_MULT).toFixed(1),VW-18,34);
   const gap=5,sw=(VW-318-gap*(K.HEAT_MAX-1))/K.HEAT_MAX;
   for(let i=0;i<K.HEAT_MAX;i++){
@@ -843,11 +850,11 @@ function drawRunMeters(ctx){
     ctx.fillStyle='#302b32';ctx.fillRect(x,45,sw,12);
     ctx.fillStyle=hot?'#ff7065':'#ffb34f';if(f)ctx.fillRect(x,45,sw*f,12);
   }
-  ctx.textAlign='left';ctx.font='800 29px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#a0ffd0';
+  ctx.textAlign='left';ctx.font='800 29px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle='#a0ffd0';
   ctx.fillText('RESCUED '+saved+' / '+runQuota,18,89);
   ctx.textAlign='right';ctx.fillStyle=rescueReward?'#b0ffd8':'#ffcf80';
   ctx.fillText('RUN +'+runEmbers+' EMBERS',VW-18,89);
-  ctx.textAlign='left';ctx.font='600 22px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='left';ctx.font='600 22px "Chakra Petch",system-ui,sans-serif';
   ctx.fillStyle=duelActive?'#ff9dbd':'#c2b6c8';
   ctx.fillText(duelActive?'KEITH '+Math.floor(dumped)+' / '+((boss&&boss.dumpNeeded)||K.DUEL_DUMP):'EDGE '+(edge>0?'+':'')+Math.round(edge),18,118);
   ctx.textAlign='right';ctx.fillStyle=rescueReward?'#b0ffd8':'#b4a7ba';
@@ -883,8 +890,8 @@ function drawDialogue(ctx){
   ctx.restore();
   const tx=px+ps+16,tw=bx+bw-pad-tx;
   ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';
-  ctx.font='800 22px "Pixelify",system-ui,sans-serif';ctx.fillText(line.who,tx,by+25);
-  ctx.fillStyle='#f2f3ff';ctx.font='500 26px "Pixelify",system-ui,sans-serif';
+  ctx.font='800 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,tx,by+25);
+  ctx.fillStyle='#f2f3ff';ctx.font='500 26px "Chakra Petch",system-ui,sans-serif';
   wrapText(ctx,line.text.slice(0,shown),tx,by+54,tw,28);
 
   ctx.restore();
@@ -895,17 +902,17 @@ function drawConversationSheet(ctx){
   const h=dialogueSave().history;
   dialogueHistoryPage=Math.max(0,Math.min(dialogueHistoryPage,h.length-1));
   const line=h[dialogueHistoryPage];
-  ctx.textAlign='center';ctx.fillStyle='#c9a0ff';ctx.font='800 30px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='center';ctx.fillStyle='#c9a0ff';ctx.font='800 30px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('CONVERSATIONS',VW/2,154);
-  ctx.font='500 20px "Pixelify",system-ui,sans-serif';ctx.fillText('Only words you have already heard.',VW/2,190);
+  ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';ctx.fillText('Only words you have already heard.',VW/2,190);
   if(line){
-    ctx.fillStyle='#f3d7f1';ctx.font='800 28px "Pixelify",system-ui,sans-serif';ctx.fillText(line.who,VW/2,340);
-    ctx.fillStyle='#efe5fa';ctx.font='500 30px "Pixelify",system-ui,sans-serif';wrapText(ctx,line.text,VW/2,405,VW-100,42);
-    ctx.font='500 22px "Pixelify",system-ui,sans-serif';ctx.fillText((dialogueHistoryPage+1)+' / '+h.length,VW/2,VH-150);
+    ctx.fillStyle='#f3d7f1';ctx.font='800 28px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,VW/2,340);
+    ctx.fillStyle='#efe5fa';ctx.font='500 30px "Chakra Petch",system-ui,sans-serif';wrapText(ctx,line.text,VW/2,405,VW-100,42);
+    ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText((dialogueHistoryPage+1)+' / '+h.length,VW/2,VH-150);
   } else {ctx.fillText('Conversations will appear here as you hear them.',VW/2,380);}
   for(const [x,label,act,ok] of [[24,'‹ PREV','talkprev',dialogueHistoryPage>0],[250,'DIARY','diary',true],[476,'NEXT ›','talknext',dialogueHistoryPage<h.length-1]]){
     panel(ctx,x,VH-115,220,66,10,'#252039',ok?'#b8a0d7':'#554963');
-    ctx.fillStyle=ok?'#eee1ff':'#716581';ctx.font='700 22px "Pixelify",system-ui,sans-serif';ctx.fillText(label,x+110,VH-73);
+    ctx.fillStyle=ok?'#eee1ff':'#716581';ctx.font='700 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText(label,x+110,VH-73);
     hubB(x,VH-115,220,66,act,ok);
   }
 }
@@ -957,22 +964,22 @@ function drawHub(ctx){
 
   // --- TOP HUD: embers (left) · villagers saved (right) · hearts preview. Bold Makko digits, clear spacing.
   if(sprReady('flames')) drawFlame(ctx, 42, 74, 62, frame*0.4, 0.95);
-  if(!drawNumber(ctx, META.embers, 118, 52, 40)){ ctx.textAlign='left'; ctx.fillStyle='#ffcf6b'; ctx.font='800 40px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(META.embers), 70, 64); }
-  ctx.textAlign='left'; ctx.fillStyle='#ffb14d'; ctx.font='700 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('EMBERS', 70, 84);
+  if(!drawNumber(ctx, META.embers, 118, 52, 40)){ ctx.textAlign='left'; ctx.fillStyle='#ffcf6b'; ctx.font='800 40px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(String(META.embers), 70, 64); }
+  ctx.textAlign='left'; ctx.fillStyle='#ffb14d'; ctx.font='700 15px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('EMBERS', 70, 84);
   if(sprReady('happy')) drawSpr(ctx,'happy', VW-150, 52, 46, {});
-  if(!drawNumber(ctx, META.saved, VW-70, 52, 36)){ ctx.textAlign='right'; ctx.fillStyle='#8affc1'; ctx.font='800 34px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(META.saved), VW-40, 62); }
-  ctx.textAlign='right'; ctx.fillStyle='#8affc1'; ctx.font='700 14px "Pixelify",system-ui,sans-serif'; ctx.fillText('SAVED', VW-40, 82);
+  if(!drawNumber(ctx, META.saved, VW-70, 52, 36)){ ctx.textAlign='right'; ctx.fillStyle='#8affc1'; ctx.font='800 34px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(String(META.saved), VW-40, 62); }
+  ctx.textAlign='right'; ctx.fillStyle='#8affc1'; ctx.font='700 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('SAVED', VW-40, 82);
   { const n=Math.min(maxHearts,8), hs=18; for(let i=0;i<n;i++){ const hx=VW-40-(n-i)*(hs+3)+hs/2, hy=104; if(!drawSpr(ctx,'heart',hx,hy,hs,{})){ ctx.fillStyle='#ff4d4d'; ctx.beginPath(); ctx.arc(hx,hy,hs*0.32,0,7); ctx.fill(); } } }
 
   // --- town title
   ctx.textAlign='center';
-  if(!drawTextFit(ctx,'ASHFORD', VW/2, 178, 60, VW*0.7)){ ctx.fillStyle='#ffb04d'; ctx.font='900 58px "Pixelify",system-ui,sans-serif'; ctx.fillText('ASHFORD', VW/2, 178); }
+  if(!drawTextFit(ctx,'ASHFORD', VW/2, 178, 60, VW*0.7)){ ctx.fillStyle='#ffb04d'; ctx.font='900 58px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('ASHFORD', VW/2, 178); }
 
   // --- Keith feud banner
   panel(ctx, 40, 220, VW-80, 54, 12, 'rgba(50,12,28,0.66)', 'rgba(255,61,122,0.55)');
   if(sprReady('keith')) drawSpr(ctx,'keith', 76, 247, 58, {});
-  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='700 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('KEITH: '+feudStage().toUpperCase(), 112, 244);
-  ctx.fillStyle='rgba(255,157,189,0.72)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('he watches you rebuild', 112, 264);
+  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='700 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('KEITH: '+feudStage().toUpperCase(), 112, 244);
+  ctx.fillStyle='rgba(255,157,189,0.72)'; ctx.font='500 15px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('he watches you rebuild', 112, 264);
 
   // --- building cards (2x2), translucent over the scene. Makko-sprite icons, no emoji.
   const cardY=296, cardH=116, gap=14, cw=(VW-80-gap)/2, wellBuilt = META.buildings.well.built, forgeBuilt = META.buildings.forge.built;
@@ -986,13 +993,13 @@ function drawHub(ctx){
   const dFresh = diaryFreshCount();
   drawBuildingCard(ctx, 40+cw+gap, cardY+cardH+gap, cw, cardH, 'THE DIARY', dFresh>0 ? dFresh+' new to read' : 'story — optional', '#c9a0ff', true, 'diary', null);
   if(dFresh>0){ const bx=40+cw+gap+cw-22, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
-    ctx.fillStyle='#0a0710'; ctx.font='800 15px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(dFresh), bx, by+5); }
+    ctx.fillStyle='#0a0710'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(dFresh), bx, by+5); }
 
   if(starterAvailable()){
     panel(ctx,40,580,VW-80,88,14,'rgba(17,25,35,0.94)','#ffcf80');
-    ctx.textAlign='center';ctx.fillStyle='#ffe1a4';ctx.font='800 26px "Pixelify",system-ui,sans-serif';
+    ctx.textAlign='center';ctx.fillStyle='#ffe1a4';ctx.font='800 26px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText('CHOOSE YOUR FIRST UPGRADE',VW/2,615);
-    ctx.font='500 21px "Pixelify",system-ui,sans-serif';ctx.fillText('An extra heart or dash · '+STARTER_COST+' embers',VW/2,648);
+    ctx.font='500 21px "Chakra Petch",system-ui,sans-serif';ctx.fillText('An extra heart or dash · '+STARTER_COST+' embers',VW/2,648);
     hubB(40,580,VW-80,88,'starter');
   }
 
@@ -1006,13 +1013,13 @@ function drawHub(ctx){
   panel(ctx, pbX, pbY, pbW, pbH, 16, 'rgba(255,120,40,'+(0.34+0.14*pulse).toFixed(2)+')', '#ff9a45');
   ctx.textAlign='center';
   // district line
-  ctx.fillStyle='rgba(255,240,220,0.92)'; ctx.font='800 15px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='rgba(255,240,220,0.92)'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('DISTRICT '+selDistrict+' / 5  ·  KEITH LV.'+selDistrict, VW/2, pbY+26);
-  if(!drawTextFit(ctx,DISTRICTS[selDistrict-1], VW/2, pbY+56, 30, pbW*0.66)){ ctx.fillStyle='#fff'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillText(DISTRICTS[selDistrict-1], VW/2, pbY+58); }
+  if(!drawTextFit(ctx,DISTRICTS[selDistrict-1], VW/2, pbY+56, 30, pbW*0.66)){ ctx.fillStyle='#fff'; ctx.font='800 30px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(DISTRICTS[selDistrict-1], VW/2, pbY+58); }
   const foot = (selDistrict===unlocked && unlocked<5) ? 'clear this district to open the next' : (isTouch?'tap to enter':'SPACE / click to enter');
-  ctx.fillStyle='rgba(255,240,220,0.8)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(foot, VW/2, pbY+78);
+  ctx.fillStyle='rgba(255,240,220,0.8)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(foot, VW/2, pbY+78);
   // arrows
-  ctx.font='800 40px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center';
+  ctx.font='800 40px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center';
   ctx.fillStyle = canPrev ? '#ffe6c8' : 'rgba(255,230,200,0.22)'; ctx.fillText('‹', pbX+30, pbY+58);
   ctx.fillStyle = canNext ? '#ffe6c8' : 'rgba(255,230,200,0.22)'; ctx.fillText('›', pbX+pbW-30, pbY+58);
   hubB(pbX, pbY, pbW, pbH, 'play');                          // center enters
@@ -1029,7 +1036,7 @@ function drawHub(ctx){
   // --- toast (build/purchase feedback)
   if(hubToast>0){ ctx.globalAlpha=Math.min(1,hubToast); ctx.textAlign='center';
     const ty=VH*0.60; panel(ctx, VW/2-230, ty-30, 460, 60, 12, 'rgba(10,8,16,0.92)', 'rgba(255,207,107,0.75)');
-    ctx.fillStyle='#ffcf6b'; ctx.font='800 24px "Pixelify",system-ui,sans-serif'; ctx.fillText(hubToastMsg, VW/2, ty+9); ctx.globalAlpha=1; }
+    ctx.fillStyle='#ffcf6b'; ctx.font='800 24px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(hubToastMsg, VW/2, ty+9); ctx.globalAlpha=1; }
 }
 
 function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
@@ -1038,20 +1045,20 @@ function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
   if(iconSpr==='fire') drawFlame(ctx, x+w/2, y+h*0.56, h*0.52, frame*0.4, live?0.95:0.4);
   else if(iconSpr && sprReady(iconSpr)) drawSpr(ctx, iconSpr, x+w/2, y+h*0.40, h*0.5, {});
   ctx.restore();
-  ctx.textAlign='center'; ctx.fillStyle=live?'#fff':'rgba(205,210,225,0.9)'; ctx.font='800 20px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='center'; ctx.fillStyle=live?'#fff':'rgba(205,210,225,0.9)'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText(title, x+w/2, y+h-28);
-  ctx.fillStyle=live?col:'rgba(150,160,180,0.9)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(sub, x+w/2, y+h-9);
+  ctx.fillStyle=live?col:'rgba(150,160,180,0.9)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(sub, x+w/2, y+h-9);
   if(act) hubB(x,y,w,h,act,true);
 }
 
 function drawUpgradeProgress(ctx,x,y,w,h){
   const goal=upgradeGoal();
   panel(ctx,x,y,w,h,12,'rgba(15,20,31,0.97)','#71664a');
-  ctx.save();ctx.textAlign='center';ctx.fillStyle='#ffe0a2';ctx.font='800 25px "Pixelify",system-ui,sans-serif';
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#ffe0a2';ctx.font='800 25px "Chakra Petch",system-ui,sans-serif';
   if(!goal){ctx.fillText('ALL CURRENT UPGRADES OWNED',x+w/2,y+40);ctx.restore();return;}
   const have=goalAmount(goal),ready=have>=goal.cost;
   ctx.fillText(goal.name+(ready?' · READY':''),x+w/2,y+30);
-  ctx.font='500 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle=ready?'#a0ffd0':'#e2d6c3';
+  ctx.font='500 23px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle=ready?'#a0ffd0':'#e2d6c3';
   ctx.fillText(Math.floor(have)+' / '+goal.cost+' '+(goal.kind==='saves'?'RESCUED':'EMBERS'),x+w/2,y+59);
   ctx.fillStyle='#35303b';ctx.fillRect(x+20,y+h-22,w-40,9);
   ctx.fillStyle=ready?'#8affc1':'#ffbd65';ctx.fillRect(x+20,y+h-22,(w-40)*Math.min(1,Math.max(0,have/goal.cost)),9);
@@ -1060,50 +1067,50 @@ function drawUpgradeProgress(ctx,x,y,w,h){
 function drawRunResults(ctx){
   ctx.save();ctx.fillStyle='rgba(7,7,14,0.94)';ctx.fillRect(0,0,VW,VH);
   ctx.textAlign='center';ctx.fillStyle=won?'#a0ffd0':'#ffbd80';
-  ctx.font='800 54px "Pixelify",system-ui,sans-serif';ctx.fillText(won?'DISTRICT CLEARED':'BURNED UP',VW/2,190);
+  ctx.font='800 54px "Chakra Petch",system-ui,sans-serif';ctx.fillText(won?'DISTRICT CLEARED':'BURNED UP',VW/2,190);
   drawSpr(ctx,won?'happy':'ashimp',VW/2,286,105,{});
-  ctx.font='600 25px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#d2d9e8';
+  ctx.font='600 25px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle='#d2d9e8';
   ctx.fillText('Your embers are safe.',VW/2,380);
   ctx.fillText(saved+' villagers rescued · '+fmt(elapsed),VW/2,423);
-  ctx.fillStyle='#ffcf6b';ctx.font='800 36px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='#ffcf6b';ctx.font='800 36px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('+'+runEmbers+' embers earned',VW/2,478);
-  if(runStarterBonus>0){ctx.font='600 24px "Pixelify",system-ui,sans-serif';ctx.fillText('+'+runStarterBonus+' first-upgrade bonus',VW/2,517);}
+  if(runStarterBonus>0){ctx.font='600 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText('+'+runStarterBonus+' first-upgrade bonus',VW/2,517);}
   drawUpgradeProgress(ctx,48,558,VW-96,122);
-  ctx.fillStyle='#b7b8c9';ctx.font='500 22px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='#b7b8c9';ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('SCORE '+score,VW/2,731);
   const goal=upgradeGoal(),ready=goal&&goalAmount(goal)>=goal.cost;
   for(const b of resultButtons()){
     const primary=b.act==='retry';
     panel(ctx,b.x,b.y,b.w,b.h,14,primary?'#533222':'#202a39',primary?'#ffbd65':'#8ba1bc');
-    ctx.fillStyle=primary?'#ffe0ac':'#dce9fa';ctx.font='800 30px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle=primary?'#ffe0ac':'#dce9fa';ctx.font='800 30px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText(primary?(won&&runDistrict<META.district?'NEXT DISTRICT':'RUN AGAIN'):(ready?'UPGRADES · READY':'BACK TO ASHFORD'),VW/2,b.y+b.h/2+10);
   }
-  if(!isTouch){ctx.fillStyle='#b6bccb';ctx.font='500 22px "Pixelify",system-ui,sans-serif';ctx.fillText('ENTER / R: RUN · T: TOWN',VW/2,1060);}
+  if(!isTouch){ctx.fillStyle='#b6bccb';ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText('ENTER / R: RUN · T: TOWN',VW/2,1060);}
   ctx.restore();
 }
 
 function drawStarterSheet(ctx){
   hubBtns=[]; // modal owns every hit region; the town underneath cannot receive clicks
   ctx.save();ctx.fillStyle='rgba(6,7,14,0.94)';ctx.fillRect(0,0,VW,VH);
-  ctx.textAlign='center';ctx.fillStyle='#ffe0a2';ctx.font='800 38px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='center';ctx.fillStyle='#ffe0a2';ctx.font='800 38px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('YOUR FIRST UPGRADE',VW/2,215);
-  ctx.fillStyle='#edf0fa';ctx.font='500 26px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='#edf0fa';ctx.font='500 26px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('Choose what helps you most.',VW/2,260);
   ctx.fillStyle='#ffbd65';ctx.fillText('YOU HAVE '+META.embers+' EMBERS',VW/2,310);
   let y=360;
   for(const [key,o] of Object.entries(STARTER_OPTIONS)){
     panel(ctx,48,y,VW-96,220,16,'#171e2d',o.color);
     drawSpr(ctx,o.icon,104,y+68,50,{});
-    ctx.textAlign='left';ctx.fillStyle=o.color;ctx.font='800 27px "Pixelify",system-ui,sans-serif';ctx.fillText(o.title,148,y+47);
-    ctx.fillStyle='#ffffff';ctx.font='800 28px "Pixelify",system-ui,sans-serif';ctx.fillText(o.benefit,148,y+91);
-    ctx.font='500 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#cbd3e4';ctx.fillText(o.description,76,y+135);
+    ctx.textAlign='left';ctx.fillStyle=o.color;ctx.font='800 27px "Chakra Petch",system-ui,sans-serif';ctx.fillText(o.title,148,y+47);
+    ctx.fillStyle='#ffffff';ctx.font='800 28px "Chakra Petch",system-ui,sans-serif';ctx.fillText(o.benefit,148,y+91);
+    ctx.font='500 23px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle='#cbd3e4';ctx.fillText(o.description,76,y+135);
     const afford=META.embers>=STARTER_COST;
     panel(ctx,76,y+156,VW-152,46,10,afford?'#303c4e':'#242633',o.color);
-    ctx.textAlign='center';ctx.font='800 24px "Pixelify",system-ui,sans-serif';ctx.fillStyle=afford?'#ffe1a4':'#8c92a1';
+    ctx.textAlign='center';ctx.font='800 24px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle=afford?'#ffe1a4':'#8c92a1';
     ctx.fillText(afford?'BUY FOR '+STARTER_COST+' EMBERS':'NEED '+STARTER_COST+' EMBERS',VW/2,y+187);
     hubB(76,y+156,VW-152,46,'starterbuy:'+key,afford);y+=250;
   }
-  ctx.font='500 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#cbd3e4';
+  ctx.font='500 23px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle='#cbd3e4';
   ctx.fillText('Permanent. Applies on your next run.',VW/2,895);
   ctx.fillText('The other upgrade stays available in its shop.',VW/2,932);
   panel(ctx,160,978,VW-320,60,12,'#1c2331','#7b89a2');ctx.fillStyle='#e2e9f6';ctx.fillText('DECIDE LATER',VW/2,1016);
@@ -1115,30 +1122,30 @@ function drawShopSheet(ctx, bld){
   const h=360, y=VH-h; ctx.fillStyle='rgba(6,5,11,0.55)'; ctx.fillRect(0,0,VW,VH);
   panel(ctx, 0, y, VW, h+20, 18, 'rgba(14,16,26,0.98)', col);
   hubB(0,0,VW,y,'close');                                     // tap above the sheet closes it
-  ctx.textAlign='center'; ctx.fillStyle=col; ctx.font='800 34px "Pixelify",system-ui,sans-serif'; ctx.fillText(shop.title, VW/2, y+50);
-  ctx.fillStyle='rgba(210,220,235,0.8)'; ctx.font='500 17px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='center'; ctx.fillStyle=col; ctx.font='800 34px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(shop.title, VW/2, y+50);
+  ctx.fillStyle='rgba(210,220,235,0.8)'; ctx.font='500 17px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText(shop.sub, VW/2, y+78);
   let ry=y+108;
   for(const item of shop.items){
     const tier=META.buildings[bld][item.track]||0, maxed=tier>=item.costs.length;
     const cost=maxed?0:item.costs[tier], afford=META.embers>=cost;
     panel(ctx, 30, ry, VW-60, 96, 12, 'rgba(30,34,48,0.9)', colDim);
-    ctx.textAlign='left'; ctx.fillStyle='#fff'; ctx.font='800 22px "Pixelify",system-ui,sans-serif'; ctx.fillText(item.name, 50, ry+34);
-    ctx.fillStyle='rgba(200,210,225,0.8)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(item.desc, 50, ry+58);
+    ctx.textAlign='left'; ctx.fillStyle='#fff'; ctx.font='800 22px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(item.name, 50, ry+34);
+    ctx.fillStyle='rgba(200,210,225,0.8)'; ctx.font='500 16px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(item.desc, 50, ry+58);
     for(let i=0;i<item.costs.length;i++){ ctx.fillStyle=i<tier?col:'rgba(180,190,210,0.2)'; ctx.beginPath(); ctx.arc(52+i*20, ry+80, 6,0,7); ctx.fill(); }
     // buy button — dark stone with the bold Makko flame + gold cost digits (no emoji, crisp numbers)
     const bw=152, bx=VW-30-bw-14, by=ry+18, bh=60;
     panel(ctx, bx, by, bw, bh, 10, maxed?'rgba(40,44,58,0.8)':(afford?'rgba(34,24,14,0.96)':'rgba(24,20,26,0.7)'), maxed?'#5a6072':(afford?'#ffb14d':'rgba(120,90,60,0.5)'));
     ctx.textAlign='center';
-    if(maxed){ ctx.fillStyle='#8891a5'; ctx.font='800 24px "Pixelify",system-ui,sans-serif'; ctx.fillText('MAX', bx+bw/2, by+39); }
+    if(maxed){ ctx.fillStyle='#8891a5'; ctx.font='800 24px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('MAX', bx+bw/2, by+39); }
     else { ctx.save(); if(!afford) ctx.globalAlpha=0.5;
       if(sprReady('flames')) drawFlame(ctx, bx+38, by+48, 44, frame*0.4, 1);
-      if(!drawNumber(ctx, cost, bx+bw/2+20, by+30, 32)){ ctx.fillStyle='#ffcf6b'; ctx.font='800 28px "Pixelify",system-ui,sans-serif'; ctx.fillText(String(cost), bx+bw/2+20, by+40); }
+      if(!drawNumber(ctx, cost, bx+bw/2+20, by+30, 32)){ ctx.fillStyle='#ffcf6b'; ctx.font='800 28px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(String(cost), bx+bw/2+20, by+40); }
       ctx.restore(); }
     if(!maxed && afford) hubB(bx,by,bw,bh,'buy:'+bld+':'+item.track);
     ry+=112;
   }
-  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
+  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 16px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-14);
 }
 
 function drawShrineSheet(ctx){
@@ -1147,20 +1154,20 @@ function drawShrineSheet(ctx){
   panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.99)', 'rgba(201,160,255,0.5)');
   hubB(0,0,VW,y,'close');
   ctx.textAlign='center';
-  ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE SHRINE', VW/2, y+48);
-  ctx.fillStyle='rgba(210,195,235,0.72)'; ctx.font='italic 500 15px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('THE SHRINE', VW/2, y+48);
+  ctx.fillStyle='rgba(210,195,235,0.72)'; ctx.font='italic 500 15px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('someone has been keeping count.', VW/2, y+72);
 
   // Rescue count records progress; it is not a debt balance or a release threshold.
-  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Pixelify",system-ui,sans-serif';
+  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('THE RATKIN REMEMBER', 44, y+112);
-  ctx.fillStyle='#efe4ff'; ctx.font='500 18px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='#efe4ff'; ctx.font='500 18px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('You got them out. Their homes are still here.', 44, y+148);
   ctx.fillText('Keith watches. The ratkin have the last word.', 44, y+180);
 
   // ---- record rows
-  const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Pixelify",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
-    ctx.textAlign='right'; ctx.fillStyle=col||'#efe4ff'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText(val, VW-44, yy); };
+  const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
+    ctx.textAlign='right'; ctx.fillStyle=col||'#efe4ff'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(val, VW-44, yy); };
   row('LIVES CARRIED OUT, ALL TOLD', String(META.saved||0), y+218, '#8affc1');
   row('QUARTERS OF ASHFORD RECLAIMED', (META.clearedDistricts||0)+' / 5', y+254, '#ffcf8a');
   row('THE JAILER, KEITH', feudStage().toUpperCase(), y+290, '#ff9dbd');
@@ -1169,11 +1176,11 @@ function drawShrineSheet(ctx){
   // ---- read-the-record button -> the diary
   const bY=y+h-92, bX=60, bW=VW-120, bH=66, fresh=diaryFreshCount();
   panel(ctx, bX, bY, bW, bH, 14, 'rgba(40,30,58,0.9)', 'rgba(201,160,255,0.6)');
-  ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='800 23px "Pixelify",system-ui,sans-serif'; ctx.fillText('READ THE RECORD', VW/2, bY+34);
-  ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(fresh>0 ? fresh+' new to read' : "Duy's account of how he got here", VW/2, bY+54);
-  if(fresh>0){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bX+bW-26, bY+24, 12, 0, 7); ctx.fill(); ctx.fillStyle='#0a0710'; ctx.font='800 15px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(fresh), bX+bW-26, bY+29); }
+  ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='800 23px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('READ THE RECORD', VW/2, bY+34);
+  ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(fresh>0 ? fresh+' new to read' : "Duy's account of how he got here", VW/2, bY+54);
+  if(fresh>0){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bX+bW-26, bY+24, 12, 0, 7); ctx.fill(); ctx.fillStyle='#0a0710'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(fresh), bX+bW-26, bY+29); }
   hubB(bX, bY, bW, bH, 'diary');
-  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
+  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
 }
 
 function drawDiarySheet(ctx){
@@ -1184,8 +1191,8 @@ function drawDiarySheet(ctx){
 
   if(diaryOpen===null){
     // ---- CHAPTER LIST
-    ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+40);
-    ctx.fillStyle='rgba(210,195,235,0.65)'; ctx.font='italic 500 14px "Pixelify",system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.fillStyle='#c9a0ff'; ctx.font='800 30px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('THE DIARY', VW/2, y+40);
+    ctx.fillStyle='rgba(210,195,235,0.65)'; ctx.font='italic 500 14px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText('Memories, when you have a moment. Reading is optional.', VW/2, y+62);
     const rowH=54, x0=30, rw=VW-60; let ry=y+80;
     for(let i=0;i<DIARY.length;i++){ const e=DIARY[i], ok=diaryUnlocked(e), fresh=ok&&!diaryIsRead(e.id);
@@ -1198,29 +1205,29 @@ function drawDiarySheet(ctx){
       else if(ok && sprReady(e.art)) drawSpr(ctx, e.art, x0+32, ty0, 38, {});
       else { ctx.fillStyle=ok?'#3a2f52':'#2a2636'; ctx.beginPath(); ctx.arc(x0+32, ty0, 17, 0, 7); ctx.fill(); }
       ctx.textAlign='left';
-      if(ok){ ctx.fillStyle='#efe4ff'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.title, x0+62, ry+22);
-        ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='italic 500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.teaser, x0+62, ry+40); }
-      else { ctx.fillStyle='#8a84a0'; ctx.font='800 20px "Pixelify",system-ui,sans-serif'; ctx.fillText('LOCKED', x0+62, ry+22);
-        ctx.fillStyle='rgba(160,154,180,0.7)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(e.hint, x0+62, ry+40); }
+      if(ok){ ctx.fillStyle='#efe4ff'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(e.title, x0+62, ry+22);
+        ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='italic 500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(e.teaser, x0+62, ry+40); }
+      else { ctx.fillStyle='#8a84a0'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('LOCKED', x0+62, ry+22);
+        ctx.fillStyle='rgba(160,154,180,0.7)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(e.hint, x0+62, ry+40); }
       ctx.restore();
-      if(fresh){ ctx.fillStyle='#8affc1'; ctx.font='800 14px "Pixelify",system-ui,sans-serif'; ctx.textAlign='right'; ctx.fillText('NEW', x0+rw-16, ry+30); }
+      if(fresh){ ctx.fillStyle='#8affc1'; ctx.font='800 14px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='right'; ctx.fillText('NEW', x0+rw-16, ry+30); }
       if(ok) hubB(x0, ry, rw, rowH-8, 'diaryopen:'+i);
       ry += rowH;
     }
     panel(ctx,30,VH-145,VW-60,60,10,'#252039','#b8a0d7');
-    ctx.textAlign='center';ctx.fillStyle='#eee1ff';ctx.font='700 23px "Pixelify",system-ui,sans-serif';ctx.fillText('CONVERSATIONS · Read again',VW/2,VH-108);
+    ctx.textAlign='center';ctx.fillStyle='#eee1ff';ctx.font='700 23px "Chakra Petch",system-ui,sans-serif';ctx.fillText('CONVERSATIONS · Read again',VW/2,VH-108);
     hubB(30,VH-145,VW-60,60,'conversations');
-    ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('tap the top to close', VW/2, VH-12);
+    ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 15px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('tap the top to close', VW/2, VH-12);
   } else {
     // ---- READER (tall, story-friendly)
     const e = DIARY[diaryOpen], pg = Math.max(0, Math.min(diaryPage, e.pages.length-1));
     // back
     panel(ctx, 24, y+22, 120, 42, 10, 'rgba(40,30,58,0.85)', 'rgba(201,160,255,0.45)');
-    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText('‹ BACK', 84, y+49);
+    ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='700 18px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('‹ BACK', 84, y+49);
     hubB(24, y+22, 120, 42, 'diaryback');
     // title (shrink to fit)
-    ctx.textAlign='center'; let ts=30; ctx.font='800 30px "Pixelify",system-ui,sans-serif';
-    while(ctx.measureText(e.title).width > VW-180 && ts>16){ ts-=2; ctx.font='800 '+ts+'px "Pixelify",system-ui,sans-serif'; }
+    ctx.textAlign='center'; let ts=30; ctx.font='800 30px "Chakra Petch",system-ui,sans-serif';
+    while(ctx.measureText(e.title).width > VW-180 && ts>16){ ts-=2; ctx.font='800 '+ts+'px "Chakra Petch",system-ui,sans-serif'; }
     ctx.fillStyle='#c9a0ff'; ctx.fillText(e.title, VW/2, y+54);
     // illustration
     const iy=y+80, ih=352;
@@ -1234,21 +1241,21 @@ function drawDiarySheet(ctx){
       ctx.drawImage(sim, VW/2-w/2, iy+ih/2-hh/2, w, hh); }
     else if(sim) drawSpr(ctx, e.art, VW/2, iy+ih/2, ih*0.86, {});
     else { const g=ctx.createLinearGradient(0,iy,0,iy+ih); g.addColorStop(0,'#241c30'); g.addColorStop(1,'#15111d'); ctx.fillStyle=g; ctx.fillRect(40,iy,VW-80,ih);
-      ctx.fillStyle='rgba(201,160,255,0.25)'; ctx.font='700 16px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText('· '+e.title+' ·', VW/2, iy+ih/2); }
+      ctx.fillStyle='rgba(201,160,255,0.25)'; ctx.font='700 16px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText('· '+e.title+' ·', VW/2, iy+ih/2); }
     ctx.restore();
     // prose (roomy)
-    ctx.textAlign='center'; ctx.fillStyle='#eadffb'; ctx.font='500 25px "Pixelify",system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.fillStyle='#eadffb'; ctx.font='500 25px "Chakra Petch",system-ui,sans-serif';
     wrapText(ctx, e.pages[pg], VW/2, iy+ih+56, VW-110, 36);
     // page dots + nav pinned to the bottom
     const dotY=VH-58, n=e.pages.length, dw=18; const dx0=VW/2-((n-1)*dw)/2;
     for(let i=0;i<n;i++){ ctx.fillStyle = i===pg ? '#c9a0ff' : 'rgba(201,160,255,0.3)'; ctx.beginPath(); ctx.arc(dx0+i*dw, dotY-14, 5, 0, 7); ctx.fill(); }
-    ctx.textAlign='center'; ctx.font='800 38px "Pixelify",system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.font='800 38px "Chakra Petch",system-ui,sans-serif';
     ctx.fillStyle = pg>0 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('‹', 58, dotY+8);
     ctx.fillStyle = pg<n-1 ? '#e7d9ff' : 'rgba(231,217,255,0.22)'; ctx.fillText('›', VW-58, dotY+8);
     if(pg>0) hubB(20, dotY-40, 96, 80, 'diaryprev');
     hubB(120, dotY-40, VW-240, 80, pg<n-1 ? 'diarynext' : 'diaryback');   // center advances, or closes on last page
     if(pg<n-1) hubB(VW-116, dotY-40, 96, 80, 'diarynext');
-    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(pg<n-1?'tap to turn the page':'tap to close the chapter', VW/2, VH-14);
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(pg<n-1?'tap to turn the page':'tap to close the chapter', VW/2, VH-14);
   }
 }
 
@@ -1281,11 +1288,11 @@ function drawTitle(ctx){
   ctx.fillStyle=tg; ctx.fillRect(0,ty-VW*0.45,VW,VW*0.9);
   const bob=Math.sin(frame*0.05)*4;
   if(!drawTextFit(ctx,'FWOOSH', VW/2, ty+bob, 140, VW*0.92)){
-    ctx.fillStyle='#ffb04d'; ctx.font='900 120px "Pixelify",system-ui,sans-serif'; ctx.fillText('FWOOSH', VW/2, ty+bob); }
-  ctx.fillStyle='#ffd0a0'; ctx.font='600 26px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle='#ffb04d'; ctx.font='900 120px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('FWOOSH', VW/2, ty+bob); }
+  ctx.fillStyle='#ffd0a0'; ctx.font='600 26px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('carry their fire', VW/2, VH*0.335);
   const blink=0.35+0.55*(0.5+0.5*Math.sin(frame*0.12));
-  ctx.fillStyle='rgba(255,255,255,'+blink.toFixed(2)+')'; ctx.font='700 30px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,'+blink.toFixed(2)+')'; ctx.font='700 30px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('TAP TO START', VW/2, VH*0.90);
 }
 
@@ -1549,13 +1556,13 @@ function render(){
     drawRunMeters(ctx);
     // Optional dialogue replaces only dock information, never the camera or controls.
     if(!intro && !presentDialogue){
-      ctx.save();ctx.textAlign='left';ctx.fillStyle='#dfd8c9';ctx.font='600 25px "Pixelify",system-ui,sans-serif';
+      ctx.save();ctx.textAlign='left';ctx.fillStyle='#dfd8c9';ctx.font='600 25px "Chakra Petch",system-ui,sans-serif';
       const goal=upgradeGoal();if(goal)ctx.fillText(goal.name+' · '+Math.floor(goalAmount(goal))+' / '+goal.cost,18,1139);
       const status=callout?callout.text:isTouch?'Swipe to dash · Hold VENT to cool':'WASD steer · SHIFT dash';
-      ctx.fillStyle=callout&&callout.good===false?'#ff9dbd':'#d7cedd';ctx.font='600 24px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle=callout&&callout.good===false?'#ff9dbd':'#d7cedd';ctx.font='600 24px "Chakra Petch",system-ui,sans-serif';
       wrapText(ctx,status,18,1175,516,27);
       if(player.ventUnit){
-        const u=player.ventUnit;ctx.fillStyle='#ffe0a2';ctx.font='700 24px "Pixelify",system-ui,sans-serif';
+        const u=player.ventUnit;ctx.fillStyle='#ffe0a2';ctx.font='700 24px "Chakra Petch",system-ui,sans-serif';
         ctx.fillText((u.kind==='heat'?'VENT 1 HEAT':'HEAL 1 HEART')+(player.ventHeld?' · HOLD':' · FINISHING'),18,1228);
       }
       ctx.restore();
@@ -1587,11 +1594,11 @@ function render(){
     }
     if(isTouch)drawVentButton(ctx);
     else {
-      ctx.textAlign='center';ctx.fillStyle='#ffcf80';ctx.font='700 26px "Pixelify",system-ui,sans-serif';
+      ctx.textAlign='center';ctx.fillStyle='#ffcf80';ctx.font='700 26px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText('HOLD',633,1160);ctx.fillText('SPACE',633,1192);
-      ctx.font='600 22px "Pixelify",system-ui,sans-serif';ctx.fillText(player.heat>0?'VENT':'HEAL',633,1224);
+      ctx.font='600 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText(player.heat>0?'VENT':'HEAL',633,1224);
     }
-    ctx.textAlign='left';ctx.fillStyle='#b4a7ba';ctx.font='500 20px "Pixelify",system-ui,sans-serif';
+    ctx.textAlign='left';ctx.fillStyle='#b4a7ba';ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText('DASH',170,1267);
     if(intro||presentDialogue)ctx.fillText('AUTO · Diary → Conversations',248,1267);
   }
@@ -1604,14 +1611,14 @@ function render(){
     ctx.fillStyle = 'rgba(7,7,11,0.82)'; ctx.fillRect(0,0,VW,VH);
     ctx.textAlign = 'center';
     if(!drawTextFit(ctx, 'YOU WOKE IN THE FIRE.', VW/2, VH*0.155, 46, VW*0.92)){
-      ctx.fillStyle = '#ffb04d'; ctx.font = '800 48px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle = '#ffb04d'; ctx.font = '800 48px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText('YOU WOKE IN THE FIRE.', VW/2, VH*0.165); }
-    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 23px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 23px "Chakra Petch",system-ui,sans-serif';
     STORY.premise.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH*0.20 + 66 + i*40));
     if(!drawTextFit(ctx, "DON'T END UP A WALL.", VW/2, VH*0.20 + 66 + STORY.premise.length*40 + 42, 34, VW*0.92)){
-      ctx.fillStyle = '#fff'; ctx.font = '800 36px "Pixelify",system-ui,sans-serif';
+      ctx.fillStyle = '#fff'; ctx.font = '800 36px "Chakra Petch",system-ui,sans-serif';
       ctx.fillText("DON'T END UP A WALL.", VW/2, VH*0.20 + 66 + STORY.premise.length*40 + 52); }
-    ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = '500 20px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = '500 20px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText('tap to start', VW/2, VH*0.82);
   }
 
@@ -1630,15 +1637,15 @@ function render(){
         ctx.strokeStyle = 'rgba(255,61,122,0.85)'; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.arc(X, g.y, pr, 0, 7); ctx.stroke();
       });
-      ctx.fillStyle = '#c9a8b8'; ctx.font = '600 21px "Pixelify",system-ui,sans-serif'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#c9a8b8'; ctx.font = '600 21px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('your most-passed spot', g.x, g.y - pr - 14);
     }
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#ff5d94'; ctx.font = '800 42px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = '#ff5d94'; ctx.font = '800 42px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText(greetC.big, VW/2, VH*0.28);
-    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 24px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 24px "Chakra Petch",system-ui,sans-serif';
     greetC.sub.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH*0.28 + 42 + i*32));
-    ctx.fillStyle = 'rgba(255,255,255,0.42)'; ctx.font = '500 20px "Pixelify",system-ui,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.42)'; ctx.font = '500 20px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText('tap to begin', VW/2, VH*0.72);
     }
   }

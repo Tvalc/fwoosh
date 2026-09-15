@@ -1,5 +1,12 @@
 # Fwoosh status — September 14, 2026
 
+## Sharper UI typography — 2026-09-15-type-1
+
+Tony requested a sharper, more legible font in the same visual family. Compared Pixelify, Chakra Petch and Oxanium at phone text sizes; selected Chakra Petch Medium/Bold for its squared forms and clearer numerals. HUD, dialogue, diary, shops and counters now use Chakra Petch. Large decorative Makko titles remain. Small image-atlas labels use real text. Both font weights are bundled locally and preloaded; no Google Fonts runtime request is required. Original fonts and artwork are preserved.
+
+97 existing state/input checks pass. Browser fixtures inspected HUD/dialogue, first-upgrade cards and diary at 320/375/430px. This is visual inspection, not a physical-device usability study. Full-map layout, barrel collider, demon-circle removal, saves and economy remain unchanged. Issue #1 records deployment.
+
+
 ## Remove demon windup circle — 2026-09-15-demon-art-1
 
 Removed the drawn yellow ring around vent-born fire demons during their windup, as Tony requested. Existing Makko demon animation and simulation timing remain unchanged. ART.md records the rule against reintroducing this overlay. All 97 existing checks pass; a local browser fixture verifies the demon windup without its yellow circle. Issue #1 records deployment.
