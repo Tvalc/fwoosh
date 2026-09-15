@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-well-1` is the release candidate. The arcade loop, assisted pursuit, faster burning runners, committed vent units, persistent vent demons, distant vent spawns, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The Well now owns survivability; its Deep Draught tiers shorten committed vent-healing. Shrine is hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-well-2` is the release candidate. The arcade loop, assisted pursuit, faster burning runners, committed vent units, persistent vent demons, distant vent spawns, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The Well now owns survivability; its Deep Draught tiers shorten committed vent-healing. Shrine is hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
