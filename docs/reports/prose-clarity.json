@@ -1,0 +1,16 @@
+{
+  "release": "2026-09-15-prose-2",
+  "approvedDraft": "Matches verbatim except page whitespace",
+  "firePages": 5,
+  "otherChapters": "unchanged",
+  "openingAndLore": "unchanged",
+  "introVersion": 4,
+  "unlock": "27 total rescues",
+  "layout": {
+    "loadedFont": true,
+    "phoneWidth": 320,
+    "maxDiaryBaseline": 980,
+    "navigationBeginsBelow": 1160,
+    "consoleErrors": 0
+  }
+}

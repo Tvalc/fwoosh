@@ -76,3 +76,7 @@ Chapter IDs, titles, art assignments, unlock predicates, hints and saved read hi
 Validation: all 81 gameplay/input checks pass in reports/prose-state.json, including intro control and one-time replay/save preservation. A comparison against the prior story verifies identical diary identities/art/unlocks/hints and STORY data structure. Browser measurement with the loaded Pixelify font checks all 78 pages, seven opening lines and fourteen lore lines: maximum diary baseline 728 (navigation begins below 1160), opening baseline 943 (available through 1008), lore width 587.425 within 700. Local 320px visual checks cover a diary page, one of the longest pages and the opening during gameplay; no console errors observed. Voice and reading pace remain subject to Tony's playtest.
 
 Release verification and final commit/PR are recorded in issue #1. No new art, factions, magic explanation, city system or Invoice conversion was invented. The author research informs general craft; the passages are original to Fwoosh.
+
+## Approved prose correction — prose-2
+
+Tony clarified that absorbing fire hurts immediately and accumulating heat increases Duy's pain. Freed ratkin ascend into light; they do not run or stumble away. The existing Makko rescue animation already depicts that ascent. Its destination remains unspecified. The approved clearer Town on Fire scene replaces that chapter only; see PROSE_DELIVERY.md for delivery and validation. Other prose-1 chapters still await the clarity pass.
