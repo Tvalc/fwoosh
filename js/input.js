@@ -51,6 +51,7 @@ function onDown(x,y){
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ resultClick(x,y); return; }        // run ended -> return to the town hub
   if(mode === 'hub'){ hubClick(x,y); return; }      // tapping the town: buildings / shop / PLAY
+  if(mode==='play' && y<ARENA.HUD_BOTTOM){cancelPointer();return;} // HUD taps never steer or spend a dash.
   // Mobile only: the on-screen VENT button. (Desktop vents with SPACE, so no button — a click there dashes.)
   if(isTouch && mode === 'play'){ const vb = ventBtn();
     if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; setVentHeld(true); return; } }

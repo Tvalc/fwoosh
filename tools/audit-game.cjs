@@ -257,8 +257,8 @@ test('Touch release finishes exactly one unit without spending a dash', () => {
 
 test('Touch swipe uses one charge; its release does not add a second dash', () => {
   const g=game();g.run('onTitle=false; intro=null; introT=0');
-  g.dispatch('pointerdown',{pointerType:'touch',clientX:100,clientY:200});
-  g.dispatch('pointermove',{pointerType:'touch',clientX:250,clientY:200});g.dispatch('pointerup');
+  g.dispatch('pointerdown',{pointerType:'touch',clientX:100,clientY:600});
+  g.dispatch('pointermove',{pointerType:'touch',clientX:250,clientY:600});g.dispatch('pointerup');
   assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.down'),false);
 });
 test('Every upgrade track caps correctly and reload applies the completed build', () => {
@@ -677,6 +677,36 @@ test('Present dialogue contains no past-life reveals and all templates use named
  assert.ok(lines.every(l=>['DUY','KEITH'].includes(l.who)&&l.emotion&&l.text.length<100));
  assert.ok(lines.every(l=>!(/Mei|Cuong|Diep|nineteen|brother|Adonai|Odin|gunman|gate/i.test(l.text))));
  assert.equal(g.run('STORY.lore.length'),0);
+});
+
+
+test('Running and repeated upward dashes never enter the reserved HUD area',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;god=true;ghost=true;cells=[];player.x=360;player.y=ARENA.TOP+5;keys.w=true;for(let i=0;i<480;i++){if(i%120===0)lungeDir(0,-1);step();if(player.y<ARENA.TOP)throw Error('Player entered HUD');}");
+ assert.ok(g.run('player.y>=ARENA.TOP'));
+});
+test('Husk and wall pushes at the top are constrained after collision resolution',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;god=true;ghost=true;cells=[];player.x=360;player.y=ARENA.TOP;player.heat=0;husks=[{x:360,y:ARENA.TOP+8,t:0,ph:0}];slag=[{x:370,y:ARENA.TOP+10}];for(let i=0;i<20;i++){step();if(player.y<ARENA.TOP)throw Error('Push entered HUD');}");
+ assert.ok(g.run('player.y>=ARENA.TOP'));
+});
+test('Spawned villagers, vent demons and old grudge targets stay in reachable ground',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;for(let i=0;i<80;i++)spawnCrowd(false);player.y=ARENA.TOP;player.hy=1;spawnVentDemon();");
+ assert.ok(g.run('cells.every(c=>c.y>=ARENA.TOP)'));assert.ok(g.run('demons.every(d=>d.y>=ARENA.TOP)'));
+ assert.ok(g.run('Array.from({length:48},(_,i)=>cellCenter(i)).every(c=>c.y>=ARENA.TOP)'));
+ g.run('opp.grudge={x:360,y:80};startDuel()');assert.ok(g.run('boss.y>=ARENA.TOP'));
+});
+test('HUD taps and swipes cannot consume a dash; playfield gestures still work',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;onDown(300,80);onMove(400,80);onUp()');assert.equal(g.run('player.charges'),3);
+ g.run('onDown(300,600);onMove(400,600);onUp()');assert.equal(g.run('player.charges'),2);
+});
+test('Tallest current vent sprite fits below the HUD even during absorb and vent pops',()=>{
+ const g=game();const reach=g.run('K.R_PLAYER*5*(1+0.3*1.25+0.3*1.4)*Math.max(K.VENT_ANIM_SC_F,K.VENT_ANIM_SC_C)*(K.VENT_ANIM_ANCH+0.5)+5');
+ assert.ok(g.run('ARENA.TOP-ARENA.HUD_BOTTOM')>=reach);
+});
+test('World drawing is clipped separately and status occupies the reserved header',()=>{
+ const g=game();g.run("const hudRects=[],hudTexts=[];const priorFill=ctx.fillText;ctx.rect=(...a)=>hudRects.push(a);ctx.fillText=(t,x,y)=>{hudTexts.push({t,x,y});priorFill(t,x,y);};onTitle=false;intro=null;introT=0;rescueReward={count:2,embers:8,t:1};render()");
+ assert.ok(g.drawnText.includes('2 RESCUED · +8 EMBERS'));
+ assert.ok(g.run('hudRects.some(r=>r[0]===0 && r[1]===ARENA.HUD_BOTTOM && r[2]===VW && r[3]===VH-ARENA.HUD_BOTTOM)'));
+ assert.ok(g.run("hudTexts.find(r=>r.t==='2 RESCUED · +8 EMBERS').y<ARENA.HUD_BOTTOM"));
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
