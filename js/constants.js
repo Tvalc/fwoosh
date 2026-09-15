@@ -141,6 +141,8 @@ const K = {
   // bosses: the apex duel (Keith, the win) + risers (minibosses)
   DUEL_CROWD: 3,                    // crowd below this late-run = Keith gets up
   DUEL_MIN_T: 20,                   // never before 20s in
+  DUEL_ARSON_EVERY: 3.2,            // boss fight keeps the rescue/heat loop alive at a readable pace
+  DUEL_ARSON_MIN: 2.2,              // deeper districts accelerate it slightly, never to town-run spam speed
   KEITH_R: 20, KEITH_FUSE: 4.0, KEITH_DOWNS: 3,
   KEITH_FLEE: 130,                  // unlit Keith evades like crowd: herding is the offense
   KEITH_PUR0: 190, KEITH_PUR1: 310, // lit Keith hunts you to shed it back

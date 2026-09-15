@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-logistics-1` is the release candidate. The arcade loop and first Ratkin Quarter foundation are joined by food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. Construction, sealing, worker assignment and production remain automatic by default and continue offline. Shrine remains hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-duel-fire-1` is the release candidate. The arcade loop now keeps renewable rescue/heat sources active through the boss encounter, preventing the reported level-one soft lock. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. Shrine remains hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 

@@ -283,6 +283,17 @@ test('Every upgrade track caps correctly and reload applies the completed build'
   assert.equal(reload.run('RUN_HP_REGEN'),g.run('K.HP_REGEN'));
   assert.equal(reload.run('RUN_VENT_HEAL_T'),0.4);
 });
+test('Keith duel keeps valid villagers and a renewable fire source',()=>{
+ const g=game();g.run('onTitle=false;intro=null;god=true;cells=[];startDuel()');
+ assert.ok(g.run('crowd().length>=K.DUEL_CROWD'),'The duel began with no villagers available for ignition.');
+ g.run('boss.state="rising";arsonT=K.DUEL_ARSON_EVERY;step()');assert.ok(g.run('arson.length>0'),'The duel disabled the fire-imp scheduler and left no renewable heat.');
+ g.run('arson[0].warn=0;arson[0].x=arson[0].tgt.x;arson[0].y=arson[0].tgt.y;stepArson(DT)');
+ assert.ok(g.run('hunters().length>0'),'A missed duel imp did not ignite its target.');
+});
+test('Duel fire can be intercepted for heat and dumped into Keith',()=>{
+ const g=game();g.run('onTitle=false;intro=null;cells=[];startDuel();boss.state="idle";const target=crowd()[0];arson=[{x:player.x,y:player.y,tgt:target,t:0,warn:0,ph:0}];stepArson(DT)');
+ const heat=g.run('K.ARSON_HEAT');assert.equal(g.run('player.heat'),heat);const before=g.run('dumped');g.run('hitstop=0;boss.x=player.x;boss.y=player.y;step()');assert.equal(g.run('dumped'),before+heat);
+});
 test('Existing Well recovery purchases become faster committed vent healing', () => {
   const g=game();g.run('onTitle=false;intro=null;META.buildings.well.regen=1;applyUpgrades();player.heat=0;player.hp=0.6;setVentHeld(true)');
   assert.equal(g.run('RUN_VENT_HEAL_T'),0.5);
