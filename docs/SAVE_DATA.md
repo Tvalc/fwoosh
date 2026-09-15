@@ -4,11 +4,13 @@ Browser-local persistence; no cloud save/backend established in inspected code. 
 
 | Key | Contents | Interpretation |
 |---|---|---|
-| fwoosh.meta | v:1, embers, saved, bestBlaze, district, clearedDistricts, buildings, hero, diary.read, flags | district is highest unlocked (1–5), not completed count. clearedDistricts records completion (0–5). hero:'stranger' is a placeholder. |
+| fwoosh.meta | v:1, embers, saved, bestBlaze, district, clearedDistricts, buildings, hero, diary.read, flags, recentRuns, city | district is highest unlocked (1–5), not completed count. clearedDistricts records completion (0–5). hero:'stranger' is a placeholder. |
 | fwoosh.opp | Territory, latency history, grudge, runs, broken reads, snipes, wins, intro/lore progress | Feud still reads older run/win/read signals. |
 | fwoosh.skin | Selected skin | Separate from progression. |
 
 Well: `{built, hearts, regen}`. Forge: `{built, charges, recharge}`. Shrine: `{built:true}`. Diary: `{read:[]}`. `flags.reachedDuel` opens a chapter. Meta loader fills missing defaults; it does not comprehensively validate arbitrary malformed values.
+
+City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, nextId}`. A building is `{id,type:'burrow'|'yard',x,y,state:'building'|'ready'|'sealed',remaining,work}`. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current Yard-cycle seconds. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, and clamps materials and progress to nonnegative values.
 
 ## Persistence timing
 
@@ -28,7 +30,11 @@ The simulation stops the frame after terminal boss outcomes so a later rescue ca
 
 ## Intro revisions
 
-The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. The current present-dialogue release uses revision 5. Revision changes replay revised opening dialogue once while preserving ember balances, district completion, upgrades and diary read state. No city/Invoice save fields exist yet.
+The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. The current present-dialogue release uses revision 5. Revision changes replay revised opening dialogue once while preserving ember balances, district completion, upgrades and diary read state. City-1 adds its optional city record without changing the outer v1 version. Invoice fields do not exist yet.
+
+## Ratkin Quarter persistence
+
+City construction and production advance from `lastAt` on town entry, city entry, city actions and the visible city timer. Each catch-up step is capped at eight hours. Road/building placement, rushing, sealing, moving and important timer completions save immediately. Sealed connected Yards clear partial work when they lose their worker or road; disconnected time is never banked for later output. Older v1 saves gain a fresh gate-only city and retain all prior progression.
 
 ## First-upgrade offer
 

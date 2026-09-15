@@ -859,6 +859,68 @@ test('First-run dialogue suppresses the adaptive beacon and its attack',()=>{
  const g=game();g.run('onTitle=false;opp.terr[0]=3;opp.lat=[1,2,3];opp.introVer=0;reset()');assert.ok(g.run('intro'));assert.equal(g.run('snipeArmed'),false);assert.equal(g.run('slag.some(s=>s.grudge)'),false);
 });
 
+test('Old v1 saves gain a clean city without losing existing progress',()=>{
+ const old={v:1,embers:321,saved:17,district:4,clearedDistricts:3,buildings:{well:{built:true,hearts:2,regen:1},forge:{built:true,charges:1,recharge:1}},diary:{read:['morning']},flags:{reachedDuel:true}};
+ const g=game({'fwoosh.meta':JSON.stringify(old)});
+ assert.equal(g.run('META.embers'),321);assert.equal(g.run('META.saved'),17);assert.equal(g.run('META.district'),4);assert.equal(g.run('META.buildings.well.hearts'),2);assert.equal(g.run('META.diary.read[0]'),'morning');
+ assert.equal(g.run('META.city.v'),1);assert.equal(g.run('META.city.roads.join()'),'2,4');assert.equal(g.run('META.city.buildings.length'),0);assert.equal(g.run('META.city.materials'),0);
+});
+test('Malformed city data normalizes to valid unique cells and safe values',()=>{
+ const city={v:1,lastAt:'bad',roads:['2,4','2,4','9,9','x,1'],materials:-8,nextId:-2,buildings:[
+  {id:4,type:'burrow',x:1,y:4,state:'sealed',work:-3},{id:5,type:'yard',x:1,y:4,state:'sealed'},{id:6,type:'fake',x:0,y:0},{id:7,type:'yard',x:2,y:4,state:'sealed'}]};
+ const g=game({'fwoosh.meta':JSON.stringify({v:1,city})});
+ assert.equal(g.run('META.city.roads.join()'),'2,4');assert.equal(g.run('META.city.materials'),0);assert.equal(g.run('META.city.buildings.length'),1);assert.equal(g.run('META.city.buildings[0].work'),0);assert.ok(g.run('META.city.nextId>=5'));
+});
+test('Roads extend only from the connected gate network',()=>{
+ const g=game();g.run("cityPlaceRoad(0,0)");assert.equal(g.run('META.city.roads.length'),1);assert.match(g.run('cityMessage'),/EXTEND ROADS/);
+ g.run('cityPlaceRoad(2,3)');assert.equal(g.run("META.city.roads.includes('2,3')"),true);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run("META.city.roads.includes('2,3')"),true);
+});
+test('Foundations reject occupied or disconnected sites without spending',()=>{
+ const g=game();g.run('META.embers=200;cityPlaceBuilding("burrow",0,0)');assert.equal(g.run('META.embers'),200);assert.equal(g.run('META.city.buildings.length'),0);
+ g.run('cityPlaceBuilding("burrow",2,4)');assert.equal(g.run('META.embers'),200);assert.equal(g.run('META.city.buildings.length'),0);
+ g.run('cityPlaceBuilding("burrow",1,4)');assert.equal(g.run('META.embers'),160);assert.equal(g.run('META.city.buildings.length'),1);
+ g.run('cityPlaceBuilding("yard",1,4)');assert.equal(g.run('META.embers'),160);assert.equal(g.run('META.city.buildings.length'),1);
+});
+test('Construction advances offline, caps at eight hours and requires sealing',()=>{
+ const g=game();g.run('META.embers=200;cityPlaceBuilding("burrow",1,4);const t=META.city.lastAt;cityAdvance(t+45*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'building');assert.equal(g.run('META.city.buildings[0].remaining'),45);
+ g.run('cityAdvance(META.city.lastAt+9*60*60*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'ready');assert.equal(g.run('cityWorkerCapacity()'),0);
+ g.run('citySeal(1)');assert.equal(g.run('META.embers'),140);assert.equal(g.run('META.city.buildings[0].state'),'sealed');assert.equal(g.run('cityWorkerCapacity()'),1);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings[0].state'),'sealed');
+});
+test('Rush spends exact embers, removes thirty seconds and cannot overspend',()=>{
+ const g=game();g.run('META.embers=45;cityPlaceBuilding("burrow",1,4);META.city.lastAt=Date.now();cityRush(1)');assert.equal(g.run('META.embers'),0);assert.ok(g.run('META.city.buildings[0].remaining<=60.01&&META.city.buildings[0].remaining>59'));
+ const before=g.run('META.city.buildings[0].remaining');g.run('cityRush(1)');assert.equal(g.run('META.embers'),0);assert.ok(g.run('META.city.buildings[0].remaining')<=before);
+});
+test('A sealed connected Burrow automatically staffs one sealed Yard',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,nextId:3,buildings:[
+  {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0}]}`);
+ assert.equal(g.run('cityWorkerCapacity()'),1);assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');assert.equal(g.run('cityYardActive(META.city.buildings[1])'),true);
+ g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.materials'),1);assert.ok(g.run('META.city.buildings[1].work<1e-6'));
+});
+test('Road distance slows output and disconnected Yards stop without banking work',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,nextId:3,buildings:[
+  {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:0,y:2,state:'sealed',remaining:0,work:0}]}`);
+ assert.equal(g.run('cityRoadDistanceTo(META.city.buildings[1])'),4);assert.equal(g.run('cityCycleSeconds(META.city.buildings[1])'),55);
+ g.run('cityAdvance(56000,true)');assert.equal(g.run('META.city.materials'),1);
+ g.run("META.city.roads=['2,4'];META.city.buildings[1].work=40;cityAdvance(META.city.lastAt+100000,true)");assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings[1].work'),0);
+});
+test('Automatic staffing is stable and extra Yards wait for more Burrows',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,nextId:4,buildings:[
+  {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0},{id:3,type:'yard',x:0,y:4,state:'sealed',remaining:0,work:0}]}`);
+ assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');g.run('cityAdvance(1000+50000,true)');assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings.find(b=>b.id===3).work'),0);
+});
+test('Moving a building persists its new connected route and clears partial work',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:22}]};cityTool='move';cityMoveCell(1,4);cityMoveCell(1,3)`);
+ assert.equal(g.run('META.city.buildings[0].x'),1);assert.equal(g.run('META.city.buildings[0].y'),3);assert.equal(g.run('META.city.buildings[0].work'),0);assert.equal(g.run('cityRoadDistanceTo(META.city.buildings[0])'),2);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings[0].y'),3);
+});
+test('Town exposes the Ratkin Quarter and its station explains inputs, output and route',()=>{
+ const g=game();g.run('onTitle=false;mode="hub";drawHub(ctx)');assert.ok(g.drawnText.includes('RATKIN QUARTER'));assert.ok(g.drawnText.includes('THE DIARY'));assert.equal(g.drawnText.includes('THE SHRINE'),false);
+ g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4'],materials:0,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0}]};citySelectedId=1;drawCityStation(ctx)`);
+ for(const label of ['INPUT','OUTPUT','ROUTE','Ruin salvage from the cleared quarter'])assert.ok(g.drawnText.includes(label),'Missing station label: '+label);
+});
+
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
   pass:results.filter(r=>r.status==='pass').length, fail:results.filter(r=>r.status==='fail').length, results};

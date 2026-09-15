@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Ratkin Quarter foundation — 2026-09-15-city-1
+
+Town now opens a persistent 5×5 Ratkin Quarter plan. Players extend free roads from a fixed gate, place Burrows and Salvage Yards beside the connected network, and can move buildings later. The first Burrow foundation costs 40 embers and takes 90 seconds; the first Yard costs 60 and takes 150 seconds. Five embers remove 30 seconds from active construction. Completed buildings remain inert until sealed for 20 or 30 embers respectively. Ratkin continue construction during arcade runs and for up to eight hours away.
+
+A sealed connected Burrow supplies one automatically assigned worker. A sealed connected Yard turns ruin salvage into one building material every 45 seconds at the shortest route; each extra road step beyond two adds five seconds. Extra Yards wait automatically when workforce is insufficient. Later copies require building materials, establishing the first self-feeding city loop. Each Yard has a station view showing its input, output, route, progress and blocking reason. This initial presentation uses the existing verified Makko Ashford background plus code-native interface elements; Ratkin-specific character/building art remains with Cursor under issue #31.
+
+The save remains version 1 and adds an optional `city` record. Older saves receive a clean gate plan while preserving embers, upgrades, districts, diary and opponent history. Invalid or overlapping city records normalize safely. 130 actual-script checks pass, including migration, spending, connection rules, offline time, sealing, assignment, distance-adjusted output, moving and reload persistence. Congestion, food, storage, manual priorities and Ratkin hauling animation remain issue #28.
+
 ## Well identity and town story cleanup — 2026-09-15-well-2
 
 The Well now has one clear arcade purpose: survivability. Deep Well adds maximum hearts, while the renamed Deep Draught shortens each committed vent-heal from 0.60 seconds to 0.50 and then 0.40 seconds. The passive clear-of-fire trickle remains at its base rate. Faster healing therefore reduces Duy's rooted exposure, but each completed heart still releases one persistent vent demon. Existing `regen` purchases convert automatically to the matching Deep Draught tier without a save migration or refund.

@@ -36,6 +36,8 @@ The action arcade game remains central. An incremental ratkin-city layer sits be
 - Sealing and major upgrade milestones can unlock random cosmetic appearances. Every appearance remains selectable; rarity grants no Fwoosh gameplay power and never determines favor or release.
 - Embers are earned and will never be sold for money.
 
+The first playable Ratkin Quarter uses a 5×5 plan with a fixed gate. Its initial playtest buildings are a worker-providing Burrow and a material-producing Salvage Yard. Current costs, timers, acceleration rate, offline cap and road-distance penalty are tuning values recorded in [CITY_FOUNDATION.md](CITY_FOUNDATION.md), not immutable story canon.
+
 ## Release and the wider RPG
 
 Completing Duy's restoration/favor path releases and resurrects him. Fwoosh must provide a satisfying, comprehensible ending even when no other game is present.
@@ -57,7 +59,7 @@ Ledger also has a route where Duy survives and older language saying dead guests
 - Whether Khet-Tak-Tor announces a collective Ratkin verdict or personally holds delegated release authority.
 - Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
 - How district/Arbiter progress contributes without making one combat victory the release condition.
-- City costs, construction times, production ratios and offline limits.
+- Long-term city costs, construction times, production ratios and offline limits after playtesting the initial slice.
 - Whether the Invoice uses lifetime collected embers, unspent embers or another auditable total.
 - Invoice conversion, caps, reward thresholds and interaction with Fwoosh spending.
 - System Shop inventory and relationship to Invoice rewards.
@@ -68,4 +70,4 @@ Do not invent these values during implementation. Resolve them through the ownin
 
 ## Current implementation boundary
 
-The live dialogue and diary follow the gradual-discovery direction and no longer promise freedom for a raw rescue or district count, but they still use the deprecated Keith name and human art. The Ratkin Arbiter migration is tracked in issue #39. The arcade loop and current town upgrades exist. City construction/production/logistics, favor judgment, resurrection ending, Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain unimplemented and are tracked in issues #27–#30.
+The live dialogue and diary follow the gradual-discovery direction and no longer promise freedom for a raw rescue or district count, but they still use the deprecated Keith name and human art. The Ratkin Arbiter migration is tracked in issue #39. The arcade loop and current town upgrades exist. The first city foundation implements roads, Burrows, Salvage Yards, offline construction, sealing, automatic staffing and distance-adjusted material output. Physical hauling, congestion, food/storage, favor judgment, resurrection ending, Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain tracked in issues #28–#30.
