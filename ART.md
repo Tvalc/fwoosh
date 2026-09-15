@@ -51,3 +51,7 @@ Four image keys exist: duy_gate, duy_save, dark_cell, wraith. **dark_cell exists
 Record key, purpose, source/output paths, dimensions, frame count/layout, playback rate, anchor/scale, transparency, provenance when known and approval status. Do not invent generator IDs or licensing information. Keep original sources, use new variant names, inspect all frames for clipping/scale, and show an in-game preview. Change sheet and metadata together; separate art commits from simulation changes.
 
 Hero sets, district-specific art, extra effects and audio follow scoped decisions. Current assets/ is ignored; see [asset preservation](docs/ASSET_PRESERVATION.md) and [inventory](docs/asset-inventory.json).
+
+## Readable UI typography
+
+Tony requested a sharper related font on September 15. Use Chakra Petch Medium/Bold for reading text, HUD labels and counters; retain the large Makko display lettering for decorative titles. This is the approved UI typeface change; the Makko artwork rule continues to cover illustrations, sprites and effects. Fonts are self-hosted in media/fonts with the original SIL OFL license. Do not switch small reading text back to Pixelify or the image glyph atlas.
