@@ -12,6 +12,8 @@ Tony's September 14 instruction: if background stripping contaminates a sprite's
 
 ## What the art communicates
 
+Do not add drawn yellow charge/windup circles around fire demons. Tony rejected that overlay on September 15; keep the Makko demon animation during its existing windup.
+
 Rescue burning villagers by absorbing their fire. Heat raises rewards and chain reach but drains health. The player transforms person → fire-man → cinder-man. Vent purges heat then heals, releasing demons. Keith sends interceptable imps; failed rescues become husks and wraiths. Rescues contribute to Edge and allied help against Keith.
 
 Preserve the established style and terrified villager expression. Distinguish safe/burning villagers, hostile demons/imps, inert husks and player at phone size. Keep gauges legible and sprite body scale/feet anchors stable across frames and forms. No screen shake.

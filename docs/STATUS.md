@@ -1,5 +1,10 @@
 # Fwoosh status — September 14, 2026
 
+## Remove demon windup circle — 2026-09-15-demon-art-1
+
+Removed the drawn yellow ring around vent-born fire demons during their windup, as Tony requested. Existing Makko demon animation and simulation timing remain unchanged. ART.md records the rule against reintroducing this overlay. All 97 existing checks pass; a local browser fixture verifies the demon windup without its yellow circle. Issue #1 records deployment.
+
+
 ## Left barrel collision — 2026-09-15-barrel-1
 
 Tony reported walking over the top barrel below the upper-left crates. Raised the barrel cluster collision top by 3 world pixels (296 → 293), retaining its bottom at y=478 and its width. Full-map framing is unchanged. All 97 existing state/input checks pass. Issue #1 records deployment; Tony should judge the alignment in the live playtest.

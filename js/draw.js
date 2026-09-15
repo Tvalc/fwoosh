@@ -1375,7 +1375,7 @@ function render(){
     if(d.feast){
       ctx.strokeStyle='#ff6155';ctx.beginPath();ctx.arc(d.feast.x,d.feast.y,K.CINDER_BLAST_R,0,Math.PI*2);ctx.stroke();
       ctx.lineWidth=6;ctx.beginPath();ctx.arc(d.feast.x,d.feast.y,28,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,d.eatT/K.CINDER_EAT_T));ctx.stroke();
-    }else if(d.warn>0){ctx.beginPath();ctx.arc(d.x,d.y,25,0,Math.PI*2);ctx.stroke();}
+    } // Windup uses the Makko demon animation; no drawn yellow charge circle.
     ctx.restore();
   }
   for(const b of cinderBlasts){
