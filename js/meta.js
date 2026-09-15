@@ -30,7 +30,8 @@ function saveMeta(){ try{ localStorage.setItem('fwoosh.meta', JSON.stringify(MET
 function applyUpgrades(){
   const w=(META.buildings&&META.buildings.well)||{}, f=(META.buildings&&META.buildings.forge)||{};
   maxHearts        = 5 + (w.hearts||0);                       // more hearts -> drain auto-slows via 5/maxHearts
-  RUN_HP_REGEN     = K.HP_REGEN + 0.05*(w.regen||0);          // faster recovery while clear of fire
+  RUN_HP_REGEN     = K.HP_REGEN;                              // faint recovery remains a base rule
+  RUN_VENT_HEAL_T  = Math.max(0.40, K.VENT_HEAL_T - 0.10*(w.regen||0)); // old regen tiers become faster risky heals
   RUN_MAX_CHARGES  = K.CHARGES + (f.charges||0);              // The Forge: more dash charges
   RUN_CHARGE_REFILL= K.CHARGE_REFILL * Math.pow(0.82, f.recharge||0);  // ...and they recharge faster
 }
@@ -38,7 +39,7 @@ function applyUpgrades(){
 const SHOPS = {
   well:  { title:'THE WELL',  color:'#7fe8ff', sub:'saves raised the shell — embers pay for the rest', items:[
     { track:'hearts', name:'DEEP WELL',  desc:'+1 max heart (survive more fire)', costs:[100,240,540] },
-    { track:'regen',  name:'COOL BLOOD', desc:'recover faster when clear of fire', costs:[100,240] } ] },
+    { track:'regen',  name:'DEEP DRAUGHT', desc:'restore each heart faster while venting', costs:[100,240] } ] },
   forge: { title:'THE FORGE', color:'#ff9a45', sub:'iron for the road — dash more, recharge quicker', items:[
     { track:'charges',  name:'QUICK FEET',  desc:'+1 dash charge', costs:[100,240,540] },
     { track:'recharge', name:'SECOND WIND', desc:'dashes recharge faster', costs:[100,240] } ] },

@@ -44,6 +44,7 @@ let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
+let RUN_VENT_HEAL_T = K.VENT_HEAL_T; // seconds committed per heart; Well upgrades shorten this
 let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash economy, upgraded at The Forge
 // ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
 let rescueReward = null;        // brief grouped rescue payout, not another currency
@@ -643,7 +644,7 @@ function beginVentUnit(){
   if(p.ventUnit || !p.ventHeld || mode!=='play') return;
   const kind=p.heat>0?'heat':p.hp<1-1e-9?'heal':null;
   if(!kind){ p.venting=false; return; } // no empty/full-health farming or permanent rooting
-  p.ventUnit={kind,t:0,duration:kind==='heat'?K.VENT_PURGE:K.VENT_HEAL_T};
+  p.ventUnit={kind,t:0,duration:kind==='heat'?K.VENT_PURGE:RUN_VENT_HEAL_T};
   p.venting=true; p.lunge=0; p.spd=0;
   if(snipeArmed&&!snipeUsed&&!intro)fireSnipe();
 }

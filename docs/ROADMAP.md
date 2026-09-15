@@ -4,12 +4,12 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-chase-1` is live. The arcade loop, priority auto-run toward fires and then demons, faster burning runners, committed vent units, persistent vent demons, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The next candidate changes exact runner tracking into periodically refreshed guidance, makes newly ignited villagers flee Duy and moves vent-created demon spawns away from the rooted player. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-well-1` is the release candidate. The arcade loop, assisted pursuit, faster burning runners, committed vent units, persistent vent demons, distant vent spawns, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The Well now owns survivability; its Deep Draught tiers shorten committed vent-healing. Shrine is hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
 1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **Cursor Makko art; Codex canon, systems and release**. Name and shared-near-death covenant are locked; exact judgment mandate and full migration are pending.
-2. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Cursor Makko art; Codex integration**. Beacon gameplay is live; replace the shared Well/Shrine menu image with two distinct Makko sprites.
+2. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Cursor Makko art; Codex integration**. Beacon gameplay is live. The duplicated Shrine card is hidden until favor/judgment; a distinct Makko Well icon remains useful when available.
 3. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Arbiter pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
 4. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, Arbiter replacement, cinder vent correction and diary art. Every visual asset must come from Makko.
 5. [#33 Consolidate records, provenance and off-device source backup](https://github.com/Tvalc/fwoosh/issues/33) — **Codex**. Records were consolidated in PR #34; an off-device destination still requires Tony's choice.
@@ -50,7 +50,7 @@ Build `2026-09-15-chase-1` is live. The arcade loop, priority auto-run toward fi
 
 ## Parking lot — not approved implementation
 
-These are ideas to revisit, not missing launch work: additional playable heroes/mastery, Tavern/Chapel/Watchtower/Dana's House, a separate Arbiter progression ladder, more villager vignettes, Cool Blood redesign, daily challenges, streaks, share cards, rewarded ads, revives, extra district themes and larger hero sets. Scope each item with Tony before implementation.
+These are ideas to revisit, not missing launch work: additional playable heroes/mastery, Tavern/Chapel/Watchtower/Dana's House, a separate Arbiter progression ladder, more villager vignettes, daily challenges, streaks, share cards, rewarded ads, revives, extra district themes and larger hero sets. Scope each item with Tony before implementation.
 
 ## Working rules
 

@@ -1,5 +1,11 @@
 # Fwoosh status — September 15, 2026
 
+## Well identity and town story cleanup — 2026-09-15-well-1
+
+The Well now has one clear arcade purpose: survivability. Deep Well adds maximum hearts, while the renamed Deep Draught shortens each committed vent-heal from 0.60 seconds to 0.50 and then 0.40 seconds. The passive clear-of-fire trickle remains at its base rate. Faster healing therefore reduces Duy's rooted exposure, but each completed heart still releases one persistent vent demon. Existing `regen` purchases convert automatically to the matching Deep Draught tier without a save migration or refund.
+
+The town Well card now states `hearts · faster vent healing`. The Shrine card is hidden until Ratkin favor and judgment give it a distinct function; its dormant record sheet remains in source for that later system. Diary is the single visible optional story destination and uses the full second row. This establishes the content boundary: Diary contains Duy's memories and understanding, while the future Shrine will contain Ratkin society's present judgment, favor and release eligibility.
+
 ## Assisted chase and distant vent spawns — 2026-09-15-assist-1
 
 Auto-run now guides Duy toward periodically updated sightings of the nearest burning villager instead of continuously tracking the runner's exact live position. A newly ignited villager also bolts away from Duy before settling into its erratic panic path. Together these changes turn nearby ignition into a readable chase: the assist keeps the player oriented, while steering toward the runner's new path and timing a dash creates the interception. Demon guidance remains exact because contact without a dash still hurts Duy.

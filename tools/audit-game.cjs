@@ -280,7 +280,17 @@ test('Every upgrade track caps correctly and reload applies the completed build'
   const reload=game(Object.fromEntries(g.storage));
   assert.equal(reload.run('META.embers'),10000-spend);
   assert.equal(reload.run('maxHearts'),8);assert.equal(reload.run('RUN_MAX_CHARGES'),6);
-  assert.equal(reload.run('RUN_HP_REGEN'),g.run('K.HP_REGEN+0.1'));
+  assert.equal(reload.run('RUN_HP_REGEN'),g.run('K.HP_REGEN'));
+  assert.equal(reload.run('RUN_VENT_HEAL_T'),0.4);
+});
+test('Existing Well recovery purchases become faster committed vent healing', () => {
+  const g=game();g.run('onTitle=false;intro=null;META.buildings.well.regen=1;applyUpgrades();player.heat=0;player.hp=0.6;setVentHeld(true)');
+  assert.equal(g.run('RUN_VENT_HEAL_T'),0.5);
+  assert.equal(g.run('RUN_HP_REGEN'),g.run('K.HP_REGEN'));
+  g.run('ventHold(0.49)');assert.equal(g.run('player.hp'),0.6);
+  g.run('ventHold(0.01)');assert.equal(g.run('player.hp'),0.8);assert.equal(g.run('demons.length'),1);
+  g.run('setVentHeld(false);player.ventUnit=null;player.venting=false;META.buildings.well.regen=2;applyUpgrades();player.hp=0.6;setVentHeld(true);ventHold(0.4)');
+  assert.equal(g.run('RUN_VENT_HEAL_T'),0.4);assert.equal(g.run('player.hp'),0.8);assert.equal(g.run('demons.length'),2);
 });
 test('Five districts complete through rescue quotas and heat-contact combat at base and max upgrades', () => {
   const rows=[];
@@ -550,7 +560,7 @@ test('A district clear adds its bounty to uncapped rewards exactly once', () => 
 test('Next goal finds cheaper tracks across both shops and respects unlocks', () => {
   const g=game();g.run('META.buildings.well.hearts=1;META.saved=5');
   assert.equal(g.run('upgradeGoal().kind'),'saves');assert.equal(g.run('upgradeGoal().cost'),6);
-  g.run('META.saved=6');assert.equal(g.run('upgradeGoal().name'),'COOL BLOOD');
+  g.run('META.saved=6');assert.equal(g.run('upgradeGoal().name'),'DEEP DRAUGHT');
   g.run('META.buildings.well.regen=1;META.saved=16');
   assert.equal(g.run('upgradeGoal().name'),'QUICK FEET');assert.equal(g.run('upgradeGoal().cost'),100);
   g.run('META.buildings.well.hearts=3;META.buildings.well.regen=2;META.buildings.forge.charges=3;META.buildings.forge.recharge=2');
@@ -559,9 +569,17 @@ test('Next goal finds cheaper tracks across both shops and respects unlocks', ()
 
 test('Town upgrade names stay out of live action and remain available in town', () => {
   const run=game();run.run('META.saved=6;META.buildings.well.built=true;META.buildings.well.hearts=1;onTitle=false;intro=null;presentDialogue=null;mode="play";render()');
-  assert.equal(run.drawnText.includes('COOL BLOOD'),false,'The run HUD exposes the unexplained Cool Blood town upgrade.');
+  assert.equal(run.drawnText.includes('DEEP DRAUGHT'),false,'The run HUD exposes the Well upgrade name.');
   const town=game();town.run('META.saved=6;META.buildings.well.built=true;META.buildings.well.hearts=1;drawUpgradeProgress(ctx,60,900,600,102)');
-  assert.equal(town.drawnText.includes('COOL BLOOD'),true,'The town upgrade panel no longer identifies Cool Blood.');
+  assert.equal(town.drawnText.includes('DEEP DRAUGHT'),true,'The town upgrade panel no longer identifies Deep Draught.');
+});
+
+test('Diary is the sole visible story destination until Shrine judgment exists', () => {
+  const g=game();g.run('META.buildings.well.built=true;META.buildings.forge.built=true;enterHub();drawHub(ctx)');
+  assert.equal(g.run('hubBtns.some(b=>b.act==="diary")'),true);
+  assert.equal(g.run('hubBtns.some(b=>b.act==="shrine")'),false);
+  assert.equal(g.drawnText.includes('THE DIARY'),true);
+  assert.equal(g.drawnText.includes('THE SHRINE'),false);
 });
 
 test('Upgrade progress includes current earnings once and keeps starter funding separate', () => {
