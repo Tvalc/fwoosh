@@ -407,6 +407,14 @@ test('Each completed unit spawns even above the old demon cap; emergence cannot 
   assert.equal(g.run('demons.length'),12);
   g.run('for(const d of demons){d.x=player.x;d.y=player.y;}stepDemons(DT)');assert.equal(g.run('player.hp'),0.2);
 });
+test('Vent demons emerge far from rooted Duy and outside solid props', () => {
+  for(const [x,y] of [[360,640],[80,110],[640,1170]]){
+    const g=game();g.run(`onTitle=false;intro=null;cells=[];slag=[];husks=[];demons=[];player.x=${x};player.y=${y};spawnVentDemon()`);
+    assert.ok(g.run('dist(player.x,player.y,demons[0].x,demons[0].y)>=K.VENT_DEMON_MIN_R'),'A vent demon spawned inside Duy\'s protected distance.');
+    assert.equal(g.run('collideObstacles({x:demons[0].x,y:demons[0].y},K.DEMON_R)'),false,'A vent demon spawned inside a solid prop.');
+    assert.equal(g.run('demons[0].warn'),g.run('K.VENT_DEMON_WAKE'));
+  }
+});
 test('Nearby cinders take priority; outside the search radius demons chase Duy', () => {
   const g=game();g.run('onTitle=false;intro=null;god=true;player.x=600;player.y=640;husks=[{x:200,y:640,t:0,ph:0}];spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT)');
   assert.equal(g.run('demons[0].tgt===husks[0]'),true);assert.ok(g.run('demons[0].x')<300);
@@ -754,6 +762,18 @@ test('Automatic pursuit turns smoothly while manual steering wins immediately', 
   const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;ghost=true;cells=[{id:1,x:600,y:600,hunter:true,fuse:5,grace:0,vx:0,vy:0,spreadT:0}];demons=[];player.x=300;player.y=600;player.hx=0;player.hy=-1;step()');
   assert.ok(g.run('player.hx')>0,'Automatic pursuit did not turn toward the fire.');
   g.run('keys.a=true;step()');assert.ok(g.run('player.hx')<-.99,'Held manual steering did not override automatic pursuit.');
+});
+test('Auto-run follows periodic runner sightings instead of perfect live tracking', () => {
+  const g=game();g.run('onTitle=false;intro=null;const runner={id:1,x:500,y:600,hunter:true};cells=[runner];player.autoTarget=null;player.autoSightT=0');
+  assert.equal(g.run('autoRunAim(player,runner,DT).x'),500);
+  g.run('runner.x=620');assert.equal(g.run('autoRunAim(player,runner,DT).x'),500,'The assist tracked every live runner movement.');
+  assert.equal(g.run('autoRunAim(player,runner,K.AUTO_SIGHT).x'),620,'The assist never refreshed its runner sighting.');
+  g.run('keys.d=true;step()');assert.equal(g.run('player.autoTarget'),null,'Manual steering did not release the old sighting.');
+});
+test('A newly burning villager initially bolts away from Duy', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.x=300;player.y=600;cells=[{id:1,x:360,y:600,hunter:false,grace:0,ph:2,ps:.6,dir:Math.PI}];ignite(cells[0],"arson")');
+  assert.ok(g.run('Math.cos(cells[0].dir)')>.9,'The new runner did not flee away from the nearby player.');
+  assert.equal(g.run('cells[0].ph'),0);
 });
 test('Burning runners outrun an ordinary jog but a dash closes the gap', () => {
   const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;ghost=false;cells=[{id:1,x:360,y:1050,hunter:true,fuse:100,grace:0,vx:0,vy:0,spreadT:0,dir:0,ph:0,ps:0}];demons=[];slag=[];arson=[];player.x=240;player.y=1050;player.hx=1;player.hy=0');

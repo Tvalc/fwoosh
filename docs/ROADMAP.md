@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-hunt-1` is live. The arcade loop, priority auto-run toward fires and then demons, committed vent units, persistent vent demons, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The next candidate makes burning villagers fast enough to require a dash when they flee directly from a clear-headed Duy. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-chase-1` is live. The arcade loop, priority auto-run toward fires and then demons, faster burning runners, committed vent units, persistent vent demons, cinder-person explosions without drawn warning circles, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The next candidate changes exact runner tracking into periodically refreshed guidance, makes newly ignited villagers flee Duy and moves vent-created demon spawns away from the rooted player. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
