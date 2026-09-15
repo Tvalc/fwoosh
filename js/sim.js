@@ -159,6 +159,23 @@ function collideObstacles(e, er){
 function nearObstacle(x,y,r){ const e={x,y}; return collideObstacles(e, r); }   // (mutates a throwaway; ok for spawn tests)
 function hunters(){ return cells.filter(c=>c.hunter); }                 // flaming villagers
 function crowd(){ return cells.filter(c=>!c.hunter && !c.saving); }     // calm, still-present villagers
+function nearestFrom(p, items){
+  let best=null, bestD=Infinity;
+  for(const item of items){const d=dist(p.x,p.y,item.x,item.y);if(d<bestD){best=item;bestD=d;}}
+  return best;
+}
+// Default play does useful work: rescue first, clear demons second, wander only when safe.
+// Manual keys and dashes remain the optimization layer and always override this heading.
+function autoRunTarget(p){
+  const burning=hunters();
+  return burning.length ? nearestFrom(p,burning) : (demons.length ? nearestFrom(p,demons) : null);
+}
+function turnToward(p,target,dt){
+  const desired=Math.atan2(target.y-p.y,wrapDX(target.x-p.x)), current=Math.atan2(p.hy,p.hx);
+  const delta=Math.atan2(Math.sin(desired-current),Math.cos(desired-current));
+  const turn=Math.max(-K.AUTO_TURN*dt,Math.min(K.AUTO_TURN*dt,delta)), angle=current+turn;
+  p.hx=Math.cos(angle);p.hy=Math.sin(angle);
+}
 function ring(x,y,r0,r1,col,life){ rings.push({x,y,r0,r1,col,t:0,life:life||0.35}); }
 // ring() calls now render as soft GLOW POPS (see the render loop) — no more hard flashing circles.
 function hexRGB(h){ if(typeof h!=='string' || h[0]!=='#') return '255,210,150';
@@ -218,14 +235,16 @@ function step(){
     while(p.chargeT >= RUN_CHARGE_REFILL && p.charges < RUN_MAX_CHARGES){ p.chargeT -= RUN_CHARGE_REFILL; p.charges++; dashPop = 0.55; } }
   else p.chargeT = 0;
 
-  // AUTO-RUN: you never stop. Heading persists; with no steering you WEAVE on your own, and the weave
-  // gets wilder as you burn (frantic, harder to control). You DASH to send yourself where you want.
+  // AUTO-RUN: you never stop. With no steering, seek the nearest burning villager, then the nearest
+  // demon. Only a safe field falls back to the old weave. Manual steering and dashes stay authoritative.
   const burn = Math.max(0, Math.min(1, 1 - (p.hp!=null ? p.hp : 1)));   // 0 healthy .. 1 near death
   if(p.lunge <= 0 && !introWalk){
     const v = heldVec();
     if(v){ p.hx = v[0]; p.hy = v[1]; }                                  // WASD nudges your heading (desktop)
-    else { const w = (K.WEAVE + burn*K.WEAVE_BURN) * Math.sin(frame*0.05 + p.wph) * dt;
-      const a = Math.atan2(p.hy, p.hx) + w; p.hx = Math.cos(a); p.hy = Math.sin(a); }
+    else { const target=autoRunTarget(p);
+      if(target) turnToward(p,target,dt);
+      else { const w = (K.WEAVE + burn*K.WEAVE_BURN) * Math.sin(frame*0.05 + p.wph) * dt;
+        const a = Math.atan2(p.hy, p.hx) + w; p.hx = Math.cos(a); p.hy = Math.sin(a); } }
   }
   if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
   else { const run = K.RUN * (1 + burn*K.FRANTIC_SPD);                  // frantic = faster as you burn
