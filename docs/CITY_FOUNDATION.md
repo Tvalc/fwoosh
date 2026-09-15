@@ -2,6 +2,8 @@
 
 Build `2026-09-15-city-1` establishes the smallest complete rebuilding loop behind Fwoosh's arcade game. It is an initial tuning slice for issue #27.
 
+Build `2026-09-15-logistics-1` extends that foundation with Mushroom Farms, Storehouses, food costs, visible road carriers, shared-route congestion and optional priorities. See [LOGISTICS.md](LOGISTICS.md).
+
 ## Player loop
 
 1. Extend free roads from the fixed gate across a 5×5 plan.

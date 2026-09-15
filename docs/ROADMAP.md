@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-city-1` is the release candidate. The arcade loop, assisted pursuit, committed vent units, persistent vent demons, adaptive beacon, uncapped ember rewards, starter upgrade choice, retry/reward flow, five districts, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The first Ratkin Quarter slice adds persistent freeform roads, placed Burrows and Salvage Yards, offline construction, ember acceleration, mandatory sealing, automatic worker assignment and distance-adjusted material production. Shrine remains hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-logistics-1` is the release candidate. The arcade loop and first Ratkin Quarter foundation are joined by food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. Construction, sealing, worker assignment and production remain automatic by default and continue offline. Shrine remains hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
@@ -17,7 +17,7 @@ Build `2026-09-15-city-1` is the release candidate. The arcade loop, assisted pu
 ## Next development sequence
 
 6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **release candidate complete**. The exterior, first two buildings, offline timers, sealing, worker assignment, material production and explanatory station view are implemented. Tony's phone playtest and approved Makko replacements remain.
-7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **next Codex item**. Add visible physical deliveries, food, storage and congestion; keep automatic assignment as the default and add optional player priorities.
+7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **release candidate complete**. Food, storage, visible carriers, shared-road congestion, automatic recovery and optional priorities are implemented. Approved Makko Ratkin locomotion and Tony's phone balance/readability playtest remain.
 8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — restoration milestones, favor, Ratkin judgment, release and resurrection. The Arbiter administers the process; beating him never grants release by itself.
 9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
 10. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
@@ -43,6 +43,9 @@ Build `2026-09-15-city-1` is the release candidate. The arcade loop, assisted pu
 - Salvage Yard: 60-ember foundation, 150 seconds, 30-ember seal; one material per 45 seconds on the shortest route.
 - Five embers accelerate construction by 30 seconds. Offline work is capped at eight hours.
 - Later copies cost two materials for a Burrow or three for a Yard. Distance beyond two road steps adds five seconds per production cycle.
+- Farm: 50-ember foundation, 120 seconds, 25-ember seal; produces one food per base 50-second cycle.
+- Storehouse: 70-ember foundation, 180 seconds, 35-ember seal; adds 15 to both resource caps. Base caps are 10.
+- A Yard consumes one food per material. Other active carriers sharing its road add four seconds each. Stations default to normal priority; low and high are optional.
 
 ## Decisions still required
 

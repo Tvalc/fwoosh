@@ -10,7 +10,7 @@ Browser-local persistence; no cloud save/backend established in inspected code. 
 
 Well: `{built, hearts, regen}`. Forge: `{built, charges, recharge}`. Shrine: `{built:true}`. Diary: `{read:[]}`. `flags.reachedDuel` opens a chapter. Meta loader fills missing defaults; it does not comprehensively validate arbitrary malformed values.
 
-City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, nextId}`. A building is `{id,type:'burrow'|'yard',x,y,state:'building'|'ready'|'sealed',remaining,work}`. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current Yard-cycle seconds. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, and clamps materials and progress to nonnegative values.
+City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, food, nextId}`. A building is `{id,type:'burrow'|'yard'|'farm'|'store',x,y,state:'building'|'ready'|'sealed',remaining,work,priority}`. `priority` is 0 low, 1 normal or 2 high for production stations. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current production-cycle seconds. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, clamps resources and progress to nonnegative values, and defaults older city saves to four food and normal priorities.
 
 ## Persistence timing
 
@@ -35,6 +35,8 @@ The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does no
 ## Ratkin Quarter persistence
 
 City construction and production advance from `lastAt` on town entry, city entry, city actions and the visible city timer. Each catch-up step is capped at eight hours. Road/building placement, rushing, sealing, moving and important timer completions save immediately. Sealed connected Yards clear partial work when they lose their worker or road; disconnected time is never banked for later output. Older v1 saves gain a fresh gate-only city and retain all prior progression.
+
+Logistics-1 retains both the outer meta v1 and city v1. It adds optional `food` and `priority` fields using defaults that preserve city-1 playability. Production stations clear partial work when they become ineligible because of disconnection, staffing, missing food or full storage; blocked time cannot be reclaimed by reconnecting later.
 
 ## First-upgrade offer
 

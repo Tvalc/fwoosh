@@ -4,7 +4,7 @@ A portrait fire-rescue game: absorb fire from villagers, manage the heat you car
 
 ## Checkpoint
 
-The non-Makko ratkin prototype remains removed; villagers use the existing Makko townsfolk animation and cinder venting uses the original Makko sheet. The first Ratkin Quarter systems slice now provides player-laid roads, Burrows, Salvage Yards, offline construction, ember sealing and automatic material production. Its presentation reuses verified Makko environment art plus code-native interface elements while Ratkin-specific Makko production continues. See `docs/CANON.md`, `docs/CITY_FOUNDATION.md` and `docs/STATUS.md`.
+The non-Makko ratkin prototype remains removed; villagers use the existing Makko townsfolk animation and cinder venting uses the original Makko sheet. The Ratkin Quarter now provides player-laid roads, four building types, offline construction, ember sealing, food/material logistics, visible carriers, congestion and optional priorities. Its presentation reuses verified Makko environment art plus code-native interface elements while Ratkin-specific Makko production continues. See `docs/CANON.md`, `docs/CITY_FOUNDATION.md`, `docs/LOGISTICS.md` and `docs/STATUS.md`.
 
 ## Play locally
 
