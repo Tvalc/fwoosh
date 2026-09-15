@@ -2,6 +2,8 @@
 
 Tony's direction, September 15: present events belong in Final Fantasy-style bottom-screen text boxes with simple Makko talking/emotional portraits. Past revelations belong mostly in the optional diary. Duy arrives in an ongoing emergency; the world does not wait for him to understand.
 
+Canon update: the character currently called Keith will be renamed and remade as a Ratkin Arbiter under issue #39. Current-runtime references below describe the deployed build, not the approved final identity.
+
 ## Current runtime
 
 - A single brief arrival line, with movement, dash and vent available immediately.
@@ -14,9 +16,9 @@ Tony's direction, September 15: present events belong in Final Fantasy-style bot
 
 ## Makko portrait handoff — Cursor art lane
 
-Status: **requested; dedicated clips are not yet generated or integrated in this build.** Runtime currently displays static crops of the existing verified Makko hero/Keith sprites. The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
+Status: **requested; dedicated clips are not yet generated or integrated in this build.** Runtime currently displays static crops of the existing verified Makko hero/Keith sprites. Cursor is replacing Keith with the newly named Ratkin Arbiter before the three non-Duy dialogue performances are finalized. The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
 
-Use the established Keith and Duy references, not Cuong's Sunday-morning sprite. FWOOSH collection: https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277. Preserve raw sources and record actual Makko asset links and export settings. Tony must review the new faces before expanding the cast.
+Use the established Duy reference and the new Tony-approved Ratkin Arbiter reference, not Cuong's Sunday-morning sprite or the deprecated human Keith reference. FWOOSH collection: https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277. Preserve raw sources and record actual Makko asset links and export settings. Tony must approve the Arbiter's name and reference before the portrait set is integrated.
 
 | Atlas key | Performance |
 |---|---|
@@ -24,14 +26,14 @@ Use the established Keith and Duy references, not Cuong's Sunday-morning sprite.
 | dialogue_duy_startled | Startled recognition and a short question; not comic panic. |
 | dialogue_duy_questioning | Alert, searching expression; speaks while catching his breath. |
 | dialogue_duy_concerned | Concern for the ratkin; tired but attentive. |
-| dialogue_keith_stern | Economical, impatient speech; no comforting smile. |
-| dialogue_keith_dry | Small, dry reaction; restrained mouth and eyebrow movement. |
-| dialogue_keith_strained | Brief flinch, then regains control and speaks. |
+| dialogue_arbiter_stern | Economical, impatient speech; no comforting smile. |
+| dialogue_arbiter_dry | Small, dry reaction; restrained mouth and eyebrow movement. |
+| dialogue_arbiter_strained | Brief flinch, then regains control and speaks. |
 
 Prompt template: “Use this exact Fwoosh character reference and preserve the face, hair, clothes and established pixel-art style. Square head-and-shoulders dialogue portrait, three-quarter view facing into the text. [Performance from table.] Very simple looping speech: closed mouth, two small open-mouth shapes, a blink and restrained eyebrows. Locked camera, fixed scale and silhouette, no walking, no zoom, no text or interface. Solid flat [red/green/blue absent from the character palette] chroma background, uniformly lit, no colored spill.”
 
 Save through Makko's normal background-removal/export flow. If removal contaminates the character, remake against a different primary-color chroma background; do not accept a green-tinted face. Inspect the actual saved transparent export, not just the generation preview.
 
-Runtime contract: a horizontal PNG atlas in `media/anim/`, square cells at least 128×128; frame 0 is the closed-mouth listening pose, frames 1..N the speech loop at 8fps. Add the exact key to `MAKKO_ANIM_SRC` in `js/media.js` and `{frames,fw,fh}` to `MAKKO_ANIM` in `js/media-meta.js`. The renderer chooses the key from the line's speaker/emotion, loops speaking frames during typing, and rests at frame 0 while the player reads. Keep facial proportions fixed between cells. Add sources to ART.md. Validate all seven keys, alpha edges, clipped hair, phone readability and listening/talking transitions before integration.
+Runtime contract: a horizontal PNG atlas in `media/anim/`, square cells at least 128×128; frame 0 is the closed-mouth listening pose, frames 1..N the speech loop at 8fps. Add the exact key to `MAKKO_ANIM_SRC` in `js/media.js` and `{frames,fw,fh}` to `MAKKO_ANIM` in `js/media-meta.js`. The renderer chooses the key from the line's speaker/emotion, loops speaking frames during typing, and rests at frame 0 while the player reads. Keep facial proportions fixed between cells. Add sources to ART.md. Validate all seven keys, alpha edges, clipped hair, phone readability and listening/talking transitions before integration. Preserve compatibility aliases for the old `keith` asset/save identifiers until the migration is verified.
 
 No other art generator, stock portrait, procedural mouth drawing or recolored substitute is authorized. Codex owns prose, pacing, renderer, history and release; Cursor keeps Makko portrait production. Merge scoped media/metadata changes rather than replacing the new runtime with an older copy.
