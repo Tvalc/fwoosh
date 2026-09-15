@@ -1395,13 +1395,19 @@ function render(){
     ctx.globalAlpha = 1;
   }
 
-  // Gameplay warning boundaries use UI lines; the explosion reuses the existing Makko flame.
+  // Vent-demon intent stays readable without charge/explosion circles. The tether shows
+  // who is in danger; a small bar shows the remaining interruption window. The target
+  // itself intensifies with the existing Makko flame animation.
   for(const d of demons){if(d.source!=='vent')continue;
     ctx.save();ctx.strokeStyle='#ffad55';ctx.lineWidth=3;
     if(d.tgt && !d.feast){ctx.setLineDash([7,9]);ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.tgt.x,d.tgt.y);ctx.stroke();ctx.setLineDash([]);}
     if(d.feast){
-      ctx.strokeStyle='#ff6155';ctx.beginPath();ctx.arc(d.feast.x,d.feast.y,K.CINDER_BLAST_R,0,Math.PI*2);ctx.stroke();
-      ctx.lineWidth=6;ctx.beginPath();ctx.arc(d.feast.x,d.feast.y,28,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,d.eatT/K.CINDER_EAT_T));ctx.stroke();
+      const f=Math.min(1,d.eatT/K.CINDER_EAT_T), bx=d.feast.x-34, by=d.feast.y-62;
+      ctx.strokeStyle='#ff6155';ctx.setLineDash([5,7]);ctx.lineDashOffset=-frame*0.7;
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.feast.x,d.feast.y);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(18,10,13,0.88)';ctx.fillRect(bx-2,by-2,72,10);
+      ctx.fillStyle='#ff6155';ctx.fillRect(bx,by,68*f,6);
+      drawFlame(ctx,d.feast.x,d.feast.y+26,42+26*f,frame*0.85,0.50+0.45*f);
     } // Windup uses the Makko demon animation; no drawn yellow charge circle.
     ctx.restore();
   }

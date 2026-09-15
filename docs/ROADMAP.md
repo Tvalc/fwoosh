@@ -4,11 +4,11 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, persistent vent demons, cinder-person explosions, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, persistent vent demons, cinder-person explosions, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. The next candidate removes the remaining cinder-eating circles. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
-1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **Cursor Makko art; Codex canon, systems and release**. Name locked; exact judgment mandate and full migration are pending.
+1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **Cursor Makko art; Codex canon, systems and release**. Name and shared-near-death covenant are locked; exact judgment mandate and full migration are pending.
 2. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Cursor Makko art; Codex integration**. Beacon gameplay is live; replace the shared Well/Shrine menu image with two distinct Makko sprites.
 3. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Arbiter pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
 4. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, Arbiter replacement, cinder vent correction and diary art. Every visual asset must come from Makko.
@@ -42,7 +42,7 @@ Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, pers
 - Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
 - Complete-restoration criteria, favor actions and release thresholds.
-- The source and limits of Khet-Tak-Tor's authority and why he maintains or uses the recurring fire.
+- The powers and limits of Khet-Tak-Tor's covenant mandate and why he maintains or uses the recurring fire.
 - Which ember total funds the Invoice; conversion, caps, reward thresholds and spending interaction.
 - Duy System Shop inventory; Ratkin recruit identity, abilities and miss condition.
 - The Duy-survives route and the exact reconciliation of Cuong's nineteen-life balance plus Duy's transferred five.

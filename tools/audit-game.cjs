@@ -1,5 +1,6 @@
 /* Run actual game scripts in an isolated VM with in-memory saves and a stubbed canvas.
- * This validates game state, not drawing, audio, browser input dispatch, or balance.
+ * This validates game state plus a few targeted draw-operation regressions, not visual
+ * quality, audio, browser input dispatch, or balance.
  * Usage: node tools/audit-game.cjs [game-folder] [report.json]
  */
 const fs = require('node:fs');
@@ -19,10 +20,14 @@ function game(saved = {}) {
   const storage = new Map(Object.entries(saved));
   const noop = () => {};
   const drawnText = [];
+  const strokedArcs = [];
+  let pathArcs = [];
   const listeners = {};
   const listen = (type, fn) => (listeners[type] ||= []).push(fn);
   const gradient = () => ({addColorStop: noop});
   const context2d = new Proxy({setTransform: noop, fillText: text => drawnText.push(String(text)),
+    beginPath: () => { pathArcs = []; }, arc: (...args) => pathArcs.push(args),
+    stroke: () => { strokedArcs.push(...pathArcs); },
     createRadialGradient: gradient, createLinearGradient: gradient,
     measureText: text => ({width:String(text).length*10})}, {get: (o, k) => o[k] || noop});
   const canvas = {style: {}, getContext: () => context2d, addEventListener: listen,
@@ -36,7 +41,7 @@ function game(saved = {}) {
   box.window = box;
   const ctx = vm.createContext(box);
   for (const s of scripts) vm.runInContext(s.code, ctx, {filename:s.filename, timeout: 10000});
-  return {run: code => vm.runInContext(code, ctx, {timeout: 10000}), storage, drawnText, dispatch(type, fields={}){ for(const fn of listeners[type]||[]) fn({preventDefault:noop, ...fields}); }};
+  return {run: code => vm.runInContext(code, ctx, {timeout: 10000}), storage, drawnText, strokedArcs, dispatch(type, fields={}){ for(const fn of listeners[type]||[]) fn({preventDefault:noop, ...fields}); }};
 }
 const results = [];
 function test(name, fn) {try {const detail = fn(); results.push({name, status:'pass', detail: detail ?? null});}
@@ -731,6 +736,10 @@ test('Backtick pauses every game screen and ignores key repeat',()=>{
   g.dispatch('keydown',{key:'Escape'});assert.equal(g.run('debugMenu.open'),false);
  }
 });
+test('Cinder-eating warning draws no stroked countdown or blast-radius circles', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;cells=[];slag=[];trail=[];rings=[];arson=[];shots=[];wake=[];pulses=[];allies=[];powerups=[];boss=null;husks=[{x:300,y:640,t:0,ph:0}];demons=[{x:240,y:640,t:0,hitCd:0,source:"vent",warn:0,ph:1,tgt:husks[0],feast:husks[0],eatT:K.CINDER_EAT_T*.6}];render()');
+  assert.equal(g.strokedArcs.length,0,'The cinder-eating warning still strokes a circular overlay.');
+});
 test('Debug menu cancels held input and blocks gameplay actions',()=>{
  const g=game();g.run('onTitle=false;intro=null;keys.w=true;player.ventHeld=true;player.ventDash=[1,0];ptr.down=true');
  g.dispatch('keydown',{key:'`'});g.dispatch('keydown',{key:'w'});g.dispatch('keydown',{key:'Shift'});g.dispatch('keydown',{key:' '});g.run('lungeDir(1,0);onMove(400,500);onUp()');
@@ -777,7 +786,7 @@ test('First-run dialogue suppresses the adaptive beacon and its attack',()=>{
  const g=game();g.run('onTitle=false;opp.terr[0]=3;opp.lat=[1,2,3];opp.introVer=0;reset()');assert.ok(g.run('intro'));assert.equal(g.run('snipeArmed'),false);assert.equal(g.run('slag.some(s=>s.grudge)'),false);
 });
 
-const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
+const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
   pass:results.filter(r=>r.status==='pass').length, fail:results.filter(r=>r.status==='fail').length, results};
 if(process.argv[3])fs.writeFileSync(path.resolve(process.argv[3]),JSON.stringify(report,null,2)+'\n');
