@@ -1,6 +1,6 @@
 # Fwoosh status — September 15, 2026
 
-## Well identity and town story cleanup — 2026-09-15-well-1
+## Well identity and town story cleanup — 2026-09-15-well-2
 
 The Well now has one clear arcade purpose: survivability. Deep Well adds maximum hearts, while the renamed Deep Draught shortens each committed vent-heal from 0.60 seconds to 0.50 and then 0.40 seconds. The passive clear-of-fire trickle remains at its base rate. Faster healing therefore reduces Duy's rooted exposure, but each completed heart still releases one persistent vent demon. Existing `regen` purchases convert automatically to the matching Deep Draught tier without a save migration or refund.
 
