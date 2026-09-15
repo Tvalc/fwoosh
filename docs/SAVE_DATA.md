@@ -1,4 +1,4 @@
-# Save-data contract — progression-fixes branch
+# Save-data contract — current live baseline
 
 Browser-local persistence; no cloud save/backend established in inspected code. Origins, profiles and devices have separate progress.
 
@@ -26,9 +26,9 @@ Rescues update lifetime saved and pending embers in memory. `foldOpp()` banks pe
 
 The simulation stops the frame after terminal boss outcomes so a later rescue cannot change run totals after settlement. Regression checks compare the displayed run tally with banked embers and reloaded rescue counts.
 
-## Intro revision 3
+## Intro revisions
 
-The revised live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. Older players see revision 3 once. This preserves ember balances, district completion, upgrades and diary read state. No city/Invoice save fields are added by this story release.
+The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. The current present-dialogue release uses revision 5. Revision changes replay revised opening dialogue once while preserving ember balances, district completion, upgrades and diary read state. No city/Invoice save fields exist yet.
 
 ## First-upgrade offer
 
@@ -49,3 +49,7 @@ prose-1 changes INTRO_VERSION from 3 to 4, using the existing one-time replay me
 ## Present dialogue history
 
 dialogue-1 retains meta save version 1 and adds optional `dialogue: {seen: string[], history: {who,text,emotion}[]}`. Old/malformed values normalize on first use. Seen exchange IDs are capped at 32; delivered text at 100 unique recent lines. Only a completed exchange is marked seen. A line enters the archive when it has finished typing; an interrupted unread line is not archived. No wallet grants or chapter-unlock changes accompany this addition. INTRO_VERSION changes from 4 to 5 for the one-time short opening. The old `opp.loreIdx` is left intact but its timer has been removed.
+
+## Debug reset
+
+Build `2026-09-15-debug-1` adds a confirmed desktop debug reset. It removes only `fwoosh.meta` and `fwoosh.opp`, preserves `fwoosh.skin` and unrelated origin storage, reloads clean defaults, and immediately starts district 1 with intro revision 5 at line 0. Deletion failure attempts to restore both snapshots and keeps the game paused with an error. Test resets must use disposable/local fixtures; never confirm reset against Tony's live save during verification.

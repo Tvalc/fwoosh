@@ -1,81 +1,43 @@
 # Fwoosh working agreement
 
-## Full map viewport — 2026-09-15-full-map-1
+Current board: https://github.com/Tvalc/fwoosh/issues/1
 
-Supersedes hud-safe-1, which incorrectly removed 32.8% of vertical travel. Original simulation, spawn distribution, opponent target mapping and obstacle coordinates are restored exactly from the pre-regression dialogue build. The complete world now renders with a single uniform transform between a compact header and a stable bottom dialogue/control dock. Pointer taps invert that transform; dock and gutter touches cannot spend dash charges. Device safe-area insets affect screen fit only. Small visual overhang accommodates bodies at the original walls; oversized decorative flames may clip.
+Current roadmap: [ROADMAP.md](ROADMAP.md)
 
-97 actual-script state/input checks pass, including original upper route access, full-map corners, screen/world mapping at 320/375/430/1280px and resize cancellation. Local browser fixtures checked normal play, rescue feedback, longest present dialogue, maximum cinder vent pop and Keith at the upper wall at 320/375/430px; an actual browser tap used the correct transformed heading. No console warnings/errors observed. These checks are not human balance testing or physical-device testing. The map is uniformly displayed at 70.2% of its former canvas scale to fit the full arena and separated docks; smaller actors are the key playtest tradeoff. No new artwork, narrative, save migration or economy changes. See FULL_MAP_VIEWPORT.md and issue #1 for release verification.
+Release history: [STATUS.md](STATUS.md)
 
-Earlier checkpoints below are historical.
+Tony's explicit instructions supersede these defaults.
 
-Established 2026-09-14. Shared tracker: https://github.com/Tvalc/fwoosh/issues/1
+## Ownership
 
-| Owner | First-batch scope | Boundaries |
+| Owner | Current work | Tracker |
 |---|---|---|
-| Cursor | Current modular split; cinder vent correction; ratkin run prototype | Existing index.html, js/, css/, media/, animation pipeline and packaging. Preserve uncommitted work. |
-| Codex | Progression/save reliability, tests, records, source preservation | Independent checkout; scoped changes to meta.js, sim.js, opp.js, Shrine drawing, description, docs and tools. |
-| Tony | Art approval, canon, larger product decisions | Ratkin approval precedes cast expansion; canon decision precedes story rewrites. |
+| Tony | Playtest feedback, art approval, canon and economy decisions | #26 and decision-dependent issues |
+| Cursor | Makko animation and illustration production in its own checkout | [#31](https://github.com/Tvalc/fwoosh/issues/31) |
+| Codex | Core-loop tuning, city systems, saves/tests, integration, records and releases in its own checkout | [#26–#30, #32–#33](ROADMAP.md) |
+| Separate Ledger task | Vovinam Ledger recovery and RPG implementation | Shared decisions via #30 and the handoff record |
 
-Cursor keeps its current folder and an existing feature branch or `cursor/game-and-animation`. Codex uses an independent repository on `codex/progression-fixes`; its earlier records are on `codex/project-foundation`. Two branches in the same folder are insufficient. Keep `animation-baseline` intact.
+## Non-negotiable art rule
 
-## Integration
+All Fwoosh artwork must come from Makko. This includes characters, animation, environments, buildings, UI art, effects and diary illustrations. Preserve source URLs/raw exports and record processing. Do not substitute another generator, stock art or newly drawn replacements unless Tony explicitly changes the rule. Regenerate art if chroma removal damages character colors.
 
-1. Every issue records owner, status, scope, affected paths, dependencies, acceptance criteria, validation and final commit/PR.
-2. Commit the modular refactor separately from animation work. Push the feature branch and hand over the exact commit and checks.
-3. Codex compares the result with its reviewed snapshot and checks the combined code, docs and media.
-4. Integrate one completed change at a time. Resolve actual diffs; never overwrite a newer file with a whole older copy.
-5. Codex coordinates integration/release. No force-pushes, automatic merges or deployment of unfinished gameplay changes. A draft PR is not a release.
+## Parallel work
 
-Tony explicitly reaffirmed parallel work on September 14. Codex continues its lane while Cursor works; integration is not a prerequisite. Shared files may receive small independent patches, reconciled by diff later. Never replace Cursor's active files. Existing explicit instructions from Tony take precedence. Preserve source assets independently of runtime output; see [ASSET_PRESERVATION.md](ASSET_PRESERVATION.md).
+- Cursor keeps `C:\Users\19415\fwoosh` and its feature branch. Codex never resets, cleans, stashes, switches or overwrites that checkout.
+- Codex works in its isolated checkout and may make scoped runtime changes while Cursor produces art.
+- Cursor hands off exact branch/commit, changed paths, Makko sources, frame metadata and preview evidence. Codex reviews actual diffs, integrates, runs checks and publishes.
+- Shared-file changes are reconciled line by line. Never replace a newer file with a whole older copy.
 
-## Assignments
+## Issue and release discipline
 
-- [#2 Codex foundation and audit](https://github.com/Tvalc/fwoosh/issues/2)
-- [#3 Cursor refactor and animation](https://github.com/Tvalc/fwoosh/issues/3)
-- [#4 Final-district completion](https://github.com/Tvalc/fwoosh/issues/4)
-- [#5 Multiple building unlocks](https://github.com/Tvalc/fwoosh/issues/5)
-- [#6 Duplicate settlement robustness](https://github.com/Tvalc/fwoosh/issues/6)
+Every active issue states owner, status, scope, dependencies and acceptance criteria. Ideas without Tony's approval stay in the roadmap parking lot rather than appearing as committed work.
 
-Deferred until scoped: heroes/mastery, Tavern and later buildings, feud redesign, district art expansion, audio production, daily challenges and monetization.
+Keep code, balance, prose and art changes separable. Preserve existing localStorage fields or test an explicit migration. A fixture or automated audit is evidence, not human balance or physical-device approval.
 
-## Latest authorization
+Tony authorized publishing each verified major change to the live site for testing. Codex coordinates merges and releases. Record the tested source, feature commit, merge commit, deployment and live URL; do not describe a local or pushed build as deployed.
 
-Tony authorized the immediate combined release and deployment after each major completed change for live testing. Codex integrates Cursor 2d9316c, verifies, and publishes; no further release permission is required for these scoped changes. Keep original checkouts untouched. Codex continues the story/city interview here; the separate Vovinam Ledger task receives shared decisions explicitly.
+## Current order
 
-## Current scoped work
+While Tony playtests and Cursor finishes Makko work, Codex maintains the board and prepares evidence-driven core-loop tuning. Then implement #27 city foundation, #28 logistics, #29 favor/ending and #30 Ledger integration in that order. Audio and final platform preparation follow under #32.
 
-Vent-risk PR #12 is deployed (2026-09-14-vent-1). Tony next approved zero ember payouts from vent-created demons and a first-run permanent choice between survivability and mobility. Codex implements/tests/publishes 2026-09-14-economy-1 from codex/first-upgrade-economy in its isolated checkout. Scope: meta.js, opp.js, sim.js, draw.js, build/script versioning, tests and records. Cursor continues the Fwoosh Makko art/animation lane. Existing core gameplay and ember economy take priority over city expansion. Reconcile shared-file changes by diff with any later Cursor delivery. ECONOMY_TUNING.md records behavior and initial prices; issue #1 records deployment verification.
-
-## Uncapped ember scope
-
-Tony confirmed removing the reward cap. Codex implements/tests/publishes economy-2 on codex/uncapped-embers, touching constants.js, sim.js, build/script versions, regression checks and records in its isolated checkout. Cursor continues Makko art. Preserve all prior starter purchases and existing saves. Later economy targets are approved (2–3 ordinary runs, skilled approximately twice as fast), but rates/prices/effects require tuning; do not claim those targets have already been measured or delivered.
-
-## Reward/retry release scope
-
-Tony approved the saved-research recommendations and prior economy pacing targets. Codex implements loop-1 in its isolated codex/reward-retry-loop branch: meta.js, sim.js, opp.js, input.js, draw.js, index version, tests and records. Cursor continues Makko art. Integrate these scoped gameplay changes rather than overwriting whole files from an older checkout. 81 checks and local browser fixture QA pass. Current price values are initial tuning, not confirmed human balance. No forced run timer; no city expansion. Deployment evidence lives in issue #1.
-
-## Prose discovery rewrite — 2026-09-15-prose-1
-
-Tony requested a complete prose rewrite following the author-craft research and confirmed that players should feel disoriented, under pressure and gradually discover what happened. The deeper story remains optional.
-
-All fifteen diary entries (78 short pages), their teasers, Keith's opening, greetings, reactions and fourteen later observations were rewritten. Duy's ordinary memories establish warmth and relationships; later entries reveal the market, afterlife, cell, debt and gate through his limited viewpoint. Mei's coercion is explained in her later confession rather than presented as knowledge Duy already possessed in the market. The early wraith entry does not reveal the cell's massacre. Keith's automatic speech gives immediate guidance and fragments rather than reciting the entire backstory. Shrine and diary labels and the public description were adjusted to match. Ratkin judgment still determines release; the final optional entry describes the restoration/favor obligation without adding a finished ending or redemption mechanic.
-
-Chapter IDs, titles, art assignments, unlock predicates, hints and saved read history are unchanged. Gameplay, economy and art are unchanged. INTRO_VERSION is 4 so the revised live opening plays once for returning players; it still allows movement, dash and vent. Existing progression is retained. Older loreIdx progress is preserved; later observations are not forcibly replayed.
-
-Validation: all 81 gameplay/input checks pass in reports/prose-state.json, including intro control and one-time replay/save preservation. A comparison against the prior story verifies identical diary identities/art/unlocks/hints and STORY data structure. Browser measurement with the loaded Pixelify font checks all 78 pages, seven opening lines and fourteen lore lines: maximum diary baseline 728 (navigation begins below 1160), opening baseline 943 (available through 1008), lore width 587.425 within 700. Local 320px visual checks cover a diary page, one of the longest pages and the opening during gameplay; no console errors observed. Voice and reading pace remain subject to Tony's playtest.
-
-Release verification and final commit/PR are recorded in issue #1. No new art, factions, magic explanation, city system or Invoice conversion was invented. The author research informs general craft; the passages are original to Fwoosh.
-
-## Present dialogue and diary rewrite — 2026-09-15-dialogue-1
-
-Tony approved clear present-tense exchanges in bottom-screen text boxes and backstory primarily in the optional diary. The live opening is one short instruction. Rescue, rising carried heat and vent completion prompt brief reactions; later returns introduce repeated death, Keith's role, ratkin judgment and rebuilding. At most two story exchanges per run, sixteen seconds between exchanges, no stale lore queue, no frozen return card. One optional combat reaction shares the same box and cannot interrupt. Dialogue remains automatic while movement, dash and vent stay available. Diary → Conversations rereads delivered words without revealing future lines.
-
-Fourteen diary chapters were rewritten as connected prose; the approved painful heat/ascending ratkin chapter is retained. There are 15 chapters and 35 pages. Identities, art references, hints, unlock predicates, purchases and existing read flags are unchanged. The market betrayal does not reveal Mei's motive before her confession; no new explanation for Duy's five-life balance is introduced.
-
-90 state/input checks pass, including nine new event pacing, interruption, persistence and history checks. Loaded-font browser measurement: all 35 diary pages fit (maximum baseline 980, limit 1160); all story dialogue fits (maximum 957, limit 1015). Phone-size visual checks cover the bottom box/control clearance, conversation navigation and the longest diary page. No human reading-speed or story-comprehension test has been claimed.
-
-**Art still pending:** this release uses static crops of the existing verified Makko Duy/Keith sprites. Seven dedicated talking/emotion clips are requested on Cursor issue #3, with prompts, source requirements and atlas integration in docs/DIALOGUE.md. They are not generated or integrated, and Cursor acknowledgment has not been verified. No other art generator is used. Codex owns this scoped runtime/story/history change; Cursor retains the art lane. Release/PR verification is recorded on issue #1.
-
-## Reserved top HUD — 2026-09-15-hud-safe-1
-
-The top HUD now occupies its own opaque screen area. Running, dashing, collision pushes, villagers/enemies and old opponent targets respect the upper arena boundary with clearance for the largest existing vent pose. Temporary rescue/tactical messages share the header instead of covering play. Header taps cannot spend dash charges. 96 checks pass; 320px human/vent boundary poses verified. No new art, save migration or economy-value changes. The reduced playable height needs balance playtesting. See HUD_SAFE_AREA.md; issue #1 records deployment.
+Historical batch assignments and shipped feature scopes are preserved in GitHub closed issues and [STATUS.md](STATUS.md); they are not current instructions.

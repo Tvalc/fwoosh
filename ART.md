@@ -4,7 +4,7 @@
 
 Tony's standing instruction, reaffirmed September 14, 2026: **all artwork for this game must be Makko art.** This applies to Codex, Cursor and any future agent, including characters, animation, environments, UI art, visual-effect artwork and diary illustrations. Reuse existing Makko assets or obtain new art through Makko. Cropping, recutting, transparency cleanup, atlasing and animation integration may process those sources while retaining their provenance. Do not substitute other generators, stock assets or freshly drawn replacement artwork without Tony explicitly changing the rule. If Makko or the required source is unavailable, record the dependency and continue independent work. Existing assets with unknown provenance need verification; do not silently relabel or replace them.
 
-Reviewed 2026-09-14. Replaces the procedural fire-passing spec preserved in `docs/archive/ART-prototype.md`. Main `d7945b4` embeds runtime art; Cursor refactor 435d0fb extracts it into media/ with metadata in js/media-meta.js. Cursor 2d9316c supersedes the cinder recut and ratkin prototype: the original Makko cinder sheet is restored and the non-Makko ratkin is removed.
+Current production is tracked in [issue #31](https://github.com/Tvalc/fwoosh/issues/31). This specification replaces the procedural fire-passing proposal preserved in `docs/archive/ART-prototype.md`. Runtime art is extracted under `media/` with metadata in `js/media-meta.js`. The original Makko cinder sheet is restored and the prior non-Makko ratkin prototype is removed; neither unfinished item should be described as approved final animation.
 
 ## Chroma background recovery
 
