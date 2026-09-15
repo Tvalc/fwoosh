@@ -911,6 +911,7 @@ function hubClick(x,y){
 }
 function hubAct(a){
   if(a==='play'){ reset(); return; }
+  if(a==='nextupgrade'){openNextUpgrade();return;}
   if(a==='dprev'){ selDistrict = Math.max(1, selDistrict-1); return; }
   if(a==='dnext'){ selDistrict = Math.min(Math.min(5,META.district||1), selDistrict+1); return; }
   if(a==='starter'){if(starterAvailable())hubSheet='starter';return;}
@@ -983,17 +984,9 @@ function drawHub(ctx){
     hubB(40,580,VW-80,88,'starter');
   }
 
-  // --- NEXT chip (always a visible next goal)
-  const nextUp=(bld)=>{ const b=META.buildings[bld], sh=SHOPS[bld]; for(const it of sh.items){ if((b[it.track]||0)<it.costs.length) return {cost:it.costs[b[it.track]||0], name:it.name, tier:(b[it.track]||0)+1}; } return null; };
-  let nextTxt;
-  if(!wellBuilt) nextTxt='NEXT: '+(K.WELL_RISE-META.saved)+' saves to raise The Well';
-  else if(nextUp('well')){ const u=nextUp('well'); nextTxt='NEXT: '+u.cost+' embers  ·  '+u.name+' '+u.tier; }
-  else if(!forgeBuilt) nextTxt='NEXT: '+(K.FORGE_RISE-META.saved)+' saves to raise The Forge';
-  else if(nextUp('forge')){ const u=nextUp('forge'); nextTxt='NEXT: '+u.cost+' embers  ·  '+u.name+' '+u.tier; }
-  else nextTxt='Ashford is thriving — more rises soon';
-  const chY=VH-186;
-  panel(ctx, 60, chY, VW-120, 40, 10, 'rgba(255,180,80,0.14)', 'rgba(255,180,80,0.4)');
-  ctx.textAlign='center'; ctx.fillStyle='#ffcf8a'; ctx.font='700 18px "Pixelify",system-ui,sans-serif'; ctx.fillText(nextTxt, VW/2, chY+26);
+  // Always show the nearest available upgrade, including cheaper Forge/recovery tracks.
+  drawUpgradeProgress(ctx,60,VH-246,VW-120,102);
+  if(upgradeGoal() && upgradeGoal().act)hubB(60,VH-246,VW-120,102,'nextupgrade');
 
   // --- PLAY button = DISTRICT launcher (‹ ›to pick any unlocked district, center to enter)
   const pbY=VH-128, pbW=VW-120, pbX=60, pbH=92, pulse=0.5+0.5*Math.sin(frame*0.08);
@@ -1036,6 +1029,44 @@ function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
   ctx.fillText(title, x+w/2, y+h-28);
   ctx.fillStyle=live?col:'rgba(150,160,180,0.9)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(sub, x+w/2, y+h-9);
   if(act) hubB(x,y,w,h,act,true);
+}
+
+function drawUpgradeProgress(ctx,x,y,w,h){
+  const goal=upgradeGoal();
+  panel(ctx,x,y,w,h,12,'rgba(15,20,31,0.97)','#71664a');
+  ctx.save();ctx.textAlign='center';ctx.fillStyle='#ffe0a2';ctx.font='800 25px "Pixelify",system-ui,sans-serif';
+  if(!goal){ctx.fillText('ALL CURRENT UPGRADES OWNED',x+w/2,y+40);ctx.restore();return;}
+  const have=goalAmount(goal),ready=have>=goal.cost;
+  ctx.fillText(goal.name+(ready?' · READY':''),x+w/2,y+30);
+  ctx.font='500 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle=ready?'#a0ffd0':'#e2d6c3';
+  ctx.fillText(Math.floor(have)+' / '+goal.cost+' '+(goal.kind==='saves'?'RESCUED':'EMBERS'),x+w/2,y+59);
+  ctx.fillStyle='#35303b';ctx.fillRect(x+20,y+h-22,w-40,9);
+  ctx.fillStyle=ready?'#8affc1':'#ffbd65';ctx.fillRect(x+20,y+h-22,(w-40)*Math.min(1,Math.max(0,have/goal.cost)),9);
+  ctx.restore();
+}
+function drawRunResults(ctx){
+  ctx.save();ctx.fillStyle='rgba(7,7,14,0.94)';ctx.fillRect(0,0,VW,VH);
+  ctx.textAlign='center';ctx.fillStyle=won?'#a0ffd0':'#ffbd80';
+  ctx.font='800 54px "Pixelify",system-ui,sans-serif';ctx.fillText(won?'DISTRICT CLEARED':'BURNED UP',VW/2,190);
+  drawSpr(ctx,won?'happy':'ashimp',VW/2,286,105,{});
+  ctx.font='600 25px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#d2d9e8';
+  ctx.fillText('Your embers are safe.',VW/2,380);
+  ctx.fillText(saved+' villagers rescued · '+fmt(elapsed),VW/2,423);
+  ctx.fillStyle='#ffcf6b';ctx.font='800 36px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('+'+runEmbers+' embers earned',VW/2,478);
+  if(runStarterBonus>0){ctx.font='600 24px "Pixelify",system-ui,sans-serif';ctx.fillText('+'+runStarterBonus+' first-upgrade bonus',VW/2,517);}
+  drawUpgradeProgress(ctx,48,558,VW-96,122);
+  ctx.fillStyle='#b7b8c9';ctx.font='500 22px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('SCORE '+score,VW/2,731);
+  const goal=upgradeGoal(),ready=goal&&goalAmount(goal)>=goal.cost;
+  for(const b of resultButtons()){
+    const primary=b.act==='retry';
+    panel(ctx,b.x,b.y,b.w,b.h,14,primary?'#533222':'#202a39',primary?'#ffbd65':'#8ba1bc');
+    ctx.fillStyle=primary?'#ffe0ac':'#dce9fa';ctx.font='800 30px "Pixelify",system-ui,sans-serif';
+    ctx.fillText(primary?(won&&runDistrict<META.district?'NEXT DISTRICT':'RUN AGAIN'):(ready?'UPGRADES · READY':'BACK TO ASHFORD'),VW/2,b.y+b.h/2+10);
+  }
+  if(!isTouch){ctx.fillStyle='#b6bccb';ctx.font='500 22px "Pixelify",system-ui,sans-serif';ctx.fillText('ENTER / R: RUN · T: TOWN',VW/2,1060);}
+  ctx.restore();
 }
 
 function drawStarterSheet(ctx){
@@ -1516,6 +1547,20 @@ function render(){
       }
     }
     drawRunMeters(ctx);
+    // Currency feedback sits away from heat/Edge and the mobile vent target.
+    ctx.save();ctx.textAlign='left';ctx.fillStyle='#ffcf80';ctx.font='800 25px "Pixelify",system-ui,sans-serif';
+    panel(ctx,18,VH-153,430,72,10,'rgba(9,8,15,0.9)',null);
+    ctx.fillStyle='#ffcf80';
+    ctx.fillText('RUN +'+runEmbers+' EMBERS',30,VH-125);
+    const liveGoal=upgradeGoal();ctx.font='500 21px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#dfd8c9';
+    if(liveGoal)ctx.fillText(liveGoal.name+' · '+Math.floor(goalAmount(liveGoal))+' / '+liveGoal.cost,30,VH-97);
+    if(rescueReward){
+      ctx.textAlign='center';ctx.font='800 29px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#b0ffd8';
+      panel(ctx,140,300,VW-280,53,10,'rgba(9,19,18,0.95)',null);
+      ctx.fillStyle='#b0ffd8';
+      ctx.fillText(rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS',VW/2,335);
+    }
+    ctx.restore();
     if(player.ventUnit){
       const u=player.ventUnit,bw=300,bx=(VW-bw)/2,by=VH-225;
       ctx.save();ctx.fillStyle='rgba(9,8,15,0.9)';ctx.fillRect(bx-14,by-39,bw+28,64);
@@ -1553,7 +1598,7 @@ function render(){
       const low = player.hp < 0.4;
       ctx.textAlign='center'; ctx.globalAlpha = low ? (0.7+0.3*Math.sin(frame*0.5)) : 0.75;
       ctx.fillStyle = low ? '#8affc1' : 'rgba(255,175,110,0.9)'; ctx.font='700 22px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('HOLD SPACE — HEAL (fire comes)', VW/2, VH-96); ctx.globalAlpha=1;
+      ctx.fillText('HOLD SPACE — HEAL (fire comes)', VW/2, VH-254); ctx.globalAlpha=1;
     }
   }
 
@@ -1613,43 +1658,7 @@ function render(){
 
   if(flash > 0){ ctx.fillStyle = 'rgba(255,255,255,0.24)'; ctx.fillRect(0,0,VW,VH); }
 
-  if(mode === 'over' && won && SK.winScreen){ SK.winScreen(ctx); }
-  else if(mode === 'over' && won){
-    ctx.fillStyle = 'rgba(7,7,11,0.82)'; ctx.fillRect(0,0,VW,VH);
-    ctx.fillStyle = '#8affc1'; ctx.textAlign = 'center';
-    ctx.font = '800 74px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('DISTRICT CLEARED.', VW/2, VH/2 - 110);
-    ctx.fillStyle = '#e7ecf5'; ctx.font = '500 26px "Pixelify",system-ui,sans-serif';
-    STORY.duel.yieldSub.forEach((ln,i)=> ctx.fillText(ln, VW/2, VH/2 - 56 + i*36));
-    ctx.fillStyle = '#fff'; ctx.font = '700 66px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(String(score), VW/2, VH/2 + 78);
-    ctx.fillStyle = '#7b8397'; ctx.font = '400 23px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(fmt(elapsed)+'  ·  win #'+(opp.duelWins||1), VW/2, VH/2 + 122);
-    ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 196);
-  }
-  else if(mode === 'over'){
-    ctx.fillStyle = 'rgba(7,7,11,0.80)'; ctx.fillRect(0,0,VW,VH);
-    ctx.textAlign = 'center';
-    if(!drawTextFit(ctx, 'BURNED UP', VW/2, VH/2 - 84, 66, VW*0.86)){
-      ctx.fillStyle = '#ff6a5a';
-      ctx.font = '800 74px "Pixelify",system-ui,sans-serif'; ctx.fillText('BURNED UP', VW/2, VH/2 - 70); }
-    ctx.fillStyle = '#aab2c4'; ctx.font = '400 25px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('you carried too much fire — brace to vent it', VW/2, VH/2 - 22);
-    if(!drawNumber(ctx, score, VW/2, VH/2 + 62, 64)){
-      ctx.fillStyle = '#fff'; ctx.font = '700 66px "Pixelify",system-ui,sans-serif';
-      ctx.fillText(String(score), VW/2, VH/2 + 66); }
-    ctx.fillStyle = '#7b8397'; ctx.font = '400 23px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(saved+' villagers saved  ·  '+fmt(elapsed), VW/2, VH/2 + 110);
-    ctx.fillStyle = '#ffcf6b'; ctx.font = '700 24px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('+'+runEmbers+' embers earned', VW/2, VH/2 + 146);
-    if(runStarterBonus>0){ctx.font='600 20px "Pixelify",system-ui,sans-serif';ctx.fillText('+'+runStarterBonus+' first-upgrade bonus',VW/2,VH/2+175);}
-    ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 200);
-    if(opp.runs >= 1){
-      ctx.fillStyle = '#a15277'; ctx.font = '600 22px "Pixelify",system-ui,sans-serif';
-      ctx.fillText(lineFor('study'), VW/2, VH/2 + 240);
-    }
-  }
+  if(mode === 'over')drawRunResults(ctx);
 }
+
 function fmt(s){ const m = Math.floor(s/60), r = Math.floor(s%60); return m+':'+String(r).padStart(2,'0'); }

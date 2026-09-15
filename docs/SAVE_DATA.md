@@ -37,3 +37,7 @@ Build 2026-09-14-economy-1 retains v1 and normalizes missing/null flags. Existin
 ## Uncapped earnings
 
 2026-09-14-economy-2 removes reward truncation at 160, with no new save fields or schema changes. The existing run-settlement guard banks all earned rewards once; win bounties still add normally and starter funding remains separate. Existing balances and upgrade tiers are retained. Historical foregone rewards are not recoverable from the stored save and are not estimated.
+
+## Recent run history — loop-1
+
+v1 `fwoosh.meta.recentRuns` retains at most 20 completed attempts. Each record contains seconds (one decimal), district, rescued, earned (including win bounty), starterBonus (separate) and won. Missing/non-array values normalize to an empty array; extra old entries are trimmed. The existing settlement guard prevents duplicates. It is local only, is not a lifetime ledger, and does not change existing balances, tiers or starter flags. Price changes apply to future purchases only; owned effects remain intact.
