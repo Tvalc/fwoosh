@@ -1,82 +1,67 @@
-# Fwoosh canon — story interview in progress
+# Fwoosh canon — approved decisions and open design
 
-Tony's explicit decisions supersede contradictory prototype text. This record distinguishes confirmed decisions from implementation. See the latest story implementation checkpoint below.
+Reviewed September 15, 2026. Tony's explicit decisions supersede contradictory prototype text. This file records current story and cross-game canon; implementation status belongs in [STATUS.md](STATUS.md), and planned work belongs in [ROADMAP.md](ROADMAP.md).
 
-## Confirmed by Tony
+## Premise
 
-- Duy's death, debt and sentence are the canonical origin. The old Keith rivalry / leaving town / becoming famous origin must be replaced.
-- Fwoosh tells Duy's path from death to earning resurrection. It must stand alone and later serve as a playable resurrection chapter in a larger story told across games and eventually a multi-genre experience.
-- Keith is the jailer. Defeating him is not the narrative goal or the authority that grants release.
-- Duy must rebuild the ratkin civilization and what they lost, then earn their favor. The ratkin decide when he is released.
-- Nineteen rescues or five district victories alone must not be described as automatically granting release. Existing diary promises to that effect require reconciliation with Tony's decisions.
-- All game artwork must be Makko art; see ART.md and AGENTS.md.
+Fwoosh tells Duy's experience between dying with his team and earning resurrection. It must stand alone, and it can later serve as the playable route used to recover Duy in a larger multi-game, multi-genre story.
 
-## Existing backstory in js/story.js
+Duy initially understands almost nothing. He dies and is dropped directly into the burning-town action. The situation does not wait for him. Keith gives brief present-tense guidance during controllable gameplay: Duy is being punished, he must relieve the ratkin's suffering and he will die repeatedly. The game reveals more as he progresses.
 
-The diary already answers why Duy owes the ratkin a debt. After the team's deaths and accepting the gods' offer, Duy and Cuong arrive in a dark cell. Afraid of the movement around them, they fire their pistols and kill nineteen unarmed ratkin. When the light comes up, they discover the ratkin were fleeing past them toward an open door, not attacking. The System records nineteen lives owed. Duy later sacrifices himself beneath a gate so his companions can escape; he subsequently awakens in the burning ratkin town, where Keith is the warden.
+Present events use paced bottom-screen dialogue. Past revelations happen rarely during runs and mainly through the optional diary. Immediate danger and objectives should be clear even while the larger mystery unfolds.
 
-These events are existing diary content, not new interview inventions. Read the source before asking Tony to repeat established history. Some existing diary interpretations of repayment and release conflict with his confirmed decisions above.
+## Duy's debt and the ratkin
 
-## Additional city and integration decisions confirmed by Tony
+After the team's deaths and the gods' offer, Duy and Cuong arrive in a dark cell. Frightened by movement around them, they fire and kill nineteen unarmed ratkin who were fleeing toward an open door rather than attacking. Duy later sacrifices himself beneath a gate so his companions can escape and awakens in the burning ratkin town.
 
-- The action arcade game remains the core; an incremental/idle ratkin-city rebuilding game sits behind it.
-- Embers are magical fuel. Spending them clears a building site and summons its foundation; ratkin then construct the building over time, including while the player is away.
-- A completed building must be sealed with embers before it becomes active. Active buildings produce resources for city growth.
-- Food supports workers, materials support construction, and homes increase the workforce. Tony approved this simple resource model.
-- Embers also fund upgrades and acceleration. Production upgrades are predictable. Sealing and major upgrade milestones grant random cosmetic appearances; every unlocked appearance is retained permanently.
-- Cosmetic rarity does not determine rebuilding progress or ratkin release judgment (approved as part of the milestone recommendation).
-- Embers will never be sold for real money.
-- Keep main-game integration simple: when Duy rejoins the party in the Shining Force-style RPG, the System Shop can sell Duy-specific upgrades for embers. The city economy need not transfer wholesale.
-- Whether that shop receives unspent embers or a budget based on lifetime earnings is still unanswered; Tony directed us to inspect Vovinam Ledger before continuing that discussion.
+Keith is Duy's jailer. He can punish, test and obstruct Duy; defeating Keith never grants freedom. Duy must rebuild what ratkin society lost and earn their favor. The ratkin decide when his obligation is fulfilled. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
 
-## Vovinam Ledger reference found
+Rescuing a burning ratkin draws its heat into Duy. The process hurts, and the pain grows as he carries more heat. A released ratkin ascends rather than merely stumbling away.
 
-Local project: `C:\Users\19415\Documents\Code Workspace\Vovinam Ledger`; remote: `Tvalc/vovinam-ledger`. Claude's local project memory is available under `.claude/projects/C--Users-19415-Documents-Code-Workspace-Vovinam-Ledger/memory`. Its memory index still describes P0, and README still says P2, but commits/changelog show P3 towns/saves/onboarding and subsequent tile/art work through 28c2040. Do not treat those stale phase labels as current evidence.
+## Rebuilding layer
 
-Read its `docs/00b_locked_decisions.md`, `docs/03_story.md`, and `docs/21_canon_systems.md` when designing the connection. Existing Ledger text says dead guests never resurrect and assigns the ratkin balance 19 to Cuong, with Duy's separate Caedite Eos balance 5 transferring on his death. Fwoosh's diary currently describes nineteen as Duy's own debt. These are recorded cross-project conflicts; do not silently invent a reconciliation. Tony's new resurrection/rebuilding direction supersedes the blanket prohibition for this intended Duy path. No Vovinam Ledger files have been edited.
+The action arcade game remains central. An incremental ratkin-city layer sits behind it.
 
-## Still to establish in the interview
+- Players place buildings and design the town rather than restoring only fixed sites.
+- Homes and production buildings can have multiple copies; landmarks are unique.
+- Embers magically clear a site and summon its foundation.
+- Ratkin construct over time during runs and while the player is away.
+- A completed building must be sealed with embers before it operates.
+- Food supports workers, materials support construction and homes expand workforce.
+- Ratkin physically carry goods over roads; distance and congestion affect output.
+- Staffing and priorities work automatically by default. Players can optimize if they want without mandatory micromanagement.
+- Embers can accelerate work and buy predictable upgrades.
+- Sealing and major upgrade milestones can unlock random cosmetic appearances. Every appearance remains selectable; rarity grants no Fwoosh gameplay power and never determines favor or release.
+- Embers are earned and will never be sold for money.
 
-- City placement confirmed: players place buildings and design the town layout. Tony chose multiple copies of homes and production buildings alongside unique landmarks. Ratkin physically transport food and materials along roads; travel distance and congestion affect output. Staffing uses automatic prioritization by default, with optional player optimization. Tony wants this automatic-by-default, optionally optimized approach throughout comparable systems; do not force manual micromanagement. Exact override controls remain to be scoped.
+## Release and the wider RPG
 
-- Tony confirmed Duy's release also reduces Cuong's debt in Vovinam Ledger. The amount remains undecided; do not assume five or the entire balance.
-- What constitutes a complete rebuild, and which systems belong in this story-update task versus later expansion.
-- What player actions earn ratkin favor, who communicates their judgment, and how release becomes available.
-- How the current district/Keith encounters represent progress toward restoration without presenting Keith's defeat as liberation.
-- How much backstory the standalone intro reveals, and how the resurrection ending connects to the wider story without depending on another game.
+Completing Duy's restoration/favor path releases and resurrects him. Fwoosh must provide a satisfying, comprehensible ending even when no other game is present.
 
-Do not invent answers to these questions or implement a new favor/release system before the interview resolves its design.
+Duy's return also reduces Cuong's debt by an amount determined by embers Duy collected. Chit-tat-to's Invoice applies that credit and can provide bonuses, rare or unique items and upgrades. After Duy rejoins the RPG party, a System Shop can sell Duy-specific upgrades funded by embers. A Ratkin character can become a missable recruit after Duy returns having rebuilt ratkin society.
 
-## September 14 follow-up: Invoice and release cadence
+Keep the connection small; the full city economy does not need to transfer into the RPG.
 
-- Tony confirmed that the debt repaid for Cuong depends on the amount of embers Duy has collected. Chit-tat-to's Invoice is the repayment mechanism.
-- The Invoice can also provide bonuses, rare unique items and upgrades for players.
-- A missable Ratkin character can join the RPG after Duy returns having rebuilt ratkin society.
-- The conversion rate, collection/budget definition, redemption rules, reward tables and conditions for missing the recruit are not specified. Do not invent or implement these values before the interview resolves them.
-- Tony authorized integrating and publishing the immediate Fwoosh release, then deploying each major completed change to the live website for his testing. This supersedes earlier instructions to leave everything in draft pending release permission. Continue checking changes before deployment and preserve saves.
+## Accounting conflict that must remain explicit
 
-## First-run direction and story implementation
+Current Vovinam Ledger material assigns the nineteen ratkin lives to Cuong and a separate five-life Caedite Eos balance to Duy, transferred to Cuong on Duy's death. Fwoosh presents the nineteen deaths through Duy's experience. Do not silently rewrite either ledger or assume that Fwoosh clears five, nineteen, twenty-four or the whole balance.
 
-Tony clarified: Duy initially understands almost nothing. He has just died and is dropped into action. Keith speaks DURING gameplay, vaguely explaining punishment, relieving ratkin suffering, and repeated death. More is revealed with progress. No upfront death/massacre explanation.
+Ledger also has a route where Duy survives and older language saying dead guests do not resurrect. Tony has established this intended Duy resurrection path as an exception. Preserve alternate routes until their relationship is explicitly decided; do not generalize Duy's exception to every dead guest.
 
-Story release 2026-09-14-story-1 implements that direction: direct control with Keith narration; fixes title boot consuming the intro; replays the new intro once without resetting progress; keeps the mobile vent HUD exposed. Later dialogue, diary, title and victory text now align with rebuilding/favor and ratkin judgment. The Shrine records rescues without declaring a nineteen-rescue debt payoff. City construction, favor judgment, resurrection and Invoice redemption remain unimplemented pending their detailed interview.
+## Open design decisions
 
-## Core-loop priority and vent decisions
+- What exactly constitutes complete restoration and which acts earn ratkin favor.
+- Who communicates the ratkin's judgment and when release becomes available.
+- How district/Keith progress contributes without making Keith the authority.
+- City costs, construction times, production ratios and offline limits.
+- Whether the Invoice uses lifetime collected embers, unspent embers or another auditable total.
+- Invoice conversion, caps, reward thresholds and interaction with Fwoosh spending.
+- System Shop inventory and relationship to Invoice rewards.
+- Ratkin recruit identity, abilities, eligibility and miss condition.
+- The exact 19-plus-5 debt reconciliation and Duy-survives route treatment.
 
-Tony deferred city expansion to polish the current arcade and existing meta through a ten-improvement interview. First authorized package: one heat/full-heart commitment, hold to chain, one persistent demon per completed unit, nearby-cinder hunting then Duy, and consuming a cinder person to explode/ignite villagers/damage Duy. See VENT_TUNING.md for the implemented mechanics, explicit tuning assumptions and remaining economy decisions. All earlier city/cross-game canon remains for later.
+Do not invent these values during implementation. Resolve them through the owning issues and update this file plus the Fwoosh/Ledger shared handoff together.
 
-## Prose discovery rewrite — 2026-09-15-prose-1
+## Current implementation boundary
 
-Tony requested a complete prose rewrite following the author-craft research and confirmed that players should feel disoriented, under pressure and gradually discover what happened. The deeper story remains optional.
-
-All fifteen diary entries (78 short pages), their teasers, Keith's opening, greetings, reactions and fourteen later observations were rewritten. Duy's ordinary memories establish warmth and relationships; later entries reveal the market, afterlife, cell, debt and gate through his limited viewpoint. Mei's coercion is explained in her later confession rather than presented as knowledge Duy already possessed in the market. The early wraith entry does not reveal the cell's massacre. Keith's automatic speech gives immediate guidance and fragments rather than reciting the entire backstory. Shrine and diary labels and the public description were adjusted to match. Ratkin judgment still determines release; the final optional entry describes the restoration/favor obligation without adding a finished ending or redemption mechanic.
-
-Chapter IDs, titles, art assignments, unlock predicates, hints and saved read history are unchanged. Gameplay, economy and art are unchanged. INTRO_VERSION is 4 so the revised live opening plays once for returning players; it still allows movement, dash and vent. Existing progression is retained. Older loreIdx progress is preserved; later observations are not forcibly replayed.
-
-Validation: all 81 gameplay/input checks pass in reports/prose-state.json, including intro control and one-time replay/save preservation. A comparison against the prior story verifies identical diary identities/art/unlocks/hints and STORY data structure. Browser measurement with the loaded Pixelify font checks all 78 pages, seven opening lines and fourteen lore lines: maximum diary baseline 728 (navigation begins below 1160), opening baseline 943 (available through 1008), lore width 587.425 within 700. Local 320px visual checks cover a diary page, one of the longest pages and the opening during gameplay; no console errors observed. Voice and reading pace remain subject to Tony's playtest.
-
-Release verification and final commit/PR are recorded in issue #1. No new art, factions, magic explanation, city system or Invoice conversion was invented. The author research informs general craft; the passages are original to Fwoosh.
-
-## Approved prose correction — prose-2
-
-Tony clarified that absorbing fire hurts immediately and accumulating heat increases Duy's pain. Freed ratkin ascend into light; they do not run or stumble away. The existing Makko rescue animation already depicts that ascent. Its destination remains unspecified. The approved clearer Town on Fire scene replaces that chapter only; see PROSE_DELIVERY.md for delivery and validation. Other prose-1 chapters still await the clarity pass.
+The live dialogue and diary follow the gradual-discovery direction and no longer promise freedom for a raw rescue or district count. The arcade loop and current town upgrades exist. City construction/production/logistics, favor judgment, resurrection ending, Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain unimplemented and are tracked in issues #27–#30.

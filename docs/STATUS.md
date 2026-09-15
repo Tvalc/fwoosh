@@ -1,4 +1,10 @@
-# Fwoosh status — September 14, 2026
+# Fwoosh status — September 15, 2026
+
+## Project-management consolidation — September 15, 2026
+
+No game code or live build changed. `docs/ROADMAP.md` is now the concise source of truth for unfinished work; shipped chronology remains in this file and superseded proposals remain under `docs/archive/`. GitHub issue #1 is a current work board. Issues #26–#33 separately track arcade/economy tuning, city foundation, city logistics, favor/ending, Ledger integration, Makko art production, audio/release readiness, and records/source backup. The completed foundation issue #2 is closed; stale mixed Cursor issue #3 is closed as superseded by the current Makko tracker #31.
+
+`docs/COORDINATION.md`, `docs/CANON.md`, `docs/SAVE_DATA.md`, `ART.md`, `AGENTS.md` and the Fwoosh/Ledger shared handoff were reconciled to the current ownership, live dialogue/reset behavior and roadmap. Unapproved older ideas are explicitly parked rather than represented as committed work. The asset inventory itself was not regenerated because this change adds no art; issue #33 requires a refresh after the next approved art handoff and still needs an off-device destination.
 
 ## Debug reset menu — 2026-09-15-debug-1
 

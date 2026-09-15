@@ -11,9 +11,13 @@ At 18:06 UTC on 2026-09-14, Codex captured the local working game and ignored so
 
 This is a local recovery checkpoint on the same computer, **not an off-device backup or release package**. It includes Cursor's uncommitted refactor; never restore it over newer work.
 
+## Current status and next action
+
+Runtime media is versioned in the public game repository; raw animation sources, downloads, frames and processing material remain separate. The two verified recovery archives below are local on this computer. A private off-device destination, access model and successful restore test remain open under [issue #33](https://github.com/Tvalc/fwoosh/issues/33).
+
 ## Git coverage and practice
 
-Main d7945b4 embeds runtime art in index.html. assets/ is ignored. Cursor's refactor will version extracted media/ once committed. Original downloads, animation video, frames and processing scripts remain separate.
+The current game versions approved runtime output under `media/`; `assets/` remains ignored for raw/source material. Original downloads, animation video, frames and processing scripts stay separate from the public runtime package.
 
 - Preserve originals and name variants distinctly.
 - Commit approved runtime output and its metadata together.
