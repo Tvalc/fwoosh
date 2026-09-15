@@ -178,10 +178,11 @@ const K = {
 
   // THE OPP (meta, phase 2A)
   OPP_COLS: 6, OPP_ROWS: 8,         // territory histogram = 48 cells (120x160px each)
-  OPP_MIN_PASSES: 3,                // need this many recorded passes before the opp arms
-  OPP_LAT_CAP: 40,                  // rolling window of recent latenesses (fuse-at-pass)
-  OPP_SNIPE_LEAD: 0.30,             // snipe fires this much fuse-time BEFORE your habitual dump
-  OPP_SNIPE_TELE: 0.42,            // telegraph -> impact time (dodge window)
+  OPP_MIN_PASSES: 3,                // need this many recorded direct rescues before the beacon arms
+  OPP_LAT_CAP: 40,                  // rolling heat-at-rescue history; accepts legacy fuse records
+  OPP_SNIPE_LEAD: 0.30,             // retained for old save/history compatibility
+  OPP_SNIPE_TELE: 0.90,            // every vent unit can finish before the impact; dash the read
   OPP_SNIPE_R: 34,                  // impact radius
+  OPP_SNIPE_HEARTS: 1,             // staying on the marked vent spot costs one heart
   INTRO_T: 1.9,                     // cold-open reveal length
 };

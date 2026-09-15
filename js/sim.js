@@ -5,14 +5,14 @@
 //
 // PHASE 1: the action core (drift/dash/brace, PASS/EAT/SLAG, backpass, cooldown, relight).
 // PHASE 2A (THE OPP, first slice): a rival assembled from HOW you played last session.
-//   It reads two axes so far — LATENESS (your habitual late-hold fuse) and TERRITORY
-//   (your most-passed grid cell). Next run it drops a GRUDGE WALL on your spot and
-//   SNIPES ~0.3s before your habitual dump. You beat reads live; they scar off.
+//   It remembers rescue TERRITORY, places a grudge beacon in the busiest area next run,
+//   and fires once when it reads the start of a vent. Finish the unit and dash, or break
+//   the beacon first. Legacy fuse records remain readable but no longer drive the trigger.
 //   Score is NEVER a meta input — the coupling is coordinates + timing, not currency.
 //   Persistence: one localStorage key `fwoosh.opp`. Crew/apex-duel/other axes NOT built yet.
 //
-// Phase-2A checkpoint: on run 2, does the grudge wall + snipe + callout read as
-//   "it studied me, I want to beat it" — or "the game placed a random wall and cheated"?
+// Phase-2A checkpoint: on run 2, does the grudge beacon + snipe + callout read as
+//   "it studied me, I want to beat it" — or "the game placed a random obstacle and cheated"?
 //
 // Open core checkpoint (still): at minute three, is the slag-filled arena more
 //   interesting or just more annoying? (The apex duel, unbuilt, is the intended answer.)
@@ -59,7 +59,7 @@ let ghost = false;   // test-only: player passes through cells without triggerin
 let god = false;     // test-only: fuse refills instead of POPping, so long-run arena state is measurable
 
 // ---- THE OPP: a rival built from how you played last session (persistent)
-let runBuf = [], snipe = null, snipeFuse = null, snipeUsed = false,
+let runBuf = [], snipe = null, snipeArmed = false, snipeUsed = false,
     introT = 0, introKind = 'keith', callout = null, oppScarred = false, gotSniped = false;
 let boss = null, duelActive = false, won = false, slagThisRun = 0, nextRiserAt = 0;
 let powerups = [], surgeT = 0, mergeT = 0;
@@ -273,6 +273,10 @@ function step(){
         if(p.lit) p.fuse = Math.max(0.001, p.fuse - K.SHATTER_COST);
         ring(s.x,s.y,K.R_SLAG,44,'#7c8496',0.30);
         hitstop = K.HITSTOP*0.6;
+        if(s.grudge){
+          snipeArmed=false;snipeUsed=true;oppScarred=true;
+          speakKeith(lineFor('broken'),'strained');
+        }
         break;
       }
     }
@@ -471,19 +475,18 @@ function step(){
     if(dist(p.x,p.y,powerups[i].x,powerups[i].y) < p.r + K.POWERUP_R){ collectPowerup(powerups[i]); powerups.splice(i,1); }
   }
 
-  // ---- THE OPP: snipe your habitual late-hold.
-  // Fires ~0.3s of fuse-time BEFORE your median dump — punishing greed at your favorite moment.
-  // Beat it by passing (going dark) before impact, or dashing clear of the lead point.
-  if(snipeFuse != null && !snipeUsed && p.lit && p.fuse <= snipeFuse) fireSnipe();
+  // ---- THE OPP: the remembered beacon fires when it reads the start of a vent.
+  // beginVentUnit() arms the telegraph; finishing the committed unit still leaves time to dash clear.
   if(snipe && !snipe.done){
     snipe.t += dt;
     if(snipe.t >= K.OPP_SNIPE_TELE){
       snipe.done = true;
-      if(p.lit && dist(p.x, p.y, snipe.tx, snipe.ty) < K.OPP_SNIPE_R){
-        p.lit = false; p.fuse = 0; p.passeeId = 0; p.passT = 0;   // SNUFFED: put out early, no pass credit
+      if(p.hurtCd<=0 && dist(p.x, p.y, snipe.tx, snipe.ty) < K.OPP_SNIPE_R){
+        p.hp=Math.max(0,p.hp-K.OPP_SNIPE_HEARTS/maxHearts);p.hurtCd=K.HURT_IFRAME;
         gotSniped = true;
         ring(p.x, p.y, 10, 80, '#ff3d7a', 0.6);
         speakKeith(lineFor('sniped')); flash = DT*2; hitstop = K.HITSTOP;
+        if(p.hp<=0){pop('Keith read your vent');return;}
       } else {
         oppScarred = true;                                        // read broken, scar the grudge wall
         ring(snipe.tx, snipe.ty, K.OPP_SNIPE_R, 6, '#7fe8ff', 0.4);
@@ -562,6 +565,7 @@ function showRescueReward(embers){
 }
 function saveCell(c, chained){
   const p = player;
+  if(!chained) recordOppRescue(c,p.heat);
   if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Keith's shield
     if(boss.shieldN <= 0){ boss.shield = false; callout = { text:'SHIELD BROKEN — DUMP NOW!', t:0, life:1.2, good:true }; } }
   c.hunter = false; c.fuse = 0; c.grace = K.GRACE;
@@ -606,6 +610,7 @@ function beginVentUnit(){
   if(!kind){ p.venting=false; return; } // no empty/full-health farming or permanent rooting
   p.ventUnit={kind,t:0,duration:kind==='heat'?K.VENT_PURGE:K.VENT_HEAL_T};
   p.venting=true; p.lunge=0; p.spd=0;
+  if(snipeArmed&&!snipeUsed&&!intro)fireSnipe();
 }
 function setVentHeld(held){
   player.ventHeld=held;

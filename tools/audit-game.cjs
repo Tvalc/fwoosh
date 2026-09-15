@@ -755,6 +755,27 @@ test('Storage failure rolls reset back and keeps a visible paused error',()=>{
  g.run('const originalRemove=localStorage.removeItem;localStorage.removeItem=k=>{if(k==="fwoosh.opp")throw Error("blocked");originalRemove(k)};toggleDebugMenu();debugAction("reset");debugAction("reset");render()');
  assert.equal(g.run('debugMenu.open&&debugMenu.confirm'),true);assert.equal(g.run('META.embers'),123);assert.equal(JSON.stringify([...g.storage].sort()),JSON.stringify(JSON.parse(before).sort()));assert.ok(g.drawnText.some(t=>t.includes('Reset failed.')));
 });
+test('Direct rescues teach the adaptive beacon using current heat and position',()=>{
+ const g=game();g.run('onTitle=false;intro=null;opp.introVer=INTRO_VERSION;player.heat=2;for(const p of [[30,40],[45,70],[90,120]])saveCell({id:900+p[0],x:p[0],y:p[1],hunter:true,fuse:1,grace:0},false);foldOpp()');
+ assert.equal(g.run('opp.terr[0]'),3);assert.equal(g.run('JSON.stringify(opp.lat.slice(-3))'),'[2,3,4]');
+ g.run('reset();intro=null');assert.equal(g.run('snipeArmed'),true);assert.ok(g.run('slag.some(s=>s.grudge)'));assert.equal(g.run('JSON.stringify(opp.grudge)'),'\{"x":60,"y":80\}');
+});
+test('Adaptive beacon fires on vent and damages Duy if he stays on the read',()=>{
+ const g=game();g.run('onTitle=false;opp.introVer=INTRO_VERSION;opp.terr[0]=3;opp.lat=[1,2,3];reset();intro=null;cells=[];arson=[];demons=[];player.hp=.4;player.heat=0;setVentHeld(true)');
+ assert.equal(g.run('snipeUsed&&!snipeArmed'),true);assert.ok(g.run('snipe&&!snipe.done'));assert.equal(g.run('snipe.tx'),g.run('player.x'));
+ g.run('for(let i=0;i<Math.ceil(K.OPP_SNIPE_TELE/DT)+1;i++)step()');assert.equal(g.run('gotSniped'),true);assert.equal(g.run('player.hurtCd>0'),true);
+});
+test('Queued dash escapes the beacon after the committed vent unit',()=>{
+ const g=game();g.run('onTitle=false;opp.introVer=INTRO_VERSION;opp.terr[0]=3;opp.lat=[1,2,3];reset();intro=null;cells=[];arson=[];demons=[];player.hp=.4;player.heat=0;setVentHeld(true);lungeDir(1,0);setVentHeld(false);for(let i=0;i<Math.ceil(K.OPP_SNIPE_TELE/DT)+1;i++)step()');
+ assert.equal(g.run('gotSniped'),false);assert.equal(g.run('oppScarred'),true);assert.ok(g.run('player.x-snipe.tx>K.OPP_SNIPE_R'));
+});
+test('Dashing through the adaptive beacon disarms it before it fires',()=>{
+ const g=game();g.run('onTitle=false;opp.introVer=INTRO_VERSION;opp.terr[14]=3;opp.lat=[1,2,3];reset();intro=null;const mark=slag.find(s=>s.grudge);player.x=mark.x;player.y=mark.y;player.hx=1;player.hy=0;player.lunge=.1;step()');
+ assert.equal(g.run('slag.some(s=>s.grudge)'),false);assert.equal(g.run('snipeArmed'),false);assert.equal(g.run('snipeUsed'),true);assert.equal(g.run('oppScarred'),true);assert.equal(g.run('snipe'),null);
+});
+test('First-run dialogue suppresses the adaptive beacon and its attack',()=>{
+ const g=game();g.run('onTitle=false;opp.terr[0]=3;opp.lat=[1,2,3];opp.introVer=0;reset()');assert.ok(g.run('intro'));assert.equal(g.run('snipeArmed'),false);assert.equal(g.run('slag.some(s=>s.grudge)'),false);
+});
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
