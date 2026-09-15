@@ -585,12 +585,13 @@ test('Town upgrade names stay out of live action and remain available in town', 
   assert.equal(town.drawnText.includes('DEEP DRAUGHT'),true,'The town upgrade panel no longer identifies Deep Draught.');
 });
 
-test('Diary is the sole visible story destination until Shrine judgment exists', () => {
+test('Town exposes distinct Diary and Ratkin Judgment destinations', () => {
   const g=game();g.run('META.buildings.well.built=true;META.buildings.forge.built=true;enterHub();drawHub(ctx)');
   assert.equal(g.run('hubBtns.some(b=>b.act==="diary")'),true);
-  assert.equal(g.run('hubBtns.some(b=>b.act==="shrine")'),false);
+  assert.equal(g.run('hubBtns.some(b=>b.act==="shrine")'),true);
   assert.equal(g.drawnText.includes('THE DIARY'),true);
-  assert.equal(g.drawnText.includes('THE SHRINE'),false);
+  assert.equal(g.drawnText.includes('RATKIN JUDGMENT'),true);
+  assert.equal(g.drawnText.includes('0 / 5 terms fulfilled'),true);
 });
 
 test('Upgrade progress includes current earnings once and keeps starter funding separate', () => {
@@ -877,11 +878,41 @@ test('First-run dialogue suppresses the adaptive beacon and its attack',()=>{
  const g=game();g.run('onTitle=false;opp.terr[0]=3;opp.lat=[1,2,3];opp.introVer=0;reset()');assert.ok(g.run('intro'));assert.equal(g.run('snipeArmed'),false);assert.equal(g.run('slag.some(s=>s.grudge)'),false);
 });
 
+const completeJudgmentCity=`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2'],materials:0,food:4,producedFood:1,producedMaterials:1,nextId:6,buildings:[
+ {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
+ {id:2,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
+ {id:3,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:0,priority:1},
+ {id:4,type:'yard',x:3,y:3,state:'sealed',remaining:0,work:0,priority:1},
+ {id:5,type:'store',x:1,y:2,state:'sealed',remaining:0,work:0,priority:1}]}`;
+test('First judgment requires all five approved restoration terms',()=>{
+ const g=game();g.run(completeJudgmentCity+';META.saved=18;META.clearedDistricts=5');
+ assert.deepEqual(JSON.parse(g.run('JSON.stringify(judgmentTerms().map(t=>t.done))')),[true,false,true,true,true]);
+ assert.equal(g.run('judgmentEvaluate(true)'),false);assert.notEqual(g.run('hubSheet'),'judgment');
+ g.run('META.saved=19;META.clearedDistricts=4');assert.equal(g.run('judgmentReady()'),false);
+ g.run('META.clearedDistricts=5;META.city.producedFood=0');assert.equal(g.run('judgmentReady()'),false);
+ g.run('META.city.producedFood=1;META.city.producedMaterials=0');assert.equal(g.run('judgmentReady()'),false);
+ g.run('META.city.producedMaterials=1;META.city.buildings.find(b=>b.type==="store").state="ready"');assert.equal(g.run('judgmentReady()'),false);
+ g.run('META.city.buildings.find(b=>b.type==="store").state="sealed"');assert.equal(g.run('judgmentReady()'),true);
+});
+test('Qualifying town summons one persistent judgment and records only delivered lines',()=>{
+ const g=game();g.run(completeJudgmentCity+';META.saved=19;META.clearedDistricts=5;META.flags.starterChecked=true;onTitle=false;mode="hub";judgmentEvaluate(true)');
+ assert.equal(g.run('META.judgment.eligible'),true);assert.equal(g.run('hubSheet'),'judgment');assert.equal(g.run('META.dialogue.history.length'),1);
+ g.run('judgmentAdvance()');assert.equal(g.run('judgmentPage'),1);assert.equal(g.run('META.dialogue.history.length'),2);assert.equal(g.run('META.judgment.heard'),false);
+ g.run('judgmentAdvance();judgmentAdvance()');assert.equal(g.run('META.judgment.heard'),true);assert.equal(g.run('hubSheet'),'shrine');assert.equal(g.run('META.dialogue.history.length'),3);
+ const reload=game(Object.fromEntries(g.storage));reload.run('onTitle=false;mode="hub";enterHub()');assert.equal(reload.run('META.judgment.heard'),true);assert.notEqual(reload.run('hubSheet'),'judgment');
+});
+test('Judgment dialogue advances once per fresh keyboard press',()=>{
+ const g=game();g.run(completeJudgmentCity+';META.saved=19;META.clearedDistricts=5;META.flags.starterChecked=true;onTitle=false;mode="hub";judgmentEvaluate(true)');
+ g.dispatch('keydown',{key:'Enter',repeat:true});assert.equal(g.run('judgmentPage'),0);
+ g.dispatch('keydown',{key:'Enter',repeat:false});assert.equal(g.run('judgmentPage'),1);
+});
+
 test('Old v1 saves gain a clean city without losing existing progress',()=>{
  const old={v:1,embers:321,saved:17,district:4,clearedDistricts:3,buildings:{well:{built:true,hearts:2,regen:1},forge:{built:true,charges:1,recharge:1}},diary:{read:['morning']},flags:{reachedDuel:true}};
  const g=game({'fwoosh.meta':JSON.stringify(old)});
  assert.equal(g.run('META.embers'),321);assert.equal(g.run('META.saved'),17);assert.equal(g.run('META.district'),4);assert.equal(g.run('META.buildings.well.hearts'),2);assert.equal(g.run('META.diary.read[0]'),'morning');
  assert.equal(g.run('META.city.v'),1);assert.equal(g.run('META.city.roads.join()'),'2,4');assert.equal(g.run('META.city.buildings.length'),0);assert.equal(g.run('META.city.materials'),0);
+ assert.equal(g.run('META.city.producedFood'),0);assert.equal(g.run('META.city.producedMaterials'),0);assert.equal(g.run('META.judgment.eligible'),false);assert.equal(g.run('META.judgment.heard'),false);
 });
 test('Malformed city data normalizes to valid unique cells and safe values',()=>{
  const city={v:1,lastAt:'bad',roads:['2,4','2,4','9,9','x,1'],materials:-8,nextId:-2,buildings:[
@@ -949,8 +980,8 @@ test('Mushroom Farms bootstrap food and Yards consume one ration per material',(
   {id:2,type:'farm',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0,priority:2}]}`);
  assert.equal(g.run('cityAssignedStations().map(b=>b.id).join()'),'2','At zero food, automatic assignment must bootstrap the Farm even when the Yard has higher manual priority.');
- g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.food'),1);assert.equal(g.run('META.city.materials'),0);
- g.run('META.city.buildings[2].priority=2;META.city.buildings[1].priority=0;cityAdvance(META.city.lastAt+cityCycleSeconds(META.city.buildings[2])*1000,true)');assert.equal(g.run('META.city.food'),0);assert.equal(g.run('META.city.materials'),1);
+ g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.food'),1);assert.equal(g.run('META.city.materials'),0);assert.equal(g.run('META.city.producedFood'),1);
+ g.run('META.city.buildings[2].priority=2;META.city.buildings[1].priority=0;cityAdvance(META.city.lastAt+cityCycleSeconds(META.city.buildings[2])*1000,true)');assert.equal(g.run('META.city.food'),0);assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.producedMaterials'),1);
 });
 test('Connected sealed Storehouses expand both resource caps',()=>{
  const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4'],materials:10,food:10,nextId:3,buildings:[

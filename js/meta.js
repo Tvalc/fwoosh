@@ -9,7 +9,8 @@ function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
   const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1, clearedDistricts:0,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
-    hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh() };
+    hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh(),
+    judgment:{eligible:false,heard:false} };
   if(!s || s.v!==1) return d;
   // Old saves prove only the districts BEFORE the highest unlocked one were cleared.
   // Keep v1 saves compatible; district 5 being unlocked does not prove it was beaten.
@@ -24,6 +25,8 @@ function loadMeta(){
   s.recentRuns = Array.isArray(s.recentRuns) ? s.recentRuns.slice(-20) : [];
   s.diary = Object.assign({}, d.diary, s.diary||{});
   s.city = cityNormalize(s.city);
+  s.judgment = Object.assign({}, d.judgment, s.judgment||{});
+  s.judgment.eligible=!!s.judgment.eligible;s.judgment.heard=!!s.judgment.heard;
   return Object.assign({}, d, s);
 }
 function saveMeta(){ try{ localStorage.setItem('fwoosh.meta', JSON.stringify(META)); }catch(e){} }
@@ -105,6 +108,39 @@ function upgradeGoal(){
 function goalAmount(goal){return goal.kind==='saves'?META.saved:META.embers+(mode==='play'&&!onTitle?runEmbers:0);}
 function openNextUpgrade(){const goal=upgradeGoal();if(goal && goal.act)hubAct(goal.act);}
 
+// A functioning society earns a hearing, never automatic release. Khet-Tak-Tor
+// convenes the record while the Ratkin retain the final decision.
+let judgmentPage=0;
+function judgmentTerms(){
+  const c=cityData(), sealed=type=>citySealedConnectedCount(type);
+  return [
+    {id:'districts',label:'ASHFORD RECLAIMED',value:Math.min(5,META.clearedDistricts||0),need:5,done:(META.clearedDistricts||0)>=5},
+    {id:'ascended',label:'RATKIN ASCENDED',value:Math.min(19,META.saved||0),need:19,done:(META.saved||0)>=19},
+    {id:'homes',label:'SEALED HOMES',value:Math.min(2,sealed('burrow')),need:2,done:sealed('burrow')>=2},
+    {id:'food',label:'FOOD FOR THE LIVING',value:(sealed('farm')>=1&&c.producedFood>=1)?1:0,need:1,done:sealed('farm')>=1&&c.producedFood>=1},
+    {id:'work',label:'WORK AND STORES',value:(sealed('yard')>=1&&sealed('store')>=1&&c.producedMaterials>=1)?1:0,need:1,done:sealed('yard')>=1&&sealed('store')>=1&&c.producedMaterials>=1}
+  ];
+}
+function judgmentReady(){return judgmentTerms().every(t=>t.done);}
+function judgmentEvaluate(autoOpen=false){
+  const j=META.judgment||(META.judgment={eligible:false,heard:false});
+  if(!j.eligible&&judgmentReady()){
+    j.eligible=true;saveMeta();hubToast=4;hubToastMsg='THE RATKIN SUMMON JUDGMENT';
+  }
+  if(autoOpen&&j.eligible&&!j.heard){judgmentPage=0;hubSheet='judgment';rememberDialogue(JUDGMENT_LINES[0]);}
+  return j.eligible;
+}
+function judgmentOpen(){
+  judgmentEvaluate(false);
+  if(META.judgment.eligible&&!META.judgment.heard){judgmentPage=0;hubSheet='judgment';rememberDialogue(JUDGMENT_LINES[0]);}
+  else hubSheet='shrine';
+}
+function judgmentAdvance(){
+  if(hubSheet!=='judgment')return;
+  if(judgmentPage<JUDGMENT_LINES.length-1){judgmentPage++;rememberDialogue(JUDGMENT_LINES[judgmentPage]);return;}
+  META.judgment.heard=true;saveMeta();hubSheet='shrine';hubToast=4;hubToastMsg='RESTORATION ACKNOWLEDGED · FAVOR REMAINS';
+}
+
 // land in the town after a run; raise any building whose saves-milestone you just crossed
 function enterHub(){
   presentDialogue=null;
@@ -121,6 +157,7 @@ function enterHub(){
     hubToastMsg=raised.join(' + ')+(raised.length>1 ? ' STAND AGAIN' : ' STANDS AGAIN'); }
   saveMeta();
   if(starterAvailable()) hubSheet='starter';
+  else judgmentEvaluate(true);
 }
 
 let META = loadMeta();

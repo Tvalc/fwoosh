@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-arbiter-1` is the release candidate. The arcade loop keeps renewable rescue/heat sources active through the boss encounter, and all player-facing runtime text now identifies the jailer as Khet-Tak-Tor, the Ratkin Arbiter. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. Shrine remains hidden until favor and judgment exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-judgment-1` is the release candidate. The arcade loop keeps renewable rescue/heat sources active through the boss encounter, and all player-facing runtime text identifies the jailer as Khet-Tak-Tor, the Ratkin Arbiter. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. The Shrine now shows the five first-judgment terms and presents the restoration hearing when they are complete. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
@@ -18,7 +18,7 @@ Build `2026-09-15-arbiter-1` is the release candidate. The arcade loop keeps ren
 
 6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **release candidate complete**. The exterior, first two buildings, offline timers, sealing, worker assignment, material production and explanatory station view are implemented. Tony's phone playtest and approved Makko replacements remain.
 7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **release candidate complete**. Food, storage, visible carriers, shared-road congestion, automatic recovery and optional priorities are implemented. Approved Makko Ratkin locomotion and Tony's phone balance/readability playtest remain.
-8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — restoration milestones, favor, Ratkin judgment, release and resurrection. The Arbiter administers the process; beating him never grants release by itself.
+8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — **first restoration judgment implemented; favor and ending remain**. The five visible terms prove district completion, ascensions, homes and a working food/material chain. The Arbiter administers the process; beating him never grants release by itself.
 9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
 10. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
 
@@ -51,7 +51,7 @@ Build `2026-09-15-arbiter-1` is the release candidate. The arcade loop keeps ren
 
 - Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
-- Complete-restoration criteria, favor actions and release thresholds.
+- Favor-earning actions and final release thresholds after the implemented first restoration judgment.
 - The powers and limits of Khet-Tak-Tor's covenant mandate and why he maintains or uses the recurring fire.
 - Which ember total funds the Invoice; conversion, caps, reward thresholds and spending interaction.
 - Duy System Shop inventory; Ratkin recruit identity, abilities and miss condition.

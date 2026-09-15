@@ -923,6 +923,7 @@ function hubClick(x,y){
   for(let i=hubBtns.length-1;i>=0;i--){ const b=hubBtns[i];         // topmost (drawn last) wins
     if(b.enabled && x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h){ hubAct(b.act); return; } }
   if(hubSheet==='city')cityAction('cityclose');
+  else if(hubSheet==='judgment')return;
   else if(hubSheet) hubSheet=null;                                  // tap outside an open sheet closes it
 }
 function hubAct(a){
@@ -935,6 +936,8 @@ function hubAct(a){
   if(a.indexOf('starterbuy:')===0){buyStarter(a.split(':')[1]);return;}
   if(a==='diary'){ hubSheet='diary'; diaryOpen=null; diaryPage=0; return; }
   if(a==='shrine'){ hubSheet='shrine'; return; }
+  if(a==='judgmentstart'){judgmentOpen();return;}
+  if(a==='judgmentnext'){judgmentAdvance();return;}
   if(a==='conversations'){hubSheet='conversations';dialogueHistoryPage=Math.max(0,dialogueSave().history.length-1);return;}
   if(a==='talkprev'){dialogueHistoryPage=Math.max(0,dialogueHistoryPage-1);return;}
   if(a==='talknext'){dialogueHistoryPage=Math.min(dialogueSave().history.length-1,dialogueHistoryPage+1);return;}
@@ -997,12 +1000,14 @@ function drawHub(ctx){
   if(dFresh>0){ const bx=40+cw+gap+cw-22, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
     ctx.fillStyle='#0a0710'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(dFresh), bx, by+5); }
 
+  drawJudgmentCard(ctx,40,cardY+2*(cardH+gap),VW-80,92);
+
   if(starterAvailable()){
-    panel(ctx,40,580,VW-80,88,14,'rgba(17,25,35,0.94)','#ffcf80');
+    panel(ctx,40,672,VW-80,88,14,'rgba(17,25,35,0.94)','#ffcf80');
     ctx.textAlign='center';ctx.fillStyle='#ffe1a4';ctx.font='800 26px "Chakra Petch",system-ui,sans-serif';
-    ctx.fillText('CHOOSE YOUR FIRST UPGRADE',VW/2,615);
-    ctx.font='500 21px "Chakra Petch",system-ui,sans-serif';ctx.fillText('An extra heart or dash · '+STARTER_COST+' embers',VW/2,648);
-    hubB(40,580,VW-80,88,'starter');
+    ctx.fillText('CHOOSE YOUR FIRST UPGRADE',VW/2,707);
+    ctx.font='500 21px "Chakra Petch",system-ui,sans-serif';ctx.fillText('An extra heart or dash · '+STARTER_COST+' embers',VW/2,740);
+    hubB(40,672,VW-80,88,'starter');
   }
 
   // Always show the nearest available upgrade, including cheaper Forge/recovery tracks.
@@ -1035,11 +1040,23 @@ function drawHub(ctx){
   else if(hubSheet==='diary') drawDiarySheet(ctx);
   else if(hubSheet==='conversations') drawConversationSheet(ctx);
   else if(hubSheet==='shrine') drawShrineSheet(ctx);
+  else if(hubSheet==='judgment') drawJudgmentSheet(ctx);
 
   // --- toast (build/purchase feedback)
   if(hubToast>0){ ctx.globalAlpha=Math.min(1,hubToast); ctx.textAlign='center';
     const ty=VH*0.60; panel(ctx, VW/2-230, ty-30, 460, 60, 12, 'rgba(10,8,16,0.92)', 'rgba(255,207,107,0.75)');
     ctx.fillStyle='#ffcf6b'; ctx.font='800 24px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(hubToastMsg, VW/2, ty+9); ctx.globalAlpha=1; }
+}
+
+function drawJudgmentCard(ctx,x,y,w,h){
+  const terms=judgmentTerms(),done=terms.filter(t=>t.done).length,heard=META.judgment&&META.judgment.heard;
+  panel(ctx,x,y,w,h,14,'rgba(28,20,42,0.88)',heard?'#8affc1':'#c9a0ff');
+  const gap=32,start=VW/2-gap*2;
+  for(let i=0;i<terms.length;i++){ctx.beginPath();ctx.arc(start+i*gap,y+23,8,0,7);ctx.fillStyle=terms[i].done?'#8affc1':'#494055';ctx.fill();}
+  ctx.textAlign='center';ctx.fillStyle='#f0e5ff';ctx.font='800 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText('RATKIN JUDGMENT',VW/2,y+56);
+  ctx.fillStyle=heard?'#8affc1':'#c9a0ff';ctx.font='500 15px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText(heard?'restoration acknowledged · favor remains':META.judgment.eligible?'the Ratkin have summoned you':done+' / 5 terms fulfilled',VW/2,y+79);
+  hubB(x,y,w,h,'shrine');
 }
 
 function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
@@ -1152,38 +1169,43 @@ function drawShopSheet(ctx, bld){
 }
 
 function drawShrineSheet(ctx){
-  const h=470, y=VH-h;
-  ctx.fillStyle='rgba(6,5,11,0.72)'; ctx.fillRect(0,0,VW,VH);
-  panel(ctx, 0, y, VW, h+20, 18, 'rgba(16,12,24,0.99)', 'rgba(201,160,255,0.5)');
-  hubB(0,0,VW,y,'close');
-  ctx.textAlign='center';
-  ctx.fillStyle='#c9a0ff'; ctx.font='800 32px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('THE SHRINE', VW/2, y+48);
-  ctx.fillStyle='rgba(210,195,235,0.72)'; ctx.font='italic 500 15px "Chakra Petch",system-ui,sans-serif';
-  ctx.fillText('someone has been keeping count.', VW/2, y+72);
+  const h=720,y=VH-h,terms=judgmentTerms(),done=terms.filter(t=>t.done).length;
+  ctx.fillStyle='rgba(6,5,11,0.72)';ctx.fillRect(0,0,VW,VH);
+  panel(ctx,0,y,VW,h+20,18,'rgba(16,12,24,0.99)','rgba(201,160,255,0.5)');hubB(0,0,VW,y,'close');
+  ctx.textAlign='center';ctx.fillStyle='#c9a0ff';ctx.font='800 32px "Chakra Petch",system-ui,sans-serif';ctx.fillText('RATKIN JUDGMENT',VW/2,y+48);
+  ctx.fillStyle='rgba(210,195,235,0.72)';ctx.font='italic 500 15px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText(META.judgment.heard?'restoration is acknowledged; favor is not yet won.':'build a society that can survive without you.',VW/2,y+76);
+  for(let i=0;i<terms.length;i++){
+    const t=terms[i],yy=y+128+i*78;
+    panel(ctx,34,yy-34,VW-68,58,10,t.done?'rgba(21,50,42,0.82)':'rgba(32,28,43,0.78)',t.done?'rgba(138,255,193,0.62)':'rgba(120,110,145,0.5)');
+    ctx.textAlign='left';ctx.fillStyle=t.done?'#8affc1':'#d7cde5';ctx.font='800 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText(t.done?'✓  '+t.label:'○  '+t.label,52,yy);
+    ctx.textAlign='right';ctx.fillStyle=t.done?'#8affc1':'#c9a0ff';ctx.font='800 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText(t.value+' / '+t.need,VW-52,yy);
+  }
+  ctx.textAlign='center';ctx.fillStyle='#d7cde5';ctx.font='500 16px "Chakra Petch",system-ui,sans-serif';ctx.fillText(done+' of 5 terms fulfilled · connected and sealed buildings only',VW/2,y+526);
+  const bY=y+h-112,bX=60,bW=VW-120,bH=76;
+  panel(ctx,bX,bY,bW,bH,14,'rgba(40,30,58,0.94)',META.judgment.eligible?'#8affc1':'#c9a0ff');
+  ctx.fillStyle=META.judgment.eligible?'#b9ffda':'#eadfff';ctx.font='800 23px "Chakra Petch",system-ui,sans-serif';
+  const label=META.judgment.eligible&&!META.judgment.heard?'ANSWER THE SUMMONS':META.judgment.heard?'RETURN TO THE QUARTER':'OPEN THE RATKIN QUARTER';
+  ctx.fillText(label,VW/2,bY+34);ctx.font='500 14px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText(META.judgment.heard?'the Ratkin are watching what comes next':META.judgment.eligible?'Khet-Tak-Tor is waiting':'roads, homes, food, work and storage',VW/2,bY+57);
+  hubB(bX,bY,bW,bH,META.judgment.eligible&&!META.judgment.heard?'judgmentstart':'city');
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 14px "Chakra Petch",system-ui,sans-serif';ctx.fillText('tap outside to close',VW/2,VH-12);
+}
 
-  // Rescue count records progress; it is not a debt balance or a release threshold.
-  ctx.textAlign='left'; ctx.fillStyle='#ff9dbd'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif';
-  ctx.fillText('THE RATKIN REMEMBER', 44, y+112);
-  ctx.fillStyle='#efe4ff'; ctx.font='500 18px "Chakra Petch",system-ui,sans-serif';
-  ctx.fillText('You got them out. Their homes are still here.', 44, y+148);
-  ctx.fillText('Khet-Tak-Tor watches. The ratkin have the last word.', 44, y+180);
-
-  // ---- record rows
-  const row=(label,val,yy,col)=>{ ctx.textAlign='left'; ctx.fillStyle='rgba(210,215,235,0.7)'; ctx.font='500 16px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(label, 44, yy);
-    ctx.textAlign='right'; ctx.fillStyle=col||'#efe4ff'; ctx.font='800 20px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(val, VW-44, yy); };
-  row('LIVES CARRIED OUT, ALL TOLD', String(META.saved||0), y+218, '#8affc1');
-  row('QUARTERS OF ASHFORD RECLAIMED', (META.clearedDistricts||0)+' / 5', y+254, '#ffcf8a');
-  row('KHET-TAK-TOR · ARBITER', feudStage().toUpperCase(), y+290, '#ff9dbd');
-  row('EMBERS BANKED', String(META.embers||0), y+326, '#ffb14d');
-
-  // ---- read-the-record button -> the diary
-  const bY=y+h-92, bX=60, bW=VW-120, bH=66, fresh=diaryFreshCount();
-  panel(ctx, bX, bY, bW, bH, 14, 'rgba(40,30,58,0.9)', 'rgba(201,160,255,0.6)');
-  ctx.textAlign='center'; ctx.fillStyle='#e7d9ff'; ctx.font='800 23px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('READ THE RECORD', VW/2, bY+34);
-  ctx.fillStyle='rgba(210,195,235,0.6)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText(fresh>0 ? fresh+' new to read' : "Duy's account of how he got here", VW/2, bY+54);
-  if(fresh>0){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bX+bW-26, bY+24, 12, 0, 7); ctx.fill(); ctx.fillStyle='#0a0710'; ctx.font='800 15px "Chakra Petch",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(fresh), bX+bW-26, bY+29); }
-  hubB(bX, bY, bW, bH, 'diary');
-  ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='500 14px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('tap outside to close', VW/2, VH-12);
+function drawJudgmentSheet(ctx){
+  const line=JUDGMENT_LINES[Math.max(0,Math.min(judgmentPage,JUDGMENT_LINES.length-1))];
+  ctx.fillStyle='#090711';ctx.fillRect(0,0,VW,VH);
+  if(sprReady('ashford')){const bg=MAKKO_IMG.ashford,sc=Math.max(VW/bg.naturalWidth,VH/bg.naturalHeight),w=bg.naturalWidth*sc,h=bg.naturalHeight*sc;ctx.globalAlpha=.24;ctx.drawImage(bg,(VW-w)/2,(VH-h)/2,w,h);ctx.globalAlpha=1;}
+  ctx.fillStyle='rgba(8,5,14,.72)';ctx.fillRect(0,0,VW,VH);ctx.textAlign='center';ctx.fillStyle='#c9a0ff';ctx.font='800 38px "Chakra Petch",system-ui,sans-serif';ctx.fillText('THE FIRST JUDGMENT',VW/2,92);
+  ctx.fillStyle='#8affc1';ctx.font='600 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText('RESTORATION COMPLETE · FAVOR UNDECIDED',VW/2,128);
+  const gap=70,start=VW/2-gap*2;for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(start+i*gap,190,18,0,7);ctx.fillStyle='#8affc1';ctx.fill();ctx.fillStyle='#0a1712';ctx.font='800 19px "Chakra Petch",system-ui,sans-serif';ctx.fillText('✓',start+i*gap,197);}
+  const by=650,bh=360,px=38,py=by+44,ps=126;panel(ctx,20,by,VW-40,bh,18,'rgba(13,16,32,.97)','rgba(201,160,255,.9)');panel(ctx,px,py,ps,ps,10,'#151323','#5d5272');
+  ctx.save();roundRectPath(ctx,px,py,ps,ps,10);ctx.clip();const actor=line.who==='DUY'?'duy':'keith',clip='dialogue_'+actor+'_'+(line.emotion||'stern'),im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
+  if(im&&im.complete&&im.naturalWidth&&meta)ctx.drawImage(im,0,0,meta.fw,meta.fh,px,py,ps,ps);else drawSpr(ctx,actor==='duy'?'hero':'keith',px+ps/2,py+ps*.78,ps*1.5,{});ctx.restore();
+  ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';ctx.font='800 25px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,px+ps+22,py+22);
+  ctx.fillStyle='#f2f3ff';ctx.font='500 28px "Chakra Petch",system-ui,sans-serif';wrapText(ctx,line.text,px+ps+22,py+62,VW-(px+ps+22)-50,36);
+  ctx.textAlign='center';ctx.fillStyle='rgba(220,210,235,.65)';ctx.font='500 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText((judgmentPage+1)+' / '+JUDGMENT_LINES.length,VW/2,by+bh-28);
+  const bY=1060,bX=70,bW=VW-140,bH=86;panel(ctx,bX,bY,bW,bH,14,'rgba(52,37,68,.96)','#c9a0ff');ctx.fillStyle='#f3e9ff';ctx.font='800 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText(judgmentPage<JUDGMENT_LINES.length-1?'CONTINUE':'RETURN TO ASHFORD',VW/2,bY+53);hubB(bX,bY,bW,bH,'judgmentnext');
 }
 
 function drawDiarySheet(ctx){

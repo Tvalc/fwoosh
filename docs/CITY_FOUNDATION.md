@@ -4,6 +4,8 @@ Build `2026-09-15-city-1` establishes the smallest complete rebuilding loop behi
 
 Build `2026-09-15-logistics-1` extends that foundation with Mushroom Farms, Storehouses, food costs, visible road carriers, shared-route congestion and optional priorities. See [LOGISTICS.md](LOGISTICS.md).
 
+Build `2026-09-15-judgment-1` makes the first complete restoration milestone playable. See [JUDGMENT.md](JUDGMENT.md).
+
 ## Player loop
 
 1. Extend free roads from the fixed gate across a 5×5 plan.

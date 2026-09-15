@@ -38,6 +38,8 @@ The action arcade game remains central. An incremental ratkin-city layer sits be
 
 The first playable Ratkin Quarter uses a 5×5 plan with a fixed gate. Its initial playtest buildings are a worker-providing Burrow and a material-producing Salvage Yard. Current costs, timers, acceleration rate, offline cap and road-distance penalty are tuning values recorded in [CITY_FOUNDATION.md](CITY_FOUNDATION.md), not immutable story canon.
 
+The first Ratkin Judgment recognizes a minimum self-sustaining society rather than demanding a large copy quota. It requires five actually cleared districts, nineteen ascended Ratkin, two connected sealed Burrows, a connected sealed Farm that has produced food, and a connected sealed Yard plus Storehouse after material production. Khet-Tak-Tor summons the hearing and acknowledges that Ratkin society can survive. The hearing explicitly does not release Duy: Ratkin favor and the final verdict remain separate. Larger settlements and optimized layouts are optional for this judgment.
+
 ## Release and the wider RPG
 
 Completing Duy's restoration/favor path releases and resurrects him. Fwoosh must provide a satisfying, comprehensible ending even when no other game is present.
@@ -54,7 +56,7 @@ Ledger also has a route where Duy survives and older language saying dead guests
 
 ## Open design decisions
 
-- What exactly constitutes complete restoration and which acts earn ratkin favor.
+- Which acts earn ratkin favor after the implemented first restoration judgment, and what completes final restoration for release.
 - The exact powers and limits of Khet-Tak-Tor's mandate under the divine covenant.
 - Whether Khet-Tak-Tor announces a collective Ratkin verdict or personally holds delegated release authority.
 - Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
@@ -70,4 +72,4 @@ Do not invent these values during implementation. Resolve them through the ownin
 
 ## Current implementation boundary
 
-The live dialogue, HUD and diary use Khet-Tak-Tor's approved identity and follow the gradual-discovery direction without promising freedom for a raw rescue or district count. The current human Makko art remains temporarily behind the save-compatible `keith` media key until Cursor supplies the approved Ratkin replacement under issue #39. The arcade loop and current town upgrades exist. Ratkin Quarter implements roads, four building types, offline construction, sealing, automatic staffing, food/material storage, visible route carriers, congestion and optional station priorities. The carrier is still a code-native marker pending approved Makko Ratkin locomotion. Favor judgment, resurrection ending, Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain tracked in issues #29–#30.
+The live dialogue, HUD and diary use Khet-Tak-Tor's approved identity and follow the gradual-discovery direction without promising freedom for a raw rescue or district count. The current human Makko art remains temporarily behind the save-compatible `keith` media key until Cursor supplies the approved Ratkin replacement under issue #39. The arcade loop and current town upgrades exist. Ratkin Quarter implements roads, four building types, offline construction, sealing, automatic staffing, food/material storage, visible route carriers, congestion and optional station priorities. The five-term Shrine record and first restoration hearing are implemented. The carrier is still a code-native marker pending approved Makko Ratkin locomotion. Favor, the final verdict, resurrection ending, Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain tracked in issues #29–#30.

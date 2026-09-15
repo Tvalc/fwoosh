@@ -100,6 +100,7 @@ window.__fwoosh = {
   openDiary(i){ onTitle=false; intro=null; mode='hub'; hubSheet='diary'; diaryOpen = (i==null?null:i); diaryPage=0; if(i!=null&&DIARY[i]) diaryMarkRead(DIARY[i].id); return { fresh:diaryFreshCount() }; },
   showSheet(name){ onTitle=false; intro=null; mode='hub'; hubSheet=name; diaryOpen=null; return { hubSheet }; },
   city(){return JSON.parse(JSON.stringify(META.city));},
+  judgment(){return {terms:judgmentTerms(),eligible:!!META.judgment.eligible,heard:!!META.judgment.heard,page:judgmentPage};},
   cityAct(action){cityAction(action);return {sheet:hubSheet,view:cityView,tool:cityTool,message:cityMessage,city:this.city()};},
   cityAdvance(seconds){cityAdvance(META.city.lastAt+Math.max(0,Number(seconds)||0)*1000,true);return this.city();},
   diaryPage(n){ diaryPage=n; return diaryPage; },

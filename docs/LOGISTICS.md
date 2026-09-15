@@ -13,6 +13,8 @@ Build `2026-09-15-logistics-1` completes the first systems pass for issue #28. T
 
 Both resources have a base cap of 10. A new or migrated city starts with four food so the first Yard can operate before a Farm is sealed. A production station loses partial cycle progress while blocked; disconnected or unstaffed time is never banked.
 
+Lifetime food and material output are also recorded as restoration proof. The first Ratkin judgment requires at least one unit of each from a connected, sealed production chain; stockpiles may be spent without erasing that proof. See [JUDGMENT.md](JUDGMENT.md).
+
 ## Assignment and priorities
 
 Eligible Farms and Yards receive connected Burrow workers automatically. Stations default to normal priority, then break ties by construction order. Players may set low, normal or high priority. At zero food, an eligible Farm receives an automatic emergency boost so a high-priority hungry Yard cannot deadlock the whole city. Once food exists, player priorities apply normally.

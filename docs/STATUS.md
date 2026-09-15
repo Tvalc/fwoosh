@@ -1,12 +1,20 @@
 # Fwoosh status — September 15, 2026
 
+## First Ratkin Judgment — 2026-09-15-judgment-1
+
+The town now exposes a five-term Ratkin Judgment record: clear all five districts, ascend nineteen Ratkin, connect and seal two Burrows, operate a connected sealed Mushroom Farm, and operate a connected sealed Salvage Yard with a connected sealed Storehouse. The production terms require at least one food and one material created after tracking begins; starting resources and loaded balances do not count as proof.
+
+Completing the record automatically summons Khet-Tak-Tor on the next return to Ashford or exit from the Quarter. A three-line present-tense scene acknowledges that Duy rebuilt a society capable of surviving and states clearly that release still requires Ratkin favor. The scene records only lines the player reaches, persists when completed and does not replay automatically. The hub and Shrine now keep the five terms visible from the start.
+
+The compatible v1 save adds `city.producedFood`, `city.producedMaterials` and `judgment:{eligible,heard}`. Larger settlements remain optional. Favor actions, release, resurrection and the Arbiter's final mandate remain issue #29 follow-ups. 142 actual-script checks and 11 asset checks pass. No new art was added; the scene reuses the current verified Makko portraits while Cursor's Ratkin Khet-Tak-Tor replacement remains pending.
+
 ## Khet-Tak-Tor runtime migration — 2026-09-15-arbiter-1
 
 The jailer is now Khet-Tak-Tor, the Ratkin Arbiter, everywhere the player sees or hears his identity: live dialogue, archived conversations, diary, town feud banner, district launcher, combat HUD, tactical callouts and final district name. The combat runtime now uses Arbiter terminology for boss state, moves and summoned threats. His existing behavior and tuning are unchanged.
 
 Older saves remain compatible. The diary chapter keeps its historical `keith` identifier, archived speaker records migrate from `KEITH` to `KHET-TAK-TOR`, and the existing verified Makko sprite and animation remain temporarily under the `keith` media key. Cursor's Ratkin Makko replacement is still required under issue #39; this release adds no generated or substitute artwork.
 
-139 actual-script checks pass, including a new regression that preserves and relabels legacy conversation history across reload. Favor, judgment and resurrection thresholds remain intentionally unimplemented until Tony chooses the restoration criteria required by canon.
+139 actual-script checks pass, including a new regression that preserves and relabels legacy conversation history across reload. This checkpoint was superseded by the first-judgment release above.
 
 ## Renewable duel fire — 2026-09-15-duel-fire-1
 
