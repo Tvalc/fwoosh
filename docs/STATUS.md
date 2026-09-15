@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Ratkin logistics and optional priorities — 2026-09-15-logistics-1
+
+The Ratkin Quarter now supports four complementary structures. Mushroom Farms produce food; Salvage Yards consume one food to produce one building material; Burrows provide connected workers; Storehouses add 15 spaces to the shared food and material caps. The city begins with four bootstrap food so the initial Burrow/Yard pair remains useful. At zero food, automatic assignment temporarily favors a connected Farm and avoids a deadlock. Otherwise available workers choose eligible stations by high, normal or low player priority and then construction order.
+
+Every operating Farm and Yard now has a visible code-native Ratkin carrier marker moving along its actual road route. Stations sharing road cells add four seconds of congestion per other active carrier. Distance and congestion appear in the station view, alongside the current input, output and blocking reason. The system still runs without manual intervention; priorities, road layout, building movement and added storage provide optional optimization.
+
+The compatible city save adds `food` and per-station `priority`; city-1 saves receive four food and normal priorities. 136 actual-script checks pass, including food bootstrap, Yard consumption, automatic deadlock recovery, Storehouse capacity, shared-road congestion, priority persistence, visible logistics and the entire arcade/save suite. The carrier remains a UI marker until Cursor supplies approved Makko Ratkin locomotion.
+
 ## Ratkin Quarter foundation — 2026-09-15-city-1
 
 Town now opens a persistent 5×5 Ratkin Quarter plan. Players extend free roads from a fixed gate, place Burrows and Salvage Yards beside the connected network, and can move buildings later. The first Burrow foundation costs 40 embers and takes 90 seconds; the first Yard costs 60 and takes 150 seconds. Five embers remove 30 seconds from active construction. Completed buildings remain inert until sealed for 20 or 30 embers respectively. Ratkin continue construction during arcade runs and for up to eight hours away.

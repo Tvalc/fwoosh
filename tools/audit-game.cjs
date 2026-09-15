@@ -893,20 +893,20 @@ test('Rush spends exact embers, removes thirty seconds and cannot overspend',()=
  const before=g.run('META.city.buildings[0].remaining');g.run('cityRush(1)');assert.equal(g.run('META.embers'),0);assert.ok(g.run('META.city.buildings[0].remaining')<=before);
 });
 test('A sealed connected Burrow automatically staffs one sealed Yard',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,nextId:3,buildings:[
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityWorkerCapacity()'),1);assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');assert.equal(g.run('cityYardActive(META.city.buildings[1])'),true);
  g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.materials'),1);assert.ok(g.run('META.city.buildings[1].work<1e-6'));
 });
 test('Road distance slows output and disconnected Yards stop without banking work',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,nextId:3,buildings:[
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:0,y:2,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityRoadDistanceTo(META.city.buildings[1])'),4);assert.equal(g.run('cityCycleSeconds(META.city.buildings[1])'),55);
  g.run('cityAdvance(56000,true)');assert.equal(g.run('META.city.materials'),1);
  g.run("META.city.roads=['2,4'];META.city.buildings[1].work=40;cityAdvance(META.city.lastAt+100000,true)");assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings[1].work'),0);
 });
 test('Automatic staffing is stable and extra Yards wait for more Burrows',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,nextId:4,buildings:[
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,food:4,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0},{id:3,type:'yard',x:0,y:4,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');g.run('cityAdvance(1000+50000,true)');assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings.find(b=>b.id===3).work'),0);
 });
@@ -917,8 +917,51 @@ test('Moving a building persists its new connected route and clears partial work
 });
 test('Town exposes the Ratkin Quarter and its station explains inputs, output and route',()=>{
  const g=game();g.run('onTitle=false;mode="hub";drawHub(ctx)');assert.ok(g.drawnText.includes('RATKIN QUARTER'));assert.ok(g.drawnText.includes('THE DIARY'));assert.equal(g.drawnText.includes('THE SHRINE'),false);
- g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4'],materials:0,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0}]};citySelectedId=1;drawCityStation(ctx)`);
- for(const label of ['INPUT','OUTPUT','ROUTE','Ruin salvage from the cleared quarter'])assert.ok(g.drawnText.includes(label),'Missing station label: '+label);
+ g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4'],materials:0,food:4,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1}]};citySelectedId=1;drawCityStation(ctx)`);
+ for(const label of ['INPUT','OUTPUT','ROUTE','1 food ration from shared stores'])assert.ok(g.drawnText.includes(label),'Missing station label: '+label);
+});
+test('Fresh and older city saves receive bootstrap food and normal priorities',()=>{
+ const fresh=game();assert.equal(fresh.run('META.city.food'),4);
+ const old=game({'fwoosh.meta':JSON.stringify({v:1,city:{v:1,lastAt:1000,roads:['2,4'],materials:2,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',work:3}]}})});
+ assert.equal(old.run('META.city.food'),4);assert.equal(old.run('META.city.buildings[0].priority'),1);assert.equal(old.run('META.city.materials'),2);
+});
+test('Mushroom Farms bootstrap food and Yards consume one ration per material',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:0,nextId:4,buildings:[
+  {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:2,type:'farm',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:3,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0,priority:2}]}`);
+ assert.equal(g.run('cityAssignedStations().map(b=>b.id).join()'),'2','At zero food, automatic assignment must bootstrap the Farm even when the Yard has higher manual priority.');
+ g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.food'),1);assert.equal(g.run('META.city.materials'),0);
+ g.run('META.city.buildings[2].priority=2;META.city.buildings[1].priority=0;cityAdvance(META.city.lastAt+cityCycleSeconds(META.city.buildings[2])*1000,true)');assert.equal(g.run('META.city.food'),0);assert.equal(g.run('META.city.materials'),1);
+});
+test('Connected sealed Storehouses expand both resource caps',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4'],materials:10,food:10,nextId:3,buildings:[
+  {id:1,type:'store',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:2,type:'store',x:0,y:0,state:'sealed',remaining:0,work:0,priority:1}]}`);
+ assert.equal(g.run('cityStorageCapacity()'),25);g.run("META.city.roads=['2,4','0,1'];");assert.equal(g.run('cityStorageCapacity()'),25,'A disconnected road island must not add storage.');
+});
+test('Shared-road carrier traffic slows station cycles',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2'],materials:0,food:4,nextId:5,buildings:[
+  {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:2,type:'burrow',x:3,y:3,state:'sealed',remaining:0,work:0,priority:1},
+  {id:3,type:'yard',x:1,y:2,state:'sealed',remaining:0,work:0,priority:1},
+  {id:4,type:'farm',x:3,y:2,state:'sealed',remaining:0,work:0,priority:1}]}`);
+ assert.equal(g.run('cityAssignedStations().length'),2);assert.equal(g.run('cityCongestionFor(META.city.buildings[2])'),1);assert.equal(g.run('cityCycleSeconds(META.city.buildings[2])'),54);
+});
+test('Player priorities reorder automatic worker assignment and persist',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:4,buildings:[
+  {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:2,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:3,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:0,priority:1}]};citySetPriority(3,2)`);
+ assert.equal(g.run('cityAssignedStations().map(b=>b.id).join()'),'3');assert.equal(g.run('META.city.buildings.find(b=>b.id===3).priority'),2);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings.find(b=>b.id===3).priority'),2);
+});
+test('Map and station render visible logistics and congestion information',()=>{
+ const g=game();g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
+  {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
+  {id:2,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:10,priority:1}]};citySelectedId=2;drawCityMap(ctx);drawCityStation(ctx)`);
+ for(const label of ['FARM','R','MUSHROOM STATION','SPORE BED','GROW ROOM'])assert.ok(g.drawnText.includes(label),'Missing logistics rendering: '+label);
+ assert.ok(g.drawnText.some(t=>t.includes('shared-route traffic')));
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
