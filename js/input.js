@@ -2,7 +2,7 @@
 let ptr = { down:false, sx:0, sy:0, t:0, swiped:false, onVent:false };
 // The VENT button — a fixed thumb-target, bottom-right. Vent fires ONLY from here (or SPACE), never from a
 // stray tap, so it can't happen by accident.
-function ventBtn(){ const r = 80; return { x: VW - r - 26, y: VH - r - 58, r }; }
+function ventBtn(){ const r = 62; return { x: 634, y: 1176, r }; }
 
 // keyboard: WASD/arrows steer, SHIFT dashes, SPACE braces
 const keys = Object.create(null);
@@ -51,10 +51,10 @@ function onDown(x,y){
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ resultClick(x,y); return; }        // run ended -> return to the town hub
   if(mode === 'hub'){ hubClick(x,y); return; }      // tapping the town: buildings / shop / PLAY
-  if(mode==='play' && y<ARENA.HUD_BOTTOM){cancelPointer();return;} // HUD taps never steer or spend a dash.
   // Mobile only: the on-screen VENT button. (Desktop vents with SPACE, so no button — a click there dashes.)
   if(isTouch && mode === 'play'){ const vb = ventBtn();
     if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; setVentHeld(true); return; } }
+  if(!inWorldView(x,y)){cancelPointer();return;}
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
 function onMove(x,y){
@@ -65,7 +65,8 @@ function onMove(x,y){
 function onUp(){
   if(ptr.onVent){ ptr.onVent = false; setVentHeld(false); }
   else if(ptr.down && !ptr.swiped){                       // a click / tap (no drag) = DASH toward the point
-    const dx = ptr.sx-player.x, dy = ptr.sy-player.y;
+    const target=screenToWorld(ptr.sx,ptr.sy);
+    const dx = target.x-player.x, dy = target.y-player.y;
     if(Math.hypot(dx,dy) >= 12) lungeDir(dx,dy);
   }
   ptr.down = false; ptr.swiped = false;

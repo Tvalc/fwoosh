@@ -1,5 +1,13 @@
 # Fwoosh working agreement
 
+## Full map viewport — 2026-09-15-full-map-1
+
+Supersedes hud-safe-1, which incorrectly removed 32.8% of vertical travel. Original simulation, spawn distribution, opponent target mapping and obstacle coordinates are restored exactly from the pre-regression dialogue build. The complete world now renders with a single uniform transform between a compact header and a stable bottom dialogue/control dock. Pointer taps invert that transform; dock and gutter touches cannot spend dash charges. Device safe-area insets affect screen fit only. Small visual overhang accommodates bodies at the original walls; oversized decorative flames may clip.
+
+97 actual-script state/input checks pass, including original upper route access, full-map corners, screen/world mapping at 320/375/430/1280px and resize cancellation. Local browser fixtures checked normal play, rescue feedback, longest present dialogue, maximum cinder vent pop and Keith at the upper wall at 320/375/430px; an actual browser tap used the correct transformed heading. No console warnings/errors observed. These checks are not human balance testing or physical-device testing. The map is uniformly displayed at 70.2% of its former canvas scale to fit the full arena and separated docks; smaller actors are the key playtest tradeoff. No new artwork, narrative, save migration or economy changes. See FULL_MAP_VIEWPORT.md and issue #1 for release verification.
+
+Earlier checkpoints below are historical.
+
 Established 2026-09-14. Shared tracker: https://github.com/Tvalc/fwoosh/issues/1
 
 | Owner | First-batch scope | Boundaries |

@@ -1,9 +1,23 @@
 // ---------------------------------------------------------------- render
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 let scale = 1;
+// Screen docks never change the 720 × 1280 simulation or obstacle coordinates.
+const PLAY_VIEW = {top:128, bottom:1100, overhangTop:80, overhangBottom:24};
+function worldView(){
+  const s=Math.min(1,(PLAY_VIEW.bottom-PLAY_VIEW.top)/(VH+PLAY_VIEW.overhangTop+PLAY_VIEW.overhangBottom));
+  return {x:(VW-VW*s)/2,y:PLAY_VIEW.top+PLAY_VIEW.overhangTop*s,w:VW*s,h:VH*s,s};
+}
+function worldToScreen(x,y){const v=worldView();return {x:v.x+x*v.s,y:v.y+y*v.s};}
+function screenToWorld(x,y){const v=worldView();return {x:(x-v.x)/v.s,y:(y-v.y)/v.s};}
+function inWorldView(x,y){const v=worldView();return x>=v.x&&x<=v.x+v.w&&y>=v.y&&y<=v.y+v.h;}
+
 
 function fit(){
-  const iw = Math.max(320, window.innerWidth||360), ih = Math.max(480, window.innerHeight||640);
+  const css=typeof getComputedStyle==='function'?getComputedStyle(document.body):null;
+  const inset=k=>css?(parseFloat(css.getPropertyValue(k))||0):0;
+  const iw=Math.max(1,(window.innerWidth||360)-inset('padding-left')-inset('padding-right'));
+  const ih=Math.max(1,(window.innerHeight||640)-inset('padding-top')-inset('padding-bottom'));
+  if(typeof ptr!=='undefined' && player)cancelPointer();
   scale = Math.min(iw/VW, ih/VH);
   const dpr = Math.min(2, window.devicePixelRatio||1);
   cv.style.width = (VW*scale)+'px'; cv.style.height = (VH*scale)+'px';
@@ -282,9 +296,9 @@ function drawVentButton(ctx){
   // label under the disc
   ctx.globalAlpha = hot ? 1 : 0.5;
   const label=player.heat>0?'VENT':'HEAL';
-  if(!drawText(ctx,label, b.x, b.y+R+30, 26)){
+  if(!drawText(ctx,label, b.x, b.y+R+24, 26)){
     ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Pixelify",system-ui,sans-serif';
-    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText(label, b.x, b.y+R+34); ctx.fillText(label, b.x, b.y+R+34); }
+    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText(label, b.x, b.y+R+24); ctx.fillText(label, b.x, b.y+R+24); }
   if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
   ctx.restore();
 }
@@ -818,52 +832,30 @@ function wrapText(ctx,str,x,y,maxW,lh){ const words=String(str).split(' '); let 
 
 // Live data gauges use canvas UI; character artwork remains the existing Makko assets.
 function drawRunMeters(ctx){
-  const x=24, w=VW-48, heat=Math.max(0,Math.min(K.HEAT_MAX,player.heat||0));
-  const hot=heat>=K.HEAT_MAX-1, heatColor=hot?'#ff7065':heat>0?'#ffb34f':'#93b9c1';
-  ctx.save(); ctx.globalAlpha=1;
-  ctx.font='800 26px "Pixelify",system-ui,sans-serif'; ctx.textAlign='left';
-  ctx.fillStyle='#fff0df'; ctx.fillText('HEAT '+Math.round(heat*10)/10+' / '+K.HEAT_MAX,x,83);
-  ctx.textAlign='right'; ctx.fillStyle='#ffcf80';
-  ctx.fillText('BLAZE x'+(1+heat*K.BLAZE_MULT).toFixed(1),VW-x,83);
-  ctx.textAlign='center'; ctx.font='700 20px "Pixelify",system-ui,sans-serif'; ctx.fillStyle=heatColor;
-  ctx.fillText(player.venting?(heat>0?'VENTING':'HEALING'):hot?'HIGH HEAT':heat===0?'COOL':'',VW/2,82);
-  // Segments represent carried fires, not health. Keep the empty gauge visible too.
-  const gap=6, sw=(w-gap*(K.HEAT_MAX-1))/K.HEAT_MAX;
+  const heat=Math.max(0,Math.min(K.HEAT_MAX,player.heat||0)),hot=heat>=K.HEAT_MAX-1;
+  ctx.save();ctx.textAlign='left';ctx.font='800 28px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle=hot?'#ff7065':'#ffcf80';ctx.fillText('HEAT '+Math.round(heat*10)/10+'/'+K.HEAT_MAX,300,34);
+  ctx.textAlign='right';ctx.font='700 25px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('BLAZE x'+(1+heat*K.BLAZE_MULT).toFixed(1),VW-18,34);
+  const gap=5,sw=(VW-318-gap*(K.HEAT_MAX-1))/K.HEAT_MAX;
   for(let i=0;i<K.HEAT_MAX;i++){
-    const sx=x+i*(sw+gap), fill=Math.max(0,Math.min(1,heat-i));
-    ctx.fillStyle='#302b32'; ctx.fillRect(sx,97,sw,18);
-    if(fill>0){ctx.fillStyle=heatColor;ctx.fillRect(sx,97,sw*fill,18);}
+    const x=300+i*(sw+gap),f=Math.max(0,Math.min(1,heat-i));
+    ctx.fillStyle='#302b32';ctx.fillRect(x,45,sw,12);
+    ctx.fillStyle=hot?'#ff7065':'#ffb34f';if(f)ctx.fillRect(x,45,sw*f,12);
   }
-  // One familiar Makko villager plus a large tally remains legible at every district quota.
-  drawSpr(ctx,'happy',43,157,40,{});
-  ctx.textAlign='left'; ctx.font='800 30px "Pixelify",system-ui,sans-serif'; ctx.fillStyle='#a0ffd0';
-  ctx.fillText('RESCUED '+saved+' / '+runQuota,74,153);
-  const progress=Math.max(0,Math.min(1,saved/Math.max(1,runQuota)));
-  ctx.fillStyle='#233932';ctx.fillRect(x,171,w,12);
-  if(progress>0){ctx.fillStyle='#8affc1';ctx.fillRect(x,171,w*progress,12);}
-  if(duelActive){
-    const need=(boss&&boss.dumpNeeded)||K.DUEL_DUMP;
-    ctx.font='700 22px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#ff9dbd';
-    ctx.fillText('KEITH '+Math.floor(dumped)+' / '+need,x,213);
-    const bx=230,bw=VW-x-bx,f=Math.max(0,Math.min(1,dumped/need));
-    ctx.fillStyle='#392532';ctx.fillRect(bx,200,bw,10);
-    if(f>0){ctx.fillStyle='#ff91b8';ctx.fillRect(bx,200,bw*f,10);}
-  } else {
-    // Edge remains secondary and explicitly named so it cannot be mistaken for heat.
-    const bw=180,bx=VW/2-60,cx=bx+bw/2,span=K.EDGE_PER_DOWN*K.EDGE_HEADSTART_CAP;
-    const f=Math.max(-1,Math.min(1,edge/span));
-    ctx.textAlign='right';ctx.font='600 18px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#c2b6c8';
-    ctx.fillText('EDGE',bx-14,208);
-    ctx.fillStyle='#34303c';ctx.fillRect(bx,200,bw,7);
-    ctx.fillStyle=f>=0?'#8affc1':'#ff769c';
-    if(f!==0)ctx.fillRect(f>=0?cx:cx+bw*f/2,200,Math.abs(bw*f/2),7);
-    ctx.fillStyle='#dbd2df';ctx.fillRect(cx-1,197,2,13);
-  }
+  ctx.textAlign='left';ctx.font='800 29px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#a0ffd0';
+  ctx.fillText('RESCUED '+saved+' / '+runQuota,18,89);
+  ctx.textAlign='right';ctx.fillStyle=rescueReward?'#b0ffd8':'#ffcf80';
+  ctx.fillText('RUN +'+runEmbers+' EMBERS',VW-18,89);
+  ctx.textAlign='left';ctx.font='600 22px "Pixelify",system-ui,sans-serif';
+  ctx.fillStyle=duelActive?'#ff9dbd':'#c2b6c8';
+  ctx.fillText(duelActive?'KEITH '+Math.floor(dumped)+' / '+((boss&&boss.dumpNeeded)||K.DUEL_DUMP):'EDGE '+(edge>0?'+':'')+Math.round(edge),18,118);
+  ctx.textAlign='right';ctx.fillStyle=rescueReward?'#b0ffd8':'#b4a7ba';
+  ctx.fillText(rescueReward?rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS':'SCORE '+score,VW-18,118);
   ctx.restore();
 }
 
-// ---- VN-style dialogue box (lower third): Keith narrates over LIVE gameplay during the intro.
-// Square portrait on the left animates (bob + scale) while the line is still typing out.
+// Present-event dialogue uses the fixed bottom dock; the world view never moves with a line.
 function drawDialogue(ctx){
   if(mode!=='play') return;
   const d=presentDialogue;
@@ -872,7 +864,7 @@ function drawDialogue(ctx){
   const t=intro?intro.lineT:d.t,shown=Math.min(line.text.length,Math.floor(t/INTRO.CHAR));
   const talking=shown<line.text.length;
   // Bottom dialogue strip stays above the mobile vent circle and dash-charge row.
-  const bx=14,bw=VW-28,bh=180,by=VH-bh-240,pad=14,ps=128;
+  const bx=8,bw=538,bh=144,by=PLAY_VIEW.bottom+4,pad=8,ps=76;
   ctx.save();panel(ctx,bx,by,bw,bh,10,'rgba(13,20,45,0.96)','rgba(185,200,239,0.95)');
   const px=bx+pad,py=by+pad;
   ctx.save();roundRectPath(ctx,px,py,ps,ps,6);ctx.fillStyle='#151323';ctx.fill();ctx.clip();
@@ -891,11 +883,10 @@ function drawDialogue(ctx){
   ctx.restore();
   const tx=px+ps+16,tw=bx+bw-pad-tx;
   ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';
-  ctx.font='800 22px "Pixelify",system-ui,sans-serif';ctx.fillText(line.who,tx,by+32);
+  ctx.font='800 22px "Pixelify",system-ui,sans-serif';ctx.fillText(line.who,tx,by+25);
   ctx.fillStyle='#f2f3ff';ctx.font='500 26px "Pixelify",system-ui,sans-serif';
-  wrapText(ctx,line.text.slice(0,shown),tx,by+66,tw,31);
-  ctx.fillStyle='#9faac6';ctx.font='500 14px "Pixelify",system-ui,sans-serif';
-  ctx.fillText('AUTO · Read again in Diary → Conversations',tx,by+bh-12);
+  wrapText(ctx,line.text.slice(0,shown),tx,by+54,tw,28);
+
   ctx.restore();
 }
 
@@ -1302,8 +1293,13 @@ function render(){
   if(onTitle){ drawTitle(ctx); return; }
   if(mode === 'hub'){ drawHub(ctx); return; }
   const p = player;
+  ctx.fillStyle='#09080f';ctx.fillRect(0,0,VW,VH);
+  const view=worldView();
+  // Small rendering overhang keeps bodies visible at the old walls. Tall flames may clip;
+  // their size never changes movement bounds. Background and actors share this transform.
+  ctx.save();ctx.beginPath();ctx.rect(0,PLAY_VIEW.top,VW,PLAY_VIEW.bottom-PLAY_VIEW.top);ctx.clip();
+  ctx.translate(view.x,view.y);ctx.scale(view.s,view.s);
   SK.bg(ctx);
-  ctx.save();ctx.beginPath();ctx.rect(0,ARENA.HUD_BOTTOM,VW,VH-ARENA.HUD_BOTTOM);ctx.clip();
 
   if(window.OBS_DEBUG){                                 // obstacle-tuning overlay (dev only)
     ctx.save(); ctx.strokeStyle='rgba(0,255,255,0.9)'; ctx.fillStyle='rgba(0,255,255,0.12)'; ctx.lineWidth=2;
@@ -1536,12 +1532,11 @@ function render(){
   const hudOn = mode === 'play' && !onTitle && introT <= 0 && (!intro || intro.phase==='talk');
   if(hudOn){
     // A dark backing separates live values from the busy town artwork.
-    ctx.fillStyle='#09080f';ctx.fillRect(0,0,VW,ARENA.HUD_BOTTOM);
-    ctx.fillStyle='#514253';ctx.fillRect(0,ARENA.HUD_BOTTOM-2,VW,2);
-    ctx.textAlign='right';ctx.fillStyle='#ffcf80';ctx.font='800 27px "Pixelify",system-ui,sans-serif';
-    ctx.fillText('SCORE '+score,VW-24,38);
+    ctx.fillStyle='#09080f';ctx.fillRect(0,0,VW,PLAY_VIEW.top);
+    ctx.fillStyle='#514253';ctx.fillRect(0,PLAY_VIEW.top-2,VW,2);
+    ctx.fillStyle='#514253';ctx.fillRect(0,PLAY_VIEW.bottom,VW,2);
     // HEALTH — a row of Makko hearts, top-left (count scales with maxHearts). Fire burns them down; clear, they refill.
-    { const n=maxHearts, hs=Math.min(38, Math.floor((VW*0.44)/n)-2), gap=2, hxx=24, hyy=12, hp=Math.max(0,Math.min(1,player.hp)), low=hp<0.3;
+    { const n=maxHearts, hs=Math.min(38, Math.floor(264/n)-2), gap=2, hxx=18, hyy=14, hp=Math.max(0,Math.min(1,player.hp)), low=hp<0.3;
       for(let i=0;i<n;i++){
         const cx=hxx+i*(hs+gap)+hs/2, cy=hyy+hs/2, fillf=Math.max(0,Math.min(1, hp*n - i));
         if(!drawSpr(ctx,'heart',cx,cy,hs,{alpha:0.20})){ ctx.fillStyle='rgba(255,80,80,0.2)'; ctx.beginPath(); ctx.arc(cx,cy,hs*0.32,0,7); ctx.fill(); }
@@ -1552,32 +1547,23 @@ function render(){
       }
     }
     drawRunMeters(ctx);
-    // Transient status shares the reserved strip rather than obscuring playable ground.
-    const status=rescueReward ? rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS' : callout ? callout.text : '';
-    if(status){
-      ctx.save();ctx.textAlign='center';ctx.fillStyle=rescueReward?'#b0ffd8':callout.good===false?'#ff9dbd':'#e5e0ed';
-      let sz=23;ctx.font='700 '+sz+'px "Pixelify",system-ui,sans-serif';
-      while(ctx.measureText(status).width>VW-48 && sz>14){sz--;ctx.font='700 '+sz+'px "Pixelify",system-ui,sans-serif';}
-      ctx.fillText(status,VW/2,253);ctx.restore();
+    // Optional dialogue replaces only dock information, never the camera or controls.
+    if(!intro && !presentDialogue){
+      ctx.save();ctx.textAlign='left';ctx.fillStyle='#dfd8c9';ctx.font='600 25px "Pixelify",system-ui,sans-serif';
+      const goal=upgradeGoal();if(goal)ctx.fillText(goal.name+' · '+Math.floor(goalAmount(goal))+' / '+goal.cost,18,1139);
+      const status=callout?callout.text:isTouch?'Swipe to dash · Hold VENT to cool':'WASD steer · SHIFT dash';
+      ctx.fillStyle=callout&&callout.good===false?'#ff9dbd':'#d7cedd';ctx.font='600 24px "Pixelify",system-ui,sans-serif';
+      wrapText(ctx,status,18,1175,516,27);
+      if(player.ventUnit){
+        const u=player.ventUnit;ctx.fillStyle='#ffe0a2';ctx.font='700 24px "Pixelify",system-ui,sans-serif';
+        ctx.fillText((u.kind==='heat'?'VENT 1 HEAT':'HEAL 1 HEART')+(player.ventHeld?' · HOLD':' · FINISHING'),18,1228);
+      }
+      ctx.restore();
     }
-    // Currency feedback sits away from heat/Edge and the mobile vent target.
-    ctx.save();ctx.textAlign='left';ctx.fillStyle='#ffcf80';ctx.font='800 25px "Pixelify",system-ui,sans-serif';
-    panel(ctx,18,VH-153,430,72,10,'rgba(9,8,15,0.9)',null);
-    ctx.fillStyle='#ffcf80';
-    ctx.fillText('RUN +'+runEmbers+' EMBERS',30,VH-125);
-    const liveGoal=upgradeGoal();ctx.font='500 21px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#dfd8c9';
-    if(liveGoal)ctx.fillText(liveGoal.name+' · '+Math.floor(goalAmount(liveGoal))+' / '+liveGoal.cost,30,VH-97);
-    ctx.restore();
-    if(player.ventUnit){
-      const u=player.ventUnit,bw=300,bx=(VW-bw)/2,by=VH-225;
-      ctx.save();ctx.fillStyle='rgba(9,8,15,0.9)';ctx.fillRect(bx-14,by-39,bw+28,64);
-      ctx.textAlign='center';ctx.font='700 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#ffe0a2';
-      ctx.fillText((u.kind==='heat'?'VENT 1 HEAT':'HEAL 1 HEART')+(player.ventHeld?' · HOLD':' · FINISHING'),VW/2,by-12);
-      ctx.fillStyle='#45343a';ctx.fillRect(bx,by,bw,10);ctx.fillStyle='#ffb34f';ctx.fillRect(bx,by,bw*Math.min(1,u.t/u.duration),10);ctx.restore();
-    }
+    if(player.ventUnit){const u=player.ventUnit;ctx.fillStyle='#45343a';ctx.fillRect(558,1265,148,8);ctx.fillStyle='#ffb34f';ctx.fillRect(558,1265,148*Math.min(1,u.t/u.duration),8);}
     // DASH charges (bottom-left) — Makko ember pips. Empty = dark socket; recharging one FILLS UP
     // bottom-to-top with a shimmer; a finished charge pops with a flourish ring.
-    { const n=RUN_MAX_CHARGES, ps=32, gap=8, x0=26, yy=VH-56;
+    { const n=RUN_MAX_CHARGES, ps=32, gap=8, x0=26, yy=VH-20;
       for(let i=0;i<n;i++){ const cx=x0+i*(ps+gap)+ps/2, ready=i<player.charges, charging=(i===player.charges && player.charges<n);
         // dark socket always
         if(!drawSpr(ctx,'ui_charge',cx,yy,ps,{alpha:0.13})){ ctx.fillStyle='rgba(255,150,60,0.13)'; ctx.beginPath(); ctx.arc(cx,yy,ps*0.34,0,7); ctx.fill(); }
@@ -1599,21 +1585,15 @@ function render(){
         }
       }
     }
-    // VENT = hold-to-HEAL: button on mobile; SPACE reminder on desktop. Pulses when your hearts are low.
-    if(isTouch) drawVentButton(ctx);
-    else if(player.hp < 0.999 || player.heat > 0){
-      const low = player.hp < 0.4;
-      ctx.textAlign='center'; ctx.globalAlpha = low ? (0.7+0.3*Math.sin(frame*0.5)) : 0.75;
-      ctx.fillStyle = low ? '#8affc1' : 'rgba(255,175,110,0.9)'; ctx.font='700 22px "Pixelify",system-ui,sans-serif';
-      ctx.fillText('HOLD SPACE — HEAL (fire comes)', VW/2, VH-254); ctx.globalAlpha=1;
+    if(isTouch)drawVentButton(ctx);
+    else {
+      ctx.textAlign='center';ctx.fillStyle='#ffcf80';ctx.font='700 26px "Pixelify",system-ui,sans-serif';
+      ctx.fillText('HOLD',633,1160);ctx.fillText('SPACE',633,1192);
+      ctx.font='600 22px "Pixelify",system-ui,sans-serif';ctx.fillText(player.heat>0?'VENT':'HEAL',633,1224);
     }
-  }
-
-  if(!hinted && mode === 'play' && introT <= 0 && !intro){
-    ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.36)';
-    ctx.font = '500 21px "Pixelify",system-ui,sans-serif';
-    ctx.fillText(isTouch ? 'SWIPE anywhere to dash   ·   tap VENT to blast fire off'
-                         : 'AUTO-RUN · WASD steer · SHIFT dash · SPACE / VENT button', VW/2, VH-186);
+    ctx.textAlign='left';ctx.fillStyle='#b4a7ba';ctx.font='500 20px "Pixelify",system-ui,sans-serif';
+    ctx.fillText('DASH',170,1267);
+    if(intro||presentDialogue)ctx.fillText('AUTO · Diary → Conversations',248,1267);
   }
 
   // ---- LIVE intro dialogue box (Keith narrates over gameplay)

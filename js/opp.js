@@ -30,7 +30,7 @@ function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp))
 function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
   return n ? (n%2 ? a[(n-1)/2] : (a[n/2-1]+a[n/2])/2) : 0; }
 function cellCenter(i){ const col = i%K.OPP_COLS, row = Math.floor(i/K.OPP_COLS);
-  return { x:(col+0.5)*(VW/K.OPP_COLS), y:Math.max(ARENA.TOP,(row+0.5)*(VH/K.OPP_ROWS)) }; }
+  return { x:(col+0.5)*(VW/K.OPP_COLS), y:(row+0.5)*(VH/K.OPP_ROWS) }; }
 
 // fold this run's records into the opp, then persist. Called once, at pop().
 function foldOpp(){
@@ -101,7 +101,7 @@ function fireSnipe(){
   snipeUsed = true;
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : 60;
   const tx = p.x + p.hx*p.spd*K.OPP_SNIPE_TELE;              // lead your drift
-  const ty = Math.max(ARENA.TOP, Math.min(ARENA.BOTTOM, p.y + p.hy*p.spd*K.OPP_SNIPE_TELE));
+  const ty = Math.max(40, Math.min(VH-40, p.y + p.hy*p.spd*K.OPP_SNIPE_TELE));
   snipe = { ox:gx, oy:gy, tx:((tx%VW)+VW)%VW, ty, t:0, done:false, lt:0 };
   speakKeith(lineFor('fired'));
 }
