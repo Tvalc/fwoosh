@@ -4,19 +4,19 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-debug-1` is live. The arcade loop, committed vent units, persistent vent demons, cinder-person explosions, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, persistent vent demons, cinder-person explosions, adaptive vent-reading beacon, uncapped ember rewards, zero rewards from vent-created demons, starter upgrade choice, retry/reward flow, five districts, current town upgrades, heat/rescue HUD, present-tense dialogue, optional diary, full-map viewport, phone controls and desktop debug reset exist. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 
-1. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Codex gameplay; Cursor Makko art**. Restore its current-loop attack; replace the shared Well/Shrine menu image with two distinct Makko sprites.
+1. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Cursor Makko art; Codex integration**. Beacon gameplay is live; replace the shared Well/Shrine menu image with two distinct Makko sprites.
 2. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Keith pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
 3. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, cinder vent correction and diary art. Every visual asset must come from Makko.
 4. [#33 Consolidate records, provenance and off-device source backup](https://github.com/Tvalc/fwoosh/issues/33) — **Codex**. Records were consolidated in PR #34; an off-device destination still requires Tony's choice.
 
 ## Next development sequence
 
-5. [#27 Build the playable ratkin city foundation slice](https://github.com/Tvalc/fwoosh/issues/27) — place roads, a home and production building; spend embers on the foundation; build over time/offline; seal before operation.
-6. [#28 Implement ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — food, materials, housing, workers, storage, physical deliveries, distance/congestion and automatic priorities with optional optimization.
+5. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — retain a player-designed exterior with roads and placed buildings, then reuse and improve Wayfarer's proven worker/workstation/request/crafting/handoff presentation inside each building. Spend embers on the foundation; build over time/offline; seal before operation.
+6. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — connect food, materials, housing, workers and storage to physical road deliveries; buildings operate automatically while station views explain work, bottlenecks and player priorities.
 7. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — restoration milestones, favor, ratkin judgment, release and resurrection. Keith is the jailer, never the authority that frees Duy.
 8. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
 9. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
@@ -24,6 +24,8 @@ Build `2026-09-15-debug-1` is live. The arcade loop, committed vent units, persi
 ## Locked product decisions
 
 - The arcade game is central; the city is an incremental layer behind it.
+- The ratkin city adapts Wayfarer's Hearth's service-room state machine and Makko workflow instead of building every interior interaction from scratch. Fwoosh keeps its own runtime, saves, canon and economy: do not embed a second React app or import Wayfarer's characters, card collection or lore.
+- The exterior remains a freely designed town with placed buildings and roads. Selecting a building opens or focuses an animated operating view with workers, a persistent workstation, inputs, progress, handoff/output and visible problems.
 - Embers begin construction, accelerate work, seal buildings and buy upgrades. Embers are never sold for money.
 - Ratkin build while the player runs and while away. Roads, distance and congestion affect physical transport.
 - Management works automatically by default; players can optimize it if they want.
@@ -34,7 +36,8 @@ Build `2026-09-15-debug-1` is live. The arcade loop, committed vent units, persi
 
 ## Decisions still required
 
-- City footprint/grid rules, starting plots, costs, timers and offline cap.
+- City footprint/grid rules, starting plots, first Ratkin building pair, costs, timers and offline cap.
+- Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
 - Complete-restoration criteria, favor actions and release thresholds.
 - Which ember total funds the Invoice; conversion, caps, reward thresholds and spending interaction.
