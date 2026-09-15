@@ -172,15 +172,14 @@ const DIARY = [
   "Diep looked back. I grinned at her and shouted that she still owed me corn. This time I got the whole thing out. She heard me.",
   "The gate shifted. I lost sight of her. There was weight everywhere, and then I was trying to draw a breath in a street full of smoke."
 ] },
-  { id:"fire", title:"The Town on Fire", art:"duy_save", teaser:"I knew the shape of their hands.",
+  { id:"fire", title:"The Town on Fire", art:"duy_save", teaser:"The fire left them. The pain stayed with me.",
     when:()=>META.saved>=27, hint:"carry 27 lives from the fire",
     pages:[
-  "For a moment I was still braced against the gate. Then my hands were on paving stones. I pushed up, expecting the iron to come down with me.",
-  "Someone ran past, burning. I reached out before I had decided to. The fire came across to me. They stumbled clear and kept going. I stood there with it climbing my arms.",
-  "Ratkin. I knew the hands, the small faces. In the cell I had only seen them properly after the light came on. Here they were moving. One of them was looking straight at me.",
-  "I kept searching the smoke for Cuong. For Diep. The last I saw of them, they were getting clear. I couldn't see anyone I knew here. Keith kept calling me back to the street.",
-  "The fires return. I have cleared places I recognize and found them burning again. I don't know what happens to the street while I'm gone. I know where I left people.",
-  "Getting someone out leaves me with another question: where can they go? I look at the houses and try to remember what stood before the roof fell in."
+  "The last thing I remembered was holding an iron gate while my friends escaped. I had stayed behind to stop the jailer following them. Then the weight came down, and I died. Now I was lying in a street, coughing on smoke. I pushed myself up and looked for Cuong and Diep. Neither of them was there. Houses were burning on both sides of the street, and small figures were running between them. Through the smoke I could make out their ears and tails. Ratkin.",
+  "One of them staggered toward me with fire climbing their back. I reached out to help. The flames left their clothes and swept up my arm. Pain shot through it, sharp enough that I cried out and tried to pull away. The heat was already spreading into my chest. The ratkin stopped screaming. Their shoulders relaxed, and light gathered around them. I watched their feet lift off the stones. They rose through the smoke and disappeared into the light. I stood clutching my arm. The flames were gone from them, but I could still feel the burning inside me.",
+  "“Duy. Get the next one.” I turned toward the voice. “What happened? Where are the others?” “My name is Keith. I'm your jailer.” Someone screamed farther down the street. I looked toward the sound, then back toward Keith. “These people are suffering,” he said. “You're here to help them.” “I died.” “You did. You'll die here too. And you'll come back. Keep moving.”",
+  "I wanted to stay and make him explain. Instead I ran toward the scream. There was another ratkin trying to put out the fire on their clothes. This time I knew what reaching for them would do. I reached for them. Fresh heat poured into the places that already hurt. My knees buckled, and I had to fight to stay upright. The second ratkin rose into the light while I stood below, trying to catch my breath.",
+  "The first rescue had hurt. The second left me shaking. Taking more fire meant adding to the heat I was still carrying; the pain grew with it. Farther down the street, another ratkin was burning. I started toward them, afraid of what the next touch would feel like. I still didn't know where my friends were, or why I had been brought here. But I could get the fire off these people. For the moment, that gave me something to do."
 ] },
   { id:"misses", title:"The Ones I Drop", art:"wraith", teaser:"Sometimes the movement in the smoke comes toward me.",
     when:()=>((META.flags&&META.flags.sawWraith)||META.saved>=30), hint:"let a rescue burn to a wraith",
