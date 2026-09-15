@@ -20,11 +20,12 @@ let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (nav
 function lungeDir(dx,dy){
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
   if(mode !== 'play' || player.charges <= 0 || player.dashCd > 0) return;   // dashes are rechargeable
+  if(player.ventUnit){ player.ventHeld=false; player.ventDash=[dx/m,dy/m]; return; }
   if(intro && intro.phase === 'walkin') return;          // no control during the scripted entrance
   player.hx = dx/m; player.hy = dy/m;
   player.lunge = K.LUNGE_T;
   player.charges--; player.dashCd = K.DASH_CD;   // spend a charge (+ a tiny gap so one swipe can't double-fire)
-  player.venting = false;                        // a DASH CANCELS a vent — always an escape, never stunlocked
+  setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
 }
 
 function onDown(x,y){
@@ -35,7 +36,7 @@ function onDown(x,y){
   if(mode === 'hub'){ hubClick(x,y); return; }      // tapping the town: buildings / shop / PLAY
   // Mobile only: the on-screen VENT button. (Desktop vents with SPACE, so no button — a click there dashes.)
   if(isTouch && mode === 'play'){ const vb = ventBtn();
-    if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; player.venting = true; return; } }
+    if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; setVentHeld(true); return; } }
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
 function onMove(x,y){
@@ -44,7 +45,7 @@ function onMove(x,y){
   if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; lungeDir(dx,dy); }   // swipe/drag = dash that way
 }
 function onUp(){
-  if(ptr.onVent){ ptr.onVent = false; player.venting = false; }
+  if(ptr.onVent){ ptr.onVent = false; setVentHeld(false); }
   else if(ptr.down && !ptr.swiped){                       // a click / tap (no drag) = DASH toward the point
     const dx = ptr.sx-player.x, dy = ptr.sy-player.y;
     if(Math.hypot(dx,dy) >= 12) lungeDir(dx,dy);
@@ -53,7 +54,8 @@ function onUp(){
 }
 // An interrupted gesture is not a completed tap: cancel without spending a dash.
 function cancelPointer(){
-  if(ptr.onVent) player.venting = false;
+  if(ptr.onVent) setVentHeld(false);
+  player.ventDash=null;
   ptr.down = false; ptr.swiped = false; ptr.onVent = false;
 }
 
@@ -92,13 +94,13 @@ window.addEventListener('keydown', e=>{
     }
   }
   // VENT on SPACE — hold to keep blasting fire off you. Only on a FRESH press: OS key-repeat must not
-  // re-arm the vent right after a dash cancels it (that was the desktop "stunlock").
-  if(k === ' ' && !e.repeat){ e.preventDefault(); player.venting = true; hinted = true; }
+  // re-arm chaining after a requested escape; a fresh press is required.
+  if(k === ' ' && !e.repeat){ e.preventDefault(); setVentHeld(true); hinted = true; }
 });
 window.addEventListener('keyup', e=>{
   const k = e.key.toLowerCase();
   if(KEYVEC[k]) keys[k] = false;
-  if(k === ' ') player.venting = false;
+  if(k === ' ') setVentHeld(false);
 });
 // dropping focus mid-key would otherwise leave you steering forever
-window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; cancelPointer(); player.venting = false; });
+window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; cancelPointer(); setVentHeld(false); player.ventDash=null; });

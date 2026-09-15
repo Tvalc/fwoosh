@@ -281,9 +281,10 @@ function drawVentButton(ctx){
   ctx.beginPath(); ctx.arc(b.x,b.y,R,0,7); ctx.stroke();
   // label under the disc
   ctx.globalAlpha = hot ? 1 : 0.5;
-  if(!drawText(ctx,'HEAL', b.x, b.y+R+30, 26)){
+  const label=player.heat>0?'VENT':'HEAL';
+  if(!drawText(ctx,label, b.x, b.y+R+30, 26)){
     ctx.fillStyle='#ffd9a0'; ctx.font='800 24px "Pixelify",system-ui,sans-serif';
-    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText('HEAL', b.x, b.y+R+34); ctx.fillText('HEAL', b.x, b.y+R+34); }
+    ctx.lineWidth=5; ctx.strokeStyle='rgba(9,7,18,0.9)'; ctx.strokeText(label, b.x, b.y+R+34); ctx.fillText(label, b.x, b.y+R+34); }
   if(!isTouch){ ctx.globalAlpha=(hot?0.7:0.4); ctx.fillStyle='#ffd9a0'; ctx.font='600 15px "Pixelify",system-ui,sans-serif'; ctx.fillText('[SPACE]', b.x, b.y+R+52); }
   ctx.restore();
 }
@@ -1275,7 +1276,22 @@ function render(){
     ctx.globalAlpha = 1;
   }
 
-  // ---- FIRE DEMONS: vent-bred (orange, temporary) and TOWN wraiths (ashen-violet, persistent, dash to kill)
+  // Gameplay warning boundaries use UI lines; the explosion reuses the existing Makko flame.
+  for(const d of demons){if(d.source!=='vent')continue;
+    ctx.save();ctx.strokeStyle='#ffad55';ctx.lineWidth=3;
+    if(d.tgt && !d.feast){ctx.setLineDash([7,9]);ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.tgt.x,d.tgt.y);ctx.stroke();ctx.setLineDash([]);}
+    if(d.feast){
+      ctx.strokeStyle='#ff6155';ctx.beginPath();ctx.arc(d.feast.x,d.feast.y,K.CINDER_BLAST_R,0,Math.PI*2);ctx.stroke();
+      ctx.lineWidth=6;ctx.beginPath();ctx.arc(d.feast.x,d.feast.y,28,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,d.eatT/K.CINDER_EAT_T));ctx.stroke();
+    }else if(d.warn>0){ctx.beginPath();ctx.arc(d.x,d.y,25,0,Math.PI*2);ctx.stroke();}
+    ctx.restore();
+  }
+  for(const b of cinderBlasts){
+    const f=b.t/b.life;
+    for(let j=0;j<6;j++){const a=j*Math.PI/3;drawFlame(ctx,b.x+Math.cos(a)*K.CINDER_BLAST_R*f,b.y+Math.sin(a)*K.CINDER_BLAST_R*f+30,85*(1-f)+35,frame*0.6+j,1-f);}
+  }
+
+  // ---- FIRE DEMONS: vent-bred (orange, persistent) and TOWN wraiths (ashen-violet, persistent, dash to kill)
   for(const d of demons){
     const town = d.source === 'town';
     wrapDraw(d.x, X=>{
@@ -1285,7 +1301,7 @@ function render(){
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,d.y,gr,0,7); ctx.fill();
       groundShadow(ctx, X, d.y+K.DEMON_R*1.2, K.DEMON_R*1.0, K.DEMON_R*0.34);
       const flip = (d.tgt ? d.tgt.x<d.x : player.x<d.x);
-      ctx.globalAlpha = (!player.venting && !town) ? Math.min(1, (d.ttl||0)/0.6) : (town?0.94:1);   // vent-demon collapse fade
+      ctx.globalAlpha = (!player.venting && !town && d.source!=='vent') ? Math.min(1, (d.ttl||0)/0.6) : (town?0.94:1);   // vent-demon collapse fade
       if(!drawAnim(ctx,'firedemon', X, d.y, K.DEMON_R*3.2, {fps:12, flip}) &&
          !drawSpr(ctx,'firedemon', X, d.y, K.DEMON_R*3.0, {flip})){
         ctx.fillStyle= town?'#b06a8a':'#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
@@ -1461,6 +1477,13 @@ function render(){
       }
     }
     drawRunMeters(ctx);
+    if(player.ventUnit){
+      const u=player.ventUnit,bw=300,bx=(VW-bw)/2,by=VH-225;
+      ctx.save();ctx.fillStyle='rgba(9,8,15,0.9)';ctx.fillRect(bx-14,by-39,bw+28,64);
+      ctx.textAlign='center';ctx.font='700 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#ffe0a2';
+      ctx.fillText((u.kind==='heat'?'VENT 1 HEAT':'HEAL 1 HEART')+(player.ventHeld?' · HOLD':' · FINISHING'),VW/2,by-12);
+      ctx.fillStyle='#45343a';ctx.fillRect(bx,by,bw,10);ctx.fillStyle='#ffb34f';ctx.fillRect(bx,by,bw*Math.min(1,u.t/u.duration),10);ctx.restore();
+    }
     // DASH charges (bottom-left) — Makko ember pips. Empty = dark socket; recharging one FILLS UP
     // bottom-to-top with a shimmer; a finished charge pops with a flourish ring.
     { const n=RUN_MAX_CHARGES, ps=32, gap=8, x0=26, yy=VH-56;

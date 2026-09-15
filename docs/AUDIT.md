@@ -57,3 +57,7 @@ The 47-file release ZIP was CRC-checked, compared byte-for-byte to source, extra
 ## HUD pass
 
 Build 2026-09-14-hud-1: all 41 existing gameplay/input checks pass. Browser fixture screenshots verify empty/full heat, rescue progress, Keith encounter, and live-action narration at 320px width; wider rendering was checked too. Functional gauges use canvas UI and existing Makko character assets. No runtime media, save schema or balance changes. Human/physical-phone playtesting remains separate.
+
+## Vent commitment / cinder explosion pass
+
+56 gameplay/input checks pass, including 15 added regressions and revised input expectations for committed units. Covered: release/dash boundaries, held chaining, no-op and partial units, upgraded hearts, focus cancellation, persistent enemies across duel transition, one spawn per unit, cinder targeting, consumption/explosion, dash/rekindle interruption, duplicate-target prevention, ignition above ordinary fire cap, and exactly-once lethal settlement. Phone-size browser fixtures verify unit progress, healing, eating warning and blast presentation. Local-only fixtures are excluded from publication. Existing save compatibility and five-district simulation checks pass. Full human balance runs remain required; initial tuning is documented in VENT_TUNING.md.

@@ -12,17 +12,19 @@ const K = {
   DASH_CD: 0.12,                    // min gap between dashes — dash is the steer, so it's ~free
   LUNGE_SPD: 640,
   LUNGE_T: 0.18,                    // 115px of travel
-  // VENT (hold-to-heal): purge heat, then refill hearts a half at a time; spawns fire demons while held
-  VENT_PURGE: 0.16,                 // sec per heat while purging (before any heal)
-  VENT_HEAL_T: 0.30,               // sec per HALF-heart of healing (a full heart in ~0.6s — venting is a real, quick heal now)
-  VENT_SUMMON: 0.60,                // grace before the first fire demon (a quick dump is free)
-  DEMON_INT0: 1.4,                  // demon spawn interval, tightens the longer you hold
-  DEMON_INT_STEP: 0.15, DEMON_INT_MIN: 0.5,
-  MAX_DEMONS: 6, DEMON_SPD: 135,    // slower than RUN(170) so a dash always escapes
-  DEMON_TGT_VILL: 0.6,              // 60% of demons hunt villagers, 40% hunt you
-  DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,  // only the nearest ~2 demons land hits -> 1-2 out = heal wins, full swarm loses
-  HURT_IFRAME: 0.5,                 // after ANY demon bite, brief invuln so a swarm can't burst you while you break free
-  DEMON_LIFE: 2.5, DEMON_R: 16,     // linger after you release, then collapse
+  // A vent commits to one heat or one full heart; holding chains units.
+  VENT_PURGE: 0.40,                 // starting tuning: seconds per heat unit (including a final fraction)
+  VENT_HEAL_T: 0.60,                // seconds per full heart, capped at full health
+  VENT_DEMON_WAKE: 0.45,            // visible emergence before a new demon can act
+  CINDER_SEEK_R: 320,              // prefer a nearby cinder person (husk), otherwise chase Duy
+  CINDER_EAT_T: 0.65,              // warning window: shatter demon or rekindle husk to interrupt
+  CINDER_BLAST_R: 120,
+  CINDER_BLAST_HEARTS: 1,
+  MAX_DEMONS: 6, DEMON_SPD: 135,    // legacy Keith cap; vent units always release their demon
+  DEMON_TGT_VILL: 0.6,
+  DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,
+  HURT_IFRAME: 0.5,
+  DEMON_LIFE: 2.5, DEMON_R: 16,     // expiry remains only for Keith's temporary summons
   CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
   VENT_ANIM_SC_F: 1.20,             // fire-man vent-anim: 280px cell (body at bottom, tall tapered flame up top) — keeps body size, flame reaches high without clipping
   VENT_ANIM_SC_C: 1.23,             // cinder-man vent-anim scale

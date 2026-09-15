@@ -115,7 +115,7 @@ window.__fwoosh = {
   arson(){ return arson.map(a=>({x:Math.round(a.x),y:Math.round(a.y),warn:+a.warn.toFixed(2),tgtId:a.tgt&&a.tgt.id})); },
   husks(){ return husks.map(h=>({x:Math.round(h.x),y:Math.round(h.y),t:+h.t.toFixed(2),heatAt:h.heatAt})); },
   makeHusk(){ const c=crowd()[0]; if(c){ c.hunter=true; c.fuse=hunterFuse; becomeHusk(c); } return { husks:husks.length }; },
-  vent(v){ player.venting = v===undefined?true:!!v; return { venting:player.venting, heat:player.heat, hp:+player.hp.toFixed(3), demons:demons.length }; },
+  vent(v){ setVentHeld(v===undefined?true:!!v); return { venting:player.venting, heat:player.heat, hp:+player.hp.toFixed(3), demons:demons.length }; },
   setHp(v){ player.hp = Math.max(0, Math.min(1, v)); return this.state(); },
   setHearts(n){ maxHearts = Math.max(1, Math.round(n)); return { maxHearts }; },
   setSaved(n){ saved = Math.max(0, Math.round(n)); saveIconPop = 0.6; return { saved }; },

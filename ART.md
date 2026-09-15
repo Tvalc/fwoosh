@@ -6,6 +6,10 @@ Tony's standing instruction, reaffirmed September 14, 2026: **all artwork for th
 
 Reviewed 2026-09-14. Replaces the procedural fire-passing spec preserved in `docs/archive/ART-prototype.md`. Main `d7945b4` embeds runtime art; Cursor refactor 435d0fb extracts it into media/ with metadata in js/media-meta.js. Cursor 2d9316c supersedes the cinder recut and ratkin prototype: the original Makko cinder sheet is restored and the non-Makko ratkin is removed.
 
+## Chroma background recovery
+
+Tony's September 14 instruction: if background stripping contaminates a sprite's colors, remake the sprite in Makko and request a flat solid red, green, or blue chroma background. Choose a background color absent from the character palette. Inspect the original and stripped result for correct skin/clothing colors and clean edges before integration; preserve source provenance. Do not accept a discolored sprite as finished. This arose from Cuong's Sunday morning sprite in Vovinam Ledger turning green; that replacement is assigned to the Ledger task.
+
 ## What the art communicates
 
 Rescue burning villagers by absorbing their fire. Heat raises rewards and chain reach but drains health. The player transforms person → fire-man → cinder-man. Vent purges heat then heals, releasing demons. Keith sends interceptable imps; failed rescues become husks and wraiths. Rescues contribute to Edge and allied help against Keith.

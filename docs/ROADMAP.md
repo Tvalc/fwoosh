@@ -2,11 +2,11 @@
 Reviewed September 14, 2026 against this conversation, current source, the older combat/meta roadmaps, art records, and GitHub issues.
 
 ## Implemented and deployed baseline
-Live build: 2026-09-14-story-1, main 0b3c1acc89ed6ceace6235fce14d3f7d40599c05.
+Latest verified baseline: 2026-09-14-hud-1, main 3c2be87a7085e6c8851653731619cfb49e1f20d1.
 The action arcade loop, heat mechanics, vent/heal, imps/demons, chain rescues, husks/wraiths, Edge, five district encounters/replay, ember banking, Well/Forge upgrades, Shrine, fifteen diary chapters, reliability fixes and revised live-action intro exist. The latest gameplay suite has 41 passing checks. These facts do not mean the systems below are implemented.
 
 ## Confirmed direction / remaining implementation
-1. HUD: implemented in candidate 2026-09-14-hud-1. Dedicated six-segment heat gauge, larger rescue tally/progress, distinct Edge/Keith meters; 41 checks pass and 320px visual checks cover empty/full heat, encounter and narration. Await deployment confirmation on coordination issue #1 before marking live. Physical-phone feedback remains open.
+1. HUD: implemented and deployed in 2026-09-14-hud-1. Dedicated six-segment heat gauge, larger rescue tally/progress, distinct Edge/Keith meters; 41 checks pass and 320px visual checks cover empty/full heat, encounter and narration. Deployment and live display were verified. Physical-phone feedback remains open.
 2. City editor: player-controlled building placement and layout, with multiple homes/production buildings and unique landmarks. Implement roads and the layout editing rules.
 3. Construction: ember-funded clearing/foundations, ratkin building over time, progress during arcade runs and while away, mandatory ember sealing before operation. Costs, times and offline limits remain to settle.
 4. City production: food supports workers, materials support construction, homes expand workforce. Implement initial supplies/population, production/consumption, storage and growth; quantities/rules remain to settle.
@@ -55,4 +55,4 @@ The action arcade loop, heat mechanics, vent/heal, imps/demons, chain rescues, h
 - Earlier flat demon caps, separate Resolve currency and old Forge unlock numbers have been superseded by working systems; they are not missing implementation tasks.
 
 ## Recommended next sequence
-Publish verified HUD -> first playable city placement/construction/transport loop -> offline economy and upgrades/sealing -> favor and standalone ending -> Invoice/System Shop/recruit integration. Makko assets and audio can progress alongside bounded implementation work. Older optional systems require scope decisions rather than automatic inclusion.
+Current priority: polish the existing core loop and ember economy through a ten-improvement interview. First approved package: vent commitment and cinder-eating demons (VENT_TUNING.md), candidate 2026-09-14-vent-1. Continue economy/reward/price interview after live feedback. City placement/construction/transport, offline economy, sealing, favor/ending and cross-game integration follow later. Makko assets and audio can progress alongside bounded implementation work. Older optional systems require scope decisions rather than automatic inclusion.

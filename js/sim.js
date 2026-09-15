@@ -31,7 +31,7 @@ let saveIconPop = 0; // brief scale-pop on the newest rescue-counter villager wh
 let dashPop = 0;     // flourish pop when a dash charge finishes recharging
 let edgePop = 0;     // brief pulse on the EDGE bar when it shifts
 let demons = [];     // fire demons summoned while venting (attack player + villagers)
-let ventSwarmT = 0, demonSpawnT = 0;   // vent-hold swarm memory (persists briefly across taps) + spawn timer
+let cinderBlasts = []; // short-lived presentation of resolved cinder explosions
 let husks = [];      // villagers you failed to save: temporary soft-solid coals that crack into roaming wraiths
 let arson = [];      // Keith's fire imps in flight toward villagers — intercept them
 let shots = [];      // Keith's ember-spit fireballs (duel)
@@ -79,14 +79,14 @@ function reset(seed){
   powerups = []; surgeT = 0; mergeT = 0;
   hitstop = 0; slowmo = 0; flash = 0;
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
-  demons = []; ventSwarmT = 0; demonSpawnT = 0;
+  demons = []; cinderBlasts = [];
   arson = []; arsonT = 0; intercepts = 0; edge = 0; arsonSeen = false;
   husks = []; huskSeen = false; edgePop = 0;
   shots = []; wake = []; pulses = []; allies = []; demonKillSeen = false; pendCall = null;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
-    venting: false, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
+    venting: false, ventHeld: false, ventUnit: null, ventDash: null, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
     heat: 0,                              // ABSORBER: fires currently carried (0..HEAT_MAX)
@@ -240,11 +240,10 @@ function step(){
   }
   if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
 
-  // ---- VENT (HOLD): purge your heat, then heal hearts a half at a time. Rooted + exposed while you hold,
-  // and fire demons pour out of you. The only real way to get hearts back — but it costs you the town.
-  if(p.venting) ventHold(); else { p.ventPurge = 0; p.ventHealAcc = 0; }
-  stepHusks(dt);                                         // failed villagers: rekindle / shove / crack into wraiths
-  stepDemons(dt);                                        // demons live/attack (and linger after you release)
+  // Complete committed units even after release; only a held button starts another.
+  ventHold(dt);
+  stepHusks(dt);
+  stepDemons(dt);
   if(mode !== 'play') return;                            // a demon (or purge) may have ended the run
   if(p.heat > 0){ p.trailT = (p.trailT||0) + dt;         // heat trail (ember wisps) while carrying
     while(p.trailT >= K.TRAIL_EVERY){ p.trailT -= K.TRAIL_EVERY; trail.push({x:p.x,y:p.y,t:0}); } }
@@ -551,7 +550,7 @@ function overloadHit(c){
 }
 
 function ignite(c, why){
-  if(hunters().length >= K.HUNTER_CAP){ becomeHusk(c); return; }   // cap simultaneous fires; extra collapses to a husk
+  if(why!=='cinder' && hunters().length >= K.HUNTER_CAP){ becomeHusk(c); return; }   // a cinder blast ignites; it never instantly consumes its victims
   c.hunter = true; c.fuse = hunterFuse; c.grace = K.GRACE; c.saving = false; c.spreadT = 0;
   ring(c.x,c.y,8,44,'#ff6a2e',0.30);
 }
@@ -597,37 +596,66 @@ function absorb(c){
 }
 const SAVE_LINES = ['SAVED!', 'GO! RUN!', 'GOT YOU!', 'CLEAR!'];
 
-// VENT (held): first PURGE your heat to 0 (no heal yet — the tax on hoarding), then HEAL hearts a half at a
-// time. You're rooted while you hold it, and stepDemons() breeds fire demons that hunt you and the town.
-function ventHold(){
-  const p = player;
-  p.ventFlash = 0.3;
-  if(p.heat > 0){ p.ventPurge = (p.ventPurge||0) + DT;
-    while(p.ventPurge >= K.VENT_PURGE && p.heat > 0){ p.ventPurge -= K.VENT_PURGE; p.heat = Math.max(0, p.heat-1); } }
-  else { p.ventHealAcc = (p.ventHealAcc||0) + DT;
-    while(p.ventHealAcc >= K.VENT_HEAL_T && p.hp < 1){ p.ventHealAcc -= K.VENT_HEAL_T;
-      p.hp = Math.min(1, p.hp + 0.5/maxHearts);                          // +HALF a heart
-      flash = DT*2;                                                       // a green heal 'ding' = upward motes, no ring
-      for(let i=0;i<5;i++){ const a=-Math.PI/2+(rnd()-0.5)*1.2; sparks.push({x:p.x,y:p.y,t:0,life:0.4+rnd()*0.2,out:true,vx:Math.cos(a)*70,vy:Math.sin(a)*70-30,hue:150}); }
-      callout = { text: HEAL_LINES[Math.floor(rnd()*HEAL_LINES.length)], t:0, life:0.5, good:true }; } }
+// A committed unit cannot be canceled by release or dash. Dash requests execute at its boundary.
+function beginVentUnit(){
+  const p=player;
+  if(p.ventUnit || !p.ventHeld || mode!=='play') return;
+  const kind=p.heat>0?'heat':p.hp<1-1e-9?'heal':null;
+  if(!kind){ p.venting=false; return; } // no empty/full-health farming or permanent rooting
+  p.ventUnit={kind,t:0,duration:kind==='heat'?K.VENT_PURGE:K.VENT_HEAL_T};
+  p.venting=true; p.lunge=0; p.spd=0;
 }
-const HEAL_LINES = ['+HEART', 'BREATHE', 'MENDING'];
+function setVentHeld(held){
+  player.ventHeld=held;
+  if(held) beginVentUnit();
+  else if(!player.ventUnit) player.venting=false;
+}
+function ventHold(dt=DT){
+  const p=player;
+  if(mode!=='play') return;
+  beginVentUnit();
+  const unit=p.ventUnit;
+  if(!unit){p.venting=false;return;}
+  p.venting=true; p.ventFlash=0.3; unit.t+=dt;
+  if(unit.t+1e-9<unit.duration) return;
+  if(unit.kind==='heat') p.heat=Math.max(0,p.heat-1);
+  else {
+    p.hp=Math.min(1,p.hp+1/maxHearts);
+    flash=DT*2;
+  }
+  spawnVentDemon();
+  p.ventUnit=null; p.venting=false;
+  if(p.ventDash){const v=p.ventDash;p.ventDash=null;lungeDir(v[0],v[1]);}
+  else beginVentUnit();
+}
+function spawnVentDemon(){
+  const p=player, a=Math.atan2(p.hy,p.hx)+Math.PI;
+  const d={x:p.x+Math.cos(a)*48,y:p.y+Math.sin(a)*48,t:0,hitCd:0,
+    source:'vent',warn:K.VENT_DEMON_WAKE,ph:rnd()*7,tgt:null,feast:null,eatT:0};
+  d.x=Math.max(K.EDGE,Math.min(VW-K.EDGE,d.x));d.y=Math.max(40,Math.min(VH-40,d.y));
+  collideObstacles(d,K.DEMON_R); demons.push(d);
+}
+function explodeCinder(h){
+  const idx=husks.indexOf(h); if(idx<0) return;
+  husks.splice(idx,1);
+  cinderBlasts.push({x:h.x,y:h.y,t:0,life:0.45});
+  // A blast ignites calm villagers; it does not instantly kill those already burning or rescued.
+  for(const c of cells){
+    if(!c.dead && !c.saving && !c.hunter && dist(c.x,c.y,h.x,h.y)<=K.CINDER_BLAST_R) ignite(c,'cinder');
+  }
+  callout={text:'CINDER EXPLOSION!',t:0,life:1.7,good:false};
+  const p=player;
+  if(!god && p.hurtCd<=0 && dist(p.x,p.y,h.x,h.y)<=K.CINDER_BLAST_R+p.r){
+    p.hp=Math.max(0,p.hp-K.CINDER_BLAST_HEARTS/maxHearts);p.hurtCd=K.HURT_IFRAME;flash=DT*2;
+    if(p.hp<=0) pop('caught in a cinder explosion');
+  }
+}
 
-// FIRE DEMONS — bred while you hold VENT; they hunt you (contact damage) and the town (re-ignite calm, wall
-// flaming). A dash outruns them; they linger a moment after you release, then collapse.
+// Vent demons persist and seek cinder people. Other enemy families retain their current behavior.
 function stepDemons(dt){
   const p = player;
-  ventSwarmT = p.venting ? Math.min(12, ventSwarmT + dt) : Math.max(0, ventSwarmT - dt*0.6);   // swarm memory (anti tap-spam)
-  // DEMON CAP = 2 per heart of CURRENT health. At 1 heart you face 2 (true at ANY maxHearts, since
-  // currentHearts = hp*maxHearts), so venting when desperate is always survivable; the swarm grows only
-  // as you recover, and scales up for tankier late-game builds that earn more hearts through the meta.
-  const demonCap = Math.max(2, Math.round(2 * p.hp * maxHearts));
-  if(p.venting && ventSwarmT >= K.VENT_SUMMON && demons.length < demonCap){
-    demonSpawnT += dt;
-    const interval = Math.max(K.DEMON_INT_MIN, K.DEMON_INT0 - K.DEMON_INT_STEP*Math.max(0, ventSwarmT-K.VENT_SUMMON));
-    if(demonSpawnT >= interval){ demonSpawnT = 0; const a=rnd()*Math.PI*2;
-      demons.push({ x:p.x, y:p.y, t:0, ttl:K.DEMON_LIFE, hitCd:0, huntVill: rnd()<K.DEMON_TGT_VILL, ph:rnd()*7, tgt:null }); }
-  } else demonSpawnT = 0;
+  for(const b of cinderBlasts)b.t+=dt;
+  cinderBlasts=cinderBlasts.filter(b=>b.t<b.life);
   if(!demons.length) return;
   // only the nearest ~2 demons to the player can land a hit (so 1-2 out = heal wins, a full swarm loses)
   const order = demons.map((d,i)=>({i,dd:dist(d.x,d.y,p.x,p.y)})).sort((a,b)=>a.dd-b.dd);
@@ -636,21 +664,43 @@ function stepDemons(dt){
     // DASH-KILL: dash through ANY fire monster to shatter it for heat + embers (your reward for clearing them).
     // You can't while venting (rooted) — so vent to heal, then dash the swarm down.
     if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){ killDemon(d); demons.splice(i,1); continue; }
-    // lifecycle: TOWN wraiths persist until killed/duel; VENT/KEITH demons linger then collapse when unsustained
-    if(d.source !== 'town' && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
+    // Only Keith summons expire; vent demons persist until killed or cinder consumption.
+    if(d.source !== 'town' && d.source !== 'vent' && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
         for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
         demons.splice(i,1); continue; } }
+    if(d.source==='vent'){
+      if(d.warn>0){d.warn=Math.max(0,d.warn-dt);continue;}
+      if(d.feast && !husks.includes(d.feast)){d.feast=null;d.eatT=0;}
+      if(d.feast){
+        d.tgt=d.feast;d.eatT+=dt;
+        if(d.eatT>=K.CINDER_EAT_T){const h=d.feast;demons.splice(i,1);explodeCinder(h);if(mode!=='play')return;}
+        continue;
+      }
+    }
     let tx=p.x, ty=p.y; d.tgt=null;
-    if(d.huntVill){ let best=null,bd=1e9; for(const c of cells){ if(c.saving||c.dead) continue; const dd=dist(c.x,c.y,d.x,d.y); if(dd<bd){bd=dd;best=c;} }
+    if(d.source==='vent'){
+      let best=null,bd=K.CINDER_SEEK_R;
+      for(const h of husks){
+        if(demons.some(other=>other!==d && other.feast===h))continue;
+        const dd=dist(d.x,d.y,h.x,h.y);if(dd<=bd){best=h;bd=dd;}
+      }
+      if(best){d.tgt=best;tx=best.x;ty=best.y;}
+    }
+    if(d.source!=='vent' && d.huntVill){ let best=null,bd=1e9; for(const c of cells){ if(c.saving||c.dead) continue; const dd=dist(c.x,c.y,d.x,d.y); if(dd<bd){bd=dd;best=c;} }
       if(best){ tx=best.x; ty=best.y; d.tgt=best; } }
     const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
     d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
     if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
     collideObstacles(d, K.DEMON_R);                                 // fire monsters can't phase through props
+    if(d.source==='vent' && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y)<=K.DEMON_R+K.HUSK_R){
+      d.feast=d.tgt;d.eatT=0;
+      callout={text:'DEMON EATING CINDER — DASH TO STOP IT!',t:0,life:1.4,good:false};
+      continue;
+    }
     if(canHit.has(i) && d.hitCd<=0 && p.hurtCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
       p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
       if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
-    if(d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
+    if(d.source!=='vent' && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
       if(d.tgt.hunter) becomeHusk(d.tgt);                              // flaming -> the fire finishes them into a husk
       else if(!d.tgt.saving && d.tgt.grace<=0) ignite(d.tgt,'demon');   // calm -> re-ignited
       d.tgt=null; }
@@ -733,7 +783,7 @@ function stepHusks(dt){
     { const dx = wrapDX(p.x-h.x), dy = p.y-h.y, d = Math.hypot(dx,dy), min = p.r + K.HUSK_R;
       if(d < min && d > 0.001 && p.lunge <= 0){ p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d); p.hx = dx/d; p.hy = dy/d; } }
     // CRACK -> rise as a persistent town-wraith (unless the roam is already full)
-    if(h.t >= K.HUSK_CRACK_T){
+    if(h.t >= K.HUSK_CRACK_T && !demons.some(d=>d.feast===h)){
       const town = demons.filter(d=>d.source==='town').length;
       if(town < K.WRAITH_CAP){
         demons.push({ x:h.x, y:h.y, t:0, ttl:1e9, hitCd:0, huntVill: rnd()<0.7, ph:rnd()*7, tgt:null,
