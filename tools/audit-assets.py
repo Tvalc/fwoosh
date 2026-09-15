@@ -23,7 +23,8 @@ for p in (root / 'css').glob('*.css'):
     refs += [(p.parent, s.strip('"\'')) for s in re.findall(r'url\(([^)]+)\)', p.read_text(encoding='utf-8-sig'))]
 for p in (root / 'js').glob('*.js'):
     refs += [(root, s) for s in re.findall(r'["\'](\./media/[^"\']+)["\']', p.read_text(encoding='utf-8-sig'))]
-local = sorted({str((base / ref).resolve()) for base, ref in refs if not re.match(r'^(https?:|data:|#|//)', ref)})
+local = sorted({str((base / ref.split('?', 1)[0].split('#', 1)[0]).resolve())
+                for base, ref in refs if not re.match(r'^(https?:|data:|#|//)', ref)})
 missing = [str(Path(p).relative_to(root)) for p in local if not Path(p).is_file()]
 check('All referenced local resources exist', not missing, {'references':len(local), 'missing':missing})
 

@@ -1,5 +1,11 @@
 # Fwoosh status — September 15, 2026
 
+## Cinder threat readability — 2026-09-15-cinder-read-1
+
+The cinder-eating sequence still drew a red blast-radius circle and a circular countdown after the earlier demon-windup ring was removed. Those remaining circles are gone. A straight dashed tether now identifies the threatened cinder person, a compact bar shows the interruption window and the existing Makko flame intensifies on the target. The resolved explosion continues to use the existing Makko flame burst. Timing, damage, affected radius, interruption rules and saves are unchanged.
+
+Tony also established Khet-Tak-Tor's connection to Duy: the gate collapse briefly kills the Ratkin jailer alongside Duy; Ratkin revive Khet-Tak-Tor but cannot revive Duy. During that shared near-death interval, the Ratkin god, Adonai and Odin bind Ratkin and humanity through the two of them. Their covenant can endure only if both peoples overcome the violence of their introduction. This canon record does not yet replace Keith's runtime name or art.
+
 ## Adaptive grudge beacon — 2026-09-15-beacon-1
 
 Tony reported that the separate magenta well/beacon sprite in the run was inert until collision. It is the opponent's grudge beacon, not the stone well baked into the arena background. Its recording and attack were still connected to the retired pass/fuse loop. Direct rescues now teach its territory model and preserve heat-at-rescue observations in the compatible opponent save. From the next sufficiently observed run, the beacon appears in the busiest rescue area and fires one telegraphed attack when Duy begins venting.

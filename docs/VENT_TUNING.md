@@ -26,7 +26,7 @@ Tony approved implementation after the core-loop interview. City expansion is de
 
 A final fractional heat amount or missing fraction of a heart takes one normal unit, caps at zero heat/full health and still releases one demon. At no heat and full health, holding does not lock Duy or generate demons. Losing input focus stops chaining and clears queued dashes; the current unit still completes. New runs clear all transient threats. Vent demons survive the transition to Keith; existing town-wraith and Keith-summon behavior remains separate.
 
-Functional warning circles/progress bars explain the mechanics. Actor and blast images reuse existing Makko sprites/flames. No new art source is introduced. Save schema and existing progress are preserved.
+Straight threat tethers and compact progress bars explain demon targets and interruption timing without drawn charge, countdown or blast-radius circles. Actor and blast images reuse existing Makko sprites/flames. No new art source is introduced. Save schema and existing progress are preserved.
 
 ## Next interview topics
 
