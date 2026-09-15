@@ -8,7 +8,7 @@ Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, pers
 
 ## Active now
 
-1. [#39 Rename Keith and reframe him as the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **Cursor name/Makko art; Codex canon, systems and release**. Direction approved; final name and exact judgment mandate are pending.
+1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **Cursor Makko art; Codex canon, systems and release**. Name locked; exact judgment mandate and full migration are pending.
 2. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Cursor Makko art; Codex integration**. Beacon gameplay is live; replace the shared Well/Shrine menu image with two distinct Makko sprites.
 3. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Arbiter pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
 4. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, Arbiter replacement, cinder vent correction and diary art. Every visual asset must come from Makko.
@@ -31,7 +31,7 @@ Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, pers
 - Ratkin build while the player runs and while away. Roads, distance and congestion affect physical transport.
 - Management works automatically by default; players can optimize it if they want.
 - Sealing and upgrade milestones can unlock permanent cosmetic variants. Cosmetic rarity never gates favor or release and grants no randomized Fwoosh power.
-- The character currently called Keith becomes a newly named Ratkin Arbiter. He remains Duy's jailer, administers punishment and judgment, and receives new Makko art. Beating him never grants release by itself.
+- The character currently called Keith becomes **Khet-Tak-Tor** (KET-tak-TOR), the Ratkin Arbiter—“the voice that closes the debt.” He remains Duy's jailer, administers punishment and judgment, and receives new Makko art. Beating him never grants release by itself.
 - Duy earns release by rebuilding Ratkin society and winning Ratkin favor. Ratkin society supplies the authority; rescuing nineteen people or clearing five districts is insufficient by itself.
 - Fwoosh must have a comprehensible standalone ending and later support Duy's return in the larger RPG.
 - All artwork is Makko artwork with preserved provenance.
@@ -42,7 +42,7 @@ Build `2026-09-15-beacon-1` is live. The arcade loop, committed vent units, pers
 - Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
 - Complete-restoration criteria, favor actions and release thresholds.
-- The Arbiter's final public name, the source and limits of his authority, and why he maintains or uses the recurring fire.
+- The source and limits of Khet-Tak-Tor's authority and why he maintains or uses the recurring fire.
 - Which ember total funds the Invoice; conversion, caps, reward thresholds and spending interaction.
 - Duy System Shop inventory; Ratkin recruit identity, abilities and miss condition.
 - The Duy-survives route and the exact reconciliation of Cuong's nineteen-life balance plus Duy's transferred five.
