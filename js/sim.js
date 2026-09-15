@@ -126,7 +126,7 @@ function nearSlag(x,y,r){ for(const s of slag){ if(dist(x,y,s.x,s.y) < r + K.R_S
 // circle prop: {x,y,r}; box prop: {x,y,w,h} with x,y = top-left. (window.OBS_DEBUG draws them for tuning.)
 const OBSTACLES = [
   { x:0,   y:26,   w:193, h:182, label:'crates-TL' },    // two-crate stack, top-left — both boxes, wider right; stops above the floor gap
-  { x:10,  y:296,  w:120, h:182, label:'barrels-L' },    // barrel cluster, upper-left (below the gap)
+  { x:10,  y:293,  w:120, h:185, label:'barrels-L' },    // barrel cluster: top raised 3px; bottom stays at 478
   { x:480, y:285,  w:220, h:222, label:'wagon-R' },      // broken wagon, right — covers the raised end + left planks/shovel
   { x:600, y:512,  w:100, h:95,  label:'crates-R' },     // pot/sack below the wagon (3px taller at top)
   { x:133, y:1117, r:90,  label:'well-BL' },             // the well, bottom-left — big enough to cover the whole stone rim
