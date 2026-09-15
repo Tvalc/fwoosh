@@ -1295,7 +1295,28 @@ function drawTitle(ctx){
   ctx.fillText('TAP TO START', VW/2, VH*0.90);
 }
 
+function drawDebugMenu(ctx){
+  ctx.fillStyle='#09080f';ctx.fillRect(0,0,VW,VH);
+  panel(ctx,36,240,VW-72,734,16,'#151626','#69627b');
+  ctx.textAlign='center';ctx.fillStyle='#ffcf80';ctx.font='700 38px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText(debugMenu.confirm?'RESET ALL PROGRESS?':'DEBUG MENU',VW/2,318);
+  ctx.font='500 26px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle='#e2ddeb';
+  const message=debugMenu.confirm
+    ? 'Embers, upgrades, districts, diary and dialogue history will be cleared in this browser. The current run will be discarded. A fresh first run starts immediately.'
+    : 'Game paused. Reset progress to test the opening dialogue and first-run experience again.';
+  wrapText(ctx,message,VW/2,394,VW-160,36);
+  if(debugMenu.error){ctx.fillStyle='#ff9c91';ctx.font='500 24px "Chakra Petch",system-ui,sans-serif';wrapText(ctx,debugMenu.error,VW/2,572,VW-160,30);}
+  debugButtons().forEach((b,i)=>{
+    panel(ctx,b.x,b.y,b.w,b.h,10,i===debugMenu.selected?'#333248':'#202032',b.act==='reset'?'#dd806d':'#8998b8');
+    ctx.fillStyle=b.act==='reset'?'#ffc1ad':'#e7edff';ctx.font='700 25px "Chakra Petch",system-ui,sans-serif';
+    ctx.fillText(b.label,b.x+b.w/2,b.y+b.h/2+8);
+  });
+  ctx.fillStyle='#b6adc5';ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText('` closes · Esc goes back · ↑ ↓ select · Enter chooses',VW/2,930);
+}
+
 function render(){
+  if(debugMenu.open){drawDebugMenu(ctx);return;}
   if(onTitle){ drawTitle(ctx); return; }
   if(mode === 'hub'){ drawHub(ctx); return; }
   const p = player;

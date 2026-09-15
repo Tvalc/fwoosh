@@ -17,7 +17,55 @@ function heldVec(){
 let hinted = false;
 let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (navigator.maxTouchPoints||0) > 0);
 
+// Backtick opens a paused debug screen. Reset is a separate, explicit confirmation.
+const debugMenu={open:false,confirm:false,selected:0,error:''};
+function toggleDebugMenu(){
+  cancelPointer();for(const k in keys)keys[k]=false;setVentHeld(false);
+  debugMenu.open=!debugMenu.open;debugMenu.confirm=false;debugMenu.selected=0;debugMenu.error='';
+  if(debugMenu.open)CG.stop();else if(mode==='play'&&!onTitle)CG.start();
+}
+function debugButtons(){return [
+  {x:64,y:650,w:VW-128,h:94,label:debugMenu.confirm?'CANCEL':'RESUME',act:'cancel'},
+  {x:64,y:778,w:VW-128,h:104,label:debugMenu.confirm?'CONFIRM RESET AND RESTART':'RESET PROGRESS AND RESTART',act:'reset'}
+];}
+function debugAction(action){
+  if(!debugMenu.open)return;
+  if(action==='cancel'){
+    if(debugMenu.confirm){debugMenu.confirm=false;debugMenu.selected=0;debugMenu.error='';}
+    else toggleDebugMenu();
+    return;
+  }
+  if(action!=='reset')return;
+  if(!debugMenu.confirm){debugMenu.confirm=true;debugMenu.selected=0;debugMenu.error='';return;}
+  resetDebugProgress();
+}
+function debugMenuClick(x,y){
+  for(const b of debugButtons())if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h){debugAction(b.act);return;}
+}
+function resetDebugProgress(){
+  if(!debugMenu.open||!debugMenu.confirm)return false;
+  const snapshots=[];
+  try{
+    // Never clear the origin: other games can share tvalc.github.io storage.
+    for(const key of ['fwoosh.meta','fwoosh.opp'])snapshots.push([key,localStorage.getItem(key)]);
+    for(const [key] of snapshots)localStorage.removeItem(key);
+    for(const [key] of snapshots)if(localStorage.getItem(key)!==null)throw Error('Save was not removed');
+  }catch(e){
+    let restored=true;
+    for(const [key,value] of snapshots){try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}catch(restoreError){restored=false;}}
+    debugMenu.error=restored?'Reset failed. Your progress is unchanged.': 'Reset failed. Saved progress may be partially cleared.';
+    return false;
+  }
+  cancelPointer();for(const k in keys)keys[k]=false;
+  META=loadMeta();opp=loadOpp();selDistrict=1;god=false;ghost=false;
+  hubSheet=null;hubBtns=[];hubScroll=0;hubToast=0;hubToastMsg='';wellJustRose=false;
+  diaryOpen=null;diaryPage=0;dialogueHistoryPage=0;hinted=false;onTitle=false;
+  debugMenu.open=false;debugMenu.confirm=false;debugMenu.selected=0;debugMenu.error='';
+  reset();saveMeta();return true;
+}
+
 function lungeDir(dx,dy){
+  if(debugMenu.open)return;
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
   if(mode !== 'play' || player.charges <= 0 || player.dashCd > 0) return;   // dashes are rechargeable
   if(player.ventUnit){ player.ventHeld=false; player.ventDash=[dx/m,dy/m]; return; }
@@ -46,6 +94,7 @@ function resultClick(x,y){
 }
 
 function onDown(x,y){
+  if(debugMenu.open){debugMenuClick(x,y);return;}
   if(onTitle){ onTitle = false; hinted = false; reset(); return; }   // start from the title screen
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
@@ -58,11 +107,13 @@ function onDown(x,y){
   ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
 }
 function onMove(x,y){
+  if(debugMenu.open)return;
   if(!ptr.down || ptr.swiped) return;
   const dx = x-ptr.sx, dy = y-ptr.sy;
   if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; lungeDir(dx,dy); }   // swipe/drag = dash that way
 }
 function onUp(){
+  if(debugMenu.open)return;
   if(ptr.onVent){ ptr.onVent = false; setVentHeld(false); }
   else if(ptr.down && !ptr.swiped){                       // a click / tap (no drag) = DASH toward the point
     const target=screenToWorld(ptr.sx,ptr.sy);
@@ -91,6 +142,14 @@ window.addEventListener('pointercancel', cancelPointer);
 // desktop: WASD/arrows steer, SHIFT dashes, SPACE braces
 window.addEventListener('keydown', e=>{
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
+  if(k==='`'||e.code==='Backquote'){e.preventDefault();if(!e.repeat)toggleDebugMenu();return;}
+  if(debugMenu.open){
+    e.preventDefault();if(e.repeat)return;
+    if(k==='escape')debugAction('cancel');
+    else if(k==='arrowdown'||k==='arrowup')debugMenu.selected=1-debugMenu.selected;
+    else if(k==='enter')debugAction(debugButtons()[debugMenu.selected].act);
+    return;
+  }
   if(k === 'k'){ e.preventDefault();                       // cycle art skins (dev/preview)
     const names = Object.keys(SKINS); setSkin(names[(names.indexOf(SKIN_NAME)+1)%names.length]); return; }
   if(onTitle){ if(KEYVEC[k]||k===' '||k==='enter'){ e.preventDefault(); onTitle=false; hinted=false; reset(); } return; }

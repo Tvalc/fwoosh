@@ -168,6 +168,7 @@ function hexRGB(h){ if(typeof h!=='string' || h[0]!=='#') return '255,210,150';
 
 // ---------------------------------------------------------------- step
 function step(){
+  if(debugMenu.open)return;
   frame++;
   if(onTitle) return;                                // title screen: only animate (frame++), no sim
   if(hitstop > 0){ hitstop -= DT; return; }          // hitstop freezes the sim

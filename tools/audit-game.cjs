@@ -723,6 +723,39 @@ test('World art shares a uniform transform and screen feedback stays in the HUD'
  assert.ok(g.run("ops.some(o=>o[0]==='scale'&&o[1]===worldView().s&&o[2]===worldView().s)"));
 });
 
+test('Backtick pauses every game screen and ignores key repeat',()=>{
+ for(const state of ['onTitle=true','onTitle=false;mode="play"','onTitle=false;mode="hub"','onTitle=false;mode="over"']){
+  const g=game();g.run(state);g.dispatch('keydown',{key:'`',code:'Backquote'});
+  assert.equal(g.run('debugMenu.open'),true);g.dispatch('keydown',{key:'`',code:'Backquote',repeat:true});assert.equal(g.run('debugMenu.open'),true);
+  const before=g.run('JSON.stringify({player,intro,mode,onTitle})');g.run('for(let i=0;i<120;i++)step()');assert.equal(g.run('JSON.stringify({player,intro,mode,onTitle})'),before);
+  g.dispatch('keydown',{key:'Escape'});assert.equal(g.run('debugMenu.open'),false);
+ }
+});
+test('Debug menu cancels held input and blocks gameplay actions',()=>{
+ const g=game();g.run('onTitle=false;intro=null;keys.w=true;player.ventHeld=true;player.ventDash=[1,0];ptr.down=true');
+ g.dispatch('keydown',{key:'`'});g.dispatch('keydown',{key:'w'});g.dispatch('keydown',{key:'Shift'});g.dispatch('keydown',{key:' '});g.run('lungeDir(1,0);onMove(400,500);onUp()');
+ assert.equal(g.run('heldVec()'),null);assert.equal(g.run('player.ventHeld'),false);assert.equal(g.run('player.ventDash'),null);assert.equal(g.run('ptr.down'),false);assert.equal(g.run('player.charges'),3);
+});
+test('Debug reset requires confirmation and cancel preserves saves',()=>{
+ const g=game();g.run('META.embers=777;saveMeta()');const before=JSON.stringify([...g.storage]);
+ g.dispatch('keydown',{key:'`'});g.run('onDown(300,820);onUp()');assert.equal(g.run('debugMenu.confirm'),true);assert.equal(g.run('META.embers'),777);
+ g.dispatch('keydown',{key:'Enter',repeat:true});assert.equal(g.run('META.embers'),777);
+ g.dispatch('keydown',{key:'Escape'});assert.equal(g.run('debugMenu.confirm'),false);g.dispatch('keydown',{key:'Escape'});assert.equal(g.run('debugMenu.open'),false);assert.equal(JSON.stringify([...g.storage]),before);
+});
+test('Confirmed debug reset starts first dialogue with clean persistent progress',()=>{
+ const g=game({'another-game.save':'keep','fwoosh.skin':'makko'});
+ g.run('META.embers=999;META.district=5;META.buildings.well.hearts=3;META.diary.read=[1,2];META.dialogue={seen:{test:true},history:[{id:"test"}]};saveMeta();opp.introVer=INTRO_VERSION;opp.runs=30;saveOpp();selDistrict=5;god=true;ghost=true;dialogueHistoryPage=4;toggleDebugMenu();debugAction("reset");debugAction("reset")');
+ assert.equal(g.run('debugMenu.open'),false);assert.equal(g.run('onTitle'),false);assert.equal(g.run('mode'),'play');assert.equal(g.run('runDistrict'),1);assert.equal(g.run('META.embers'),0);assert.equal(g.run('maxHearts'),5);assert.equal(g.run('player.charges'),3);
+ assert.equal(g.run('META.diary.read.length'),0);assert.equal(g.run('META.dialogue?.history?.length||0'),0);assert.equal(g.run('opp.runs'),0);assert.equal(g.run('intro.i'),0);assert.equal(g.run('intro.lineT'),0);assert.equal(g.run('dialogueHistoryPage'),0);assert.equal(g.run('god||ghost'),false);
+ assert.equal(g.storage.get('another-game.save'),'keep');assert.equal(g.storage.get('fwoosh.skin'),'makko');
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.embers'),0);assert.equal(reload.run('META.district'),1);assert.equal(reload.run('META.buildings.well.hearts'),0);
+});
+test('Storage failure rolls reset back and keeps a visible paused error',()=>{
+ const g=game();g.run('META.embers=123;saveMeta();saveOpp()');const before=JSON.stringify([...g.storage]);
+ g.run('const originalRemove=localStorage.removeItem;localStorage.removeItem=k=>{if(k==="fwoosh.opp")throw Error("blocked");originalRemove(k)};toggleDebugMenu();debugAction("reset");debugAction("reset");render()');
+ assert.equal(g.run('debugMenu.open&&debugMenu.confirm'),true);assert.equal(g.run('META.embers'),123);assert.equal(JSON.stringify([...g.storage].sort()),JSON.stringify(JSON.parse(before).sort()));assert.ok(g.drawnText.some(t=>t.includes('Reset failed.')));
+});
+
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
   pass:results.filter(r=>r.status==='pass').length, fail:results.filter(r=>r.status==='fail').length, results};
