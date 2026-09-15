@@ -1,3 +1,5 @@
+> Superseded: this design caused a map-access regression. See [FULL_MAP_VIEWPORT.md](FULL_MAP_VIEWPORT.md) for the correction. Retained below as historical context.
+
 # Reserved top HUD — 2026-09-15-hud-safe-1
 
 Tony reported that the player can run under the top interface. The old HUD faded over ground that remained playable down to y=40.

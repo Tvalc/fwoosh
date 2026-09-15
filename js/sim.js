@@ -107,7 +107,7 @@ function spawnCrowd(initial){
   let x, y, tries = 0;
   do{
     x = 40 + rnd()*(VW-80);
-    y = ARENA.TOP + rnd()*(ARENA.BOTTOM-ARENA.TOP-50);
+    y = 90 + rnd()*(VH-180);
     tries++;
   } while(tries < 30 && (dist(x,y,player.x,player.y) < (initial?170:260) || nearSlag(x,y,K.R_CELL+6) || nearObstacle(x,y,K.R_CELL+8)));
   cells.push({
@@ -146,7 +146,7 @@ function collideObstacles(e, er){
       if(d < er){
         if(d > 0.001){ e.x = cx+dx/d*er; e.y = cy+dy/d*er; e._nx = dx/d; e._ny = dy/d; }
         else {                                           // center inside: eject along the shallowest axis
-          const l = e.x-o.x, rgt = o.x+o.w-e.x, t = o.y-er<ARENA.TOP ? Infinity : e.y-o.y, b = o.y+o.h-e.y, m = Math.min(l,rgt,t,b);
+          const l = e.x-o.x, rgt = o.x+o.w-e.x, t = e.y-o.y, b = o.y+o.h-e.y, m = Math.min(l,rgt,t,b);
           if(m===l){ e.x = o.x-er; e._nx=-1; e._ny=0; } else if(m===rgt){ e.x = o.x+o.w+er; e._nx=1; e._ny=0; }
           else if(m===t){ e.y = o.y-er; e._nx=0; e._ny=-1; } else { e.y = o.y+o.h+er; e._nx=0; e._ny=1; }
         }
@@ -155,20 +155,6 @@ function collideObstacles(e, er){
     }
   }
   return hit;
-}
-function keepBelowHud(e){
-  if(e.y>=ARENA.TOP) return;
-  e.y=ARENA.TOP;
-  // Resolve an edge-straddling prop after clamping a collision push or old saved target.
-  collideObstacles(e,e===player?K.R_PLAYER:e.r||K.R_CELL);
-  e.y=Math.max(ARENA.TOP,e.y);
-  if(e.hy<0)e.hy=-e.hy;
-  if(e.vy<0)e.vy=-e.vy;
-}
-function constrainArena(){
-  keepBelowHud(player);
-  for(const list of [cells,demons,arson,husks,slag,powerups,allies]) for(const e of list) keepBelowHud(e);
-  if(boss)keepBelowHud(boss);
 }
 function nearObstacle(x,y,r){ const e={x,y}; return collideObstacles(e, r); }   // (mutates a throwaway; ok for spawn tests)
 function hunters(){ return cells.filter(c=>c.hunter); }                 // flaming villagers
@@ -251,7 +237,7 @@ function step(){
   p.y += p.hy*p.spd*dt;
   if(p.x < K.EDGE){ p.x = K.EDGE; p.hx = Math.abs(p.hx); }        // bounce off the LEFT/RIGHT walls too
   if(p.x > VW-K.EDGE){ p.x = VW-K.EDGE; p.hx = -Math.abs(p.hx); }
-  if(p.y < ARENA.TOP){ p.y = ARENA.TOP; p.hy = Math.abs(p.hy); }
+  if(p.y < 40){ p.y = 40; p.hy = Math.abs(p.hy); }
   if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
   if(collideObstacles(p, p.r)){                                   // props are solid like the borders
     if(p._nx!=null){ p.hx = p._nx; p.hy = p._ny; }               // deflect the auto-run heading off the prop
@@ -300,7 +286,6 @@ function step(){
     }
   }
 
-  keepBelowHud(p);
   // ---- player position history (hunter reaction lag)
   hist.push({x:p.x,y:p.y});
   const histMax = Math.ceil(K.HUNTER_LAG/DT)+2;
@@ -343,7 +328,7 @@ function step(){
     c.x += c.vx*dt; c.y += c.vy*dt;
     if(c.x < K.EDGE){ c.x = K.EDGE; c.vx = Math.abs(c.vx); c.dir = Math.PI - c.dir; }
     if(c.x > VW-K.EDGE){ c.x = VW-K.EDGE; c.vx = -Math.abs(c.vx); c.dir = Math.PI - c.dir; }
-    if(c.y < ARENA.TOP){ c.y = ARENA.TOP; c.vy = Math.abs(c.vy); c.dir = -c.dir; }
+    if(c.y < 40){ c.y = 40; c.vy = Math.abs(c.vy); c.dir = -c.dir; }
     if(c.y > VH-40){ c.y = VH-40; c.vy = -Math.abs(c.vy); c.dir = -c.dir; }
     // slag is solid for cells too
     for(const s of slag){
@@ -406,7 +391,7 @@ function step(){
       }
       b.x += b.vx*dt; b.y += b.vy*dt;
       if(b.x < K.EDGE){ b.x = K.EDGE; b.vx = Math.abs(b.vx); } if(b.x > VW-K.EDGE){ b.x = VW-K.EDGE; b.vx = -Math.abs(b.vx); }
-      if(b.y < ARENA.TOP) b.y = ARENA.TOP; if(b.y > VH-40) b.y = VH-40;
+      if(b.y < 40) b.y = 40; if(b.y > VH-40) b.y = VH-40;
       // slag is solid for bosses too — cornering Keith against your walls IS the fight
       for(const s of slag){
         const dx = wrapDX(b.x-s.x), dy = b.y-s.y, d = Math.hypot(dx,dy), min = b.r + K.R_SLAG;
@@ -508,7 +493,6 @@ function step(){
   if(callout){ callout.t += dt; if(callout.t >= callout.life) callout = null; }
   if(pendCall){ pendCall.t -= dt; if(pendCall.t <= 0){ callout = { text:pendCall.text, t:0, life:1.8, good:pendCall.good }; pendCall = null; } }
 
-  constrainArena(); // Last: collision/knockback must not push an actor back under the HUD.
   // ---- rings
   for(const r of rings) r.t += dt;
   rings = rings.filter(r=>r.t < r.life);
@@ -650,7 +634,7 @@ function spawnVentDemon(){
   const p=player, a=Math.atan2(p.hy,p.hx)+Math.PI;
   const d={x:p.x+Math.cos(a)*48,y:p.y+Math.sin(a)*48,t:0,hitCd:0,
     source:'vent',warn:K.VENT_DEMON_WAKE,ph:rnd()*7,tgt:null,feast:null,eatT:0};
-  d.x=Math.max(K.EDGE,Math.min(VW-K.EDGE,d.x));d.y=Math.max(ARENA.TOP,Math.min(ARENA.BOTTOM,d.y));
+  d.x=Math.max(K.EDGE,Math.min(VW-K.EDGE,d.x));d.y=Math.max(40,Math.min(VH-40,d.y));
   collideObstacles(d,K.DEMON_R); demons.push(d);
 }
 function explodeCinder(h){
@@ -708,7 +692,7 @@ function stepDemons(dt){
       if(best){ tx=best.x; ty=best.y; d.tgt=best; } }
     const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
     d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
-    if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<ARENA.TOP)d.y=ARENA.TOP; if(d.y>VH-40)d.y=VH-40;
+    if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
     collideObstacles(d, K.DEMON_R);                                 // fire monsters can't phase through props
     if(d.source==='vent' && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y)<=K.DEMON_R+K.HUSK_R){
       d.feast=d.tgt;d.eatT=0;
@@ -733,7 +717,7 @@ function spawnArson(){
   if(!calm.length) return;
   const c = calm[Math.floor(rnd()*calm.length)];
   // enter from the edge nearest the mark, so it reads as arriving from outside
-  const cand = [ {x:K.EDGE, y:c.y}, {x:VW-K.EDGE, y:c.y}, {x:c.x, y:ARENA.TOP}, {x:c.x, y:VH-40} ];
+  const cand = [ {x:K.EDGE, y:c.y}, {x:VW-K.EDGE, y:c.y}, {x:c.x, y:40}, {x:c.x, y:VH-40} ];
   const e = cand.reduce((b,p)=> dist(p.x,p.y,c.x,c.y) < dist(b.x,b.y,c.x,c.y) ? p : b);
   arson.push({ x:e.x, y:e.y, tgt:c, t:0, warn:K.ARSON_WARN, ph:rnd()*7 });
   if(!arsonSeen){ arsonSeen = true; callout = { text:'KEITH SENDS A FIRE IMP — CUT IT OFF', t:0, life:1.9, good:false }; }
@@ -948,7 +932,7 @@ function lastLag(){ return (typeof hist!=='undefined' && hist.length) ? hist[0] 
 function stepDuelFX(dt){
   const p = player;
   for(let i=shots.length-1;i>=0;i--){ const s=shots[i]; s.t+=dt; s.x+=s.vx*dt; s.y+=s.vy*dt;
-    if(s.x<-20||s.x>VW+20||s.y<ARENA.HUD_BOTTOM||s.y>VH+20||s.t>4){ shots.splice(i,1); continue; }
+    if(s.x<-20||s.x>VW+20||s.y<-20||s.y>VH+20||s.t>4){ shots.splice(i,1); continue; }
     if(collideObstacles(s, K.SPIT_R)){ shots.splice(i,1); continue; }
     if(dist(s.x,s.y,p.x,p.y) < K.SPIT_R+p.r){ keithHitPlayer(s.x,s.y); shots.splice(i,1); continue; }
   }
@@ -990,7 +974,7 @@ function startDuel(){
   if(boss && boss.kind === 'riser'){ slag.push({x:boss.x, y:boss.y}); }   // riser sits back down
   duelActive = true; snipeUsed = true; snipe = null;
   if(!META.flags) META.flags={}; if(!META.flags.reachedDuel){ META.flags.reachedDuel=true; saveMeta(); }   // opens a diary page
-  const gx = opp.grudge ? opp.grudge.x : VW/2, gy = Math.max(ARENA.TOP, opp.grudge ? opp.grudge.y : VH*0.3);
+  const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
   slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
   arson = []; husks = [];                            // imps stand down + coals go cold for the duel
   demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (they become Keith's reinforcements below)

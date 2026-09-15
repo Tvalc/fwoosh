@@ -257,8 +257,8 @@ test('Touch release finishes exactly one unit without spending a dash', () => {
 
 test('Touch swipe uses one charge; its release does not add a second dash', () => {
   const g=game();g.run('onTitle=false; intro=null; introT=0');
-  g.dispatch('pointerdown',{pointerType:'touch',clientX:100,clientY:600});
-  g.dispatch('pointermove',{pointerType:'touch',clientX:250,clientY:600});g.dispatch('pointerup');
+  g.dispatch('pointerdown',{pointerType:'touch',clientX:200,clientY:600});
+  g.dispatch('pointermove',{pointerType:'touch',clientX:350,clientY:600});g.dispatch('pointerup');
   assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.down'),false);
 });
 test('Every upgrade track caps correctly and reload applies the completed build', () => {
@@ -680,33 +680,47 @@ test('Present dialogue contains no past-life reveals and all templates use named
 });
 
 
-test('Running and repeated upward dashes never enter the reserved HUD area',()=>{
- const g=game();g.run("onTitle=false;reset();intro=null;god=true;ghost=true;cells=[];player.x=360;player.y=ARENA.TOP+5;keys.w=true;for(let i=0;i<480;i++){if(i%120===0)lungeDir(0,-1);step();if(player.y<ARENA.TOP)throw Error('Player entered HUD');}");
- assert.ok(g.run('player.y>=ARENA.TOP'));
+test('Original upper route is reachable by running and upward dash',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;god=true;ghost=true;cells=[];player.x=360;player.y=430;keys.w=true;for(let i=0;i<480;i++){if(i%120===0)lungeDir(0,-1);step();}");
+ assert.equal(g.run('player.y'),40);
 });
-test('Husk and wall pushes at the top are constrained after collision resolution',()=>{
- const g=game();g.run("onTitle=false;reset();intro=null;god=true;ghost=true;cells=[];player.x=360;player.y=ARENA.TOP;player.heat=0;husks=[{x:360,y:ARENA.TOP+8,t:0,ph:0}];slag=[{x:370,y:ARENA.TOP+10}];for(let i=0;i<20;i++){step();if(player.y<ARENA.TOP)throw Error('Push entered HUD');}");
- assert.ok(g.run('player.y>=ARENA.TOP'));
+test('Spawns and remembered opponent cells cover the original top and bottom',()=>{
+ const g=game();g.run('onTitle=false;reset();intro=null;for(let i=0;i<100;i++)spawnCrowd(false)');
+ assert.ok(g.run('cells.some(c=>c.y<270)&&cells.some(c=>c.y>1000)'));
+ assert.ok(g.run('cellCenter(0).y<100 && cellCenter(47).y>1100'));
+ g.run('opp.grudge={x:360,y:80};startDuel()');assert.equal(g.run('boss.y'),80);
 });
-test('Spawned villagers, vent demons and old grudge targets stay in reachable ground',()=>{
- const g=game();g.run("onTitle=false;reset();intro=null;for(let i=0;i<80;i++)spawnCrowd(false);player.y=ARENA.TOP;player.hy=1;spawnVentDemon();");
- assert.ok(g.run('cells.every(c=>c.y>=ARENA.TOP)'));assert.ok(g.run('demons.every(d=>d.y>=ARENA.TOP)'));
- assert.ok(g.run('Array.from({length:48},(_,i)=>cellCenter(i)).every(c=>c.y>=ARENA.TOP)'));
- g.run('opp.grudge={x:360,y:80};startDuel()');assert.ok(g.run('boss.y>=ARENA.TOP'));
+test('Full map corners fit between docks and inverse mapping preserves coordinates',()=>{
+ const g=game();
+ for(const [x,y] of [[0,0],[720,0],[0,1280],[720,1280],[360,40],[360,1240]]){
+  const q=g.run(`worldToScreen(${x},${y})`),back=g.run(`screenToWorld(${q.x},${q.y})`);
+  assert.ok(q.x>=0&&q.x<=720&&q.y>=128&&q.y<=1100);
+  assert.ok(Math.abs(back.x-x)<1e-9&&Math.abs(back.y-y)<1e-9);
+ }
 });
-test('HUD taps and swipes cannot consume a dash; playfield gestures still work',()=>{
- const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;onDown(300,80);onMove(400,80);onUp()');assert.equal(g.run('player.charges'),3);
+test('HUD, dialogue dock and gutters cannot consume a dash',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true');
+ for(const [x,y] of [[300,80],[300,1160],[20,600]])g.run(`onDown(${x},${y});onMove(${x+100},${y});onUp()`);
+ assert.equal(g.run('player.charges'),3);
  g.run('onDown(300,600);onMove(400,600);onUp()');assert.equal(g.run('player.charges'),2);
 });
-test('Tallest current vent sprite fits below the HUD even during absorb and vent pops',()=>{
- const g=game();const reach=g.run('K.R_PLAYER*5*(1+0.3*1.25+0.3*1.4)*Math.max(K.VENT_ANIM_SC_F,K.VENT_ANIM_SC_C)*(K.VENT_ANIM_ANCH+0.5)+5');
- assert.ok(g.run('ARENA.TOP-ARENA.HUD_BOTTOM')>=reach);
+test('Tap directions track rendered world targets at phone and desktop sizes',()=>{
+ for(const width of [320,375,430,1280])for(const [x,y] of [[100,40],[620,40],[100,1240],[620,1240]]){
+  const g=game();g.run(`innerWidth=${width};innerHeight=900;fit();onTitle=false;intro=null;introT=0;player.x=360;player.y=640`);
+  const q=g.run(`(()=>{const p=worldToScreen(${x},${y});return {clientX:p.x*scale,clientY:p.y*scale};})()`);
+  g.dispatch('pointerdown',q);g.dispatch('pointerup');
+  assert.equal(g.run('player.charges'),2);
+  const m=Math.hypot(x-360,y-640);assert.ok(Math.abs(g.run('player.hx')-(x-360)/m)<1e-9);assert.ok(Math.abs(g.run('player.hy')-(y-640)/m)<1e-9);
+ }
 });
-test('World drawing is clipped separately and status occupies the reserved header',()=>{
- const g=game();g.run("const hudRects=[],hudTexts=[];const priorFill=ctx.fillText;ctx.rect=(...a)=>hudRects.push(a);ctx.fillText=(t,x,y)=>{hudTexts.push({t,x,y});priorFill(t,x,y);};onTitle=false;intro=null;introT=0;rescueReward={count:2,embers:8,t:1};render()");
+test('Resizing cancels incomplete gestures without an accidental dash',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;onDown(300,600);innerWidth=375;fit();onUp()');assert.equal(g.run('player.charges'),3);
+});
+test('World art shares a uniform transform and screen feedback stays in the HUD',()=>{
+ const g=game();g.run("const ops=[];ctx.translate=(...a)=>ops.push(['translate',...a]);ctx.scale=(...a)=>ops.push(['scale',...a]);SK.bg=()=>ops.push(['background']);onTitle=false;intro=null;introT=0;rescueReward={count:2,embers:8,t:1};render()");
  assert.ok(g.drawnText.includes('2 RESCUED · +8 EMBERS'));
- assert.ok(g.run('hudRects.some(r=>r[0]===0 && r[1]===ARENA.HUD_BOTTOM && r[2]===VW && r[3]===VH-ARENA.HUD_BOTTOM)'));
- assert.ok(g.run("hudTexts.find(r=>r.t==='2 RESCUED · +8 EMBERS').y<ARENA.HUD_BOTTOM"));
+ assert.ok(g.run("ops.findIndex(o=>o[0]==='scale')<ops.findIndex(o=>o[0]==='background')"));
+ assert.ok(g.run("ops.some(o=>o[0]==='scale'&&o[1]===worldView().s&&o[2]===worldView().s)"));
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
