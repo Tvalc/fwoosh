@@ -60,6 +60,7 @@ function foldOpp(){
 function setupOpp(){
   runBuf = []; snipe = null; snipeUsed = false; oppScarred = false; gotSniped = false;
   snipeFuse = null; callout = null; introT = 0; loreT = 0; overloadCd = 0; intro = null;
+  resetPresentDialogue();
   // TERRITORY: hottest cell -> grudge wall
   let best = 0, bi = -1;
   for(let i=0;i<opp.terr.length;i++){ if(opp.terr[i] > best){ best = opp.terr[i]; bi = i; } }
@@ -78,7 +79,7 @@ function setupOpp(){
     if(!onTitle){ opp.introVer = INTRO_VERSION; opp.seenIntro = true; saveOpp(); }
   }
   // otherwise, on a return run, the Keith cold-open reacts to how you played
-  else if(opp.runs >= 1 && (opp.grudge || snipeFuse != null)){ introT = K.INTRO_T; introKind = 'keith'; }
+  // Returning players keep control; later exchanges run over the active street.
 }
 // the player reaches the middle and the fire is forced on them: become lit, hand over control,
 // and roll into the talking phase where the dialogue rides live gameplay.
@@ -102,7 +103,7 @@ function fireSnipe(){
   const tx = p.x + p.hx*p.spd*K.OPP_SNIPE_TELE;              // lead your drift
   const ty = Math.max(40, Math.min(VH-40, p.y + p.hy*p.spd*K.OPP_SNIPE_TELE));
   snipe = { ox:gx, oy:gy, tx:((tx%VW)+VW)%VW, ty, t:0, done:false, lt:0 };
-  callout = { text: lineFor('fired'), t:0, life:1.6, good:false };
+  speakKeith(lineFor('fired'));
 }
 
 let opp = loadOpp();

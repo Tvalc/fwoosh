@@ -105,6 +105,7 @@ function openNextUpgrade(){const goal=upgradeGoal();if(goal && goal.act)hubAct(g
 
 // land in the town after a run; raise any building whose saves-milestone you just crossed
 function enterHub(){
+  presentDialogue=null;
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
   selDistrict = Math.min(5, Math.max(1, META.district||1));   // default the picker to your deepest unlocked
   if(districtCleared){ hubToast=3.4; hubToastMsg=DISTRICTS[Math.min(4,(META.district||1)-1)]+' UNLOCKED'; districtCleared=false; }

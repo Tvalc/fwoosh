@@ -1,0 +1,37 @@
+# Dialogue and diary delivery
+
+Tony's direction, September 15: present events belong in Final Fantasy-style bottom-screen text boxes with simple Makko talking/emotional portraits. Past revelations belong mostly in the optional diary. Duy arrives in an ongoing emergency; the world does not wait for him to understand.
+
+## Current runtime
+
+- A single brief arrival line, with movement, dash and vent available immediately.
+- Rescue, carried heat and completed vent units trigger short exchanges about something the player has witnessed. An event expires after six seconds rather than joining a queue of stale explanations.
+- At most two story exchanges per run. Each has two short lines, auto-typed with a reading hold. Sixteen seconds of silence follow an exchange. One optional Keith combat reaction per run shares the same box and cannot interrupt an exchange.
+- Death/return, Keith's role, ratkin judgment and the rebuild obligation unfold on separate later runs. Return explanations have a short opening window; the ratkin/freedom exchange requires at least four completed runs, rebuilding six plus sixteen lifetime rescues. These are initial pacing values for playtesting.
+- The street continues during all dialogue. No dismiss button shares the vent input. On touch devices the box sits above the vent target and dash indicators. Ordinary tactical HUD labels remain near gameplay; they are not character speech.
+- Diary → Conversations repeats only lines already delivered. Speech history and completed exchanges survive reloads without altering purchases, read flags or chapter unlocks. Interrupted exchanges can be encountered again; no lore backlog follows death.
+- Fifteen optional diary chapters retain their identities, unlock rules and art assignments. Fourteen chapters were rewritten for orientation and cause/effect; the approved painful-heat/ascending-ratkin scene is preserved. Mei's motive is revealed at her confession, not at the stabbing. No new explanation for Duy's separate five-life debt is invented.
+
+## Makko portrait handoff — Cursor art lane
+
+Status: **requested; dedicated clips are not yet generated or integrated in this build.** Runtime currently displays static crops of the existing verified Makko hero/Keith sprites. The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
+
+Use the established Keith and Duy references, not Cuong's Sunday-morning sprite. FWOOSH collection: https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277. Preserve raw sources and record actual Makko asset links and export settings. Tony must review the new faces before expanding the cast.
+
+| Atlas key | Performance |
+|---|---|
+| dialogue_duy_pain | Teeth clenched, brow tight, strained speech; accumulating heat hurts internally. |
+| dialogue_duy_startled | Startled recognition and a short question; not comic panic. |
+| dialogue_duy_questioning | Alert, searching expression; speaks while catching his breath. |
+| dialogue_duy_concerned | Concern for the ratkin; tired but attentive. |
+| dialogue_keith_stern | Economical, impatient speech; no comforting smile. |
+| dialogue_keith_dry | Small, dry reaction; restrained mouth and eyebrow movement. |
+| dialogue_keith_strained | Brief flinch, then regains control and speaks. |
+
+Prompt template: “Use this exact Fwoosh character reference and preserve the face, hair, clothes and established pixel-art style. Square head-and-shoulders dialogue portrait, three-quarter view facing into the text. [Performance from table.] Very simple looping speech: closed mouth, two small open-mouth shapes, a blink and restrained eyebrows. Locked camera, fixed scale and silhouette, no walking, no zoom, no text or interface. Solid flat [red/green/blue absent from the character palette] chroma background, uniformly lit, no colored spill.”
+
+Save through Makko's normal background-removal/export flow. If removal contaminates the character, remake against a different primary-color chroma background; do not accept a green-tinted face. Inspect the actual saved transparent export, not just the generation preview.
+
+Runtime contract: a horizontal PNG atlas in `media/anim/`, square cells at least 128×128; frame 0 is the closed-mouth listening pose, frames 1..N the speech loop at 8fps. Add the exact key to `MAKKO_ANIM_SRC` in `js/media.js` and `{frames,fw,fh}` to `MAKKO_ANIM` in `js/media-meta.js`. The renderer chooses the key from the line's speaker/emotion, loops speaking frames during typing, and rests at frame 0 while the player reads. Keep facial proportions fixed between cells. Add sources to ART.md. Validate all seven keys, alpha edges, clipped hair, phone readability and listening/talking transitions before integration.
+
+No other art generator, stock portrait, procedural mouth drawing or recolored substitute is authorized. Codex owns prose, pacing, renderer, history and release; Cursor keeps Makko portrait production. Merge scoped media/metadata changes rather than replacing the new runtime with an older copy.

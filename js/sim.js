@@ -186,6 +186,7 @@ function step(){
         const full = line.text.length * INTRO.CHAR;
         const hold = INTRO.HOLD + line.text.length*0.012;
         if(intro.lineT >= full + hold){
+          rememberDialogue(line);presentGap=1.5;
           intro.i++; intro.lineT = 0;
           if(intro.i >= STORY.intro.length) intro = null;   // done -> pure gameplay
         }
@@ -193,6 +194,7 @@ function step(){
     }
   }
 
+  tickPresentDialogue(DT);
   const scale = slowmo > 0 ? K.SLOWMO_SCALE : 1;
   const dt = DT * scale;
   if(slowmo > 0) slowmo -= DT;
@@ -404,7 +406,7 @@ function step(){
         p.heat = 0; heatCoolT = 0; overloadT = 0;
         score += 150; hitstop = K.HITSTOP; flash = DT*2;
         b.move = null; b.moveTele = 0;                       // a solid dump interrupts whatever he was winding up
-        callout = { text: STORY.duel.tag[(dumped) % STORY.duel.tag.length], t:0, life:1.3, good:true };
+        speakKeith(STORY.duel.tag[(dumped) % STORY.duel.tag.length],'strained');
         b.state = 'stagger'; b.t = 0.5; b.moveCd = Math.max(b.moveCd, 1.2);   // he reels
         if(dumped >= (b.dumpNeeded||K.DUEL_DUMP)){ winDuel(); }
       }
@@ -480,25 +482,16 @@ function step(){
         p.lit = false; p.fuse = 0; p.passeeId = 0; p.passT = 0;   // SNUFFED: put out early, no pass credit
         gotSniped = true;
         ring(p.x, p.y, 10, 80, '#ff3d7a', 0.6);
-        callout = { text: lineFor('sniped'), t:0, life:1.4, good:false }; flash = DT*2; hitstop = K.HITSTOP;
+        speakKeith(lineFor('sniped')); flash = DT*2; hitstop = K.HITSTOP;
       } else {
         oppScarred = true;                                        // read broken, scar the grudge wall
         ring(snipe.tx, snipe.ty, K.OPP_SNIPE_R, 6, '#7fe8ff', 0.4);
-        callout = { text: lineFor('broken'), t:0, life:1.4, good:true };
+        speakKeith(lineFor('broken'),'strained');
       }
     }
   } else if(snipe && snipe.done){ snipe.lt += dt; if(snipe.lt > 0.5) snipe = null; }
   if(callout){ callout.t += dt; if(callout.t >= callout.life) callout = null; }
   if(pendCall){ pendCall.t -= dt; if(pendCall.t <= 0){ callout = { text:pendCall.text, t:0, life:1.8, good:pendCall.good }; pendCall = null; } }
-
-  // ---- Keith drip-feeds THE REASON, one line at a time, when the field is momentarily quiet
-  if(mode==='play' && introT<=0 && !duelActive && opp.loreIdx < STORY.lore.length){
-    loreT += dt;
-    if(loreT >= 8.5 && !callout){
-      callout = { text: STORY.lore[opp.loreIdx], t:0, life:3.6, lore:true, good:null };
-      opp.loreIdx++; saveOpp(); loreT = 0;
-    }
-  }
 
   // ---- rings
   for(const r of rings) r.t += dt;
@@ -559,8 +552,8 @@ function ignite(c, why){
   ring(c.x,c.y,8,44,'#ff6a2e',0.30);
 }
 
-// ABSORB: pull the fire off a flaming villager. They flash free and sprint away (saved); you take
-// their heat. Holding at max heat cooks you (handled in step). This is the core verb now.
+// ABSORB: pull the fire off a flaming villager. They ascend into light (saved); you take
+// their heat. The ratkin ascend; holding heat burns Duy (handled in step).
 // Save ONE villager (the teleport-to-light rescue). chained=true = swept up by a hot chain (no extra heat gain).
 function showRescueReward(embers){
   if(rescueReward && rescueReward.t>0.8){rescueReward.embers+=embers;rescueReward.count++;rescueReward.t=1.15;}
@@ -573,6 +566,7 @@ function saveCell(c, chained){
   c.hunter = false; c.fuse = 0; c.grace = K.GRACE;
   c.saving = true; c.saveT = 0; c.dir = 0; c.svx = 0; c.svy = 0;   // freeze in place — the anim lifts them into the light
   saved++;
+  if(!chained) notePresentEvent('rescue');
   const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're carrying, the bigger the save
   score += Math.round(K.SAVE_SCORE * blaze);
   if(blaze > META.bestBlaze) META.bestBlaze = blaze;
@@ -601,7 +595,7 @@ function absorb(c){
   callout = chained>0 ? { text:(chained+1)+' SAVED!', t:0, life:1.0, good:true }
                       : { text: SAVE_LINES[Math.floor(rnd()*SAVE_LINES.length)], t:0, life:0.9, good:true };
 }
-const SAVE_LINES = ['SAVED!', 'GO! RUN!', 'GOT YOU!', 'CLEAR!'];
+const SAVE_LINES = ['SAVED!', 'FIRE LIFTED!', 'RESCUED!', 'CLEAR!'];
 
 // A committed unit cannot be canceled by release or dash. Dash requests execute at its boundary.
 function beginVentUnit(){
@@ -631,6 +625,7 @@ function ventHold(dt=DT){
     flash=DT*2;
   }
   spawnVentDemon();
+  notePresentEvent('vent');
   p.ventUnit=null; p.venting=false;
   if(p.ventDash){const v=p.ventDash;p.ventDash=null;lungeDir(v[0],v[1]);}
   else beginVentUnit();
@@ -806,7 +801,8 @@ function rekindleHusk(h){
   p.heat = Math.max(0, p.heat - K.REKINDLE_COST);      // spend YOUR fire (inverse of absorb's +1)
   cells.push({ id: nextId++, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
                hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
-  saved++; META.saved++;
+  saved++;
+  META.saved++;
   edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
   const em = Math.round(K.EMBER_BASE*0.5); runEmbers += em;showRescueReward(em);
   score += Math.round(K.SAVE_SCORE*0.5);
@@ -1005,7 +1001,7 @@ function startDuel(){
   let riseTxt = 'KEITH LV.' + level + (level>1 ? ' — NEW TRICKS' : '');
   if(headStart > 0) riseTxt += ' · you start ' + dumped + ' ahead';
   else if(deficit > 0) riseTxt += ' · the ash fuels him';
-  else riseTxt = taunt;
+  else speakKeith(taunt,'stern');
   callout = { text: riseTxt, t:0, life:2.3, good: headStart > 0 };
   if(allyN > 0) setDelayedCallout(allyN + ' SAVED VILLAGERS STAND WITH YOU', 1.6, true);
   flash = DT*2;

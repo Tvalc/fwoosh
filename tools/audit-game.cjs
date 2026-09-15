@@ -631,6 +631,54 @@ test('Assumed event profiles exercise real rewards and expose initial price cade
 });
 
 
+
+test('Present rescue exchange follows a witnessed rescue without pausing control',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;notePresentEvent('rescue');tickPresentDialogue(DT)");
+ assert.equal(g.run('presentDialogue.id'),'rescue');
+ const y=g.run('player.y');g.dispatch('keydown',{key:'w'});g.run('step()');assert.notEqual(g.run('player.y'),y);
+ g.dispatch('keydown',{key:'Shift'});assert.equal(g.run('player.charges'),2);
+});
+test('Unwitnessed and stale events do not create a dialogue backlog',()=>{
+ const g=game();g.run('onTitle=false;reset();intro=null;elapsed=20;tickPresentDialogue(DT)');assert.equal(g.run('presentDialogue'),null);
+ g.run("notePresentEvent('rescue');elapsed+=7;tickPresentDialogue(DT)");assert.equal(g.run('presentDialogue'),null);
+});
+test('Two-line exchanges save delivered text, leave silence, and survive reload',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;startPresentDialogue('rescue');tickPresentDialogue(10);tickPresentDialogue(10)");
+ assert.equal(g.run('presentDialogue'),null);assert.equal(g.run('presentGap'),16);assert.equal(g.run('dialogueSave().history.length'),2);
+ g.run("player.heat=3;tickPresentDialogue(1)");assert.equal(g.run('presentDialogue'),null);
+ const reloaded=game(Object.fromEntries(g.storage));assert.equal(reloaded.run("presentSeen('rescue')"),true);assert.equal(reloaded.run('dialogueSave().history.length'),2);
+});
+test('Interrupted speech does not mark the whole exchange as completed',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;startPresentDialogue('rescue');tickPresentDialogue(0.1);pop('test');reset();intro=null");
+ assert.equal(g.run("presentSeen('rescue')"),false);assert.equal(g.run('presentDialogue'),null);assert.equal(g.run('dialogueSave().history.length'),0);
+});
+test('Heat observation needs rescue knowledge and follows current heat',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;elapsed=20;player.heat=3;tickPresentDialogue(DT)");assert.equal(g.run('presentDialogue'),null);
+ g.run("dialogueSave().seen.push('rescue');tickPresentDialogue(DT)");assert.equal(g.run('presentDialogue.id'),'heat');
+});
+test('Run dialogue budget suppresses extra exchanges and combat cannot interrupt',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;elapsed=20;startPresentDialogue('rescue');speakKeith('No interruption')");
+ assert.equal(g.run('presentDialogue.id'),'rescue');g.run("presentDialogue=null;presentCount=2;notePresentEvent('rescue');tickPresentDialogue(DT)");assert.equal(g.run('presentDialogue'),null);
+});
+test('Return after death is not delivered after a win and never freezes the street',()=>{
+ const g=game();g.run("onTitle=false;reset();intro=null;opp.introVer=INTRO_VERSION;opp.runs=1;opp.terr[0]=10;META.recentRuns=[{won:true}];reset();elapsed=5;tickPresentDialogue(DT)");
+ assert.equal(g.run('introT'),0);assert.equal(g.run('presentDialogue'),null);
+ g.run('META.recentRuns=[{won:false}];tickPresentDialogue(DT)');assert.equal(g.run('presentDialogue.id'),'return');
+});
+test('Conversation archive excludes unrevealed text and tolerates old malformed saves',()=>{
+ const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:17,dialogue:{seen:null,history:[null,3,{who:'UNKNOWN',text:'bad'}]}})});
+ g.run("enterHub();hubAct('conversations');drawConversationSheet(ctx)");
+ assert.equal(g.run('dialogueSave().history.length'),0);assert.equal(g.run('META.embers'),17);
+ assert.ok(!g.drawnText.includes(g.run('PRESENT.release[1].text')));
+ g.run("rememberDialogue(PRESENT.rescue[0]);drawConversationSheet(ctx)");assert.ok(g.drawnText.includes(g.run('PRESENT.rescue[0].text')));
+});
+test('Present dialogue contains no past-life reveals and all templates use named speakers',()=>{
+ const g=game();const lines=g.run('Object.values(PRESENT).flat()');
+ assert.ok(lines.every(l=>['DUY','KEITH'].includes(l.who)&&l.emotion&&l.text.length<100));
+ assert.ok(lines.every(l=>!(/Mei|Cuong|Diep|nineteen|brother|Adonai|Odin|gunman|gate/i.test(l.text))));
+ assert.equal(g.run('STORY.lore.length'),0);
+});
+
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
   pass:results.filter(r=>r.status==='pass').length, fail:results.filter(r=>r.status==='fail').length, results};
