@@ -80,7 +80,6 @@ const K = {
   VENT_IGNITE_R: 82,                // vent blasts fire OUTWARD — calm villagers this close get RE-IGNITED
   // META: the villagers you SAVE are the root of everything. Saves mint EMBERS (currency) + raise the town.
   EMBER_BASE: 3,                    // embers per save, before the blaze multiplier
-  EMBER_RUN_CAP: 160,               // soft cap: saves past this still count for the town, but mint 0 embers
   WIN_EMBERS: 25,                   // KEITH YIELDS bounty
   WELL_RISE: 6,                     // cumulative lifetime saves to raise The Well from rubble
   FORGE_RISE: 16,                   // cumulative lifetime saves to raise The Forge (dash upgrades)

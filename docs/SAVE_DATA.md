@@ -33,3 +33,7 @@ The revised live-action intro uses existing `fwoosh.opp.introVer`. Title loading
 ## First-upgrade offer
 
 Build 2026-09-14-economy-1 retains v1 and normalizes missing/null flags. Existing flags gain starterChecked (one settlement eligibility check), starterReady (offer issued), starterBonus (one-time amount granted), and starterChosen (hearts or charges when bought). Unupgraded saves get one catch-up offer on their next completed run; already-upgraded saves receive no grant. Earned embers bank before the wallet top-up; the wallet and grant marker save together. Purchases consume normal tier 1, so later shop tiers and old upgrades retain their meaning. See ECONOMY_TUNING.md. Lifetime collection/Invoice accounting remains undefined and unimplemented.
+
+## Uncapped earnings
+
+2026-09-14-economy-2 removes reward truncation at 160, with no new save fields or schema changes. The existing run-settlement guard banks all earned rewards once; win bounties still add normally and starter funding remains separate. Existing balances and upgrade tiers are retained. Historical foregone rewards are not recoverable from the stored save and are not estimated.

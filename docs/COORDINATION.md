@@ -37,3 +37,7 @@ Tony authorized the immediate combined release and deployment after each major c
 ## Current scoped work
 
 Vent-risk PR #12 is deployed (2026-09-14-vent-1). Tony next approved zero ember payouts from vent-created demons and a first-run permanent choice between survivability and mobility. Codex implements/tests/publishes 2026-09-14-economy-1 from codex/first-upgrade-economy in its isolated checkout. Scope: meta.js, opp.js, sim.js, draw.js, build/script versioning, tests and records. Cursor continues the Fwoosh Makko art/animation lane. Existing core gameplay and ember economy take priority over city expansion. Reconcile shared-file changes by diff with any later Cursor delivery. ECONOMY_TUNING.md records behavior and initial prices; issue #1 records deployment verification.
+
+## Uncapped ember scope
+
+Tony confirmed removing the reward cap. Codex implements/tests/publishes economy-2 on codex/uncapped-embers, touching constants.js, sim.js, build/script versions, regression checks and records in its isolated checkout. Cursor continues Makko art. Preserve all prior starter purchases and existing saves. Later economy targets are approved (2–3 ordinary runs, skilled approximately twice as fast), but rates/prices/effects require tuning; do not claim those targets have already been measured or delivered.

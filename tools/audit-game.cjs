@@ -507,6 +507,33 @@ test('Vent kills award zero embers while preserving heat and Edge; other sources
   g.run('killDemon({x:300,y:400})');assert.equal(g.run('runEmbers'),6);
 });
 
+test('Every ordinary reward source pays its full amount across and beyond the former 160 cap', () => {
+  for(const start of [159,160,500]){
+    const g=game();g.run(`onTitle=false;intro=null;runEmbers=${start};player.heat=2;saveCell(cells[0],true)`);
+    assert.equal(g.run('runEmbers'),start+6,'High-heat rescue must pay all six embers');
+    g.run('player.lunge=0;interceptArson({x:300,y:400});player.lunge=.1;interceptArson({x:300,y:400})');
+    assert.equal(g.run('runEmbers'),start+16,'Walking and dashing interceptions must pay four and six');
+    g.run('player.heat=1;rekindleHusk({x:300,y:400})');assert.equal(g.run('runEmbers'),start+18);
+    for(const source of ['town','keith'])g.run(`killDemon({source:${JSON.stringify(source)},x:300,y:400})`);
+    g.run('killDemon({x:300,y:400});killDemon({source:"vent",x:300,y:400})');
+    assert.equal(g.run('runEmbers'),start+24,'Three other demons pay two each; vent pays zero');
+  }
+});
+test('Uncapped loss earnings bank once, render honestly, persist and leave old upgrades intact', () => {
+  const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:37,saved:16,district:3,buildings:{well:{built:true,hearts:1}}})});
+  g.run('onTitle=false;intro=null;player.heat=6;for(let i=0;i<20;i++){spawnCrowd(true);saveCell(cells[cells.length-1],true)}');
+  assert.equal(g.run('runEmbers'),240);g.run('pop("long run");pop("duplicate");foldOpp();render()');
+  assert.equal(g.run('META.embers'),277);assert.equal(g.run('runStarterBonus'),0);
+  assert.ok(g.drawnText.includes('+240 embers earned'));
+  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.embers'),277);
+  assert.equal(reload.run('maxHearts'),6);assert.equal(reload.run('META.saved'),36);assert.equal(reload.run('META.district'),3);
+});
+test('A district clear adds its bounty to uncapped rewards exactly once', () => {
+  const g=game();g.run('selDistrict=3;reset();runEmbers=500;startDuel();winDuel();winDuel();foldOpp()');
+  assert.equal(g.run('runEmbers'),575);assert.equal(g.run('META.embers'),575);assert.equal(g.run('runStarterBonus'),0);
+  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.embers'),575);
+});
+
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
   pass:results.filter(r=>r.status==='pass').length, fail:results.filter(r=>r.status==='fail').length, results};

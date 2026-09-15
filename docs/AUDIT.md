@@ -65,3 +65,7 @@ Build 2026-09-14-hud-1: all 41 existing gameplay/input checks pass. Browser fixt
 ## First-upgrade economy pass
 
 67 gameplay/input checks pass (reports/economy-state.json), including 11 economy regressions: first-loss affordability before building unlocks, shortfall-only funding, no bonus for sufficient earnings, no duplicate grants across settlement/reload, both ordinary-tier starter purchases, invalid/unaffordable requests, old upgraded/unupgraded saves, deferral/reopening and source-specific enemy rewards. Browser checks at 320px verified the loss earnings/bonus lines, heart and dash purchases, deferral, and reopening. Existing Makko UI icons are reused. Script URLs are release-versioned after a browser check exposed a mix of cached and updated modules. The 45-file ZIP is byte-checked against source. Human pacing and physical-phone playtesting remain open.
+
+## Uncapped ember rewards
+
+70 gameplay/input checks pass (reports/uncapped-embers-state.json). Three added scenarios exercise all four ordinary reward paths below/across/above the old 160 boundary; vent-source exclusion; earned 240-ember loss rendering, exactly-once banking and upgraded-save reload; and uncapped district-clear bounty. Existing tests cover starter purchases and grants, progression, old saves and vent behavior. Source/package bytes are checked. No rendering/layout/art change is included. Full human pacing verification remains open; 2–3 ordinary runs and about twice-as-fast skilled progression are targets, not measured outcomes.
