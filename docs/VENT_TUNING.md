@@ -33,3 +33,7 @@ Functional warning circles/progress bars explain the mechanics. Actor and blast 
 Ember earning, reward incentives, upgrade effects, prices and purchase pacing remain to tune. Existing monster-kill rewards are unchanged in this release, including rewards for vent-created demons; possible farming incentives need a deliberate economy decision. Passive recovery and its upgrade also remain unchanged. Assess persistent-swarm performance and difficulty through full human runs before adding more systems.
 
 Publish each verified major change. Record deployment confirmation in issue #1 rather than treating a pushed branch as live.
+
+## Subsequent economy update
+
+2026-09-14-economy-1 supersedes the reward note above: vent-created demon kills now pay zero embers; other demon sources keep their existing reward. Heat return and Edge effects remain. See ECONOMY_TUNING.md for starter upgrades and outstanding economy tuning.

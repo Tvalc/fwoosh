@@ -12,8 +12,8 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].flatMap(m => {
   const src = /\bsrc=["']([^"']+)["']/.exec(m[1]);
   if (src && /^https?:/.test(src[1])) return []; // External SDK is not exercised here.
-  const filename = src ? src[1] : 'index.html:inline';
-  return [{filename, code: src ? fs.readFileSync(path.join(root, src[1]), 'utf8') : m[2]}];
+  const filename = src ? src[1].split('?')[0] : 'index.html:inline';
+  return [{filename, code: src ? fs.readFileSync(path.join(root, filename), 'utf8') : m[2]}];
 });
 function game(saved = {}) {
   const storage = new Map(Object.entries(saved));
@@ -104,7 +104,7 @@ test('Rescue counts persist; earned embers bank at run end', () => {
   assert.equal(g.run('META.saved'),1); assert.ok(g.run('runEmbers')>0);
   const earned=g.run('runEmbers'); assert.equal(g.run('META.embers'),0);
   g.run('pop("audit")'); const reload=game(Object.fromEntries(g.storage));
-  assert.equal(reload.run('META.saved'),1); assert.equal(reload.run('META.embers'),earned);
+  assert.equal(reload.run('META.saved'),1); assert.equal(reload.run('META.embers'),earned+g.run('runStarterBonus'));assert.equal(g.run('runEmbers'),earned);
 });
 test('Repeated game-over dispatch does not bank the same loss twice', () => {
   const g=game(); g.run('runEmbers=20; pop("audit")'); const once=g.run('META.embers');
@@ -436,6 +436,75 @@ test('Cinder blast leaves rescued villagers safe, respects damage immunity and c
 test('Cinder blasts ignite victims even at the ordinary fire cap instead of instantly killing them', () => {
   const g=game();g.run('onTitle=false;intro=null;god=true;cells=[];for(let i=0;i<K.HUNTER_CAP;i++)cells.push({x:30,y:50,hunter:true});cells.push({x:300,y:640,grace:0});husks=[{x:300,y:640}];explodeCinder(husks[0])');
   assert.equal(g.run('cells[cells.length-1].hunter'),true);assert.notEqual(g.run('cells[cells.length-1].dead'),true);assert.equal(g.run('husks.length'),0);
+});
+
+
+test('A zero-rescue first loss funds either starter before buildings unlock', () => {
+  const g=game();g.run('onTitle=false;intro=null;pop("first loss");enterHub();drawHub(ctx)');
+  assert.equal(g.run('META.embers'),20);assert.equal(g.run('runStarterBonus'),20);assert.equal(g.run('runEmbers'),0);
+  assert.equal(g.run('META.buildings.well.built || META.buildings.forge.built'),false);
+  assert.equal(g.run('hubSheet'),'starter');
+  assert.deepEqual(JSON.parse(g.run('JSON.stringify(hubBtns.filter(b=>b.act.startsWith("starterbuy:")).map(b=>({act:b.act,enabled:b.enabled})))')),
+    [{act:'starterbuy:hearts',enabled:true},{act:'starterbuy:charges',enabled:true}]);
+});
+test('Starter top-up pays only the shortfall and leaves earned run tally honest', () => {
+  const g=game();g.run('onTitle=false;intro=null;META.embers=5;runEmbers=7;pop("short run")');
+  assert.equal(g.run('META.embers'),20);assert.equal(g.run('runStarterBonus'),8);assert.equal(g.run('runEmbers'),7);
+  g.run('render()');assert.ok(g.drawnText.includes('+7 embers earned'));assert.ok(g.drawnText.includes('+8 first-upgrade bonus'));
+});
+test('A strong first run keeps all earnings without an unnecessary bonus', () => {
+  const g=game();g.run('runEmbers=80;pop("strong run");enterHub()');
+  assert.equal(g.run('META.embers'),80);assert.equal(g.run('runStarterBonus'),0);assert.equal(g.run('starterAvailable()'),true);
+});
+test('Starter funding cannot repeat after duplicate settlement, reload, skip or another run', () => {
+  const g=game();g.run('pop("first");foldOpp();pop("duplicate");enterHub();hubAct("close");saveMeta()');
+  const reload=game(Object.fromEntries(g.storage));reload.run('enterHub()');
+  assert.equal(reload.run('META.embers'),20);assert.equal(reload.run('starterAvailable()'),true);
+  reload.run('reset();pop("second")');assert.equal(reload.run('META.embers'),20);assert.equal(reload.run('runStarterBonus'),0);
+});
+test('Heart starter purchases once, persists, and occupies the normal first tier', () => {
+  const g=game();g.run('pop("first");enterHub();buyStarter("hearts");buyStarter("charges");buyStarter("hearts")');
+  assert.equal(g.run('META.embers'),0);assert.equal(g.run('maxHearts'),6);assert.equal(g.run('RUN_MAX_CHARGES'),3);
+  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('maxHearts'),6);assert.equal(reload.run('starterAvailable()'),false);
+  reload.run('META.saved=16;META.embers=150;enterHub();buy("well","hearts")');
+  assert.equal(reload.run('maxHearts'),7);assert.equal(reload.run('META.embers'),0);
+});
+test('Mobility starter applies next run and does not grant a separate bonus tier', () => {
+  const g=game();g.run('pop("first");enterHub();buyStarter("charges");reset()');
+  assert.equal(g.run('player.charges'),4);assert.equal(g.run('RUN_MAX_CHARGES'),4);assert.equal(g.run('maxHearts'),5);
+  assert.equal(g.run('META.buildings.forge.charges'),1);assert.equal(g.run('META.embers'),0);
+});
+test('Starter purchase rejects insufficient funds, unavailable offer and wrong mode', () => {
+  const g=game();g.run('META.embers=100;buyStarter("hearts")');assert.equal(g.run('maxHearts'),5);
+  g.run('pop("first");enterHub();META.embers=19;buyStarter("hearts");buyStarter("unknown")');
+  assert.equal(g.run('maxHearts'),5);assert.equal(g.run('META.embers'),19);assert.equal(g.run('starterAvailable()'),true);
+  g.run('META.embers=20;reset();buyStarter("hearts")');assert.equal(g.run('maxHearts'),5);
+});
+test('Older saves without upgrades get one catch-up offer on the next settlement', () => {
+  const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:9,saved:4,flags:null})});
+  assert.equal(g.run('META.embers'),9);assert.equal(g.run('starterAvailable()'),false);
+  g.run('opp.runs=8;runEmbers=3;pop("returning player");enterHub()');
+  assert.equal(g.run('META.embers'),20);assert.equal(g.run('runStarterBonus'),8);assert.equal(g.run('starterAvailable()'),true);
+});
+test('Existing upgraded saves get neither an unsolicited grant nor starter offer', () => {
+  const g=game();g.run('META.embers=7;META.district=4;META.buildings.well.regen=1;saveMeta()');
+  const reload=game(Object.fromEntries(g.storage));reload.run('runEmbers=3;pop("old save");enterHub()');
+  assert.equal(reload.run('META.embers'),10);assert.equal(reload.run('META.district'),4);
+  assert.equal(reload.run('META.buildings.well.regen'),1);assert.equal(reload.run('starterAvailable()'),false);
+});
+test('Skipping starter leaves it reopenable; buying a normal upgrade ends the first-purchase offer', () => {
+  const g=game();g.run('runEmbers=100;pop("first");enterHub();hubAct("close");drawHub(ctx)');
+  assert.equal(g.run('hubBtns.some(b=>b.act==="starter")'),true);
+  g.run('hubAct("starter");drawHub(ctx)');assert.equal(g.run('hubBtns.some(b=>b.act==="play")'),false);
+  g.run('hubAct("close");META.saved=16;enterHub();buy("well","regen")');assert.equal(g.run('starterAvailable()'),false);
+});
+test('Vent kills award zero embers while preserving heat and Edge; other sources retain payouts', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.heat=0;runEmbers=0;killDemon({source:"vent",x:300,y:400})');
+  assert.equal(g.run('runEmbers'),0);assert.equal(g.run('player.heat'),0.5);assert.equal(g.run('edge'),0.25);
+  assert.ok(g.run('callout.text.includes("NO EMBERS")'));
+  for(const source of ['town','keith']){g.run(`killDemon({source:${JSON.stringify(source)},x:300,y:400})`);}
+  assert.equal(g.run('runEmbers'),4);
+  g.run('killDemon({x:300,y:400})');assert.equal(g.run('runEmbers'),6);
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',

@@ -49,6 +49,7 @@ function foldOpp(){
   // META: bank this run's embers (+ win bounty, scaled by how deep the district was). saved already counted.
   if(won) runEmbers += K.WIN_EMBERS * runDistrict;
   META.embers += runEmbers;
+  prepareStarterOffer();
   saveMeta();
 }
 
