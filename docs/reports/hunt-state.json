@@ -1,6 +1,6 @@
 {
   "checkpoint": "C:\\Users\\19415\\Documents\\Codex\\2026-09-14\\create-an-image-of\\work\\fwoosh-codex",
-  "generated_at": "2026-09-15T19:58:20.078Z",
+  "generated_at": "2026-09-15T20:02:31.079Z",
   "method": "Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.",
   "source_sha256": {
     "./js/media-meta.js": "da89f493fe555d14723361f6a133a214b21ec244533bc1c765dc2c1a643f2463",
@@ -11,11 +11,11 @@
     "./js/meta.js": "bebd736e797ca3f0a299d256e2a2d45e182aae96d2ed1cb5d0cbd11837afcca3",
     "./js/opp.js": "cf97f4f4bb8bc87a6e685548dd0cf1997adf7acfd76d021650b5983be571de34",
     "./js/sim.js": "8842dae15f71ca2bde367f098bd84d9befc364c52c6751e1720e8848da725d44",
-    "./js/draw.js": "043d6542de426cb378addf499d7101c5a74eb39e196cc8cf0f0b2e3221737ba3",
+    "./js/draw.js": "0bb1c84fdf6522513074dd90fe3406131f33d5bcfa902b19d41f5cadafd1705a",
     "./js/input.js": "93cd08d5430e775e77cafe1b478e932e64b4bdc12ee5b4d8e72352c704b65fe6",
     "./js/main.js": "291863d135e9b317d0fd6123d625cbad5ae5177dbf28fc5dc9f4ca8e0b73f444"
   },
-  "pass": 112,
+  "pass": 113,
   "fail": 0,
   "results": [
     {
@@ -598,6 +598,11 @@
     },
     {
       "name": "Next goal finds cheaper tracks across both shops and respects unlocks",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Town upgrade names stay out of live action and remain available in town",
       "status": "pass",
       "detail": null
     },

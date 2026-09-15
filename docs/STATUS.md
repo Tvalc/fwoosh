@@ -4,7 +4,9 @@
 
 Duy's unattended heading now pursues the nearest burning villager whenever one exists. When no villagers are burning, he pursues the nearest fire demon. He uses the prior heat-sensitive wander only when both sets are empty. Pursuit turns smoothly instead of snapping; held movement keys and player-directed dashes take immediate priority, preserving the player's ability to route faster, cut off threats and avoid a bad automatic approach. Running into a demon without dashing remains dangerous.
 
-No save, reward, enemy, damage or art data changes. Automated checks cover target-class priority even when a demon is closer, nearest-target selection, safe-field fallback, smooth turning, immediate manual override, an actual open-lane rescue and collision deflection around the wagon. Local browser scenarios also reached stationary targets around the wagon, well and lower crate pile without becoming pinned.
+The live-action dock no longer advertises the cheapest town upgrade by name. This removes unexplained labels such as `COOL BLOOD` from the run while preserving the upgrade and its progress inside the town Well. No save, reward, enemy, damage or art data changes.
+
+Automated checks cover target-class priority even when a demon is closer, nearest-target selection, safe-field fallback, smooth turning, immediate manual override, an actual open-lane rescue, collision deflection around the wagon and the town-only upgrade-name boundary. Local browser scenarios also reached stationary targets around the wagon, well and lower crate pile without becoming pinned.
 
 ## Cinder threat readability — 2026-09-15-cinder-read-1
 

@@ -549,6 +549,13 @@ test('Next goal finds cheaper tracks across both shops and respects unlocks', ()
   assert.equal(g.run('upgradeGoal()'),null);
 });
 
+test('Town upgrade names stay out of live action and remain available in town', () => {
+  const run=game();run.run('META.saved=6;META.buildings.well.built=true;META.buildings.well.hearts=1;onTitle=false;intro=null;presentDialogue=null;mode="play";render()');
+  assert.equal(run.drawnText.includes('COOL BLOOD'),false,'The run HUD exposes the unexplained Cool Blood town upgrade.');
+  const town=game();town.run('META.saved=6;META.buildings.well.built=true;META.buildings.well.hearts=1;drawUpgradeProgress(ctx,60,900,600,102)');
+  assert.equal(town.drawnText.includes('COOL BLOOD'),true,'The town upgrade panel no longer identifies Cool Blood.');
+});
+
 test('Upgrade progress includes current earnings once and keeps starter funding separate', () => {
   const g=game();g.run('onTitle=false;intro=null;runEmbers=7');
   assert.equal(g.run('goalAmount(upgradeGoal())'),7);
