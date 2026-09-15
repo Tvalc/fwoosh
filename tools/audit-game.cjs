@@ -86,9 +86,9 @@ test('Separate visits raise Well at 6 and Forge at 16', () => {
 });
 test('Upgrade prices, limits, and persistence survive reload', () => {
   const g=game(); g.run('META.embers=1000; META.buildings.well.built=true; buy("well","hearts"); buy("well","hearts"); buy("well","hearts"); buy("well","hearts")');
-  assert.equal(g.run('META.embers'),430); assert.equal(g.run('maxHearts'),8);
+  assert.equal(g.run('META.embers'),120); assert.equal(g.run('maxHearts'),8);
   const reload=game(Object.fromEntries(g.storage)); assert.equal(reload.run('maxHearts'),8);
-  assert.equal(reload.run('META.embers'),430);
+  assert.equal(reload.run('META.embers'),120);
 });
 test('Unaffordable purchase does not spend embers or grant an upgrade', () => {
   const g=game(); g.run('META.embers=10; META.buildings.well.built=true; buy("well","hearts")');
@@ -466,7 +466,7 @@ test('Heart starter purchases once, persists, and occupies the normal first tier
   const g=game();g.run('pop("first");enterHub();buyStarter("hearts");buyStarter("charges");buyStarter("hearts")');
   assert.equal(g.run('META.embers'),0);assert.equal(g.run('maxHearts'),6);assert.equal(g.run('RUN_MAX_CHARGES'),3);
   const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('maxHearts'),6);assert.equal(reload.run('starterAvailable()'),false);
-  reload.run('META.saved=16;META.embers=150;enterHub();buy("well","hearts")');
+  reload.run('META.saved=16;META.embers=240;enterHub();buy("well","hearts")');
   assert.equal(reload.run('maxHearts'),7);assert.equal(reload.run('META.embers'),0);
 });
 test('Mobility starter applies next run and does not grant a separate bonus tier', () => {
@@ -533,6 +533,103 @@ test('A district clear adds its bounty to uncapped rewards exactly once', () => 
   assert.equal(g.run('runEmbers'),575);assert.equal(g.run('META.embers'),575);assert.equal(g.run('runStarterBonus'),0);
   const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.embers'),575);
 });
+
+test('Next goal finds cheaper tracks across both shops and respects unlocks', () => {
+  const g=game();g.run('META.buildings.well.hearts=1;META.saved=5');
+  assert.equal(g.run('upgradeGoal().kind'),'saves');assert.equal(g.run('upgradeGoal().cost'),6);
+  g.run('META.saved=6');assert.equal(g.run('upgradeGoal().name'),'COOL BLOOD');
+  g.run('META.buildings.well.regen=1;META.saved=16');
+  assert.equal(g.run('upgradeGoal().name'),'QUICK FEET');assert.equal(g.run('upgradeGoal().cost'),100);
+  g.run('META.buildings.well.hearts=3;META.buildings.well.regen=2;META.buildings.forge.charges=3;META.buildings.forge.recharge=2');
+  assert.equal(g.run('upgradeGoal()'),null);
+});
+
+test('Upgrade progress includes current earnings once and keeps starter funding separate', () => {
+  const g=game();g.run('onTitle=false;intro=null;runEmbers=7');
+  assert.equal(g.run('goalAmount(upgradeGoal())'),7);
+  g.run('pop("loss")');assert.equal(g.run('goalAmount(upgradeGoal())'),20);
+  g.run('resultAction("town")');assert.equal(g.run('goalAmount(upgradeGoal())'),20);
+  assert.equal(g.run('hubSheet'),'starter');
+  g.run('buyStarter("hearts");META.saved=16;enterHub();META.embers=30;reset();onTitle=false;runEmbers=70');
+  assert.equal(g.run('goalAmount(upgradeGoal())'),100);
+  g.run('pop("loss")');assert.equal(g.run('goalAmount(upgradeGoal())'),100);
+});
+
+test('Direct retry banks once, raises unlocked buildings, and clears input without spending a dash', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;META.saved=16;selDistrict=2;reset();introT=0;runEmbers=75;pop("loss");keys.w=true;ptr.down=true;ptr.sx=100;ptr.sy=100;resultClick(360,840);onUp()');
+  assert.equal(g.run('mode'),'play');assert.equal(g.run('runDistrict'),2);
+  assert.equal(g.run('META.embers'),75);assert.equal(g.run('opp.runs'),1);
+  assert.equal(g.run('META.buildings.well.built && META.buildings.forge.built'),true);
+  assert.equal(g.run('player.charges'),g.run('RUN_MAX_CHARGES'));assert.equal(g.run('heldVec()'),null);
+  assert.equal(g.run('player.ventHeld'),false);assert.equal(g.run('introT'),0);
+  g.run('resultAction("retry")');assert.equal(g.run('opp.runs'),1);
+});
+
+test('Win retry advances one district, including replays, without skipping or exceeding five', () => {
+  for(const [current,unlocked,expected] of [[1,1,2],[1,4,2],[4,4,5],[5,5,5]]){
+    const g=game();g.run(`onTitle=false;META.district=${unlocked};selDistrict=${current};reset();startDuel();winDuel();resultAction("retry")`);
+    assert.equal(g.run('runDistrict'),expected);assert.equal(g.run('opp.runs'),1);
+    assert.equal(g.run('META.embers'),25*current);
+  }
+});
+
+test('Held result keys and stray movement do not retry; fresh Enter does', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;pop("loss")');
+  for(const key of ['w','Shift','ArrowUp'])g.dispatch('keydown',{key});
+  for(const key of [' ','Enter','r','t'])g.dispatch('keydown',{key,repeat:true});
+  g.run('resultClick(30,30)');assert.equal(g.run('mode'),'over');
+  g.dispatch('keydown',{key:'Enter',repeat:false});assert.equal(g.run('mode'),'play');
+  assert.equal(g.run('player.ventHeld'),false);assert.equal(g.run('player.charges'),3);
+});
+
+test('Town action opens the affordable shop and held Enter cannot close it', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;META.saved=16;META.buildings.well.hearts=1;META.buildings.well.regen=1;runEmbers=100;pop("loss")');
+  g.dispatch('keydown',{key:'t',repeat:false});assert.equal(g.run('hubSheet'),'forge');
+  g.dispatch('keydown',{key:'Enter',repeat:true});assert.equal(g.run('hubSheet'),'forge');
+  g.run('hubAct("close");hubAct("nextupgrade")');assert.equal(g.run('hubSheet'),'forge');
+});
+
+test('Run history records once, keeps the newest twenty, and survives older saves and reload', () => {
+  const g=game({'fwoosh.meta':JSON.stringify({v:1,recentRuns:null})});
+  for(let i=0;i<23;i++)g.run(`reset();elapsed=${i}+.25;runEmbers=${i};saved=2;pop("history");foldOpp()`);
+  assert.equal(g.run('META.recentRuns.length'),20);assert.equal(g.run('META.recentRuns[0].earned'),3);
+  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.recentRuns.length'),20);
+  assert.deepEqual(JSON.parse(reload.run('JSON.stringify(META.recentRuns[19])')),
+    {seconds:22.3,district:1,rescued:2,earned:22,starterBonus:0,won:false});
+});
+
+test('Win history includes the bounty; zero-rescue loss records top-up separately', () => {
+  const g=game();g.run('pop("zero")');assert.equal(g.run('META.recentRuns[0].earned'),0);assert.equal(g.run('META.recentRuns[0].starterBonus'),20);
+  g.run('reset();runEmbers=50;startDuel();winDuel()');assert.equal(g.run('META.recentRuns[1].earned'),75);assert.equal(g.run('META.recentRuns[1].won'),true);
+});
+
+test('Rescue reward feedback groups a chain, includes rekindling, and clears on timeout and reset', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.heat=2;saveCell(cells[0],true);saveCell(cells[1],true);rekindleHusk({x:300,y:400})');
+  assert.equal(g.run('rescueReward.count'),3);assert.equal(g.run('rescueReward.embers'),14);
+  g.run('god=true;cells=[];hitstop=0;for(let i=0;i<200;i++)step(DT)');assert.equal(g.run('rescueReward'),null);
+  g.run('showRescueReward(8);reset()');assert.equal(g.run('rescueReward'),null);
+});
+
+test('Results show earned embers, available upgrade and explicit retry; live HUD exposes earnings', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;runEmbers=7;render()');
+  assert.ok(g.drawnText.includes('RUN +7 EMBERS'));
+  g.run('pop("loss");render()');
+  for(const text of ['+7 embers earned','+13 first-upgrade bonus','FIRST UPGRADE · READY','RUN AGAIN','UPGRADES · READY'])assert.ok(g.drawnText.includes(text),text);
+});
+
+test('Assumed event profiles exercise real rewards and expose initial price cadence for playtesting', () => {
+  function profile(rescues,hot){const g=game();g.run('onTitle=false;intro=null');
+    for(let i=0;i<rescues;i++)g.run(`player.heat=${(hot?3:1)+i%2};spawnCrowd(true);saveCell(cells[cells.length-1],true)`);
+    g.run(`player.lunge=${hot?'.1':'0'};interceptArson({x:300,y:400});player.heat=1;rekindleHusk({x:300,y:400})`);
+    if(hot)g.run('killDemon({source:"town",x:300,y:400});killDemon({source:"keith",x:300,y:400})');
+    return g.run('runEmbers');}
+  const ordinary=[7,8,9].map(n=>profile(n,false)),skilled=[9,10,11].map(n=>profile(n,true));
+  assert.deepEqual(ordinary,[44,50,55]);assert.deepEqual(skilled,[88,97,105]);
+  const price=game().run('SHOPS.well.items[1].costs[0]');
+  assert.ok(ordinary.every(n=>Math.ceil(price/n)>=2&&Math.ceil(price/n)<=3));
+  return {method:'Constructed event profiles, not observed human performance; no duration assumption.',ordinary,skilled,price,midpointRatio:skilled[1]/ordinary[1],laterTiers:[240,540]};
+});
+
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),

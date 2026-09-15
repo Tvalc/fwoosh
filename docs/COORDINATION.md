@@ -41,3 +41,7 @@ Vent-risk PR #12 is deployed (2026-09-14-vent-1). Tony next approved zero ember 
 ## Uncapped ember scope
 
 Tony confirmed removing the reward cap. Codex implements/tests/publishes economy-2 on codex/uncapped-embers, touching constants.js, sim.js, build/script versions, regression checks and records in its isolated checkout. Cursor continues Makko art. Preserve all prior starter purchases and existing saves. Later economy targets are approved (2–3 ordinary runs, skilled approximately twice as fast), but rates/prices/effects require tuning; do not claim those targets have already been measured or delivered.
+
+## Reward/retry release scope
+
+Tony approved the saved-research recommendations and prior economy pacing targets. Codex implements loop-1 in its isolated codex/reward-retry-loop branch: meta.js, sim.js, opp.js, input.js, draw.js, index version, tests and records. Cursor continues Makko art. Integrate these scoped gameplay changes rather than overwriting whole files from an older checkout. 81 checks and local browser fixture QA pass. Current price values are initial tuning, not confirmed human balance. No forced run timer; no city expansion. Deployment evidence lives in issue #1.

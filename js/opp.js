@@ -50,6 +50,9 @@ function foldOpp(){
   if(won) runEmbers += K.WIN_EMBERS * runDistrict;
   META.embers += runEmbers;
   prepareStarterOffer();
+  META.recentRuns.push({seconds:Math.round(elapsed*10)/10,district:runDistrict,rescued:saved,
+    earned:runEmbers,starterBonus:runStarterBonus,won:!!won});
+  META.recentRuns=META.recentRuns.slice(-20);
   saveMeta();
 }
 

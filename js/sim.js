@@ -46,6 +46,7 @@ let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
 let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash economy, upgraded at The Forge
 // ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
+let rescueReward = null;        // brief grouped rescue payout, not another currency
 let runStarterBonus = 0;         // one-time first-upgrade top-up, separate from earned rewards
 let runEmbers = 0;               // embers minted this run (banked into META at run end)
 let runSettled = false;          // one terminal event may bank this run and update its records
@@ -74,6 +75,7 @@ function reset(seed){
   score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
   mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
   boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
+  rescueReward=null;
   runEmbers = 0; runStarterBonus = 0; runSettled = false; applyUpgrades();      // fresh tally/settlement + purchased upgrades
   runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Keith LV)
   runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Keith rises
@@ -426,6 +428,7 @@ function step(){
     s.y += (dy/d)*pull + (dx/d)*s.sw*(1-k); }
   sparks = sparks.filter(s => s.t < s.life);
   if(p.absorbPop) p.absorbPop = Math.max(0, p.absorbPop - dt*1.6);
+  if(rescueReward){rescueReward.t-=dt;if(rescueReward.t<=0)rescueReward=null;}
   if(saveIconPop) saveIconPop = Math.max(0, saveIconPop - dt*2.2);
 
   // ---- contact: run into a FLAMING villager and ABSORB their fire (save them, take the heat)
@@ -559,6 +562,10 @@ function ignite(c, why){
 // ABSORB: pull the fire off a flaming villager. They flash free and sprint away (saved); you take
 // their heat. Holding at max heat cooks you (handled in step). This is the core verb now.
 // Save ONE villager (the teleport-to-light rescue). chained=true = swept up by a hot chain (no extra heat gain).
+function showRescueReward(embers){
+  if(rescueReward && rescueReward.t>0.8){rescueReward.embers+=embers;rescueReward.count++;rescueReward.t=1.15;}
+  else rescueReward={embers,count:1,t:1.15};
+}
 function saveCell(c, chained){
   const p = player;
   if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Keith's shield
@@ -570,7 +577,7 @@ function saveCell(c, chained){
   score += Math.round(K.SAVE_SCORE * blaze);
   if(blaze > META.bestBlaze) META.bestBlaze = blaze;
   const em = Math.round(K.EMBER_BASE * blaze);
-  runEmbers += em; META.saved++;
+  runEmbers += em; META.saved++;showRescueReward(em);
   for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
     sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
   saveIconPop = 0.6; ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);
@@ -801,7 +808,7 @@ function rekindleHusk(h){
                hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
   saved++; META.saved++;
   edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
-  const em = Math.round(K.EMBER_BASE*0.5); runEmbers += em;
+  const em = Math.round(K.EMBER_BASE*0.5); runEmbers += em;showRescueReward(em);
   score += Math.round(K.SAVE_SCORE*0.5);
   saveIconPop = 0.6; p.absorbPop = 0.28; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
   ring(h.x, h.y, K.R_CELL+2, 90, '#8affc1', 0.6);

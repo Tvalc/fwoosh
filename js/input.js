@@ -28,11 +28,28 @@ function lungeDir(dx,dy){
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
 }
 
+// Results have explicit actions; a held movement/vent key must never dismiss them.
+function resultButtons(){return [
+  {x:48,y:790,w:VW-96,h:100,act:'retry'},
+  {x:48,y:914,w:VW-96,h:92,act:'town'}
+];}
+function resultAction(action){
+  if(mode!=='over')return;
+  const target=won?Math.min(META.district,runDistrict+1):runDistrict;
+  cancelPointer();for(const k in keys)keys[k]=false;setVentHeld(false);
+  enterHub();
+  if(action==='retry'){selDistrict=target;reset();introT=0;}
+  else openNextUpgrade();
+}
+function resultClick(x,y){
+  for(const b of resultButtons())if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h){resultAction(b.act);return;}
+}
+
 function onDown(x,y){
   if(onTitle){ onTitle = false; hinted = false; reset(); return; }   // start from the title screen
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
-  if(mode === 'over'){ enterHub(); return; }        // run ended -> return to the town hub
+  if(mode === 'over'){ resultClick(x,y); return; }        // run ended -> return to the town hub
   if(mode === 'hub'){ hubClick(x,y); return; }      // tapping the town: buildings / shop / PLAY
   // Mobile only: the on-screen VENT button. (Desktop vents with SPACE, so no button — a click there dashes.)
   if(isTouch && mode === 'play'){ const vb = ventBtn();
@@ -77,11 +94,11 @@ window.addEventListener('keydown', e=>{
   if(onTitle){ if(KEYVEC[k]||k===' '||k==='enter'){ e.preventDefault(); onTitle=false; hinted=false; reset(); } return; }
   if(introT > 0){ introT = 0; if(KEYVEC[k]||k===' '||k==='shift'||k==='enter'){ e.preventDefault(); } return; }
   if(mode === 'over'){
-    if(KEYVEC[k] || k===' ' || k==='shift' || k==='enter'){ e.preventDefault(); enterHub(); }
+    if(k==='r'||k==='enter'||k===' '||k==='t'){e.preventDefault();if(!e.repeat)resultAction(k==='t'?'town':'retry');}
     return;
   }
   if(mode === 'hub'){                                 // in the town: Space/Enter = PLAY, Esc closes a sheet
-    if(k===' '||k==='enter'){ e.preventDefault(); if(hubSheet) hubSheet=null; else reset(); }
+    if(k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat){if(hubSheet) hubSheet=null; else reset();} }
     else if(k==='escape'){ hubSheet=null; }
     return;
   }
