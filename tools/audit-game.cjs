@@ -755,6 +755,14 @@ test('Automatic pursuit turns smoothly while manual steering wins immediately', 
   assert.ok(g.run('player.hx')>0,'Automatic pursuit did not turn toward the fire.');
   g.run('keys.a=true;step()');assert.ok(g.run('player.hx')<-.99,'Held manual steering did not override automatic pursuit.');
 });
+test('Burning runners outrun an ordinary jog but a dash closes the gap', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;ghost=false;cells=[{id:1,x:360,y:1050,hunter:true,fuse:100,grace:0,vx:0,vy:0,spreadT:0,dir:0,ph:0,ps:0}];demons=[];slag=[];arson=[];player.x=240;player.y=1050;player.hx=1;player.hy=0');
+  assert.ok(g.run('K.PANIC_SPD>K.RUN'),'A clear-headed auto-run can still match a burning villager.');
+  const before=g.run('dist(player.x,player.y,cells[0].x,cells[0].y)');g.run('for(let i=0;i<60;i++)step()');
+  assert.ok(g.run('dist(player.x,player.y,cells[0].x,cells[0].y)')>before,'An ordinary jog closed on a straight fleeing runner.');
+  g.run('lungeDir(1,0);for(let i=0;i<30&&saved===0;i++)step()');
+  assert.equal(g.run('saved'),1,'A well-aimed dash could not catch the faster runner.');
+});
 test('Automatic pursuit closes an open lane and rescues its burning target', () => {
   const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;cells=[{id:1,x:450,y:600,hunter:true,fuse:5,grace:0,vx:0,vy:0,spreadT:0,dir:Math.PI,ph:0,ps:.5}];demons=[];slag=[];player.x=300;player.y=600;player.hx=0;player.hy=-1;for(let i=0;i<240&&saved===0;i++)step()');
   assert.equal(g.run('saved'),1,'Auto-run identified the fire but failed to complete an unobstructed rescue.');
