@@ -10,7 +10,7 @@ Build `2026-09-15-debug-1` is live. The arcade loop, committed vent units, persi
 
 1. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Keith pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
 2. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, cinder vent correction and diary art. Every visual asset must come from Makko.
-3. [#33 Consolidate records, provenance and off-device source backup](https://github.com/Tvalc/fwoosh/issues/33) — **Codex**. Current tracker cleanup is underway; an off-device destination still requires Tony's choice.
+3. [#33 Consolidate records, provenance and off-device source backup](https://github.com/Tvalc/fwoosh/issues/33) — **Codex**. Records were consolidated in PR #34; an off-device destination still requires Tony's choice.
 
 ## Next development sequence
 
