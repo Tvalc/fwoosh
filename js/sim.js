@@ -480,10 +480,13 @@ function step(){
 
   // ---- Keith no longer ignites villagers from thin air: he SENDS fire imps in from the edges, each flying to a
   // chosen villager to torch it. Cut the imp off (run/dash into it) to INTERCEPT — eat its fire, mint embers, bank
-  // an edge against Keith. Miss it, and the villager catches. (Sends speed up as the run wears on.)
-  if(!introWalk && !duelActive){
+  // an edge against Keith. Miss it, and the villager catches. The duel keeps a slower stream alive because rescues
+  // and interceptions are the heat supply required to hurt him; stopping them can make the fight unwinnable.
+  if(!introWalk){
     arsonT += dt;
-    const cadence = Math.max(K.ARSON_MIN, K.ARSON_EVERY - elapsed*0.012 - (runDistrict-1)*0.22);
+    const cadence = duelActive
+      ? Math.max(K.DUEL_ARSON_MIN, K.DUEL_ARSON_EVERY - (runDistrict-1)*0.15)
+      : Math.max(K.ARSON_MIN, K.ARSON_EVERY - elapsed*0.012 - (runDistrict-1)*0.22);
     if(arsonT >= cadence){ arsonT = 0; spawnArson(); }
   }
   stepArson(dt);
@@ -1039,7 +1042,9 @@ function startDuel(){
   if(!META.flags) META.flags={}; if(!META.flags.reachedDuel){ META.flags.reachedDuel=true; saveMeta(); }   // opens a diary page
   const gx = opp.grudge ? opp.grudge.x : VW/2, gy = opp.grudge ? opp.grudge.y : VH*0.3;
   slag = slag.filter(s => !s.grudge);                // Keith is UP: his wall is him
-  arson = []; husks = [];                            // imps stand down + coals go cold for the duel
+  arson = []; husks = [];                            // clear old threats; the duel begins its own readable fire cadence
+  while(crowd().length < K.DUEL_CROWD) spawnCrowd(false); // never enter a heat-powered fight without valid fire targets
+  arsonT = Math.max(0, K.DUEL_ARSON_EVERY-0.8);      // first duel source arrives promptly, then uses the slower cadence
   demons = demons.filter(d => d.source !== 'town');  // roaming wraiths clear (they become Keith's reinforcements below)
   shots = []; wake = []; pulses = [];
   // Keith's LEVEL is the district you're in (deeper district = more movesets). Movesets are cumulative.

@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Renewable duel fire — 2026-09-15-duel-fire-1
+
+Tony found a level-one boss soft lock: entering the Keith encounter without enough carried heat left no way to earn the eight heat required to win. The ordinary fire-imp scheduler explicitly stopped when `duelActive` began, while level one has no separate heat-producing move.
+
+The duel now maintains at least three calm villagers and continues a slower, readable fire-imp cadence. Intercepting an imp supplies one heat directly; missing it ignites the marked villager for the normal chase-and-rescue loop. The first duel source arrives promptly, then repeats every 3.2 seconds at level one, scaling to a 2.6-second cadence by level five with a 2.2-second floor. Existing boss moves continue normally.
+
+138 actual-script checks pass. New regressions prove an empty duel repopulates valid targets, schedules an imp, ignites a villager when missed, grants heat when intercepted and accepts that heat as boss damage. Save data, economy, city state and art are unchanged.
+
 ## Ratkin logistics and optional priorities — 2026-09-15-logistics-1
 
 The Ratkin Quarter now supports four complementary structures. Mushroom Farms produce food; Salvage Yards consume one food to produce one building material; Burrows provide connected workers; Storehouses add 15 spaces to the shared food and material caps. The city begins with four bootstrap food so the initial Burrow/Yard pair remains useful. At zero food, automatic assignment temporarily favors a connected Farm and avoids a deadlock. Otherwise available workers choose eligible stations by high, normal or low player priority and then construction order.
