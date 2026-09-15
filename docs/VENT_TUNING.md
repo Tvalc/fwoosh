@@ -17,20 +17,20 @@ Tony approved implementation after the core-loop interview. City expansion is de
 | Parameter | Initial value |
 |---|---:|
 | Heat-unit commitment | 0.40 seconds |
-| Full-heart commitment | 0.60 seconds |
+| Full-heart commitment | 0.60 seconds base; 0.50 / 0.40 with Deep Draught |
 | Newly released demon emergence | 0.45 seconds before it can attack or eat |
 | Cinder search range | 320 world pixels |
 | Eating warning | 0.65 seconds |
 | Blast radius | 120 world pixels |
 | Player blast damage | One heart |
 
-A final fractional heat amount or missing fraction of a heart takes one normal unit, caps at zero heat/full health and still releases one demon. At no heat and full health, holding does not lock Duy or generate demons. Losing input focus stops chaining and clears queued dashes; the current unit still completes. New runs clear all transient threats. Vent demons survive the transition to Keith; existing town-wraith and Keith-summon behavior remains separate.
+A final fractional heat amount or missing fraction of a heart takes one normal unit, caps at zero heat/full health and still releases one demon. Deep Draught shortens the rooted heart-restoration window, but does not remove that demon cost; existing Well recovery purchases convert to these tiers. The faint passive recovery outside venting stays at its base rate. At no heat and full health, holding does not lock Duy or generate demons. Losing input focus stops chaining and clears queued dashes; the current unit still completes. New runs clear all transient threats. Vent demons survive the transition to Keith; existing town-wraith and Keith-summon behavior remains separate.
 
 Straight threat tethers and compact progress bars explain demon targets and interruption timing without drawn charge, countdown or blast-radius circles. Actor and blast images reuse existing Makko sprites/flames. No new art source is introduced. Save schema and existing progress are preserved.
 
 ## Next interview topics
 
-Ember earning, reward incentives, upgrade effects, prices and purchase pacing remain to tune. Existing monster-kill rewards are unchanged in this release, including rewards for vent-created demons; possible farming incentives need a deliberate economy decision. Passive recovery and its upgrade also remain unchanged. Assess persistent-swarm performance and difficulty through full human runs before adding more systems.
+Ember earning, reward incentives, prices and purchase pacing remain to tune. Assess persistent-swarm performance, Deep Draught value and difficulty through full human runs before adding more systems.
 
 Publish each verified major change. Record deployment confirmation in issue #1 rather than treating a pushed branch as live.
 
