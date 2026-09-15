@@ -1,5 +1,11 @@
 # Fwoosh status — September 15, 2026
 
+## Assisted chase and distant vent spawns — 2026-09-15-assist-1
+
+Auto-run now guides Duy toward periodically updated sightings of the nearest burning villager instead of continuously tracking the runner's exact live position. A newly ignited villager also bolts away from Duy before settling into its erratic panic path. Together these changes turn nearby ignition into a readable chase: the assist keeps the player oriented, while steering toward the runner's new path and timing a dash creates the interception. Demon guidance remains exact because contact without a dash still hurts Duy.
+
+Vent-created demons now enter at least 260 world pixels from Duy in a valid space outside the arena's solid props, villagers and cinders. The existing emergence delay still prevents an immediate attack. Manual steering and every directed dash clear the assist's old sighting immediately. Runner speed remains 205 versus Duy's normal 170; burn fuse, rescue radius, rewards, save data and art are unchanged. Automated checks cover sighting refresh, manual release, initial flee direction, normal-run disadvantage, dash interception and distant valid demon spawns from multiple player positions.
+
 ## Faster burning runners — 2026-09-15-chase-1
 
 Burning villagers now panic-run at 205 world pixels per second, up from 150. That is faster than Duy's clear-headed 170-pixel jog, so unattended pursuit cannot simply reel in a target fleeing in the same direction. A directed dash still closes the gap decisively; carrying heat can also push Duy above their speed, rewarding the existing risk loop. Their fuse, movement pattern, rescue radius, rewards and all other actors are unchanged.

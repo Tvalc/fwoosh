@@ -71,6 +71,7 @@ function lungeDir(dx,dy){
   if(player.ventUnit){ player.ventHeld=false; player.ventDash=[dx/m,dy/m]; return; }
   if(intro && intro.phase === 'walkin') return;          // no control during the scripted entrance
   player.hx = dx/m; player.hy = dy/m;
+  player.autoTarget=null;player.autoSightT=0;
   player.lunge = K.LUNGE_T;
   player.charges--; player.dashCd = K.DASH_CD;   // spend a charge (+ a tiny gap so one swipe can't double-fire)
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment

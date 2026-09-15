@@ -95,6 +95,7 @@ function reset(seed){
     heat: 0,                              // ABSORBER: fires currently carried (0..HEAT_MAX)
     hp: 1,                                // HEALTH (0..1): burns down while carrying fire, recovers when clear
     passeeId: 0, passT: 999, passVal: 0,
+    autoTarget: null, autoSightX: VW/2, autoSightY: VH/2, autoSightT: 0,
   };
   setupOpp();                                 // grudge wall + snipe, before crowd so they avoid it
   for(let i=0;i<K.CROWD_START;i++) spawnCrowd(true);
@@ -170,6 +171,17 @@ function autoRunTarget(p){
   const burning=hunters();
   return burning.length ? nearestFrom(p,burning) : (demons.length ? nearestFrom(p,demons) : null);
 }
+// Runner guidance follows periodic sightings rather than calculating a perfect live intercept.
+// Demons retain live tracking because touching one without an intentional dash still hurts Duy.
+function autoRunAim(p,target,dt){
+  if(!target){p.autoTarget=null;p.autoSightT=0;return null;}
+  if(!target.hunter)return target;
+  p.autoSightT-=dt;
+  if(p.autoTarget!==target || p.autoSightT<=0){
+    p.autoTarget=target;p.autoSightX=target.x;p.autoSightY=target.y;p.autoSightT=K.AUTO_SIGHT;
+  }
+  return {x:p.autoSightX,y:p.autoSightY};
+}
 function turnToward(p,target,dt){
   const desired=Math.atan2(target.y-p.y,wrapDX(target.x-p.x)), current=Math.atan2(p.hy,p.hx);
   const delta=Math.atan2(Math.sin(desired-current),Math.cos(desired-current));
@@ -240,9 +252,10 @@ function step(){
   const burn = Math.max(0, Math.min(1, 1 - (p.hp!=null ? p.hp : 1)));   // 0 healthy .. 1 near death
   if(p.lunge <= 0 && !introWalk){
     const v = heldVec();
-    if(v){ p.hx = v[0]; p.hy = v[1]; }                                  // WASD nudges your heading (desktop)
+    if(v){ p.autoTarget=null;p.autoSightT=0;p.hx = v[0]; p.hy = v[1]; }  // manual input takes over and clears the old sighting
     else { const target=autoRunTarget(p);
-      if(target) turnToward(p,target,dt);
+      const aim=autoRunAim(p,target,dt);
+      if(aim) turnToward(p,aim,dt);
       else { const w = (K.WEAVE + burn*K.WEAVE_BURN) * Math.sin(frame*0.05 + p.wph) * dt;
         const a = Math.atan2(p.hy, p.hx) + w; p.hx = Math.cos(a); p.hy = Math.sin(a); } }
   }
@@ -572,6 +585,9 @@ function overloadHit(c){
 function ignite(c, why){
   if(why!=='cinder' && hunters().length >= K.HUNTER_CAP){ becomeHusk(c); return; }   // a cinder blast ignites; it never instantly consumes its victims
   c.hunter = true; c.fuse = hunterFuse; c.grace = K.GRACE; c.saving = false; c.spreadT = 0;
+  // Bolt away before resuming erratic panic, so nearby ignition begins a chase instead of a free contact save.
+  const dx=wrapDX(c.x-player.x),dy=c.y-player.y;
+  c.dir=(Math.abs(dx)+Math.abs(dy)>0.001?Math.atan2(dy,dx):rnd()*Math.PI*2)+(rnd()-0.5)*0.7;c.ph=0;
   ring(c.x,c.y,8,44,'#ff6a2e',0.30);
 }
 
@@ -656,11 +672,32 @@ function ventHold(dt=DT){
   else beginVentUnit();
 }
 function spawnVentDemon(){
-  const p=player, a=Math.atan2(p.hy,p.hx)+Math.PI;
-  const d={x:p.x+Math.cos(a)*48,y:p.y+Math.sin(a)*48,t:0,hitCd:0,
+  const p=player, spot=ventDemonSpawn(p);
+  const d={x:spot.x,y:spot.y,t:0,hitCd:0,
     source:'vent',warn:K.VENT_DEMON_WAKE,ph:rnd()*7,tgt:null,feast:null,eatT:0};
-  d.x=Math.max(K.EDGE,Math.min(VW-K.EDGE,d.x));d.y=Math.max(40,Math.min(VH-40,d.y));
-  collideObstacles(d,K.DEMON_R); demons.push(d);
+  demons.push(d);
+}
+function ventDemonSpawnClear(x,y,p){
+  if(dist(x,y,p.x,p.y)<K.VENT_DEMON_MIN_R || nearObstacle(x,y,K.DEMON_R+6) || nearSlag(x,y,K.DEMON_R+6))return false;
+  if(cells.some(c=>!c.dead&&dist(x,y,c.x,c.y)<K.DEMON_R+K.R_CELL+12))return false;
+  if(husks.some(h=>dist(x,y,h.x,h.y)<K.DEMON_R+K.HUSK_R+12))return false;
+  return !demons.some(d=>dist(x,y,d.x,d.y)<K.DEMON_R*3);
+}
+function ventDemonSpawn(p){
+  const candidates=[
+    {x:K.EDGE+24,y:64},{x:VW-K.EDGE-24,y:64},
+    {x:K.EDGE+24,y:VH-64},{x:VW-K.EDGE-24,y:VH-64}
+  ];
+  for(let i=0;i<40;i++)candidates.push({x:K.EDGE+24+rnd()*(VW-2*(K.EDGE+24)),y:64+rnd()*(VH-128)});
+  const clear=candidates.filter(s=>ventDemonSpawnClear(s.x,s.y,p));
+  if(clear.length)return clear.reduce((best,s)=>{
+    const separation=demons.length?Math.min(...demons.map(d=>dist(s.x,s.y,d.x,d.y))):0;
+    const score=dist(s.x,s.y,p.x,p.y)+separation*0.3+rnd()*16;
+    return !best||score>best.score?{x:s.x,y:s.y,score}:best;
+  },null);
+  // Extremely crowded fallback: choose the farthest sampled position, then push it out of solid art.
+  const far=candidates.reduce((best,s)=>dist(s.x,s.y,p.x,p.y)>dist(best.x,best.y,p.x,p.y)?s:best);
+  const spot={x:far.x,y:far.y};collideObstacles(spot,K.DEMON_R);return spot;
 }
 function explodeCinder(h){
   const idx=husks.indexOf(h); if(idx<0) return;

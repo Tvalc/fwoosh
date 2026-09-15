@@ -10,6 +10,7 @@ const K = {
   WEAVE: 0.28,                      // base auto-wander when you're not steering (rad-ish/s)
   WEAVE_BURN: 2.6,                  // extra wander at full burn — control degrades as you burn
   AUTO_TURN: 3.2,                   // rad/s toward the nearest priority target; smooth enough for manual overrides
+  AUTO_SIGHT: 0.65,                 // seconds between runner sightings; assist follows, player predicts/intercepts
   DASH_CD: 0.12,                    // min gap between dashes — dash is the steer, so it's ~free
   LUNGE_SPD: 640,
   LUNGE_T: 0.18,                    // 115px of travel
@@ -17,6 +18,7 @@ const K = {
   VENT_PURGE: 0.40,                 // starting tuning: seconds per heat unit (including a final fraction)
   VENT_HEAL_T: 0.60,                // seconds per full heart, capped at full health
   VENT_DEMON_WAKE: 0.45,            // visible emergence before a new demon can act
+  VENT_DEMON_MIN_R: 260,            // vent demons enter well outside immediate contact while Duy is rooted
   CINDER_SEEK_R: 320,              // prefer a nearby cinder person (husk), otherwise chase Duy
   CINDER_EAT_T: 0.65,              // warning window: shatter demon or rekindle husk to interrupt
   CINDER_BLAST_R: 120,
