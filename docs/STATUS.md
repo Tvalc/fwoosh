@@ -1,5 +1,10 @@
 # Fwoosh status — September 14, 2026
 
+## Left barrel collision — 2026-09-15-barrel-1
+
+Tony reported walking over the top barrel below the upper-left crates. Raised the barrel cluster collision top by 3 world pixels (296 → 293), retaining its bottom at y=478 and its width. Full-map framing is unchanged. All 97 existing state/input checks pass. Issue #1 records deployment; Tony should judge the alignment in the live playtest.
+
+
 ## Full map viewport — 2026-09-15-full-map-1
 
 Supersedes hud-safe-1, which incorrectly removed 32.8% of vertical travel. Original simulation, spawn distribution, opponent target mapping and obstacle coordinates are restored exactly from the pre-regression dialogue build. The complete world now renders with a single uniform transform between a compact header and a stable bottom dialogue/control dock. Pointer taps invert that transform; dock and gutter touches cannot spend dash charges. Device safe-area insets affect screen fit only. Small visual overhang accommodates bodies at the original walls; oversized decorative flames may clip.
