@@ -1583,7 +1583,6 @@ function render(){
     // Optional dialogue replaces only dock information, never the camera or controls.
     if(!intro && !presentDialogue){
       ctx.save();ctx.textAlign='left';ctx.fillStyle='#dfd8c9';ctx.font='600 25px "Chakra Petch",system-ui,sans-serif';
-      const goal=upgradeGoal();if(goal)ctx.fillText(goal.name+' · '+Math.floor(goalAmount(goal))+' / '+goal.cost,18,1139);
       const status=callout?callout.text:'';
       ctx.fillStyle=callout&&callout.good===false?'#ff9dbd':'#d7cedd';ctx.font='600 24px "Chakra Petch",system-ui,sans-serif';
       if(status)wrapText(ctx,status,18,1175,516,27);

@@ -3,12 +3,13 @@ const VW = 720, VH = 1280;          // virtual world, portrait, x wraps
 const DT = 1/120;                   // fixed timestep
 
 const K = {
-  // player — AUTO-RUN: you never stop. You DASH to steer, and HOLD/SPACE to vent.
+  // player — AUTO-RUN: threats set the default route. You DASH/steer to optimize and HOLD/SPACE to vent.
   DRIFT: 110,                       // (legacy) old constant drift
   RUN: 170,                         // px/s auto-run — always moving
   FRANTIC_SPD: 0.55,                // + this fraction of speed at full burn (near death = faster/frantic)
   WEAVE: 0.28,                      // base auto-wander when you're not steering (rad-ish/s)
   WEAVE_BURN: 2.6,                  // extra wander at full burn — control degrades as you burn
+  AUTO_TURN: 3.2,                   // rad/s toward the nearest priority target; smooth enough for manual overrides
   DASH_CD: 0.12,                    // min gap between dashes — dash is the steer, so it's ~free
   LUNGE_SPD: 640,
   LUNGE_T: 0.18,                    // 115px of travel

@@ -549,6 +549,13 @@ test('Next goal finds cheaper tracks across both shops and respects unlocks', ()
   assert.equal(g.run('upgradeGoal()'),null);
 });
 
+test('Town upgrade names stay out of live action and remain available in town', () => {
+  const run=game();run.run('META.saved=6;META.buildings.well.built=true;META.buildings.well.hearts=1;onTitle=false;intro=null;presentDialogue=null;mode="play";render()');
+  assert.equal(run.drawnText.includes('COOL BLOOD'),false,'The run HUD exposes the unexplained Cool Blood town upgrade.');
+  const town=game();town.run('META.saved=6;META.buildings.well.built=true;META.buildings.well.hearts=1;drawUpgradeProgress(ctx,60,900,600,102)');
+  assert.equal(town.drawnText.includes('COOL BLOOD'),true,'The town upgrade panel no longer identifies Cool Blood.');
+});
+
 test('Upgrade progress includes current earnings once and keeps starter funding separate', () => {
   const g=game();g.run('onTitle=false;intro=null;runEmbers=7');
   assert.equal(g.run('goalAmount(upgradeGoal())'),7);
@@ -735,6 +742,26 @@ test('Backtick pauses every game screen and ignores key repeat',()=>{
   const before=g.run('JSON.stringify({player,intro,mode,onTitle})');g.run('for(let i=0;i<120;i++)step()');assert.equal(g.run('JSON.stringify({player,intro,mode,onTitle})'),before);
   g.dispatch('keydown',{key:'Escape'});assert.equal(g.run('debugMenu.open'),false);
  }
+});
+test('Auto-run prioritizes nearest fire, then nearest demon, then wandering', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;player.x=300;player.y=600;cells=[{id:1,x:100,y:600,hunter:true},{id:2,x:520,y:600,hunter:true}];demons=[{x:310,y:600,source:"vent"},{x:650,y:600,source:"town"}]');
+  assert.equal(g.run('autoRunTarget(player)===cells[0]'),true,'A closer demon incorrectly outranked a flaming villager.');
+  g.run('cells[0].hunter=false;cells[1].hunter=false');
+  assert.equal(g.run('autoRunTarget(player)===demons[0]'),true,'Auto-run did not choose the nearest demon after fires cleared.');
+  g.run('demons=[]');assert.equal(g.run('autoRunTarget(player)'),null,'A safe field should fall back to wandering.');
+});
+test('Automatic pursuit turns smoothly while manual steering wins immediately', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;ghost=true;cells=[{id:1,x:600,y:600,hunter:true,fuse:5,grace:0,vx:0,vy:0,spreadT:0}];demons=[];player.x=300;player.y=600;player.hx=0;player.hy=-1;step()');
+  assert.ok(g.run('player.hx')>0,'Automatic pursuit did not turn toward the fire.');
+  g.run('keys.a=true;step()');assert.ok(g.run('player.hx')<-.99,'Held manual steering did not override automatic pursuit.');
+});
+test('Automatic pursuit closes an open lane and rescues its burning target', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;cells=[{id:1,x:450,y:600,hunter:true,fuse:5,grace:0,vx:0,vy:0,spreadT:0,dir:Math.PI,ph:0,ps:.5}];demons=[];slag=[];player.x=300;player.y=600;player.hx=0;player.hy=-1;for(let i=0;i<240&&saved===0;i++)step()');
+  assert.equal(g.run('saved'),1,'Auto-run identified the fire but failed to complete an unobstructed rescue.');
+});
+test('Automatic pursuit follows collision deflection around a large prop', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;K.PANIC_SPD=0;cells=[{id:1,x:680,y:240,hunter:true,fuse:100,grace:0,vx:0,vy:0,spreadT:0,dir:0,ph:0,ps:.5}];demons=[];slag=[];arson=[];player.x=430;player.y=560;player.hx=0;player.hy=-1;for(let i=0;i<600&&saved===0;i++)step()');
+  assert.equal(g.run('saved'),1,'Automatic pursuit stayed pinned against the wagon instead of following its collision deflection around it.');
 });
 test('Cinder-eating warning draws no stroked countdown or blast-radius circles', () => {
   const g=game();g.run('onTitle=false;intro=null;introT=0;cells=[];slag=[];trail=[];rings=[];arson=[];shots=[];wake=[];pulses=[];allies=[];powerups=[];boss=null;husks=[{x:300,y:640,t:0,ph:0}];demons=[{x:240,y:640,t:0,hitCd:0,source:"vent",warn:0,ph:1,tgt:husks[0],feast:husks[0],eatT:K.CINDER_EAT_T*.6}];render()');
