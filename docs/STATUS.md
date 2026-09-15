@@ -1,5 +1,11 @@
 # Fwoosh status — September 14, 2026
 
+## Reserved top HUD — 2026-09-15-hud-safe-1
+
+The top HUD now occupies its own opaque screen area. Running, dashing, collision pushes, villagers/enemies and old opponent targets respect the upper arena boundary with clearance for the largest existing vent pose. Temporary rescue/tactical messages share the header instead of covering play. Header taps cannot spend dash charges. 96 checks pass; 320px human/vent boundary poses verified. No new art, save migration or economy-value changes. The reduced playable height needs balance playtesting. See HUD_SAFE_AREA.md; issue #1 records deployment.
+
+Earlier checkpoints below are historical.
+
 ## Present dialogue and diary rewrite — 2026-09-15-dialogue-1
 
 Tony approved clear present-tense exchanges in bottom-screen text boxes and backstory primarily in the optional diary. The live opening is one short instruction. Rescue, rising carried heat and vent completion prompt brief reactions; later returns introduce repeated death, Keith's role, ratkin judgment and rebuilding. At most two story exchanges per run, sixteen seconds between exchanges, no stale lore queue, no frozen return card. One optional combat reaction shares the same box and cannot interrupt. Dialogue remains automatic while movement, dash and vent stay available. Diary → Conversations rereads delivered words without revealing future lines.

@@ -1,5 +1,7 @@
 // ---------------------------------------------------------------- constants
 const VW = 720, VH = 1280;          // virtual world, portrait, x wraps
+// Top UI is outside playable ground. Clearance includes the tallest current Makko vent pose.
+const ARENA = { HUD_BOTTOM:270, TOP:434, BOTTOM:VH-40 };
 const DT = 1/120;                   // fixed timestep
 
 const K = {

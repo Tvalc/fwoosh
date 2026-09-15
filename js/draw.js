@@ -1303,6 +1303,7 @@ function render(){
   if(mode === 'hub'){ drawHub(ctx); return; }
   const p = player;
   SK.bg(ctx);
+  ctx.save();ctx.beginPath();ctx.rect(0,ARENA.HUD_BOTTOM,VW,VH-ARENA.HUD_BOTTOM);ctx.clip();
 
   if(window.OBS_DEBUG){                                 // obstacle-tuning overlay (dev only)
     ctx.save(); ctx.strokeStyle='rgba(0,255,255,0.9)'; ctx.fillStyle='rgba(0,255,255,0.12)'; ctx.lineWidth=2;
@@ -1529,35 +1530,14 @@ function render(){
     }
   }
 
-  // ---- Keith's callout (fires read / snuffed / broken / the opening premise)
-  if(callout){
-    const a = Math.max(0, Math.min(1, (1 - callout.t/callout.life)*1.4));
-    ctx.globalAlpha = a;
-    ctx.textAlign = 'center';
-    if(callout.lore){                                    // Keith, telling you why — dialogue, not HUD
-      ctx.font = 'italic 600 25px "Pixelify",system-ui,sans-serif';
-      ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(7,7,11,0.9)';
-      ctx.strokeText('“'+callout.text+'”', VW/2, VH*0.29);
-      ctx.fillStyle = '#ff9dbd'; ctx.fillText('“'+callout.text+'”', VW/2, VH*0.29);
-      ctx.font = '700 16px "Pixelify",system-ui,sans-serif'; ctx.lineWidth = 4;
-      ctx.strokeText('— KEITH', VW/2, VH*0.29 + 28);
-      ctx.fillStyle = 'rgba(255,157,189,0.75)'; ctx.fillText('— KEITH', VW/2, VH*0.29 + 28);
-    } else {
-      ctx.fillStyle = callout.good === true ? '#7fe8ff' : callout.good === false ? '#ff5d94' : '#dfe6f2';
-      const big = callout.good !== null;
-      ctx.font = (big ? '800 33px' : '500 26px') + ' "Pixelify",system-ui,sans-serif';
-      ctx.fillText(callout.text, VW/2, 265);
-    }
-    ctx.globalAlpha = 1;
-  }
+  ctx.restore(); // End world clip; HUD has its own reserved screen space.
 
   // ---- HUD (clean: hearts for health, gold score, one-line objective; hidden on title/intro/over)
   const hudOn = mode === 'play' && !onTitle && introT <= 0 && (!intro || intro.phase==='talk');
   if(hudOn){
     // A dark backing separates live values from the busy town artwork.
-    const hudShade=ctx.createLinearGradient(0,0,0,244);
-    hudShade.addColorStop(0,'rgba(9,8,15,0.94)');hudShade.addColorStop(0.88,'rgba(9,8,15,0.87)');hudShade.addColorStop(1,'rgba(9,8,15,0)');
-    ctx.fillStyle=hudShade;ctx.fillRect(0,0,VW,244);
+    ctx.fillStyle='#09080f';ctx.fillRect(0,0,VW,ARENA.HUD_BOTTOM);
+    ctx.fillStyle='#514253';ctx.fillRect(0,ARENA.HUD_BOTTOM-2,VW,2);
     ctx.textAlign='right';ctx.fillStyle='#ffcf80';ctx.font='800 27px "Pixelify",system-ui,sans-serif';
     ctx.fillText('SCORE '+score,VW-24,38);
     // HEALTH — a row of Makko hearts, top-left (count scales with maxHearts). Fire burns them down; clear, they refill.
@@ -1572,6 +1552,14 @@ function render(){
       }
     }
     drawRunMeters(ctx);
+    // Transient status shares the reserved strip rather than obscuring playable ground.
+    const status=rescueReward ? rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS' : callout ? callout.text : '';
+    if(status){
+      ctx.save();ctx.textAlign='center';ctx.fillStyle=rescueReward?'#b0ffd8':callout.good===false?'#ff9dbd':'#e5e0ed';
+      let sz=23;ctx.font='700 '+sz+'px "Pixelify",system-ui,sans-serif';
+      while(ctx.measureText(status).width>VW-48 && sz>14){sz--;ctx.font='700 '+sz+'px "Pixelify",system-ui,sans-serif';}
+      ctx.fillText(status,VW/2,253);ctx.restore();
+    }
     // Currency feedback sits away from heat/Edge and the mobile vent target.
     ctx.save();ctx.textAlign='left';ctx.fillStyle='#ffcf80';ctx.font='800 25px "Pixelify",system-ui,sans-serif';
     panel(ctx,18,VH-153,430,72,10,'rgba(9,8,15,0.9)',null);
@@ -1579,12 +1567,6 @@ function render(){
     ctx.fillText('RUN +'+runEmbers+' EMBERS',30,VH-125);
     const liveGoal=upgradeGoal();ctx.font='500 21px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#dfd8c9';
     if(liveGoal)ctx.fillText(liveGoal.name+' · '+Math.floor(goalAmount(liveGoal))+' / '+liveGoal.cost,30,VH-97);
-    if(rescueReward){
-      ctx.textAlign='center';ctx.font='800 29px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#b0ffd8';
-      panel(ctx,140,300,VW-280,53,10,'rgba(9,19,18,0.95)',null);
-      ctx.fillStyle='#b0ffd8';
-      ctx.fillText(rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS',VW/2,335);
-    }
     ctx.restore();
     if(player.ventUnit){
       const u=player.ventUnit,bw=300,bx=(VW-bw)/2,by=VH-225;
