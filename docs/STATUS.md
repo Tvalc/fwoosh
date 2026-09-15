@@ -1,5 +1,11 @@
 # Fwoosh status — September 15, 2026
 
+## Faster burning runners — 2026-09-15-chase-1
+
+Burning villagers now panic-run at 205 world pixels per second, up from 150. That is faster than Duy's clear-headed 170-pixel jog, so unattended pursuit cannot simply reel in a target fleeing in the same direction. A directed dash still closes the gap decisively; carrying heat can also push Duy above their speed, rewarding the existing risk loop. Their fuse, movement pattern, rescue radius, rewards and all other actors are unchanged.
+
+The tuning test proves a straight fleeing runner opens distance against an ordinary jog and is caught by one well-aimed dash. The broader pursuit, collision, economy, input and save suite remains in place.
+
 ## Priority auto-run — 2026-09-15-hunt-1
 
 Duy's unattended heading now pursues the nearest burning villager whenever one exists. When no villagers are burning, he pursues the nearest fire demon. He uses the prior heat-sensitive wander only when both sets are empty. Pursuit turns smoothly instead of snapping; held movement keys and player-directed dashes take immediate priority, preserving the player's ability to route faster, cut off threats and avoid a bad automatic approach. Running into a demon without dashing remains dangerous.

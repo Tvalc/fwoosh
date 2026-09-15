@@ -74,7 +74,7 @@ const K = {
   SPREAD_EVERY: 0.9,               // spread check cadence per flaming villager
   SPREAD_CHANCE: 0.5,              // chance a nearby calm villager catches on a check
   BURN_FUSE: 6.5,                   // a flaming villager burns into a WALL after this (unsaved)
-  PANIC_SPD: 150,                   // flaming villager panic-run (catchable with a dash)
+  PANIC_SPD: 205,                   // flaming villagers outrun a clear-headed jog; dash or build heat to close
   SAVE_SCORE: 120,                  // base points per villager saved
   SAVE_ANIM_DUR: 1.5,               // seconds the Makko teleport-to-light save animation plays before the villager is gone
   BLAZE_MULT: 0.5,                  // + this per heat carried, to the save score (hold fire = big points)
