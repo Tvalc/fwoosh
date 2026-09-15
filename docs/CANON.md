@@ -6,7 +6,7 @@ Reviewed September 15, 2026. Tony's explicit decisions supersede contradictory p
 
 Fwoosh tells Duy's experience between dying with his team and earning resurrection. It must stand alone, and it can later serve as the playable route used to recover Duy in a larger multi-game, multi-genre story.
 
-Duy initially understands almost nothing. He dies and is dropped directly into the burning-town action. The situation does not wait for him. The Ratkin Arbiter gives brief present-tense guidance during controllable gameplay: Duy is being punished, he must relieve the ratkin's suffering and he will die repeatedly. The game reveals more as he progresses. The current live build calls this character Keith; that name is deprecated and its replacement is pending.
+Duy initially understands almost nothing. He dies and is dropped directly into the burning-town action. The situation does not wait for him. Khet-Tak-Tor, the Ratkin Arbiter, gives brief present-tense guidance during controllable gameplay: Duy is being punished, he must relieve the ratkin's suffering and he will die repeatedly. The game reveals more as he progresses. His name is pronounced **KET-tak-TOR** and carries the Ratkin sense **“the voice that closes the debt.”** The current live build still uses the deprecated name Keith.
 
 Present events use paced bottom-screen dialogue. Past revelations happen rarely during runs and mainly through the optional diary. Immediate danger and objectives should be clear even while the larger mystery unfolds.
 
@@ -14,7 +14,7 @@ Present events use paced bottom-screen dialogue. Past revelations happen rarely 
 
 After the team's deaths and the gods' offer, Duy and Cuong arrive in a dark cell. Frightened by movement around them, they fire and kill nineteen unarmed ratkin who were fleeing toward an open door rather than attacking. Duy later sacrifices himself beneath a gate so his companions can escape and awakens in the burning ratkin town.
 
-The character currently called Keith is a Ratkin jailer and Arbiter and will receive a new public name and Ratkin Makko design. He can punish, test and obstruct Duy, and he administers the judgment process; defeating the Arbiter never grants freedom by itself. Duy must rebuild what Ratkin society lost and earn their favor. Ratkin society supplies the authority behind his release. Whether the Arbiter announces their collective verdict or holds delegated authority to release Duy remains to be decided. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
+Khet-Tak-Tor is a Ratkin jailer and Arbiter. The current human presentation will be replaced with a Ratkin Makko design. He can punish, test and obstruct Duy, and he administers the judgment process; defeating him never grants freedom by itself. Duy must rebuild what Ratkin society lost and earn their favor. Ratkin society supplies the authority behind his release. Whether Khet-Tak-Tor announces their collective verdict or holds delegated authority to release Duy remains to be decided. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
 
 Rescuing a burning ratkin draws its heat into Duy. The process hurts, and the pain grows as he carries more heat. A released ratkin ascends rather than merely stumbling away.
 
@@ -51,9 +51,9 @@ Ledger also has a route where Duy survives and older language saying dead guests
 ## Open design decisions
 
 - What exactly constitutes complete restoration and which acts earn ratkin favor.
-- The Arbiter's final public name and exact mandate.
-- Whether the Arbiter announces a collective Ratkin verdict or personally holds delegated release authority.
-- Why the Arbiter maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
+- Khet-Tak-Tor's exact mandate as jailer and Arbiter.
+- Whether Khet-Tak-Tor announces a collective Ratkin verdict or personally holds delegated release authority.
+- Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
 - How district/Arbiter progress contributes without making one combat victory the release condition.
 - City costs, construction times, production ratios and offline limits.
 - Whether the Invoice uses lifetime collected embers, unspent embers or another auditable total.
