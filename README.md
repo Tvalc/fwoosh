@@ -1,6 +1,6 @@
 # FWOOSH
 
-A portrait fire-rescue game: absorb fire from villagers, manage the heat you carry, vent to heal, and turn rescues into an advantage against Keith. Duy wakes in a burning ratkin town after death. Keith is his jailer; later diary entries reveal why he must rebuild and earn the ratkin's judgment.
+A portrait fire-rescue game: absorb fire from villagers, manage the heat you carry, vent to heal, and turn rescues into an advantage against the Ratkin Arbiter. Duy wakes in a burning ratkin town after death. The current live build still calls the Arbiter Keith; that public name and human presentation are being replaced while save-compatible internal keys remain stable.
 
 ## Checkpoint
 
