@@ -60,3 +60,7 @@ Do not invent answers to these questions or implement a new favor/release system
 Tony clarified: Duy initially understands almost nothing. He has just died and is dropped into action. Keith speaks DURING gameplay, vaguely explaining punishment, relieving ratkin suffering, and repeated death. More is revealed with progress. No upfront death/massacre explanation.
 
 Story release 2026-09-14-story-1 implements that direction: direct control with Keith narration; fixes title boot consuming the intro; replays the new intro once without resetting progress; keeps the mobile vent HUD exposed. Later dialogue, diary, title and victory text now align with rebuilding/favor and ratkin judgment. The Shrine records rescues without declaring a nineteen-rescue debt payoff. City construction, favor judgment, resurrection and Invoice redemption remain unimplemented pending their detailed interview.
+
+## Core-loop priority and vent decisions
+
+Tony deferred city expansion to polish the current arcade and existing meta through a ten-improvement interview. First authorized package: one heat/full-heart commitment, hold to chain, one persistent demon per completed unit, nearby-cinder hunting then Duy, and consuming a cinder person to explode/ignite villagers/damage Duy. See VENT_TUNING.md for the implemented mechanics, explicit tuning assumptions and remaining economy decisions. All earlier city/cross-game canon remains for later.

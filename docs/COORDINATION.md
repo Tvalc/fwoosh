@@ -33,3 +33,7 @@ Deferred until scoped: heroes/mastery, Tavern and later buildings, feud redesign
 ## Latest authorization
 
 Tony authorized the immediate combined release and deployment after each major completed change for live testing. Codex integrates Cursor 2d9316c, verifies, and publishes; no further release permission is required for these scoped changes. Keep original checkouts untouched. Codex continues the story/city interview here; the separate Vovinam Ledger task receives shared decisions explicitly.
+
+## Current scoped work
+
+Tony approved the vent-risk package after interview: Codex implements/tests/publishes from codex/vent-commitment in its isolated checkout. Cursor continues the Fwoosh Makko art/animation lane. Existing core gameplay and ember economy now take priority over city expansion. Shared files touched: constants.js, sim.js, input.js, draw.js, main.js and build marker; reconcile by diff with any later Cursor delivery.

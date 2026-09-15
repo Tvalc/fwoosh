@@ -21,3 +21,7 @@ The city implementation, ratkin favor/judgment, earned resurrection, Invoice con
 Cursor owns Makko animations/art in its separate checkout. Full run cycles and cinder clipping/scale correction remain open; the non-Makko prototype was removed and original Makko cinder restored. Twelve diary assignments remain; evaluate existing dark_cell artwork for one. Codex continues scoped gameplay/records/release work independently and passes shared canon to the Ledger task explicitly.
 
 Tony authorizes publication after each verified major change. Preserve original checkouts and existing saves. Verified source backup is local; off-device destination remains unresolved. Heroes/mastery, expanded landmarks, feud redesign and daily/share/ads remain proposals needing reconciliation, not automatic launch requirements.
+
+## Latest checkpoint: core-loop polish before city expansion
+
+HUD 2026-09-14-hud-1 deployed and was browser-verified at main 3c2be87. Tony now prioritizes existing gameplay and ember economy over city expansion. Candidate 2026-09-14-vent-1 implements the approved vent unit commitment and persistent cinder-eating demons. See VENT_TUNING.md for behavior and initial numbers. Tests cover old saves, input boundaries, chaining, full/partial hearts, persistence, interruption and blast settlement; phone-size fixtures cover unit progress, warning and blast. Economy rates and prices remain unchanged pending interview. Verify deployment before describing this candidate as live; issue #1 carries final release evidence.

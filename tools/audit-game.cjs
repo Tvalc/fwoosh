@@ -204,8 +204,8 @@ test('Edge advantage leaves a fight; disadvantage remains bounded', () => {
     detail.push(g.run('({district:runDistrict, edge, dumped, required:boss.dumpNeeded})'));
   } return detail;
 });
-test('A dash cancels venting and spends one charge', () => {
-  const g=game();g.run('onTitle=false; intro=null; player.venting=true; lungeDir(1,0)');
+test('A dash at an idle boundary spends one charge', () => {
+  const g=game();g.run('onTitle=false; intro=null; lungeDir(1,0)');
   assert.equal(g.run('player.venting'),false);assert.equal(g.run('player.charges'),2);
 });
 test('All five boss move handlers can advance without a simulation exception', () => {
@@ -230,24 +230,31 @@ test('Focus loss cancels a pending tap instead of dashing on a later release', (
   assert.equal(g.run('player.charges'),3);
   assert.equal(g.run('heldVec()'),null);assert.equal(g.run('player.venting'),false);
 });
-test('Desktop keys steer, dash once on a held Shift, and do not rearm canceled vent', () => {
-  const g=game();g.run('onTitle=false; intro=null; introT=0');
+test('Desktop dash waits for vent unit and held keys do not rearm chaining', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;player.heat=2');
   g.dispatch('keydown',{key:'d'});g.dispatch('keydown',{key:' '});
   assert.equal(g.run('player.venting'),true);
   g.dispatch('keydown',{key:'Shift',repeat:false});
   g.dispatch('keydown',{key:'Shift',repeat:true});g.dispatch('keydown',{key:' ',repeat:true});
+  assert.equal(g.run('player.charges'),3);assert.equal(g.run('player.venting'),true);
+  g.run('ventHold(K.VENT_PURGE)');
   assert.equal(g.run('player.charges'),2);assert.equal(g.run('player.venting'),false);
+  assert.equal(g.run('player.heat'),1);assert.equal(g.run('demons.length'),1);
   assert.equal(g.run('player.hx'),1);
-  g.dispatch('keyup',{key:'d'}); assert.equal(g.run('heldVec()'),null);
+  g.dispatch('keyup',{key:'d'});assert.equal(g.run('heldVec()'),null);
 });
-test('Touch vent starts and releases without consuming a dash', () => {
-  const g=game();g.run('onTitle=false; intro=null; introT=0');
+
+test('Touch release finishes exactly one unit without spending a dash', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;player.heat=2');
   const pt=g.run('({x:ventBtn().x*scale,y:ventBtn().y*scale})');
   g.dispatch('pointerdown',{pointerType:'touch',clientX:pt.x,clientY:pt.y});
-  assert.equal(g.run('player.venting'),true);
-  g.dispatch('pointerup');assert.equal(g.run('player.venting'),false);
-  assert.equal(g.run('player.charges'),3);
+  g.dispatch('pointerup');assert.equal(g.run('player.venting'),true);
+  g.run('ventHold(K.VENT_PURGE/2)');assert.equal(g.run('player.heat'),2);
+  g.run('ventHold(K.VENT_PURGE/2);ventHold(K.VENT_PURGE)');
+  assert.equal(g.run('player.venting'),false);assert.equal(g.run('player.heat'),1);
+  assert.equal(g.run('demons.length'),1);assert.equal(g.run('player.charges'),3);
 });
+
 test('Touch swipe uses one charge; its release does not add a second dash', () => {
   const g=game();g.run('onTitle=false; intro=null; introT=0');
   g.dispatch('pointerdown',{pointerType:'touch',clientX:100,clientY:200});
@@ -296,7 +303,7 @@ test('Five-district simulation soak keeps positions, health and economy finite',
   const rows=[];
   for(let district=1;district<=5;district++)for(const seed of [11,42,99]){
     const g=game();g.run(`selDistrict=${district};reset(${seed});onTitle=false;intro=null;introT=0;god=true;startDuel()`);
-    g.run('for(let i=0;i<7200;i++){if(i%240===0)player.venting=!player.venting;if(i%60===0)lungeDir(Math.cos(i),Math.sin(i));step();if(!Number.isFinite(player.x+player.y+player.hp+META.embers+runEmbers))throw Error("non-finite simulation");}');
+    g.run('for(let i=0;i<7200;i++){if(i%240===0){player.heat=2;setVentHeld(!player.ventHeld);}if(i%60===0)lungeDir(Math.cos(i),Math.sin(i));step();if(!Number.isFinite(player.x+player.y+player.hp+META.embers+runEmbers))throw Error("non-finite simulation");}');
     assert.ok(g.run('player.charges>=0 && player.charges<=RUN_MAX_CHARGES'));
     rows.push({district,seed,seconds:g.run('elapsed'),mode:g.run('mode')});
   }return rows;
@@ -323,7 +330,7 @@ test('Title boot does not consume the live intro; first start gives control duri
   assert.ok(g.run('player.x')>x,'Player must move while Keith speaks');
   g.dispatch('keydown',{key:'Shift',repeat:false});
   assert.equal(g.run('player.charges'),2,'Dialogue must not block dashing');
-  g.dispatch('keydown',{key:' ',repeat:false});
+  g.run('player.heat=1');g.dispatch('keydown',{key:' ',repeat:false});
   assert.equal(g.run('player.venting'),true,'Dialogue must not block venting');
 });
 
@@ -343,9 +350,92 @@ test('Updated intro replays once for an older save while preserving progression 
 test('Mobile vent HUD remains visible and usable during the live intro', () => {
   const g=game();g.run('onDown(360,1100);isTouch=true;var ventDraws=0;drawVentButton=()=>ventDraws++;render()');
   assert.equal(g.run('ventDraws'),1);
-  g.run('var vb=ventBtn();onDown(vb.x,vb.y)');
-  assert.equal(g.run('player.venting'),true);g.run('onUp()');
+  g.run('player.heat=1;var vb=ventBtn();onDown(vb.x,vb.y)');
+  assert.equal(g.run('player.venting'),true);g.run('onUp();ventHold(K.VENT_PURGE)');
   assert.equal(g.run('player.venting'),false);
+});
+
+
+test('Holding chains heat units then full-heart heals, one demon per completed unit', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.heat=2;player.hp=0.6;setVentHeld(true)');
+  g.run('ventHold(K.VENT_PURGE)');assert.equal(g.run('player.heat'),1);assert.equal(g.run('player.hp'),0.6);
+  g.run('ventHold(K.VENT_PURGE)');assert.equal(g.run('player.heat'),0);assert.equal(g.run('player.ventUnit.kind'),'heal');
+  g.run('ventHold(K.VENT_HEAL_T/2)');assert.equal(g.run('player.hp'),0.6);
+  g.run('ventHold(K.VENT_HEAL_T/2)');assert.equal(g.run('player.hp'),0.8);
+  g.run('ventHold(K.VENT_HEAL_T)');assert.equal(g.run('player.hp'),1);
+  assert.equal(g.run('demons.length'),4);assert.equal(g.run('player.venting'),false);
+  g.run('ventHold(10)');assert.equal(g.run('demons.length'),4);
+});
+test('Final partial heat and heart still complete one bounded unit; no overheal', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.heat=0.5;player.hp=0.95;setVentHeld(true);ventHold(K.VENT_PURGE);ventHold(K.VENT_HEAL_T)');
+  assert.equal(g.run('player.heat'),0);assert.equal(g.run('player.hp'),1);
+  assert.equal(g.run('demons.length'),2);assert.equal(g.run('player.ventUnit'),null);
+});
+test('Full health with no heat does not lock or generate enemies', () => {
+  const g=game();g.run('onTitle=false;intro=null;setVentHeld(true);ventHold(10)');
+  assert.equal(g.run('player.venting'),false);assert.equal(g.run('demons.length'),0);
+});
+test('A full-heart heal scales correctly after heart upgrades', () => {
+  const g=game();g.run('onTitle=false;intro=null;META.buildings.well.hearts=3;applyUpgrades();player.hp=0.5;setVentHeld(true);setVentHeld(false);ventHold(K.VENT_HEAL_T)');
+  assert.equal(g.run('player.hp'),0.625);assert.equal(g.run('demons.length'),1);
+});
+test('Focus loss stops chaining and clears queued dash, but finishes committed unit', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.heat=2');
+  g.dispatch('keydown',{key:' '});g.dispatch('keydown',{key:'Shift',repeat:false});g.dispatch('blur');
+  g.run('ventHold(K.VENT_PURGE);ventHold(10)');
+  assert.equal(g.run('player.heat'),1);assert.equal(g.run('demons.length'),1);
+  assert.equal(g.run('player.charges'),3);assert.equal(g.run('player.ventDash'),null);
+});
+test('Venting roots actual movement until the released unit finishes', () => {
+  const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;cells=[];player.x=360;player.y=640;player.heat=2;setVentHeld(true);setVentHeld(false);for(let i=0;i<20;i++)step()');
+  assert.equal(g.run('player.x'),360);assert.equal(g.run('player.y'),640);
+  g.run('for(let i=0;i<50;i++)step()');assert.ok(g.run('player.y')<640);
+  assert.equal(g.run('demons.length'),1);
+});
+test('Vent demons persist after release and into Keith encounter; new run clears them', () => {
+  const g=game();g.run('onTitle=false;intro=null;god=true;husks=[];spawnVentDemon();setVentHeld(false);for(let i=0;i<1000;i++)stepDemons(DT)');
+  assert.equal(g.run('demons.length'),1);g.run('startDuel()');assert.equal(g.run('demons.length'),1);
+  g.run('reset()');assert.equal(g.run('demons.length'),0);assert.equal(g.run('player.ventUnit'),null);
+});
+test('Each completed unit spawns even above the old demon cap; emergence cannot bite', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.hp=0.2;for(let i=0;i<12;i++){player.heat=1;setVentHeld(true);setVentHeld(false);ventHold(K.VENT_PURGE);}');
+  assert.equal(g.run('demons.length'),12);
+  g.run('for(const d of demons){d.x=player.x;d.y=player.y;}stepDemons(DT)');assert.equal(g.run('player.hp'),0.2);
+});
+test('Nearby cinders take priority; outside the search radius demons chase Duy', () => {
+  const g=game();g.run('onTitle=false;intro=null;god=true;player.x=600;player.y=640;husks=[{x:200,y:640,t:0,ph:0}];spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT)');
+  assert.equal(g.run('demons[0].tgt===husks[0]'),true);assert.ok(g.run('demons[0].x')<300);
+  g.run('husks[0].x=30;demons[0].x=400;stepDemons(DT)');assert.equal(g.run('demons[0].tgt'),null);assert.ok(g.run('demons[0].x')>400);
+});
+test('Eating cinder telegraphs then consumes both bodies, ignites multiple villagers and deals one heart', () => {
+  const g=game();g.run('onTitle=false;intro=null;player.x=400;player.y=640;player.hp=1;husks=[{x:300,y:640,t:0,ph:0}];cells=[{x:330,y:640,grace:0},{x:300,y:700,grace:0},{x:600,y:700,grace:0}];spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT)');
+  assert.equal(g.run('demons[0].feast===husks[0]'),true);assert.equal(g.run('cells[0].hunter'),undefined);
+  g.run('stepDemons(K.CINDER_EAT_T)');assert.equal(g.run('demons.length'),0);assert.equal(g.run('husks.length'),0);
+  assert.equal(g.run('cells.filter(c=>c.hunter).length'),2);assert.equal(g.run('player.hp'),0.8);
+  assert.equal(g.run('runEmbers'),0);assert.equal(g.run('cinderBlasts.length'),1);
+});
+test('Dash interception prevents an eating demon from consuming its cinder', () => {
+  const g=game();g.run('onTitle=false;intro=null;husks=[{x:300,y:640,t:0,ph:0}];player.x=400;player.y=640;spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT);player.x=300;player.lunge=0.1;stepDemons(DT)');
+  assert.equal(g.run('demons.length'),0);assert.equal(g.run('husks.length'),1);assert.equal(g.run('cinderBlasts.length'),0);
+});
+test('Rekindling interrupts eating and preserves the rescue instead of exploding', () => {
+  const g=game();g.run('onTitle=false;intro=null;cells=[];husks=[{x:300,y:640,t:0,ph:0}];player.x=400;player.y=640;spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT);player.x=300;player.heat=1;stepHusks(DT);stepDemons(K.CINDER_EAT_T)');
+  assert.equal(g.run('saved'),1);assert.equal(g.run('demons.length'),1);assert.equal(g.run('cinderBlasts.length'),0);
+});
+test('Two demons cannot consume one cinder twice', () => {
+  const g=game();g.run('onTitle=false;intro=null;god=true;husks=[{x:300,y:640,t:0,ph:0}];player.x=500;player.y=640;spawnVentDemon();spawnVentDemon();for(const d of demons)Object.assign(d,{x:300,y:640,warn:0});stepDemons(DT);stepDemons(K.CINDER_EAT_T)');
+  assert.equal(g.run('cinderBlasts.length'),1);assert.equal(g.run('demons.length'),1);
+});
+test('Cinder blast leaves rescued villagers safe, respects damage immunity and cannot pay twice on death', () => {
+  const g=game();g.run('onTitle=false;intro=null;cells=[{x:300,y:640,saving:true},{x:300,y:640,dead:true}];player.x=300;player.y=640;player.hp=0.1;player.hurtCd=0.5;husks=[{x:300,y:640}];explodeCinder(husks[0])');
+  assert.equal(g.run('player.hp'),0.1);assert.equal(g.run('cells.some(c=>c.hunter)'),false);
+  g.run('player.hurtCd=0;runEmbers=20;husks=[{x:300,y:640}];spawnVentDemon();Object.assign(demons[0],{warn:0,feast:husks[0],eatT:K.CINDER_EAT_T});stepDemons(DT)');
+  assert.equal(g.run('mode'),'over');assert.equal(g.run('META.embers'),20);assert.equal(g.run('opp.runs'),1);
+});
+
+test('Cinder blasts ignite victims even at the ordinary fire cap instead of instantly killing them', () => {
+  const g=game();g.run('onTitle=false;intro=null;god=true;cells=[];for(let i=0;i<K.HUNTER_CAP;i++)cells.push({x:30,y:50,hunter:true});cells.push({x:300,y:640,grace:0});husks=[{x:300,y:640}];explodeCinder(husks[0])');
+  assert.equal(g.run('cells[cells.length-1].hunter'),true);assert.notEqual(g.run('cells[cells.length-1].dead'),true);assert.equal(g.run('husks.length'),0);
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; no rendering/audio/network; no human balance assessment.',
