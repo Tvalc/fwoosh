@@ -1,5 +1,12 @@
 # Fwoosh status — September 14, 2026
 
+## Debug reset menu — 2026-09-15-debug-1
+
+Backtick opens a paused debug screen from title, play, town or results. Reset progress and restart requires a separate confirmation; Cancel is selected by default. Clears only fwoosh.meta and fwoosh.opp, preserves skin preference and other games, and immediately starts district 1 with fresh opening dialogue. Escape goes back, backtick closes, arrows/Enter or pointer choose actions. A storage failure attempts rollback and displays an error without starting a new run.
+
+102 actual-script checks pass, including reset persistence, dialogue initialization, input isolation, cancellation and storage-failure rollback. Local browser testing with a synthetic save verified backtick, clickable confirmation, cancellation, keyboard confirmation, and a fresh first run at zero embers/district 1/intro line 0. Live user progress was not reset. Issue #1 records deployment. This keyboard debug entry is for desktop testing.
+
+
 ## Clean control labels — 2026-09-15-clean-hud-1
 
 Removed the persistent WASD/SHIFT and swipe instructions, desktop HOLD SPACE/VENT/HEAL prompt, and DASH text beside the charge icons. Mobile keeps the Makko VENT/HEAL button; dash pips and active gameplay feedback remain. Input bindings are unchanged. Tony requested this simplification on September 15. All 97 existing checks pass. Local browser fixtures verify desktop has no control instructions and touch mode retains its VENT button. Issue #1 records deployment.
