@@ -20,6 +20,7 @@ function loadMeta(){
   s.buildings.well  = Object.assign({}, d.buildings.well,  s.buildings.well||{});
   s.buildings.forge = Object.assign({}, d.buildings.forge, s.buildings.forge||{});
   s.buildings.shrine = Object.assign({}, d.buildings.shrine, s.buildings.shrine||{});
+  s.flags = Object.assign({}, s.flags||{});
   s.diary = Object.assign({}, d.diary, s.diary||{});
   return Object.assign({}, d, s);
 }
@@ -48,6 +49,40 @@ function buy(building, track){
   META.embers-=item.costs[tier]; b[track]=tier+1; saveMeta(); applyUpgrades();
   hubToast=2.0; hubToastMsg=item.name+' UP';
 }
+// The first permanent upgrade is a one-time choice before building shops unlock.
+const STARTER_COST=20;
+const STARTER_OPTIONS={
+  hearts:{building:'well',track:'hearts',title:'MORE SURVIVABILITY',name:'DEEP WELL',icon:'heart',color:'#86dfff',
+    benefit:'5 hearts → 6 hearts',description:'Carry fire longer before you need to heal.'},
+  charges:{building:'forge',track:'charges',title:'BETTER MOBILITY',name:'QUICK FEET',icon:'ui_charge',color:'#ffbb70',
+    benefit:'3 dash charges → 4 charges',description:'One more dash to rescue, intercept or escape.'}
+};
+function hasPermanentUpgrade(){
+  const b=META.buildings;
+  return ['hearts','regen'].some(k=>(b.well[k]||0)>0) || ['charges','recharge'].some(k=>(b.forge[k]||0)>0);
+}
+function starterAvailable(){
+  return !!META.flags.starterReady && !META.flags.starterChosen && !hasPermanentUpgrade();
+}
+function prepareStarterOffer(){
+  if(META.flags.starterChecked) return;
+  META.flags.starterChecked=true;
+  if(hasPermanentUpgrade()) return; // existing purchases and balances keep their meaning
+  META.flags.starterReady=true;
+  runStarterBonus=Math.max(0,STARTER_COST-META.embers);
+  META.embers+=runStarterBonus;
+  META.flags.starterBonus=runStarterBonus;
+}
+function buyStarter(key){
+  const option=STARTER_OPTIONS[key];
+  if(mode!=='hub' || !option || !starterAvailable() || META.embers<STARTER_COST) return;
+  META.embers-=STARTER_COST;
+  META.buildings[option.building][option.track]=1;
+  META.flags.starterChosen=key;
+  saveMeta();applyUpgrades();hubSheet=null;hubBtns=[];
+  hubToast=3;hubToastMsg=option.name+' UP — READY FOR YOUR NEXT RUN';
+}
+
 // land in the town after a run; raise any building whose saves-milestone you just crossed
 function enterHub(){
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
@@ -61,6 +96,7 @@ function enterHub(){
   if(raised.length){ wellJustRose=true; hubToast=raised.length>1 ? 4.5 : 3.2;
     hubToastMsg=raised.join(' + ')+(raised.length>1 ? ' STAND AGAIN' : ' STANDS AGAIN'); }
   saveMeta();
+  if(starterAvailable()) hubSheet='starter';
 }
 
 let META = loadMeta();

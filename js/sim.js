@@ -46,6 +46,7 @@ let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more
 let RUN_HP_REGEN = K.HP_REGEN;   // per-run, set by applyUpgrades() from META (default = base)
 let RUN_MAX_CHARGES = K.CHARGES, RUN_CHARGE_REFILL = K.CHARGE_REFILL;   // dash economy, upgraded at The Forge
 // ---- META PROGRESSION: everything hangs off the villagers you SAVE. See loadMeta()/drawHub().
+let runStarterBonus = 0;         // one-time first-upgrade top-up, separate from earned rewards
 let runEmbers = 0;               // embers minted this run (banked into META at run end)
 let runSettled = false;          // one terminal event may bank this run and update its records
 let hubScroll = 0, hubSheet = null, wellJustRose = false, hubToast = 0, hubToastMsg = '', hubBtns = [];
@@ -73,7 +74,7 @@ function reset(seed){
   score = 0; elapsed = 0; cooldowns = 0; armed = false; respawnT = 0;
   mode = 'play'; popCause = ''; nextId = 1; frame = 0; peakHunters = 0; noFireT = 0;
   boss = null; duelActive = false; won = false; slagThisRun = 0; nextRiserAt = 1e9;  // risers off (absorb loop)
-  runEmbers = 0; runSettled = false; applyUpgrades();      // fresh tally/settlement + purchased upgrades
+  runEmbers = 0; runStarterBonus = 0; runSettled = false; applyUpgrades();      // fresh tally/settlement + purchased upgrades
   runDistrict = Math.min(5, Math.max(1, selDistrict||1));   // which district this run is (sets difficulty + Keith LV)
   runQuota = K.SAVE_QUOTA + (runDistrict-1)*2;              // deeper districts demand more saves before Keith rises
   powerups = []; surgeT = 0; mergeT = 0;
@@ -815,13 +816,13 @@ function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat yo
   const p = player;
   const town = d.source === 'town';
   p.heat = Math.min(K.HEAT_MAX, p.heat + K.WRAITH_KILL_HEAT);
-  const em = Math.max(0, Math.min(K.DEMON_KILL_EMBERS, K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
+  const em = d.source==='vent'?0:Math.max(0, Math.min(K.DEMON_KILL_EMBERS, K.EMBER_RUN_CAP - runEmbers)); runEmbers += em;
   edge += 0.25; edgePop = 0.5;                                   // clearing them nudges the town war your way
   p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
   ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
   for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:town?285:24}); }
-  if(!demonKillSeen){ demonKillSeen = true; callout = { text:'DASH THROUGH FIRE MONSTERS TO SHATTER THEM · +HEAT +EMBERS', t:0, life:2.3, good:true }; }
-  else callout = { text:'SHATTERED! +EMBERS', t:0, life:0.7, good:true };
+  if(!demonKillSeen){ demonKillSeen = true; callout = { text:d.source==='vent'?'VENT DEMON CLEARED · +HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +HEAT +EMBERS', t:0, life:2.3, good:true }; }
+  else callout = { text:em>0?'SHATTERED! +EMBERS':'SHATTERED! +HEAT', t:0, life:0.7, good:true };
 }
 
 // ---------------------------------------------------------------- LEVELED KEITH: movesets + duel FX

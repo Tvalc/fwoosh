@@ -913,6 +913,8 @@ function hubAct(a){
   if(a==='play'){ reset(); return; }
   if(a==='dprev'){ selDistrict = Math.max(1, selDistrict-1); return; }
   if(a==='dnext'){ selDistrict = Math.min(Math.min(5,META.district||1), selDistrict+1); return; }
+  if(a==='starter'){if(starterAvailable())hubSheet='starter';return;}
+  if(a.indexOf('starterbuy:')===0){buyStarter(a.split(':')[1]);return;}
   if(a==='diary'){ hubSheet='diary'; diaryOpen=null; diaryPage=0; return; }
   if(a==='shrine'){ hubSheet='shrine'; return; }
   if(a==='diaryback'){ diaryOpen=null; diaryPage=0; return; }
@@ -973,6 +975,14 @@ function drawHub(ctx){
   if(dFresh>0){ const bx=40+cw+gap+cw-22, by=cardY+cardH+gap+20; ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(bx,by,11,0,7); ctx.fill();
     ctx.fillStyle='#0a0710'; ctx.font='800 15px "Pixelify",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText(String(dFresh), bx, by+5); }
 
+  if(starterAvailable()){
+    panel(ctx,40,580,VW-80,88,14,'rgba(17,25,35,0.94)','#ffcf80');
+    ctx.textAlign='center';ctx.fillStyle='#ffe1a4';ctx.font='800 26px "Pixelify",system-ui,sans-serif';
+    ctx.fillText('CHOOSE YOUR FIRST UPGRADE',VW/2,615);
+    ctx.font='500 21px "Pixelify",system-ui,sans-serif';ctx.fillText('An extra heart or dash · '+STARTER_COST+' embers',VW/2,648);
+    hubB(40,580,VW-80,88,'starter');
+  }
+
   // --- NEXT chip (always a visible next goal)
   const nextUp=(bld)=>{ const b=META.buildings[bld], sh=SHOPS[bld]; for(const it of sh.items){ if((b[it.track]||0)<it.costs.length) return {cost:it.costs[b[it.track]||0], name:it.name, tier:(b[it.track]||0)+1}; } return null; };
   let nextTxt;
@@ -1005,6 +1015,7 @@ function drawHub(ctx){
   if(canNext) hubB(pbX+pbW-60, pbY, 60, pbH, 'dnext');      // ›
 
   // --- sheets
+  if(hubSheet==='starter'){drawStarterSheet(ctx);return;}
   if(hubSheet==='well'||hubSheet==='forge') drawShopSheet(ctx, hubSheet);
   else if(hubSheet==='diary') drawDiarySheet(ctx);
   else if(hubSheet==='shrine') drawShrineSheet(ctx);
@@ -1025,6 +1036,34 @@ function drawBuildingCard(ctx, x, y, w, h, title, sub, col, live, act, iconSpr){
   ctx.fillText(title, x+w/2, y+h-28);
   ctx.fillStyle=live?col:'rgba(150,160,180,0.9)'; ctx.font='500 14px "Pixelify",system-ui,sans-serif'; ctx.fillText(sub, x+w/2, y+h-9);
   if(act) hubB(x,y,w,h,act,true);
+}
+
+function drawStarterSheet(ctx){
+  hubBtns=[]; // modal owns every hit region; the town underneath cannot receive clicks
+  ctx.save();ctx.fillStyle='rgba(6,7,14,0.94)';ctx.fillRect(0,0,VW,VH);
+  ctx.textAlign='center';ctx.fillStyle='#ffe0a2';ctx.font='800 38px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('YOUR FIRST UPGRADE',VW/2,215);
+  ctx.fillStyle='#edf0fa';ctx.font='500 26px "Pixelify",system-ui,sans-serif';
+  ctx.fillText('Choose what helps you most.',VW/2,260);
+  ctx.fillStyle='#ffbd65';ctx.fillText('YOU HAVE '+META.embers+' EMBERS',VW/2,310);
+  let y=360;
+  for(const [key,o] of Object.entries(STARTER_OPTIONS)){
+    panel(ctx,48,y,VW-96,220,16,'#171e2d',o.color);
+    drawSpr(ctx,o.icon,104,y+68,50,{});
+    ctx.textAlign='left';ctx.fillStyle=o.color;ctx.font='800 27px "Pixelify",system-ui,sans-serif';ctx.fillText(o.title,148,y+47);
+    ctx.fillStyle='#ffffff';ctx.font='800 28px "Pixelify",system-ui,sans-serif';ctx.fillText(o.benefit,148,y+91);
+    ctx.font='500 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#cbd3e4';ctx.fillText(o.description,76,y+135);
+    const afford=META.embers>=STARTER_COST;
+    panel(ctx,76,y+156,VW-152,46,10,afford?'#303c4e':'#242633',o.color);
+    ctx.textAlign='center';ctx.font='800 24px "Pixelify",system-ui,sans-serif';ctx.fillStyle=afford?'#ffe1a4':'#8c92a1';
+    ctx.fillText(afford?'BUY FOR '+STARTER_COST+' EMBERS':'NEED '+STARTER_COST+' EMBERS',VW/2,y+187);
+    hubB(76,y+156,VW-152,46,'starterbuy:'+key,afford);y+=250;
+  }
+  ctx.font='500 23px "Pixelify",system-ui,sans-serif';ctx.fillStyle='#cbd3e4';
+  ctx.fillText('Permanent. Applies on your next run.',VW/2,895);
+  ctx.fillText('The other upgrade stays available in its shop.',VW/2,932);
+  panel(ctx,160,978,VW-320,60,12,'#1c2331','#7b89a2');ctx.fillStyle='#e2e9f6';ctx.fillText('DECIDE LATER',VW/2,1016);
+  hubB(160,978,VW-320,60,'close');ctx.restore();
 }
 
 function drawShopSheet(ctx, bld){
@@ -1604,6 +1643,7 @@ function render(){
     ctx.fillText(saved+' villagers saved  ·  '+fmt(elapsed), VW/2, VH/2 + 110);
     ctx.fillStyle = '#ffcf6b'; ctx.font = '700 24px "Pixelify",system-ui,sans-serif';
     ctx.fillText('+'+runEmbers+' embers earned', VW/2, VH/2 + 146);
+    if(runStarterBonus>0){ctx.font='600 20px "Pixelify",system-ui,sans-serif';ctx.fillText('+'+runStarterBonus+' first-upgrade bonus',VW/2,VH/2+175);}
     ctx.fillStyle = '#666f84'; ctx.font = '500 25px "Pixelify",system-ui,sans-serif';
     ctx.fillText('tap → back to Ashford', VW/2, VH/2 + 200);
     if(opp.runs >= 1){

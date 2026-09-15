@@ -2,8 +2,8 @@
 Reviewed September 14, 2026 against this conversation, current source, the older combat/meta roadmaps, art records, and GitHub issues.
 
 ## Implemented and deployed baseline
-Latest verified baseline: 2026-09-14-hud-1, main 3c2be87a7085e6c8851653731619cfb49e1f20d1.
-The action arcade loop, heat mechanics, vent/heal, imps/demons, chain rescues, husks/wraiths, Edge, five district encounters/replay, ember banking, Well/Forge upgrades, Shrine, fifteen diary chapters, reliability fixes and revised live-action intro exist. The latest gameplay suite has 41 passing checks. These facts do not mean the systems below are implemented.
+Latest verified baseline: 2026-09-14-vent-1, main 2d0540d00c1408a3ee27f967de09177f42628167. Release candidate 2026-09-14-economy-1 follows; issue #1 records final deployment evidence.
+The action arcade loop, heat mechanics, vent/heal, imps/demons, chain rescues, husks/wraiths, Edge, five district encounters/replay, ember banking, Well/Forge upgrades, Shrine, fifteen diary chapters, reliability fixes and revised live-action intro exist. The latest gameplay suite has 67 passing checks, including the economy candidate. These facts do not mean the systems below are implemented.
 
 ## Confirmed direction / remaining implementation
 1. HUD: implemented and deployed in 2026-09-14-hud-1. Dedicated six-segment heat gauge, larger rescue tally/progress, distinct Edge/Keith meters; 41 checks pass and 320px visual checks cover empty/full heat, encounter and narration. Deployment and live display were verified. Physical-phone feedback remains open.
@@ -55,4 +55,4 @@ The action arcade loop, heat mechanics, vent/heal, imps/demons, chain rescues, h
 - Earlier flat demon caps, separate Resolve currency and old Forge unlock numbers have been superseded by working systems; they are not missing implementation tasks.
 
 ## Recommended next sequence
-Current priority: polish the existing core loop and ember economy through a ten-improvement interview. First approved package: vent commitment and cinder-eating demons (VENT_TUNING.md), candidate 2026-09-14-vent-1. Continue economy/reward/price interview after live feedback. City placement/construction/transport, offline economy, sealing, favor/ending and cross-game integration follow later. Makko assets and audio can progress alongside bounded implementation work. Older optional systems require scope decisions rather than automatic inclusion.
+Current priority: polish the existing core loop and ember economy through a ten-improvement interview. Vent commitment and cinder-eating demons (VENT_TUNING.md) are live. The next candidate adds zero ember payouts for vent-created demons and a first-run choice of heart or dash capacity for 20 embers, funded by a one-time wallet top-up if needed (ECONOMY_TUNING.md). Later purchase cadence, earning rates, prices and upgrade effects remain in interview; unchanged prices are not a completed balance pass. City placement/construction/transport, offline economy, sealing, favor/ending and cross-game integration follow later. Makko assets and audio can progress alongside bounded implementation work. Older optional systems require scope decisions rather than automatic inclusion.

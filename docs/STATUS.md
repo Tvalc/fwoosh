@@ -2,26 +2,20 @@
 
 ## Verified live baseline
 
-Build 2026-09-14-story-1 deployed at main 0b3c1acc89ed6ceace6235fce14d3f7d40599c05. Reliability/refactor/Makko corrections and the action-first Keith narration are live. The arcade loop, heat/vent/heal, chain rescues, imps/demons/husks/wraiths, Edge, five districts and encounters/replay, allies, rewards, ember banking, Well/Forge, Shrine and fifteen diary chapters exist.
+Build 2026-09-14-vent-1 deployed through PR #12 at main 2d0540d00c1408a3ee27f967de09177f42628167. Reliability/refactor/Makko corrections, the action-first Keith narration, readable heat/rescue HUD, vent-unit commitment and persistent cinder-eating demons are live. The arcade loop, chain rescues, Edge, five districts and encounters/replay, allies, rewards, Well/Forge, Shrine and fifteen diary chapters exist.
 
-## HUD release candidate
+## Economy release candidate
 
-Build 2026-09-14-hud-1 adds an always-visible six-segment heat gauge, numeric heat and BLAZE multiplier, larger RESCUED tally/progress bar, separately labeled Edge and Keith progress. Hearts and score sit above the gauges. Narration and mobile vent remain exposed. All character artwork reuses Makko assets; no media, balance or save fields changed.
+2026-09-14-economy-1 removes ember rewards from vent-created demon kills and offers one extra heart or dash capacity for 20 embers after the first settled run. A one-time wallet top-up guarantees affordability even after a zero-rescue loss, before building unlocks. Existing unupgraded saves qualify after their next run; upgraded saves preserve their balances and tiers. Later shop prices remain unchanged. See ECONOMY_TUNING.md for exact rules and unresolved pacing/accounting decisions.
 
-All 41 existing gameplay/input checks pass (docs/reports/hud-state.json). Browser fixtures were visually checked at 320px width for zero heat, full heat, Keith encounter and intro dialogue, plus the wider display. Physical-phone and human balance testing remain open. Publication is authorized; verify the Pages deployment and live marker before calling this candidate live. The coordination issue records the final deployment result.
+67 gameplay/input checks pass (docs/reports/economy-state.json). 320px browser checks verify earnings/bonus presentation, both purchases, deferral and reopening. Release-versioned script URLs avoid mixed cached modules. The build ZIP matches tested source. Physical-phone and human balance testing remain open. Issue #1 records the final merge, deployment and live browser evidence; a candidate or pushed branch alone is not a live release.
 
-## Next: city rebuilding
+## Priority and deferred work
 
-Confirmed: freely placed buildings, multiple homes/production buildings and unique landmarks; roads and layout affect output; ratkin physically haul goods with distance and congestion; automatic staffing/priorities with optional player optimization. Ember foundations, offline construction and mandatory ember sealing precede operation. Food/materials/workforce support growth; ember upgrades accelerate progress. Random sealing appearances are cosmetic in Fwoosh. Embers will never be sold.
+Polish the existing core loop and ember economy through Tony's ten-improvement interview before city expansion. Continue with later purchase cadence, earning sources, prices and upgrade effects. Do not count individual interview answers as ten completed improvements.
 
-The city implementation, ratkin favor/judgment, earned resurrection, Invoice conversion/rewards, RPG System Shop and missable Ratkin recruit remain unbuilt. Interview costs, timing, resources, controls, release conditions and cross-game accounting before implementation. See docs/CANON.md and the complete docs/ROADMAP.md.
+Confirmed city design remains: freely placed buildings, multiple production buildings and unique landmarks; roads and physical ratkin hauling with distance/congestion; automatic priorities with optional optimization; ember foundations, offline construction and mandatory ember sealing before operation. City production, favor/judgment, earned resurrection, Invoice conversion/rewards, RPG System Shop and missable Ratkin recruit remain unbuilt. Embers will never be sold. See CANON.md and ROADMAP.md.
 
 ## Art and coordination
 
-Cursor owns Makko animations/art in its separate checkout. Full run cycles and cinder clipping/scale correction remain open; the non-Makko prototype was removed and original Makko cinder restored. Twelve diary assignments remain; evaluate existing dark_cell artwork for one. Codex continues scoped gameplay/records/release work independently and passes shared canon to the Ledger task explicitly.
-
-Tony authorizes publication after each verified major change. Preserve original checkouts and existing saves. Verified source backup is local; off-device destination remains unresolved. Heroes/mastery, expanded landmarks, feud redesign and daily/share/ads remain proposals needing reconciliation, not automatic launch requirements.
-
-## Latest checkpoint: core-loop polish before city expansion
-
-HUD 2026-09-14-hud-1 deployed and was browser-verified at main 3c2be87. Tony now prioritizes existing gameplay and ember economy over city expansion. Candidate 2026-09-14-vent-1 implements the approved vent unit commitment and persistent cinder-eating demons. See VENT_TUNING.md for behavior and initial numbers. Tests cover old saves, input boundaries, chaining, full/partial hearts, persistence, interruption and blast settlement; phone-size fixtures cover unit progress, warning and blast. Economy rates and prices remain unchanged pending interview. Verify deployment before describing this candidate as live; issue #1 carries final release evidence.
+Cursor owns Fwoosh Makko art/animation in its separate checkout. Ratkin run approval, cast locomotion, cinder clipping/scale correction, twelve diary assignments and audio remain open. Codex continues scoped gameplay, testing, records and releases independently. Preserve original checkouts and saves; reconcile overlapping diffs during integration. Verified source backup is local; off-device backup remains unresolved. The separate Ledger task receives shared canon explicitly.
