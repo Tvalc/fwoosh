@@ -183,6 +183,11 @@ const PRESENT = {
     {who:'DUY',emotion:'concerned',text:'Their homes are gone. What do they have to go back to?'},
     {who:ARBITER_NAME,emotion:'stern',text:"That's part of what you owe them. Help them rebuild."}]
 };
+const JUDGMENT_LINES=[
+  {who:ARBITER_NAME,emotion:'stern',text:'Five quarters stand. Nineteen spirits rose. Food and salvage move through homes you raised. The ratkin have seen it.'},
+  {who:'DUY',emotion:'questioning',text:'Then I paid the debt. Let me go.'},
+  {who:ARBITER_NAME,emotion:'stern',text:'You rebuilt enough for them to live. Release requires their favor. From this moment, the ratkin will weigh what you do with the life you restored.'}
+];
 let presentDialogue=null, presentGap=0, presentCount=0, presentTaunts=0, presentEvents={};
 let dialogueHistoryPage=0;
 function dialogueSave(){

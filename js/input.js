@@ -160,7 +160,7 @@ window.addEventListener('keydown', e=>{
     return;
   }
   if(mode === 'hub'){                                 // in the town: Space/Enter = PLAY, Esc closes a sheet
-    if(k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat){if(hubSheet==='city')cityAction('cityclose');else if(hubSheet)hubSheet=null;else reset();} }
+    if(k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat){if(hubSheet==='judgment')judgmentAdvance();else if(hubSheet==='city')cityAction('cityclose');else if(hubSheet)hubSheet=null;else reset();} }
     else if(k==='escape'){if(hubSheet==='city')cityAction('cityclose');else hubSheet=null;}
     return;
   }

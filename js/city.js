@@ -10,7 +10,8 @@ const CITY_DEF={
 const CITY_RUSH_COST=5, CITY_RUSH_SECONDS=30, CITY_BASE_STORAGE=10, CITY_STORE_BONUS=15, CITY_CONGESTION_SECONDS=4;
 
 function cityFresh(now=Date.now()){
-  return {v:1,lastAt:now,roads:[CITY_GATE],buildings:[],materials:0,food:4,nextId:1};
+  return {v:1,lastAt:now,roads:[CITY_GATE],buildings:[],materials:0,food:4,
+    producedFood:0,producedMaterials:0,nextId:1};
 }
 function cityCellKey(x,y){return Math.trunc(x)+','+Math.trunc(y);}
 function cityValidCell(x,y){return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&x<CITY_COLS&&y>=0&&y<CITY_ROWS;}
@@ -18,7 +19,9 @@ function cityNormalize(raw,now=Date.now()){
   const c=raw&&raw.v===1?raw:cityFresh(now), roads=Array.isArray(c.roads)?c.roads:[];
   const out={v:1,lastAt:Number.isFinite(Number(c.lastAt))?Number(c.lastAt):now,
     roads:[],buildings:[],materials:Math.max(0,Math.trunc(Number(c.materials)||0)),
-    food:c.food==null?4:Math.max(0,Math.trunc(Number(c.food)||0)),nextId:1};
+    food:c.food==null?4:Math.max(0,Math.trunc(Number(c.food)||0)),
+    producedFood:Math.max(0,Math.trunc(Number(c.producedFood)||0)),
+    producedMaterials:Math.max(0,Math.trunc(Number(c.producedMaterials)||0)),nextId:1};
   const seen=new Set();
   for(const key of roads){const p=String(key).split(',').map(Number), k=cityCellKey(p[0],p[1]);
     if(cityValidCell(p[0],p[1])&&!seen.has(k)){seen.add(k);out.roads.push(k);}}
@@ -65,6 +68,7 @@ function cityRoadPathTo(b){
 }
 function cityConnected(b){return cityRoadDistanceTo(b)!=null;}
 function cityWorkerCapacity(){return cityData().buildings.filter(b=>b.type==='burrow'&&b.state==='sealed'&&cityConnected(b)).length;}
+function citySealedConnectedCount(type){return cityData().buildings.filter(b=>b.type===type&&b.state==='sealed'&&cityConnected(b)).length;}
 function cityStorageCapacity(){return CITY_BASE_STORAGE+CITY_STORE_BONUS*cityData().buildings.filter(b=>b.type==='store'&&b.state==='sealed'&&cityConnected(b)).length;}
 function cityStationEligible(b){
   if(!b||!['yard','farm'].includes(b.type)||b.state!=='sealed'||!cityConnected(b))return false;
@@ -105,8 +109,8 @@ function cityAdvance(now=Date.now(),force=false){
     for(const b of c.buildings)if(['yard','farm'].includes(b.type)&&b.state==='sealed'){
       if(!active.has(b.id)){b.work=0;continue;}const cycle=cityCycleSeconds(b);b.work+=slice;
       const completed=Math.floor(b.work/cycle);if(completed>0){const cap=cityStorageCapacity();
-        if(b.type==='farm'){const made=Math.min(completed,cap-c.food);c.food+=made;b.work=made===completed?b.work-made*cycle:0;important=important||made>0;}
-        else{const made=Math.min(completed,Math.floor(c.food),cap-c.materials);c.food-=made;c.materials+=made;b.work=made===completed?b.work-made*cycle:0;important=important||made>0;}
+        if(b.type==='farm'){const made=Math.min(completed,cap-c.food);c.food+=made;c.producedFood=(c.producedFood||0)+made;b.work=made===completed?b.work-made*cycle:0;important=important||made>0;}
+        else{const made=Math.min(completed,Math.floor(c.food),cap-c.materials);c.food-=made;c.materials+=made;c.producedMaterials=(c.producedMaterials||0)+made;b.work=made===completed?b.work-made*cycle:0;important=important||made>0;}
       }
     }left-=slice;
   }
@@ -162,7 +166,7 @@ function cityRush(id){
 function citySetPriority(id,priority){const b=cityBuilding(id);if(!b||!['yard','farm'].includes(b.type))return;b.priority=Math.max(0,Math.min(2,Math.trunc(priority)));b.work=0;citySetMessage(CITY_DEF[b.type].short+' PRIORITY SET TO '+['LOW','NORMAL','HIGH'][b.priority]+'.');cityPersist();}
 function cityAction(action){
   if(action==='city'){cityOpen();return true;}
-  if(action==='cityclose'){cityAdvance(Date.now(),true);hubSheet=null;cityView='map';return true;}
+  if(action==='cityclose'){cityAdvance(Date.now(),true);hubSheet=null;cityView='map';judgmentEvaluate(true);return true;}
   if(action==='cityback'){cityView='map';return true;}
   if(action.indexOf('citytool:')===0){cityTool=action.split(':')[1];cityMovingId=null;cityMessage=cityTool==='move'?'SELECT A BUILDING, THEN ITS NEW SITE.':'';return true;}
   if(action.indexOf('citycell:')===0){const p=action.split(':').slice(1).map(Number);cityCellAct(p[0],p[1]);return true;}

@@ -4,13 +4,15 @@ Browser-local persistence; no cloud save/backend established in inspected code. 
 
 | Key | Contents | Interpretation |
 |---|---|---|
-| fwoosh.meta | v:1, embers, saved, bestBlaze, district, clearedDistricts, buildings, hero, diary.read, flags, recentRuns, city | district is highest unlocked (1–5), not completed count. clearedDistricts records completion (0–5). hero:'stranger' is a placeholder. |
+| fwoosh.meta | v:1, embers, saved, bestBlaze, district, clearedDistricts, buildings, hero, diary.read, flags, recentRuns, city, judgment | district is highest unlocked (1–5), not completed count. clearedDistricts records completion (0–5). hero:'stranger' is a placeholder. |
 | fwoosh.opp | Territory, latency history, grudge, runs, broken reads, snipes, wins, intro/lore progress | Feud still reads older run/win/read signals. |
 | fwoosh.skin | Selected skin | Separate from progression. |
 
 Well: `{built, hearts, regen}`. Forge: `{built, charges, recharge}`. Shrine: `{built:true}`. Diary: `{read:[]}`. `flags.reachedDuel` opens a chapter. Meta loader fills missing defaults; it does not comprehensively validate arbitrary malformed values.
 
-City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, food, nextId}`. A building is `{id,type:'burrow'|'yard'|'farm'|'store',x,y,state:'building'|'ready'|'sealed',remaining,work,priority}`. `priority` is 0 low, 1 normal or 2 high for production stations. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current production-cycle seconds. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, clamps resources and progress to nonnegative values, and defaults older city saves to four food and normal priorities.
+City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, food, producedFood, producedMaterials, nextId}`. A building is `{id,type:'burrow'|'yard'|'farm'|'store',x,y,state:'building'|'ready'|'sealed',remaining,work,priority}`. `priority` is 0 low, 1 normal or 2 high for production stations. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current production-cycle seconds. The production totals prove that each chain has operated and never decrease when resources are spent. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, clamps resources and progress to nonnegative values, and defaults older city saves to four food, zero production proof and normal priorities.
+
+Judgment: `{eligible:boolean, heard:boolean}`. `eligible` persists the first summons once all five restoration terms have been met. `heard` is set only after the player reaches the end of the three-line judgment scene. Old saves default both fields to false; existing resources are not retroactively counted as production.
 
 ## Persistence timing
 
