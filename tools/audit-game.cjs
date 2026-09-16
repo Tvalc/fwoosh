@@ -418,6 +418,18 @@ test('Venting roots actual movement until the released unit finishes', () => {
   g.run('for(let i=0;i<50;i++)step()');assert.ok(g.run('player.y')<640);
   assert.equal(g.run('demons.length'),1);
 });
+test('A demon bite cancels the current vent unit and requires a fresh press', () => {
+  const g=game();g.run('onTitle=false;intro=null;cells=[];husks=[];player.x=400;player.y=640;player.hp=.6;player.heat=0;setVentHeld(true);ventHold(RUN_VENT_HEAL_T/2);demons=[{x:390,y:640,t:0,hitCd:0,source:"vent",warn:0,ph:0,tgt:null,feast:null,eatT:0}];stepDemons(DT)');
+  assert.equal(g.run('player.ventUnit'),null);assert.equal(g.run('player.venting'),false);assert.equal(g.run('player.ventHeld'),false);
+  const hurt=g.run('player.hp');g.run('ventHold(RUN_VENT_HEAL_T*2)');assert.equal(g.run('player.hp'),hurt,'An interrupted held input silently restarted healing.');
+  assert.equal(g.run('demons.length'),1,'An interrupted heal incorrectly released another demon.');
+});
+test('A demon bite knocks Duy away instead of leaving both bodies stacked', () => {
+  const g=game();g.run('onTitle=false;intro=null;cells=[];husks=[];slag=[];player.x=400;player.y=640;player.hx=1;player.hy=0;demons=[{x:390,y:640,t:0,hitCd:0,source:"vent",warn:0,ph:0,tgt:null,feast:null,eatT:0}];stepDemons(DT)');
+  const before=g.run('dist(player.x,player.y,demons[0].x,demons[0].y)');assert.ok(g.run('player.knockT>0&&player.knockX>0'));
+  g.run('for(let i=0;i<16;i++)step()');assert.ok(g.run('player.x')>400,'Knockback did not move Duy away from the hit.');
+  assert.ok(g.run('dist(player.x,player.y,demons[0].x,demons[0].y)')>before+25,'Duy and the demon remained stacked after impact.');
+});
 test('Vent demons persist after release and into Khet-Tak-Tor encounter; new run clears them', () => {
   const g=game();g.run('onTitle=false;intro=null;god=true;husks=[];spawnVentDemon();setVentHeld(false);for(let i=0;i<1000;i++)stepDemons(DT)');
   assert.equal(g.run('demons.length'),1);g.run('startDuel()');assert.equal(g.run('demons.length'),1);

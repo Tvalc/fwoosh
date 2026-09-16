@@ -90,7 +90,8 @@ function reset(seed){
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
-    venting: false, ventHeld: false, ventUnit: null, ventDash: null, ventCd: 0, ventFlash: 0, wph: rnd()*7,  // vent + auto-wander phase
+    venting: false, ventHeld: false, ventUnit: null, ventDash: null, ventCd: 0, ventFlash: 0,
+    knockT:0, knockX:0, knockY:0, wph: rnd()*7,  // vent, hit knockback + auto-wander phase
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
     heat: 0,                              // ABSORBER: fires currently carried (0..HEAT_MAX)
@@ -239,6 +240,7 @@ function step(){
   const p = player;
   if(p.dashCd > 0) p.dashCd -= dt;
   if(p.hurtCd > 0) p.hurtCd -= dt;
+  if(p.knockT > 0) p.knockT = Math.max(0,p.knockT-dt);
   if(p.ventCd > 0) p.ventCd -= dt;
   if(p.ventFlash > 0) p.ventFlash -= dt;
   // DASH CHARGES recharge over time (max + speed set by The Forge upgrades)
@@ -251,7 +253,7 @@ function step(){
   // AUTO-RUN: you never stop. With no steering, seek the nearest burning villager, then the nearest
   // demon. Only a safe field falls back to the old weave. Manual steering and dashes stay authoritative.
   const burn = Math.max(0, Math.min(1, 1 - (p.hp!=null ? p.hp : 1)));   // 0 healthy .. 1 near death
-  if(p.lunge <= 0 && !introWalk){
+  if(p.lunge <= 0 && p.knockT <= 0 && !introWalk){
     const v = heldVec();
     if(v){ p.autoTarget=null;p.autoSightT=0;p.hx = v[0]; p.hy = v[1]; }  // manual input takes over and clears the old sighting
     else { const target=autoRunTarget(p);
@@ -260,7 +262,8 @@ function step(){
       else { const w = (K.WEAVE + burn*K.WEAVE_BURN) * Math.sin(frame*0.05 + p.wph) * dt;
         const a = Math.atan2(p.hy, p.hx) + w; p.hx = Math.cos(a); p.hy = Math.sin(a); } }
   }
-  if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
+  if(p.knockT > 0){ p.hx=p.knockX;p.hy=p.knockY;p.spd=K.DEMON_KNOCK_SPD; }
+  else if(p.lunge > 0){ p.lunge -= dt; p.spd = K.LUNGE_SPD; }
   else { const run = K.RUN * (1 + burn*K.FRANTIC_SPD);                  // frantic = faster as you burn
     p.spd = p.spd > run ? Math.max(run, p.spd - 1600*dt) : run; }       // ease down from a dash, never below run
   if(p.venting) p.spd = 0;                                              // venting ROOTS you — exposed while you heal
@@ -269,13 +272,14 @@ function step(){
 
   p.x += p.hx*p.spd*dt;
   p.y += p.hy*p.spd*dt;
-  if(p.x < K.EDGE){ p.x = K.EDGE; p.hx = Math.abs(p.hx); }        // bounce off the LEFT/RIGHT walls too
-  if(p.x > VW-K.EDGE){ p.x = VW-K.EDGE; p.hx = -Math.abs(p.hx); }
-  if(p.y < 40){ p.y = 40; p.hy = Math.abs(p.hy); }
-  if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); }
+  if(p.x < K.EDGE){ p.x = K.EDGE; p.hx = Math.abs(p.hx); p.knockT=0; }        // bounce off the LEFT/RIGHT walls too
+  if(p.x > VW-K.EDGE){ p.x = VW-K.EDGE; p.hx = -Math.abs(p.hx); p.knockT=0; }
+  if(p.y < 40){ p.y = 40; p.hy = Math.abs(p.hy); p.knockT=0; }
+  if(p.y > VH-40){ p.y = VH-40; p.hy = -Math.abs(p.hy); p.knockT=0; }
   if(collideObstacles(p, p.r)){                                   // props are solid like the borders
     if(p._nx!=null){ p.hx = p._nx; p.hy = p._ny; }               // deflect the auto-run heading off the prop
     if(p.lunge > 0){ p.lunge = 0; p.spd = 0; }                    // a dash into a prop stops dead (like slag)
+    if(p.knockT > 0) p.knockT=0;                                  // props stop knockback instead of trapping Duy inside them
   }
   if(introWalk && p.y <= VH*INTRO.IGNITE_Y){ igniteIntro(); }   // reached the middle -> catch fire
 
@@ -719,6 +723,16 @@ function explodeCinder(h){
   }
 }
 
+function demonHitReaction(d){
+  const p=player;
+  // Enemy contact is a hard interrupt. Releasing the held state makes the player
+  // consciously press again instead of silently restarting the heal under a stack.
+  p.ventUnit=null;p.venting=false;p.ventHeld=false;p.ventDash=null;p.ventFlash=0;
+  let dx=wrapDX(p.x-d.x),dy=p.y-d.y,m=Math.hypot(dx,dy);
+  if(m<0.001){dx=-(p.hx||1);dy=-(p.hy||0);m=Math.hypot(dx,dy)||1;}
+  p.knockX=dx/m;p.knockY=dy/m;p.knockT=K.DEMON_KNOCK_T;p.lunge=0;
+}
+
 // Vent demons persist and seek cinder people. Other enemy families retain their current behavior.
 function stepDemons(dt){
   const p = player;
@@ -767,6 +781,7 @@ function stepDemons(dt){
     }
     if(canHit.has(i) && d.hitCd<=0 && p.hurtCd<=0 && !god && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R+p.r){   // bite the player
       p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
+      demonHitReaction(d);hitstop=K.HITSTOP*0.45;
       if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
     if(d.source!=='vent' && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
       if(d.tgt.hunter) becomeHusk(d.tgt);                              // flaming -> the fire finishes them into a husk

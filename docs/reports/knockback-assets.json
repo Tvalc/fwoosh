@@ -1,0 +1,339 @@
+{
+  "method": "Static modular resource and atlas validation; no visual approval.",
+  "pass": 11,
+  "fail": 0,
+  "checks": [
+    {
+      "name": "All referenced local resources exist",
+      "status": "pass",
+      "detail": {
+        "references": 46,
+        "missing": []
+      }
+    },
+    {
+      "name": "Animation metadata parsed",
+      "status": "pass",
+      "detail": {
+        "keys": [
+          "ashimp",
+          "firedemon",
+          "hero",
+          "hero_run",
+          "keith",
+          "save",
+          "townsfolk",
+          "ventcinder",
+          "ventfire"
+        ]
+      }
+    },
+    {
+      "name": "Atlas ashimp",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1692,
+          180
+        ],
+        "expected": [
+          1692,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas firedemon",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2988,
+          180
+        ],
+        "expected": [
+          2988,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas hero",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1368,
+          180
+        ],
+        "expected": [
+          1368,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas keith",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1296,
+          180
+        ],
+        "expected": [
+          1296,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas townsfolk",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2112,
+          180
+        ],
+        "expected": [
+          2112,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas hero_run",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          756,
+          308
+        ],
+        "expected": [
+          756,
+          308
+        ],
+        "frames": 4
+      }
+    },
+    {
+      "name": "Atlas save",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          3132,
+          224
+        ],
+        "expected": [
+          3132,
+          224
+        ],
+        "frames": 18
+      }
+    },
+    {
+      "name": "Atlas ventfire",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1710,
+          280
+        ],
+        "expected": [
+          1710,
+          280
+        ],
+        "frames": 10
+      }
+    },
+    {
+      "name": "Atlas ventcinder",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2502,
+          200
+        ],
+        "expected": [
+          2502,
+          200
+        ],
+        "frames": 18
+      }
+    }
+  ],
+  "media_files": [
+    {
+      "path": "media/anim/ashimp.png",
+      "bytes": 230489,
+      "sha256": "df669d91f8bd5770ea61574cbdb02cdedf3a0f5d5ecb691cc0caaf1a60b6a94a"
+    },
+    {
+      "path": "media/anim/firedemon.png",
+      "bytes": 504446,
+      "sha256": "67672a2bae538880be7f7fe1578668518eed2f28ed3c29d1629302192c3e2ba8"
+    },
+    {
+      "path": "media/anim/hero.png",
+      "bytes": 184306,
+      "sha256": "a5891e4bbc891ced3756ab7b2ea594d970ac229e8509dff43529089bbcc55a72"
+    },
+    {
+      "path": "media/anim/hero_run.png",
+      "bytes": 94192,
+      "sha256": "d10382d9ba20790ee8953cec6e4295b57203acfe504ea96c20eb1596de8dd254"
+    },
+    {
+      "path": "media/anim/keith.png",
+      "bytes": 199240,
+      "sha256": "6aa43621be09e0ba3f250776d737fad2e349e31332cef80fe3a98abb4270bb0b"
+    },
+    {
+      "path": "media/anim/save.png",
+      "bytes": 563615,
+      "sha256": "cbcafa3a6a10d151ac23b10924568931cec42f3065e14e000134520576bb7c3c"
+    },
+    {
+      "path": "media/anim/townsfolk.png",
+      "bytes": 293699,
+      "sha256": "a0e7ba77b36e31d360dc80ad15593e0a81ffb657bc9572a6b10375d83b76ca2d"
+    },
+    {
+      "path": "media/anim/ventcinder.png",
+      "bytes": 401149,
+      "sha256": "b744c255e7154f5f954f0cf3bcd0e4d3afbeeb27f02e8ac1594eeacef2ab65fc"
+    },
+    {
+      "path": "media/anim/ventfire.png",
+      "bytes": 327124,
+      "sha256": "012cde96f7fb9fc8eaf380c5256655687551144569c78fa4e212b45834aa07b1"
+    },
+    {
+      "path": "media/diary/dark_cell.webp",
+      "bytes": 50422,
+      "sha256": "a3b9521f5442eeef3c85ab02d555187cd7312ae4b3042eeb3222cd45124c97a2"
+    },
+    {
+      "path": "media/diary/duy_gate.webp",
+      "bytes": 38076,
+      "sha256": "982db48f89704968916185e0acc4e16acb9c0d258456e48e533deb3e86b97466"
+    },
+    {
+      "path": "media/diary/duy_save.webp",
+      "bytes": 68802,
+      "sha256": "ba7e8f48b3a1dc9427a346c943d768a74d1ccfa47a8cd0b3e245029b733c9f7f"
+    },
+    {
+      "path": "media/diary/wraith.webp",
+      "bytes": 30774,
+      "sha256": "18a898220506b6a7771fa168a9493eb920f032ac0fdd8526718b357ee9dcd67c"
+    },
+    {
+      "path": "media/fonts/chakra-bold.ttf",
+      "bytes": 78384,
+      "sha256": "65fbf76d95651697275e19db4d717c0e95a789ddd3476478b05292104db278a0"
+    },
+    {
+      "path": "media/fonts/chakra-medium.ttf",
+      "bytes": 78600,
+      "sha256": "d480f4f97405fac3600652e2e14fd0b14339031c0af4da11582994878f04d919"
+    },
+    {
+      "path": "media/fonts/OFL-ChakraPetch.txt",
+      "bytes": 4395,
+      "sha256": "4a1d840eb0b2df8553804d844960a15773ca5af5d5c9803745307db8c617540b"
+    },
+    {
+      "path": "media/fx/flame.png",
+      "bytes": 40703,
+      "sha256": "6dffa683f2ac0c6566a623e82347dc66b74a300c19d3e10131a686c8a8c63596"
+    },
+    {
+      "path": "media/pixelify.woff2",
+      "bytes": 12016,
+      "sha256": "4a5633a0c9c1b73abd133a56d3716c2d8df2ed03cb987346f72194aeb224f382"
+    },
+    {
+      "path": "media/spr/ashford.png",
+      "bytes": 646504,
+      "sha256": "ce9ec987155021f3c0bcb9b6b49b1d568817fcd4305965c433440aad82f896a8"
+    },
+    {
+      "path": "media/spr/ashimp.png",
+      "bytes": 26609,
+      "sha256": "16ef29b370a0d9c9c4ebf324217cbe2cb9aa7d5dd348e13e2cf0431669695c8a"
+    },
+    {
+      "path": "media/spr/beacon.png",
+      "bytes": 109190,
+      "sha256": "e11afa8ad56b6428997757bec9fd65cdfe17d058ca6d0b74082c6c67dd597724"
+    },
+    {
+      "path": "media/spr/bg.png",
+      "bytes": 763440,
+      "sha256": "a4d14a681c3469c9c9ca7ed84b14e901434f3162f88e7f0b3295d2b007e81e6e"
+    },
+    {
+      "path": "media/spr/firedemon.png",
+      "bytes": 44061,
+      "sha256": "2fbbc2fb8957515d048e6979aa177f71070e7ed476eff8f85e34064f5ad2579b"
+    },
+    {
+      "path": "media/spr/happy.png",
+      "bytes": 20784,
+      "sha256": "7b729f06a62b7ceb57af38b09b983f595cfb1143f41cf0f14df14ae1a848694f"
+    },
+    {
+      "path": "media/spr/heart.png",
+      "bytes": 4261,
+      "sha256": "b3dfe17b80dd30f3a4b92bbeb2aa92775688e292e1bcab8fba3dd6abc78bc8ea"
+    },
+    {
+      "path": "media/spr/hero.png",
+      "bytes": 29498,
+      "sha256": "5137cc44855d0ce938175e63a2324253555bd77f6cfec946cd243b0cb3e5a33e"
+    },
+    {
+      "path": "media/spr/husk.png",
+      "bytes": 28372,
+      "sha256": "b8acdb17927164e87aaefc97561fa3575d0c6a1c519d8000ebefce8deb9a267c"
+    },
+    {
+      "path": "media/spr/keith.png",
+      "bytes": 24209,
+      "sha256": "c9fc70ead3c45bba2a36cba89cba7652a543dee7c21a3c8ad6db530898cdfadf"
+    },
+    {
+      "path": "media/spr/powerup.png",
+      "bytes": 34235,
+      "sha256": "a777a7ce7fe64a966f7b6b499d1e37919bfc21d2f55a02f98a3a27dd6ad39b94"
+    },
+    {
+      "path": "media/spr/townsfolk.png",
+      "bytes": 29851,
+      "sha256": "f097f17695114683692ba690db51090dff56409055e72ace140079eed5cc7ef7"
+    },
+    {
+      "path": "media/spr/ui_charge.png",
+      "bytes": 5578,
+      "sha256": "f9ddccd14a69ef21913a4f91d051aeea13aabebb5a0bfcb99133077a7382a03f"
+    },
+    {
+      "path": "media/spr/ui_pip.png",
+      "bytes": 7549,
+      "sha256": "9e33be0a5cf82c0ae5ce36ce95d4d91d3baed8b747a3002800d7b7a8af986a3b"
+    },
+    {
+      "path": "media/ui/digits.png",
+      "bytes": 32161,
+      "sha256": "d47c0a83383bdaeeb308cdfac6a00ec298a956bee84ce8223e412db6d5397faa"
+    },
+    {
+      "path": "media/ui/glyphs.png",
+      "bytes": 154105,
+      "sha256": "9b932f3bdfa39d1bcacfbe0f666599b7937db5ae2249baec288d696781a752bd"
+    }
+  ]
+}
