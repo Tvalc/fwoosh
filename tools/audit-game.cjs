@@ -20,12 +20,14 @@ function game(saved = {}) {
   const storage = new Map(Object.entries(saved));
   const noop = () => {};
   const drawnText = [];
+  const drawnImages = [];
   const strokedArcs = [];
   let pathArcs = [];
   const listeners = {};
   const listen = (type, fn) => (listeners[type] ||= []).push(fn);
   const gradient = () => ({addColorStop: noop});
   const context2d = new Proxy({setTransform: noop, fillText: text => drawnText.push(String(text)),
+    drawImage: (image,...args) => drawnImages.push({src:image.src,args}),
     beginPath: () => { pathArcs = []; }, arc: (...args) => pathArcs.push(args),
     stroke: () => { strokedArcs.push(...pathArcs); },
     createRadialGradient: gradient, createLinearGradient: gradient,
@@ -41,7 +43,7 @@ function game(saved = {}) {
   box.window = box;
   const ctx = vm.createContext(box);
   for (const s of scripts) vm.runInContext(s.code, ctx, {filename:s.filename, timeout: 10000});
-  return {run: code => vm.runInContext(code, ctx, {timeout: 10000}), storage, drawnText, strokedArcs, dispatch(type, fields={}){ for(const fn of listeners[type]||[]) fn({preventDefault:noop, ...fields}); }};
+  return {run: code => vm.runInContext(code, ctx, {timeout: 10000}), storage, drawnText, drawnImages, strokedArcs, dispatch(type, fields={}){ for(const fn of listeners[type]||[]) fn({preventDefault:noop, ...fields}); }};
 }
 const results = [];
 function test(name, fn) {try {const detail = fn(); results.push({name, status:'pass', detail: detail ?? null});}
@@ -1100,9 +1102,24 @@ test('Player priorities reorder automatic worker assignment and persist',()=>{
 test('Map and station render visible logistics and congestion information',()=>{
  const g=game();g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
-  {id:2,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:10,priority:1}]};citySelectedId=2;drawCityMap(ctx);drawCityStation(ctx)`);
- for(const label of ['FARM','R','MUSHROOM STATION','SPORE BED','GROW ROOM'])assert.ok(g.drawnText.includes(label),'Missing logistics rendering: '+label);
+  {id:2,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:10,priority:1}]};citySelectedId=2;loadCityArt();for(const k of ['farmer_walk','farmer_idle'])Object.assign(MAKKO_ANIM_IMG[k],{complete:true,naturalWidth:2000});drawCityMap(ctx);drawCityStation(ctx)`);
+ for(const label of ['FARM','MUSHROOM STATION','SPORE BED','GROW ROOM'])assert.ok(g.drawnText.includes(label),'Missing logistics rendering: '+label);
+ assert.ok(g.drawnImages.some(i=>i.src.endsWith('/farmer_walk.png')),'Carrier must draw the farmer, not a letter marker.');
+ assert.ok(g.drawnImages.some(i=>i.src.endsWith('/farmer_idle.png')),'Working station must display its farmer.');
  assert.ok(g.drawnText.some(t=>t.includes('shared-route traffic')));
+});
+
+test('Ratkin rescue retains identity without a death or human sheet',()=>{
+ const g=game();g.run(`Object.assign(MAKKO_ANIM_IMG.ratkin_idle,{complete:true,naturalWidth:2040});SKINS.makko.cell(ctx,300,500,{saving:true,saveT:0,vx:1});`);
+ const first=g.drawnImages.find(i=>i.src.endsWith('/ratkin_idle.png'));assert.ok(first);
+ g.drawnImages.length=0;g.run(`SKINS.makko.cell(ctx,300,500,{saving:true,saveT:K.SAVE_ANIM_DUR*.7,vx:1});`);
+ assert.ok(g.drawnImages.some(i=>i.src.endsWith('/ratkin_idle.png')));
+ assert.ok(!g.drawnImages.some(i=>/save\.png|death|townsfolk\.png/.test(i.src||'')));
+});
+
+test('Canonical Arbiter portrait keys resolve before legacy compatibility keys',()=>{
+ const g=game();g.run(`MAKKO_ANIM.dialogue_arbiter_stern={frames:3,fw:128,fh:128};MAKKO_ANIM_IMG.dialogue_arbiter_stern={src:'portrait-test',complete:true,naturalWidth:384};drawDialoguePortrait(ctx,'keith','stern',0,0,76,true,.2)`);
+ assert.equal(g.drawnImages.at(-1).src,'portrait-test');assert.equal(g.drawnImages.at(-1).args[0],256);
 });
 
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',

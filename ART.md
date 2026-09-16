@@ -24,6 +24,9 @@ The arena is 720 × 1280 virtual pixels with four solid boundaries and collision
 
 ## Existing art
 
+September 16: the first new Makko Ratkin batch is integrated. See [ART_INTEGRATION.md](docs/ART_INTEGRATION.md) for placements, provenance and remaining gaps. The former blanket Ratkin production dependency is obsolete: many saved animation exports already exist.
+
+
 Actors/forms, townsfolk, the legacy jailer placeholder for Khet-Tak-Tor, imps/demons, husks, rescue/happy sprites; arena and Ashford backdrops; hearts, dash charge/pips, digits/letters, Pixelify font; flame, rescue and vent effects.
 
 | Animation key | Frames | Cell width × height |
@@ -38,7 +41,7 @@ Actors/forms, townsfolk, the legacy jailer placeholder for Khet-Tak-Tor, imps/de
 | ventfire | 10 | 171 × 280 |
 | ventcinder | 18 | 139 × 200 |
 
-An existing sheet is not proof that requested locomotion is finished. The ratkin prototype was removed for violating the Makko-only requirement; produce a Makko prototype for Tony's review before expanding the cast. The cinder sheet is restored to its original Makko version, so the visual clipping/scale request remains open. Historical fire-vent processing includes a synthesized taper; verify its compliance with Tony before further visual work rather than calling every historical pixel verified Makko.
+The earlier non-Makko prototype was removed. Real Makko Ratkin walk/run/idle exports now replace the arena cast; remaining cast expansion still needs export QA and integration. The cinder sheet is restored to its original Makko version, so the visual clipping/scale request remains open. Historical fire-vent processing includes a synthesized taper; verify its compliance with Tony before further visual work rather than calling every historical pixel verified Makko.
 
 ## Diary
 
