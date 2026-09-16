@@ -16,7 +16,7 @@ After the team's deaths and the gods' offer, Duy and Cuong arrive in a dark cell
 
 Khet-Tak-Tor was Duy's Ratkin jailer before the gate fell. The collapse kills him briefly alongside Duy. The Ratkin revive Khet-Tak-Tor in time; they cannot revive Duy. During their shared interval near death, the Ratkin god, Adonai and Odin bind Ratkin and humanity through Khet-Tak-Tor and Duy. The bond can endure only if the two peoples overcome the heinous violence of their introduction. Khet-Tak-Tor returns as the Ratkin Arbiter and Duy remains among the dead, making their afterlife conflict a continuation of personal history and a trial of that larger covenant.
 
-The current human presentation will be replaced with a Ratkin Makko design. Khet-Tak-Tor can punish, test and obstruct Duy, and he administers the judgment process; defeating him never grants freedom by itself. Duy must rebuild what Ratkin society lost and earn their favor. Ratkin society supplies the authority behind his release. Whether Khet-Tak-Tor announces their collective verdict or holds delegated authority to release Duy remains to be decided. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
+The current human presentation will be replaced with a Ratkin Makko design. Khet-Tak-Tor can punish, test and obstruct Duy, and he administers the judgment process; defeating him never grants freedom by itself. Duy must rebuild what Ratkin society lost and earn their favor. The rebuilt Ratkin community alone supplies the authority behind his release. Khet-Tak-Tor presents the evidence, announces their collective verdict and executes the resulting sentence under the covenant, but he cannot personally forgive the debt or substitute his will for theirs. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
 
 Rescuing a burning ratkin draws its heat into Duy. The process hurts, and the pain grows as he carries more heat. A released ratkin ascends rather than merely stumbling away.
 
@@ -58,7 +58,6 @@ Ledger also has a route where Duy survives and older language saying dead guests
 
 - Which acts earn ratkin favor after the implemented first restoration judgment, and what completes final restoration for release.
 - The exact powers and limits of Khet-Tak-Tor's mandate under the divine covenant.
-- Whether Khet-Tak-Tor announces a collective Ratkin verdict or personally holds delegated release authority.
 - Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
 - How district/Arbiter progress contributes without making one combat victory the release condition.
 - Long-term city costs, construction times, production ratios and offline limits after playtesting the initial slice.
