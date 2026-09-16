@@ -1,5 +1,11 @@
 # Fwoosh status — September 16, 2026
 
+## Character readability - 2026-09-16-readable-1
+
+Removed the orange target glow drawn over marked Ratkin and moved the imp's directional warning line beneath the residents. Burning villagers now draw a smaller, softer Makko flame behind their panic performance; the old foreground flame and procedural fallback lick are removed. Residents remain fully visible across the map instead of dropping to 30% opacity at distance.
+
+Arena actors are 50% larger around their existing ground anchors, including Duy, Ratkin, demons, imps, the Arbiter, cinder bodies and allies. Props, map, movement, collision radii, touch targets, saves and economy are unchanged. Phone-width preview compares calm, targeted panic and burning panic beside arena props. 166 gameplay/render checks and 77 asset checks pass; live deployment evidence is recorded on #26/#31.
+
 ## Threat-triggered Ratkin panic - 2026-09-16-panic-1
 
 Unburned civilians now flee and use their own Makko panic animation when a demon or arson imp targets them anywhere in the arena, or either approaches within 140 world pixels. Nearby burning villagers also trigger panic within the existing 98-pixel range. Escape uses the existing 130px/s flee speed, below pursuer speed so imps can still catch their targets. Panic persists for 0.65 seconds after danger passes to prevent boundary flicker. Rescue retains its ascension animation; panic alone does not ignite a villager, award a rescue or change persistent saves.
