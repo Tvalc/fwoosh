@@ -491,6 +491,7 @@ test('Eating cinder telegraphs then consumes both bodies, ignites multiple villa
 test('Dash interception prevents an eating demon from consuming its cinder', () => {
   const g=game();g.run('onTitle=false;intro=null;husks=[{x:300,y:640,t:0,ph:0}];player.x=400;player.y=640;spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT);player.x=300;player.lunge=0.1;stepDemons(DT)');
   assert.equal(g.run('demons.length'),0);assert.equal(g.run('husks.length'),1);assert.equal(g.run('cinderBlasts.length'),0);
+  assert.equal(g.run('player.heat'),1);assert.equal(g.run('runEmbers'),0);
 });
 test('Rekindling interrupts eating and preserves the rescue instead of exploding', () => {
   const g=game();g.run('onTitle=false;intro=null;cells=[];husks=[{x:300,y:640,t:0,ph:0}];player.x=400;player.y=640;spawnVentDemon();Object.assign(demons[0],{x:300,y:640,warn:0});stepDemons(DT);player.x=300;player.heat=1;stepHusks(DT);stepDemons(K.CINDER_EAT_T)');
@@ -572,13 +573,14 @@ test('Skipping starter leaves it reopenable; buying a normal upgrade ends the fi
   g.run('hubAct("starter");drawHub(ctx)');assert.equal(g.run('hubBtns.some(b=>b.act==="play")'),false);
   g.run('hubAct("close");META.saved=16;enterHub();buy("well","regen")');assert.equal(g.run('starterAvailable()'),false);
 });
-test('Vent kills award zero embers while preserving heat and Edge; other sources retain payouts', () => {
+test('Every demon kill adds one heat; vent kills still award zero embers', () => {
   const g=game();g.run('onTitle=false;intro=null;player.heat=0;runEmbers=0;killDemon({source:"vent",x:300,y:400})');
-  assert.equal(g.run('runEmbers'),0);assert.equal(g.run('player.heat'),0.5);assert.equal(g.run('edge'),0.25);
+  assert.equal(g.run('runEmbers'),0);assert.equal(g.run('player.heat'),1);assert.equal(g.run('edge'),0.25);
   assert.ok(g.run('callout.text.includes("NO EMBERS")'));
   for(const source of ['town','keith']){g.run(`killDemon({source:${JSON.stringify(source)},x:300,y:400})`);}
-  assert.equal(g.run('runEmbers'),4);
-  g.run('killDemon({x:300,y:400})');assert.equal(g.run('runEmbers'),6);
+  assert.equal(g.run('runEmbers'),4);assert.equal(g.run('player.heat'),3);
+  g.run('killDemon({x:300,y:400})');assert.equal(g.run('runEmbers'),6);assert.equal(g.run('player.heat'),4);
+  g.run('player.heat=K.HEAT_MAX;killDemon({source:"vent",x:300,y:400})');assert.equal(g.run('player.heat'),g.run('K.HEAT_MAX'));
 });
 
 test('Every ordinary reward source pays its full amount across and beyond the former 160 cap', () => {
@@ -816,6 +818,12 @@ test('Desktop mouse hold draws the same slingshot trajectory preview',()=>{
  assert.ok(strokes>0,'Desktop pointer aim did not draw a trajectory preview');
  assert.equal(g.run('player.charges'),3,'Desktop preview spent a charge before release');
  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<0&&g.run('player.hy')<0);
+});
+test('Burst preview builds its arrow from the approved Makko flame frames',()=>{
+ const g=game();const ops=g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640;MAKKO_FLAME_IMG.complete=true;MAKKO_FLAME_IMG.naturalWidth=755;var flameDraws=0,flameRotations=0,dashPatterns=0;ctx.drawImage=()=>flameDraws++;ctx.rotate=()=>flameRotations++;ctx.setLineDash=()=>dashPatterns++;var q=worldToScreen(620,760);onDown(q.x,q.y);drawPointerBurstAim(ctx);({flameDraws,flameRotations,dashPatterns})');
+ assert.ok(ops.flameDraws>=3,'The preview did not use enough Makko flame frames to read as a burning arrow');
+ assert.equal(ops.flameRotations,ops.flameDraws);assert.equal(ops.dashPatterns,0,'The retired dashed trajectory returned');
+ assert.equal(g.run('player.charges'),3);
 });
 test('Resizing cancels incomplete gestures without an accidental dash',()=>{
  const g=game();g.run('onTitle=false;intro=null;introT=0;onDown(300,600);innerWidth=375;fit();onUp()');assert.equal(g.run('player.charges'),3);

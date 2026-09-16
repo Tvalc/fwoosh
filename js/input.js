@@ -104,8 +104,12 @@ function pointerBurstEnd(aim){
   return {x:q.x,y:q.y,blocked};
 }
 
-// A line and chevron communicate the result without adding another permanent button or a circular
-// effect to the arena. Nothing is spent until release.
+// Aim uses the approved Makko flame frames as a directional trail and arrowhead. The thin ember
+// spine is functional guidance beneath the art; no charge is spent until release.
+function drawBurstFlame(ctx,x,y,h,phase,alpha,ux,uy){
+  ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(uy,ux)+Math.PI/2);
+  const drawn=drawFlame(ctx,0,0,h,phase,alpha);ctx.restore();return drawn;
+}
 function drawPointerBurstAim(ctx){
   const aim=pointerBurstAim();if(!aim)return;
   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
@@ -115,12 +119,31 @@ function drawPointerBurstAim(ctx){
     ctx.moveTo(player.x+r,player.y-r);ctx.lineTo(player.x-r,player.y+r);ctx.stroke();ctx.restore();return;
   }
   const end=pointerBurstEnd(aim), ready=player.charges>0&&player.dashCd<=0;
-  const col=ready?'255,224,162':'145,136,151', sx=player.x+aim.ux*(player.r+8), sy=player.y+aim.uy*(player.r+8);
-  ctx.strokeStyle='rgba('+col+',0.88)';ctx.lineWidth=5;ctx.setLineDash([14,10]);ctx.lineDashOffset=-frame*0.8;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(end.x,end.y);ctx.stroke();ctx.setLineDash([]);
-  const backX=end.x-aim.ux*18,backY=end.y-aim.uy*18,sideX=-aim.uy*10,sideY=aim.ux*10;
-  ctx.fillStyle='rgba('+col+','+(end.blocked?'0.62':'0.95')+')';ctx.beginPath();ctx.moveTo(end.x,end.y);
-  ctx.lineTo(backX+sideX,backY+sideY);ctx.lineTo(backX-sideX,backY-sideY);ctx.closePath();ctx.fill();
+  const sx=player.x+aim.ux*(player.r+8),sy=player.y+aim.uy*(player.r+8),dx=end.x-sx,dy=end.y-sy;
+  const len=Math.hypot(dx,dy),alpha=ready?(end.blocked?0.62:0.96):0.34;
+
+  // Deep ember spine keeps the direction readable between animated flame frames at phone scale.
+  ctx.strokeStyle='rgba('+(ready?'208,55,20':'105,83,88')+','+(alpha*0.82)+')';ctx.lineWidth=4;
+  ctx.shadowColor=ready?'rgba(255,78,20,0.72)':'rgba(93,73,82,0.35)';ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(end.x,end.y);ctx.stroke();ctx.shadowBlur=0;
+
+  // A large forward-pointing flame reaches the predicted endpoint; smaller staggered flames make
+  // its tail read as one burning arrow instead of the former yellow dashed line.
+  const headH=Math.min(54,Math.max(36,len*0.24)),headBaseX=end.x-aim.ux*headH,headBaseY=end.y-aim.uy*headH;
+  let usedMakko=drawBurstFlame(ctx,headBaseX,headBaseY,headH,frame*0.55+2,alpha,aim.ux,aim.uy);
+  const shaftLen=Math.max(0,len-headH),count=Math.max(2,Math.min(7,Math.floor(shaftLen/34)));
+  for(let i=0;i<count;i++){
+    const t=(i+0.65)/(count+0.25),h=20+(i%3)*4,side=(i%2?1:-1)*2.5;
+    const x=sx+aim.ux*shaftLen*t-aim.uy*side,y=sy+aim.uy*shaftLen*t+aim.ux*side;
+    usedMakko=drawBurstFlame(ctx,x,y,h,frame*0.48+i*1.7,alpha*(0.62+0.3*t),aim.ux,aim.uy)||usedMakko;
+  }
+
+  // Functional fallback if the Makko sheet has not loaded yet: solid ember arrow, never a dash.
+  if(!usedMakko){
+    const backX=end.x-aim.ux*20,backY=end.y-aim.uy*20,sideX=-aim.uy*11,sideY=aim.ux*11;
+    ctx.fillStyle='rgba('+(ready?'239,81,25':'122,101,106')+','+alpha+')';ctx.beginPath();ctx.moveTo(end.x,end.y);
+    ctx.lineTo(backX+sideX,backY+sideY);ctx.lineTo(backX-sideX,backY-sideY);ctx.closePath();ctx.fill();
+  }
   ctx.restore();
 }
 

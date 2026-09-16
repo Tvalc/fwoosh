@@ -125,7 +125,7 @@ const K = {
   CRACK_TELE: 0.9,                  // convulsion telegraph before the wraith rises
   REKINDLE_COST: 1,                 // heat you SPEND to pour fire back into a husk and save them (mirror of absorb)
   WRAITH_CAP: 5,                    // persistent town-wraiths roaming at once (over-cap cracks don't add a body)
-  WRAITH_KILL_HEAT: 0.5,           // dash-kill ANY fire monster: heat you can turn into a save or a dump
+  DEMON_KILL_HEAT: 1,              // dash-kill ANY fire monster: one heat to bank into a save or dump
   DEMON_KILL_EMBERS: 2,            // + embers per shattered monster (your reward for clearing them)
 
   // trail

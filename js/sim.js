@@ -897,14 +897,14 @@ let demonKillSeen = false;
 function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat you can bank + embers to spend
   const p = player;
   const town = d.source === 'town';
-  p.heat = Math.min(K.HEAT_MAX, p.heat + K.WRAITH_KILL_HEAT);
+  p.heat = Math.min(K.HEAT_MAX, p.heat + K.DEMON_KILL_HEAT);
   const em = d.source==='vent'?0:K.DEMON_KILL_EMBERS; runEmbers += em;
   edge += 0.25; edgePop = 0.5;                                   // clearing them nudges the town war your way
   p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
   ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
   for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:town?285:24}); }
-  if(!demonKillSeen){ demonKillSeen = true; callout = { text:d.source==='vent'?'VENT DEMON CLEARED · +HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +HEAT +EMBERS', t:0, life:2.3, good:true }; }
-  else callout = { text:em>0?'SHATTERED! +EMBERS':'SHATTERED! +HEAT', t:0, life:0.7, good:true };
+  if(!demonKillSeen){ demonKillSeen = true; callout = { text:d.source==='vent'?'VENT DEMON CLEARED · +1 HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +1 HEAT +EMBERS', t:0, life:2.3, good:true }; }
+  else callout = { text:em>0?'SHATTERED! +1 HEAT +EMBERS':'SHATTERED! +1 HEAT', t:0, life:0.7, good:true };
 }
 
 // ---------------------------------------------------------------- LEVELED ARBITER: movesets + duel FX

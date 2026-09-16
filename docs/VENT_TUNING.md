@@ -36,4 +36,4 @@ Publish each verified major change. Record deployment confirmation in issue #1 r
 
 ## Subsequent economy update
 
-2026-09-14-economy-1 supersedes the reward note above: vent-created demon kills now pay zero embers; other demon sources keep their existing reward. Heat return and Edge effects remain. See ECONOMY_TUNING.md for starter upgrades and outstanding economy tuning.
+2026-09-14-economy-1 supersedes the reward note above: vent-created demon kills pay zero embers; other demon sources keep their existing reward. As of 2026-09-15-flame-arrow-1, killing any demon adds exactly one carried heat while preserving the existing Edge effect. See ECONOMY_TUNING.md for starter upgrades and outstanding economy tuning.

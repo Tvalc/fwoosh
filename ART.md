@@ -14,6 +14,8 @@ Tony's September 14 instruction: if background stripping contaminates a sprite's
 
 Do not add drawn charge, blast-radius or countdown circles around fire demons. Tony rejected those overlays on September 15. Keep the Makko demon animation during windup; cinder-eating danger uses a straight threat tether, compact countdown bar and the existing Makko flame animation.
 
+The Burst aiming preview reuses the approved `media/fx/flame.png` frames, rotated and staggered into a directional trail with a larger flame tip. This is the approved flaming-arrow treatment for touch and desktop pointer aim; do not restore the yellow dashed line or replace the Makko flame with procedurally drawn fire.
+
 Rescue burning villagers by absorbing their fire. Heat raises rewards and chain reach but drains health. The player transforms person → fire-man → cinder-man. Vent purges heat then heals, releasing demons. Khet-Tak-Tor sends interceptable imps; failed rescues become husks and wraiths. Rescues contribute to Edge and allied help against the Arbiter.
 
 Preserve the established style and terrified villager expression. Distinguish safe/burning villagers, hostile demons/imps, inert husks and player at phone size. Keep gauges legible and sprite body scale/feet anchors stable across frames and forms. No screen shake.

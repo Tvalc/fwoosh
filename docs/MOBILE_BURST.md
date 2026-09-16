@@ -1,6 +1,6 @@
 # Slingshot Burst input
 
-Build `2026-09-15-slingshot-1` gives touch and desktop mouse the same predictable Burst gesture.
+Build `2026-09-15-flame-arrow-1` gives touch and desktop mouse the same predictable Burst gesture.
 
 ## Player contract
 
@@ -12,7 +12,7 @@ Build `2026-09-15-slingshot-1` gives touch and desktop mouse the same predictabl
 - HUD, dialogue, gutters and the separate Vent button cannot start a Burst.
 - Desktop WASD/arrow steering and Shift Burst remain unchanged.
 
-The pull vector is anchored to Duy's position at pointer-down, so autorun cannot skew the player's aim while the preview is held. The trajectory points in the resulting travel direction on both touchscreens and desktop mouse input.
+The pull vector is anchored to Duy's position at pointer-down, so autorun cannot skew the player's aim while the preview is held. The trajectory points in the resulting travel direction on both touchscreens and desktop mouse input. Its visual is a burning arrow assembled from the approved Makko flame frames over an ember-red directional spine; the former yellow dashed line and plain chevron are retired.
 
 ## Design basis
 
@@ -27,4 +27,4 @@ Apple's game-control guidance favors predictable movement, broad touch regions a
 
 The actual-script suite covers inverted direction at phone and desktop widths, release-only spending, direction changes during a drag, pointer-down anchoring while Duy moves, near-Duy cancellation, second-finger isolation, desktop mouse preview, Vent release, pointer cancellation, focus loss, resize, dock/gutter exclusion and world/screen mapping at 320, 375, 430 and 1280 pixel widths. The full gameplay, progression, city and save suite remains in the same run.
 
-A local browser fixture verifies that pulling down-right previews travel up-left at phone scale. Physical-phone and desktop-mouse feel remain human playtest requirements.
+A local browser fixture verifies that pulling down-right previews a Makko flame arrow traveling up-left at phone scale. Physical-phone and desktop-mouse feel remain human playtest requirements.
