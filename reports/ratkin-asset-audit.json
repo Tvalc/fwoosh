@@ -1,0 +1,616 @@
+{
+  "method": "Static modular resource and atlas validation; no visual approval.",
+  "pass": 23,
+  "fail": 0,
+  "checks": [
+    {
+      "name": "All referenced local resources exist",
+      "status": "pass",
+      "detail": {
+        "references": 55,
+        "missing": []
+      }
+    },
+    {
+      "name": "Animation metadata parsed",
+      "status": "pass",
+      "detail": {
+        "keys": [
+          "arbiter_attack",
+          "arbiter_cast",
+          "arbiter_hit",
+          "arbiter_idle",
+          "arbiter_run",
+          "ashimp",
+          "farmer_idle",
+          "farmer_walk",
+          "firedemon",
+          "hero",
+          "hero_run",
+          "keith",
+          "mason_idle",
+          "mason_walk",
+          "ratkin_idle",
+          "ratkin_run",
+          "ratkin_walk",
+          "save",
+          "townsfolk",
+          "ventcinder",
+          "ventfire"
+        ]
+      }
+    },
+    {
+      "name": "Atlas ashimp",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1692,
+          180
+        ],
+        "expected": [
+          1692,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas firedemon",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2988,
+          180
+        ],
+        "expected": [
+          2988,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas hero",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1368,
+          180
+        ],
+        "expected": [
+          1368,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas keith",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1296,
+          180
+        ],
+        "expected": [
+          1296,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas townsfolk",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2112,
+          180
+        ],
+        "expected": [
+          2112,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas hero_run",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          756,
+          308
+        ],
+        "expected": [
+          756,
+          308
+        ],
+        "frames": 4
+      }
+    },
+    {
+      "name": "Atlas save",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          3132,
+          224
+        ],
+        "expected": [
+          3132,
+          224
+        ],
+        "frames": 18
+      }
+    },
+    {
+      "name": "Atlas ventfire",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1710,
+          280
+        ],
+        "expected": [
+          1710,
+          280
+        ],
+        "frames": 10
+      }
+    },
+    {
+      "name": "Atlas ventcinder",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2502,
+          200
+        ],
+        "expected": [
+          2502,
+          200
+        ],
+        "frames": 18
+      }
+    },
+    {
+      "name": "Atlas arbiter_cast",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1288,
+          180
+        ],
+        "expected": [
+          1288,
+          180
+        ],
+        "frames": 8
+      }
+    },
+    {
+      "name": "Atlas arbiter_hit",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2100,
+          180
+        ],
+        "expected": [
+          2100,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas arbiter_attack",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2160,
+          134
+        ],
+        "expected": [
+          2160,
+          134
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas arbiter_idle",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1212,
+          180
+        ],
+        "expected": [
+          1212,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas arbiter_run",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2160,
+          143
+        ],
+        "expected": [
+          2160,
+          143
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas ratkin_walk",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2160,
+          153
+        ],
+        "expected": [
+          2160,
+          153
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas ratkin_idle",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2040,
+          180
+        ],
+        "expected": [
+          2040,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas mason_walk",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2160,
+          163
+        ],
+        "expected": [
+          2160,
+          163
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas mason_idle",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1956,
+          180
+        ],
+        "expected": [
+          1956,
+          180
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas farmer_walk",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2160,
+          154
+        ],
+        "expected": [
+          2160,
+          154
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas farmer_idle",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          2160,
+          157
+        ],
+        "expected": [
+          2160,
+          157
+        ],
+        "frames": 12
+      }
+    },
+    {
+      "name": "Atlas ratkin_run",
+      "status": "pass",
+      "detail": {
+        "actual": [
+          1800,
+          158
+        ],
+        "expected": [
+          1800,
+          158
+        ],
+        "frames": 10
+      }
+    }
+  ],
+  "media_files": [
+    {
+      "path": "media/anim/arbiter_attack.png",
+      "bytes": 192376,
+      "sha256": "909432d744c771387e4926f34a75198d89be9ee467c07d2869b4e21d2b4b8c6f"
+    },
+    {
+      "path": "media/anim/arbiter_cast.png",
+      "bytes": 217799,
+      "sha256": "70cb918bcae34abf9ec38769adc4c6b1a9e06b1d878a2e583cf71687f4587747"
+    },
+    {
+      "path": "media/anim/arbiter_hit.png",
+      "bytes": 434815,
+      "sha256": "14962d4a5d38750dae8e31e54e65af33e957e960642acb83bc27bc3a00723ae9"
+    },
+    {
+      "path": "media/anim/arbiter_idle.png",
+      "bytes": 331650,
+      "sha256": "d79cc9422693f2d7ae66494e7f55e5dfb200e2fb548366763bd937c5efc02007"
+    },
+    {
+      "path": "media/anim/arbiter_run.png",
+      "bytes": 312953,
+      "sha256": "c62e26d1a9a668ecd754d4e21df789661e02651076b1ce8db427a9aa99ba0952"
+    },
+    {
+      "path": "media/anim/ashimp.png",
+      "bytes": 230489,
+      "sha256": "df669d91f8bd5770ea61574cbdb02cdedf3a0f5d5ecb691cc0caaf1a60b6a94a"
+    },
+    {
+      "path": "media/anim/farmer_idle.png",
+      "bytes": 393351,
+      "sha256": "182c91336648ed5dca18c75fb1b0dd743689d5a58deef34287152e1b86e53308"
+    },
+    {
+      "path": "media/anim/farmer_walk.png",
+      "bytes": 360419,
+      "sha256": "fb3addc05b0c201ecd6fd408fa9069715f45f6a46148c396d4e0376283cefc3a"
+    },
+    {
+      "path": "media/anim/firedemon.png",
+      "bytes": 504446,
+      "sha256": "67672a2bae538880be7f7fe1578668518eed2f28ed3c29d1629302192c3e2ba8"
+    },
+    {
+      "path": "media/anim/hero.png",
+      "bytes": 184306,
+      "sha256": "a5891e4bbc891ced3756ab7b2ea594d970ac229e8509dff43529089bbcc55a72"
+    },
+    {
+      "path": "media/anim/hero_run.png",
+      "bytes": 94192,
+      "sha256": "d10382d9ba20790ee8953cec6e4295b57203acfe504ea96c20eb1596de8dd254"
+    },
+    {
+      "path": "media/anim/keith.png",
+      "bytes": 199240,
+      "sha256": "6aa43621be09e0ba3f250776d737fad2e349e31332cef80fe3a98abb4270bb0b"
+    },
+    {
+      "path": "media/anim/mason_idle.png",
+      "bytes": 458011,
+      "sha256": "ab0785c535379f7de000513387475088eb35431b74d798745715112197401a0b"
+    },
+    {
+      "path": "media/anim/mason_walk.png",
+      "bytes": 344895,
+      "sha256": "d51f5412c9f242b7924a6e9f157efd6517847a409ebba7ccd9c99cf8e7fd63f6"
+    },
+    {
+      "path": "media/anim/ratkin_idle.png",
+      "bytes": 416603,
+      "sha256": "90750b7c0e687177504edf42063c795e81674c4da5fd385f248f24eebe057c1d"
+    },
+    {
+      "path": "media/anim/ratkin_run.png",
+      "bytes": 283355,
+      "sha256": "708d3f89f5ee5ac066ac67b9e720487e4e5e80adff34091c91b235a72cdf7c4a"
+    },
+    {
+      "path": "media/anim/ratkin_walk.png",
+      "bytes": 315008,
+      "sha256": "db887b343d65b5667630414c9c7a35df19c01fdeb1426de8a1bb1d887fe5152a"
+    },
+    {
+      "path": "media/anim/save.png",
+      "bytes": 563615,
+      "sha256": "cbcafa3a6a10d151ac23b10924568931cec42f3065e14e000134520576bb7c3c"
+    },
+    {
+      "path": "media/anim/townsfolk.png",
+      "bytes": 293699,
+      "sha256": "a0e7ba77b36e31d360dc80ad15593e0a81ffb657bc9572a6b10375d83b76ca2d"
+    },
+    {
+      "path": "media/anim/ventcinder.png",
+      "bytes": 401149,
+      "sha256": "b744c255e7154f5f954f0cf3bcd0e4d3afbeeb27f02e8ac1594eeacef2ab65fc"
+    },
+    {
+      "path": "media/anim/ventfire.png",
+      "bytes": 327124,
+      "sha256": "012cde96f7fb9fc8eaf380c5256655687551144569c78fa4e212b45834aa07b1"
+    },
+    {
+      "path": "media/diary/dark_cell.webp",
+      "bytes": 50422,
+      "sha256": "a3b9521f5442eeef3c85ab02d555187cd7312ae4b3042eeb3222cd45124c97a2"
+    },
+    {
+      "path": "media/diary/duy_gate.webp",
+      "bytes": 38076,
+      "sha256": "982db48f89704968916185e0acc4e16acb9c0d258456e48e533deb3e86b97466"
+    },
+    {
+      "path": "media/diary/duy_save.webp",
+      "bytes": 68802,
+      "sha256": "ba7e8f48b3a1dc9427a346c943d768a74d1ccfa47a8cd0b3e245029b733c9f7f"
+    },
+    {
+      "path": "media/diary/wraith.webp",
+      "bytes": 30774,
+      "sha256": "18a898220506b6a7771fa168a9493eb920f032ac0fdd8526718b357ee9dcd67c"
+    },
+    {
+      "path": "media/fonts/chakra-bold.ttf",
+      "bytes": 78384,
+      "sha256": "65fbf76d95651697275e19db4d717c0e95a789ddd3476478b05292104db278a0"
+    },
+    {
+      "path": "media/fonts/chakra-medium.ttf",
+      "bytes": 78600,
+      "sha256": "d480f4f97405fac3600652e2e14fd0b14339031c0af4da11582994878f04d919"
+    },
+    {
+      "path": "media/fonts/OFL-ChakraPetch.txt",
+      "bytes": 4488,
+      "sha256": "bd06215877a779574fa9a0236089eb409722bbf89d2ce92d87d76ef72c6f1ba0"
+    },
+    {
+      "path": "media/fx/flame.png",
+      "bytes": 40703,
+      "sha256": "6dffa683f2ac0c6566a623e82347dc66b74a300c19d3e10131a686c8a8c63596"
+    },
+    {
+      "path": "media/pixelify.woff2",
+      "bytes": 12016,
+      "sha256": "4a5633a0c9c1b73abd133a56d3716c2d8df2ed03cb987346f72194aeb224f382"
+    },
+    {
+      "path": "media/spr/arbiter.png",
+      "bytes": 52426,
+      "sha256": "3199b4bb5ed23ba119b4b016ceb27bb32b6fc2df18be176f5cd811994adcf3d9"
+    },
+    {
+      "path": "media/spr/arbiter_portrait.png",
+      "bytes": 18523,
+      "sha256": "9589f52886ea34f8905252f98d81db1eb1ea88af7471ac4030118c888bab12ce"
+    },
+    {
+      "path": "media/spr/ashford.png",
+      "bytes": 646504,
+      "sha256": "ce9ec987155021f3c0bcb9b6b49b1d568817fcd4305965c433440aad82f896a8"
+    },
+    {
+      "path": "media/spr/ashimp.png",
+      "bytes": 26609,
+      "sha256": "16ef29b370a0d9c9c4ebf324217cbe2cb9aa7d5dd348e13e2cf0431669695c8a"
+    },
+    {
+      "path": "media/spr/beacon.png",
+      "bytes": 109190,
+      "sha256": "e11afa8ad56b6428997757bec9fd65cdfe17d058ca6d0b74082c6c67dd597724"
+    },
+    {
+      "path": "media/spr/bg.png",
+      "bytes": 763440,
+      "sha256": "a4d14a681c3469c9c9ca7ed84b14e901434f3162f88e7f0b3295d2b007e81e6e"
+    },
+    {
+      "path": "media/spr/farmer.png",
+      "bytes": 65158,
+      "sha256": "61430ce73f5b37ced3f3498ee3c18263f9a0d4ee1482d32ed83a46d6de0dc96f"
+    },
+    {
+      "path": "media/spr/firedemon.png",
+      "bytes": 44061,
+      "sha256": "2fbbc2fb8957515d048e6979aa177f71070e7ed476eff8f85e34064f5ad2579b"
+    },
+    {
+      "path": "media/spr/happy.png",
+      "bytes": 20784,
+      "sha256": "7b729f06a62b7ceb57af38b09b983f595cfb1143f41cf0f14df14ae1a848694f"
+    },
+    {
+      "path": "media/spr/heart.png",
+      "bytes": 4261,
+      "sha256": "b3dfe17b80dd30f3a4b92bbeb2aa92775688e292e1bcab8fba3dd6abc78bc8ea"
+    },
+    {
+      "path": "media/spr/hero.png",
+      "bytes": 29498,
+      "sha256": "5137cc44855d0ce938175e63a2324253555bd77f6cfec946cd243b0cb3e5a33e"
+    },
+    {
+      "path": "media/spr/husk.png",
+      "bytes": 28372,
+      "sha256": "b8acdb17927164e87aaefc97561fa3575d0c6a1c519d8000ebefce8deb9a267c"
+    },
+    {
+      "path": "media/spr/keith.png",
+      "bytes": 24209,
+      "sha256": "c9fc70ead3c45bba2a36cba89cba7652a543dee7c21a3c8ad6db530898cdfadf"
+    },
+    {
+      "path": "media/spr/mason.png",
+      "bytes": 72328,
+      "sha256": "49a8ecf42818345ae138219e31678a77aafc7582fe816f8acc5c1bbc6ea1251f"
+    },
+    {
+      "path": "media/spr/powerup.png",
+      "bytes": 34235,
+      "sha256": "a777a7ce7fe64a966f7b6b499d1e37919bfc21d2f55a02f98a3a27dd6ad39b94"
+    },
+    {
+      "path": "media/spr/ratkin.png",
+      "bytes": 62087,
+      "sha256": "fc8988e1f8e43b04af1790591f400829bd93fc80969112ac9098bf0f0dafed9a"
+    },
+    {
+      "path": "media/spr/townsfolk.png",
+      "bytes": 29851,
+      "sha256": "f097f17695114683692ba690db51090dff56409055e72ace140079eed5cc7ef7"
+    },
+    {
+      "path": "media/spr/ui_charge.png",
+      "bytes": 5578,
+      "sha256": "f9ddccd14a69ef21913a4f91d051aeea13aabebb5a0bfcb99133077a7382a03f"
+    },
+    {
+      "path": "media/spr/ui_pip.png",
+      "bytes": 7549,
+      "sha256": "9e33be0a5cf82c0ae5ce36ce95d4d91d3baed8b747a3002800d7b7a8af986a3b"
+    },
+    {
+      "path": "media/ui/digits.png",
+      "bytes": 32161,
+      "sha256": "d47c0a83383bdaeeb308cdfac6a00ec298a956bee84ce8223e412db6d5397faa"
+    },
+    {
+      "path": "media/ui/glyphs.png",
+      "bytes": 154105,
+      "sha256": "9b932f3bdfa39d1bcacfbe0f666599b7937db5ae2249baec288d696781a752bd"
+    }
+  ]
+}

@@ -9,3 +9,17 @@ const MAKKO_DIGITS={"h": 110, "digits": [{"x": 0, "w": 48}, {"x": 50, "w": 40}, 
 const MAKKO_GLYPHS={"h": 120, "map": {"0": {"x": 0, "w": 45}, "1": {"x": 47, "w": 41}, "2": {"x": 90, "w": 47}, "3": {"x": 139, "w": 45}, "4": {"x": 186, "w": 50}, "5": {"x": 238, "w": 45}, "6": {"x": 285, "w": 45}, "7": {"x": 332, "w": 45}, "8": {"x": 379, "w": 45}, "9": {"x": 426, "w": 45}, "A": {"x": 473, "w": 52}, "B": {"x": 527, "w": 42}, "C": {"x": 571, "w": 39}, "D": {"x": 612, "w": 40}, "E": {"x": 654, "w": 37}, "F": {"x": 693, "w": 39}, "G": {"x": 734, "w": 39}, "H": {"x": 775, "w": 72}, "I": {"x": 849, "w": 34}, "J": {"x": 885, "w": 62}, "K": {"x": 949, "w": 71}, "L": {"x": 1022, "w": 48}, "M": {"x": 1072, "w": 74}, "N": {"x": 1148, "w": 72}, "O": {"x": 1222, "w": 42}, "P": {"x": 1266, "w": 46}, "Q": {"x": 1314, "w": 43}, "R": {"x": 1359, "w": 46}, "S": {"x": 1407, "w": 41}, "T": {"x": 1450, "w": 44}, "U": {"x": 1496, "w": 51}, "V": {"x": 1549, "w": 72}, "W": {"x": 1623, "w": 77}, "X": {"x": 1702, "w": 73}, "Y": {"x": 1777, "w": 72}, "Z": {"x": 1851, "w": 65}, "!": {"x": 1918, "w": 44}, "?": {"x": 1964, "w": 89}, ".": {"x": 2055, "w": 39}, "'": {"x": 2096, "w": 37}}};
 const MAKKO_FLAME_META={"n": 5, "fw": 151, "fh": 303};
 
+
+// Makko Ratkin exports; full provenance in docs/ratkin-art-manifest.json.
+MAKKO_ANIM.arbiter_cast={"frames": 8, "fw": 161, "fh": 180, "anchorX": 64.12};
+MAKKO_ANIM.arbiter_hit={"frames": 12, "fw": 175, "fh": 180, "anchorX": 92.04};
+MAKKO_ANIM.arbiter_attack={"frames": 12, "fw": 180, "fh": 134, "anchorX": 79.43};
+MAKKO_ANIM.arbiter_idle={"frames": 12, "fw": 101, "fh": 180, "anchorX": 50.44};
+MAKKO_ANIM.arbiter_run={"frames": 12, "fw": 180, "fh": 143, "anchorX": 105.25};
+MAKKO_ANIM.ratkin_walk={"frames": 12, "fw": 180, "fh": 153, "anchorX": 113.76};
+MAKKO_ANIM.ratkin_idle={"frames": 12, "fw": 170, "fh": 180, "anchorX": 108.76};
+MAKKO_ANIM.mason_walk={"frames": 12, "fw": 180, "fh": 163, "anchorX": 114.36};
+MAKKO_ANIM.mason_idle={"frames": 12, "fw": 163, "fh": 180, "anchorX": 103.81};
+MAKKO_ANIM.farmer_walk={"frames": 12, "fw": 180, "fh": 154, "anchorX": 99.89};
+MAKKO_ANIM.farmer_idle={"frames": 12, "fw": 180, "fh": 157, "anchorX": 99.03};
+MAKKO_ANIM.ratkin_run={"frames": 10, "fw": 180, "fh": 158, "anchorX": 107.86};

@@ -372,8 +372,30 @@ function drawAnim(ctx, key, X, y, targetH, o){ o=o||{};
   ctx.scale((o.flip?-1:1)*(o.sx||1), (o.sy||1));
   if(o.alpha!=null) ctx.globalAlpha*=o.alpha;
   ctx.imageSmoothingEnabled=true;
-  ctx.drawImage(im, fi*m.fw, 0, m.fw, m.fh, -w/2, -targetH/2, w, targetH);
+  const anchor=m.anchorX==null?m.fw/2:m.anchorX;
+  ctx.drawImage(im, fi*m.fw, 0, m.fw, m.fh, -anchor*sc, -targetH/2, w, targetH);
   ctx.restore(); return true; }
+
+function arbiterAnimation(b,flat){
+  if(flat||b.state==='stagger')return 'arbiter_hit';
+  if(b.move&&b.move!=='charge')return 'arbiter_cast';
+  if(Math.hypot(b.vx||0,b.vy||0)>10)return 'arbiter_run';
+  return 'arbiter_idle';
+}
+
+// Full-body clips remain full-body clips. Dedicated dialogue exports take priority;
+// until they arrive use a still head-and-shoulders crop of the Makko Ratkin.
+function drawDialoguePortrait(ctx,actor,emotion,x,y,size,talking,t){
+  const name=actor==='duy'?'duy':'arbiter';
+  const key='dialogue_'+name+'_'+emotion,legacy='dialogue_'+actor+'_'+emotion;
+  const clip=animReady(key)?key:legacy,im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
+  if(im&&im.complete&&im.naturalWidth&&meta){
+    const f=talking&&meta.frames>1?1+(Math.floor((t||0)*8)%(meta.frames-1)):0;
+    ctx.drawImage(im,f*meta.fw,0,meta.fw,meta.fh,x,y,size,size);
+  }else if(name==='arbiter'&&sprReady('arbiter_portrait')){
+    ctx.drawImage(MAKKO_IMG.arbiter_portrait,x,y,size,size);
+  }else drawSpr(ctx,name==='duy'?'hero':'keith',x+size/2,y+size*.78,size*1.5,{});
+}
 
 const SKINS = {
   vector: {
@@ -662,31 +684,32 @@ const SKINS = {
       if(!drawSpr(ctx,'husk',X,y,H,{})) return SKINS.vector.wall(ctx,X,y,grudge,scarred); },
     cell(ctx,X,y,c){
       if(c.saving){
-        // SAVED! — the Makko teleport animation: burning agony -> purified/healed -> pulled up into the light.
-        const t=Math.min(1,(c.saveT||0)/K.SAVE_ANIM_DUR), fi=Math.min(17,Math.floor(t*18));
-        const H=K.R_CELL*5.0;                                  // sized so the villager matches the running townsfolk; light column rises above
+        // Keep the rescued Ratkin's identity as it rises; the legacy save sheet
+        // contains a human actor, so it cannot replace this character mid-rescue.
+        const t=Math.min(1,(c.saveT||0)/K.SAVE_ANIM_DUR);
+        const H=K.R_CELL*4.2;
         const sh=1-Math.min(1,t*1.4);                          // ground shadow fades as they lift into the light
         if(sh>0){ ctx.save(); ctx.globalAlpha=sh; groundShadow(ctx, X, y+K.R_CELL*1.4, K.R_CELL*1.0, K.R_CELL*0.3); ctx.restore(); }
-        const alpha = t>0.9 ? Math.max(0,1-(t-0.9)/0.1) : 1;   // dissolve on the last beat = transported / gone
-        if(!drawAnim(ctx,'save', X, y - H*0.5, H, {frame:fi, alpha})){
-          if(!drawSpr(ctx,'happy',X,y,K.R_CELL*3.7,{})) SKINS.vector.cell(ctx,X,y,c);   // fallback if the sheet isn't loaded
-        }
+        const alpha=1-Math.max(0,(t-.4)/.6),lift=H*t*t;
+        if(!drawAnim(ctx,'ratkin_idle',X,y-lift,H,{frame:0,alpha,flip:(c.vx||0)<0}))
+          drawSpr(ctx,'townsfolk',X,y-lift,H,{alpha});
+        if(t<.45)drawFlame(ctx,X,y+K.R_CELL*1.6-lift,H*1.2,frame*.32,1-t/.45);
         return;
       }
       // CALM — running around the square: the Makko 12-frame townsfolk animation, faster legs while running
-      const spd=Math.hypot(c.vx||0,c.vy||0), run=spd>10, flip=(c.vx||0)<0, step=Math.sin(frame*0.5+(c.ph||0));
+      const spd=Math.hypot(c.vx||0,c.vy||0), run=spd>10, flip=(c.vx||0)<0;
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
-      if(!drawAnim(ctx,'townsfolk',X,y,K.R_CELL*4.2,{fps:run?13:6, flip, t:(c.id||0)*3}) &&
-         !drawSpr(ctx,'townsfolk',X,y+(run?-Math.abs(step)*K.R_CELL*0.5:0),K.R_CELL*3.5,{flip}))
+      if(!drawAnim(ctx,run?'ratkin_walk':'ratkin_idle',X,y,K.R_CELL*4.2,{fps:run?10:5, flip, t:Math.floor((c.ph||0)*3)}) &&
+         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*4.2,{flip}))
         SKINS.vector.cell(ctx,X,y,c); },
-    hunter(ctx,X,y,a,t){ const flip=(frame*0.12|0)%2===0, k=Math.max(0,Math.min(1,1-t));   // t=burn progress
+    hunter(ctx,X,y,a,t,c){ const flip=c?(c.vx||0)<0:Math.cos(a)<0, k=Math.max(0,Math.min(1,1-t));
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
       const gr=16+k*18+5*Math.sin(frame*0.45), g=ctx.createRadialGradient(X,y,2,X,y,gr);  // engulfing fire glow
       g.addColorStop(0,'rgba(255,150,50,0.62)'); g.addColorStop(0.5,'rgba(255,90,30,0.35)'); g.addColorStop(1,'rgba(255,90,30,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill();
       // a villager, panicking, ON FIRE (townsfolk sprite + rising flames) — someone to save, not a monster
-      if(!drawAnim(ctx,'townsfolk',X,y,K.R_CELL*4.2,{flip, fps:13}) &&
-         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*3.5,{flip, dy:-Math.abs(Math.sin(frame*0.5))*2}))
+      if(!drawAnim(ctx,'ratkin_run',X,y,K.R_CELL*4.2,{flip, fps:13,t:Math.floor((c?.ph||0)*3)}) &&
+         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*4.2,{flip}))
         SKINS.vector.hunter(ctx,X,y,a,t);
       // ACTUAL animated flames engulfing the villager (Makko 5-frame fire, per-villager desynced)
       const ph = frame*0.32 + X*0.09;
@@ -752,6 +775,12 @@ const SKINS = {
         const gr=rr*(1.0+k*2.2), g=ctx.createRadialGradient(X,y,2,X,y,gr);   // glow + flames contract to the sprite as fuse burns = timer
         g.addColorStop(0,'rgba(255,175,65,0.55)'); g.addColorStop(1,'rgba(255,110,40,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill(); aFlame(ctx,X,y,rr*(0.45+0.55*k),frame*0.12); }
+      if(arbiter){
+        const key=arbiterAnimation(b,flat),opts={fps:key==='arbiter_run'?12:8,flip:(b.vx||0)<0};
+        if(key==='arbiter_hit')opts.frame=Math.min(11,Math.floor(Math.max(0,.5-(b.t||0))*24));
+        if(key==='arbiter_cast')opts.frame=Math.min(7,Math.floor((b.moveT||0)*8));
+        if(drawAnim(ctx,key,X,y,H,opts))return;
+      }
       const key=arbiter?'keith':'firedemon';
       if(flat || !drawAnim(ctx,key,X,y,H,{fps:arbiter?8:11})){   // defeated boss = static squashed sprite
         const opt={ dy: flat?H*0.14:Math.sin(frame*0.14)*2, sy: flat?0.66:1, sx: flat?1.18:1 };
@@ -875,17 +904,7 @@ function drawDialogue(ctx){
   const px=bx+pad,py=by+pad;
   ctx.save();roundRectPath(ctx,px,py,ps,ps,6);ctx.fillStyle='#151323';ctx.fill();ctx.clip();
   const actor=line.who==='DUY'?'duy':'keith';
-  const clip='dialogue_'+actor+'_'+(line.emotion||'stern');
-  // Atlas frame 0 is a listening pose; remaining frames are the Makko talking loop.
-  const im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
-  if(im && im.complete && im.naturalWidth && meta){
-    const f=talking && meta.frames>1?1+(Math.floor(t*8)%(meta.frames-1)):0;
-    ctx.drawImage(im,f*meta.fw,0,meta.fw,meta.fh,px,py,ps,ps);
-  } else {
-    // Existing verified Makko sprite until Cursor's dedicated portrait clips are integrated.
-    // No fake lip movement or procedural replacement art.
-    drawSpr(ctx,actor==='duy'?'hero':'keith',px+ps/2,py+ps*0.78,ps*1.5,{});
-  }
+  drawDialoguePortrait(ctx,actor,line.emotion||'stern',px,py,ps,talking,t);
   ctx.restore();
   const tx=px+ps+16,tw=bx+bw-pad-tx;
   ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';
@@ -1205,8 +1224,8 @@ function drawJudgmentSheet(ctx){
   ctx.fillStyle='#8affc1';ctx.font='600 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText('RESTORATION COMPLETE · FAVOR UNDECIDED',VW/2,128);
   const gap=70,start=VW/2-gap*2;for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(start+i*gap,190,18,0,7);ctx.fillStyle='#8affc1';ctx.fill();ctx.fillStyle='#0a1712';ctx.font='800 19px "Chakra Petch",system-ui,sans-serif';ctx.fillText('✓',start+i*gap,197);}
   const by=650,bh=360,px=38,py=by+44,ps=126;panel(ctx,20,by,VW-40,bh,18,'rgba(13,16,32,.97)','rgba(201,160,255,.9)');panel(ctx,px,py,ps,ps,10,'#151323','#5d5272');
-  ctx.save();roundRectPath(ctx,px,py,ps,ps,10);ctx.clip();const actor=line.who==='DUY'?'duy':'keith',clip='dialogue_'+actor+'_'+(line.emotion||'stern'),im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
-  if(im&&im.complete&&im.naturalWidth&&meta)ctx.drawImage(im,0,0,meta.fw,meta.fh,px,py,ps,ps);else drawSpr(ctx,actor==='duy'?'hero':'keith',px+ps/2,py+ps*.78,ps*1.5,{});ctx.restore();
+  ctx.save();roundRectPath(ctx,px,py,ps,ps,10);ctx.clip();const actor=line.who==='DUY'?'duy':'keith';
+  drawDialoguePortrait(ctx,actor,line.emotion||'stern',px,py,ps,false,0);ctx.restore();
   ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';ctx.font='800 25px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,px+ps+22,py+22);
   ctx.fillStyle='#f2f3ff';ctx.font='500 28px "Chakra Petch",system-ui,sans-serif';wrapText(ctx,line.text,px+ps+22,py+62,VW-(px+ps+22)-50,36);
   ctx.textAlign='center';ctx.fillStyle='rgba(220,210,235,.65)';ctx.font='500 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText((judgmentPage+1)+' / '+JUDGMENT_LINES.length,VW/2,by+bh-28);
@@ -1222,8 +1241,8 @@ function drawVerdictSheet(ctx){
   const votes=favorVotes();ctx.fillStyle='#8affc1';ctx.font='600 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText(votes===5?'UNANIMOUS · DUY WILL RISE':'FOUR VOICES · DUY WILL RISE',VW/2,128);
   const gap=70,start=VW/2-gap*2;for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(start+i*gap,190,18,0,7);ctx.fillStyle=i<votes?'#8affc1':'#494055';ctx.fill();ctx.fillStyle=i<votes?'#0a1712':'#b6aec4';ctx.font='800 19px "Chakra Petch",system-ui,sans-serif';ctx.fillText(i<votes?'✓':'–',start+i*gap,197);}
   const by=650,bh=360,px=38,py=by+44,ps=126;panel(ctx,20,by,VW-40,bh,18,'rgba(13,16,32,.97)','rgba(255,207,107,.9)');panel(ctx,px,py,ps,ps,10,'#151323','#5d5272');
-  ctx.save();roundRectPath(ctx,px,py,ps,ps,10);ctx.clip();const actor=line.who==='DUY'?'duy':'keith',clip='dialogue_'+actor+'_'+(line.emotion||'stern'),im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
-  if(im&&im.complete&&im.naturalWidth&&meta)ctx.drawImage(im,0,0,meta.fw,meta.fh,px,py,ps,ps);else drawSpr(ctx,actor==='duy'?'hero':'keith',px+ps/2,py+ps*.78,ps*1.5,{});ctx.restore();
+  ctx.save();roundRectPath(ctx,px,py,ps,ps,10);ctx.clip();const actor=line.who==='DUY'?'duy':'keith';
+  drawDialoguePortrait(ctx,actor,line.emotion||'stern',px,py,ps,false,0);ctx.restore();
   ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';ctx.font='800 25px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,px+ps+22,py+22);
   ctx.fillStyle='#f2f3ff';ctx.font='500 28px "Chakra Petch",system-ui,sans-serif';wrapText(ctx,line.text,px+ps+22,py+62,VW-(px+ps+22)-50,36);
   ctx.textAlign='center';ctx.fillStyle='rgba(220,210,235,.65)';ctx.font='500 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText((verdictPage+1)+' / '+verdictScene.length,VW/2,by+bh-28);
@@ -1436,7 +1455,7 @@ function render(){
     if(c.hunter){
       const t = 1 - (c.fuse/hunterFuse);
       const a = Math.atan2(c.vy, c.vx);
-      wrapDraw(c.x, X=> SK.hunter(ctx, X, c.y, a, t));
+      wrapDraw(c.x, X=> SK.hunter(ctx, X, c.y, a, t, c));
     } else {
       wrapDraw(c.x, X=> SK.cell(ctx, X, c.y, c));
     }

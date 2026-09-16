@@ -179,6 +179,7 @@ function cityAction(action){
 function cityFormatTime(s){s=Math.max(0,Math.ceil(s));const m=Math.floor(s/60),r=s%60;return m+':'+String(r).padStart(2,'0');}
 
 function drawCitySheet(ctx){
+  loadCityArt();
   hubBtns=[];if(Date.now()-cityTickAt>=1000){cityTickAt=Date.now();cityAdvance(cityTickAt,false);}
   ctx.save();ctx.fillStyle='#080a10';ctx.fillRect(0,0,VW,VH);
   if(sprReady('ashford')){ctx.globalAlpha=0.20;const im=MAKKO_IMG.ashford,sc=Math.max(VW/im.naturalWidth,VH/im.naturalHeight);ctx.drawImage(im,(VW-im.naturalWidth*sc)/2,(VH-im.naturalHeight*sc)/2,im.naturalWidth*sc,im.naturalHeight*sc);ctx.globalAlpha=1;}
@@ -221,7 +222,9 @@ function drawCityCarriers(ctx,gx,gy,cs){
   for(const b of cityAssignedStations()){const path=cityRoadPathTo(b);if(!path||!path.length)continue;const cycle=cityCycleSeconds(b),p=Math.min(1,b.work/cycle),leg=p<0.5?p*2:(1-p)*2;
     const points=path.map(k=>{const [x,y]=k.split(',').map(Number);return [gx+x*cs+cs/2,gy+y*cs+cs/2];});points.push([gx+b.x*cs+cs/2,gy+b.y*cs+cs/2]);
     const span=(points.length-1)*leg,i=Math.min(points.length-2,Math.floor(span)),f=span-i,a=points[i],z=points[i+1],x=a[0]+(z[0]-a[0])*f,y=a[1]+(z[1]-a[1])*f;
-    panel(ctx,x-13,y-11,26,22,5,'#192821',b.type==='farm'?'#b9e47c':'#ffc070');ctx.textAlign='center';ctx.fillStyle='#f4ffe9';ctx.font='800 12px "Chakra Petch",system-ui,sans-serif';ctx.fillText('R',x,y+4);
+    const actor=b.type==='farm'?'farmer':'mason',flip=(z[0]-a[0])*(p<.5?1:-1)<0;
+    if(!drawAnim(ctx,actor+'_walk',x,y-9,42,{fps:9,flip,t:b.id%12}))
+      drawSpr(ctx,'townsfolk',x,y-9,42,{flip});
   }
 }
 function drawCitySelection(ctx){
@@ -259,7 +262,10 @@ function drawCityStation(ctx){
   for(const [x,label] of labels){panel(ctx,x-74,370,148,112,12,'#202733','#7d725f');ctx.fillStyle='#e9dcc4';ctx.font='800 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText(label,x,438);}
   const phase=progress<0.2?'APPROACH':progress<0.75?'WORK':progress<0.9?'HANDOFF':'RETURN';let wx=128;
   if(progress<0.2)wx=128+(360-128)*(progress/0.2);else if(progress<0.75)wx=360;else if(progress<0.9)wx=360+(592-360)*((progress-0.75)/0.15);else wx=592-(592-128)*((progress-0.9)/0.1);
-  if(!active)wx=128;panel(ctx,wx-58,510,116,52,10,active?'#283b35':'#35272b',active?'#8affc1':'#ff9c82');ctx.fillStyle=active?'#d9ffe8':'#ffd0c6';ctx.font='800 15px "Chakra Petch",system-ui,sans-serif';ctx.fillText('RATKIN',wx,542);
+  if(!active)wx=128;
+  const actor=b.type==='farm'?'farmer':'mason',walking=active&&(phase==='APPROACH'||phase==='HANDOFF'||phase==='RETURN');
+  if(!drawAnim(ctx,actor+(walking?'_walk':'_idle'),wx,510,146,{fps:walking?9:5,flip:phase==='RETURN'}))
+    drawSpr(ctx,'townsfolk',wx,510,146,{});
   ctx.fillStyle='#2f3541';ctx.fillRect(86,620,VW-172,18);ctx.fillStyle=active?'#8affc1':'#9a5d5d';ctx.fillRect(86,620,(VW-172)*progress,18);
   ctx.fillStyle='#fff0c8';ctx.font='800 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText(active?phase:'BLOCKED',VW/2,686);
   ctx.textAlign='left';ctx.fillStyle='#ccd4df';ctx.font='600 19px "Chakra Petch",system-ui,sans-serif';ctx.fillText('INPUT',84,754);ctx.fillText('OUTPUT',84,808);ctx.fillText('ROUTE',84,862);

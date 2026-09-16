@@ -1,4 +1,11 @@
-# Fwoosh status — September 15, 2026
+# Fwoosh status — September 16, 2026
+
+## Ratkin cast and village workers — 2026-09-16-ratkin-1
+
+The first existing Makko art batch is integrated: Ratkin arena walk/run/idle, state-driven Arbiter idle/run/cast/hit, a static Ratkin dialogue close-up, and farmer/mason route and station animations. Rescues retain the Ratkin body while ascending instead of changing to the old human rescue sheet. Existing save keys, simulation, economy and collision remain unchanged. Village sheets load on entry.
+
+Raw Makko exports and exact provenance are versioned. All 157 gameplay/render checks and 23 asset checks pass; browser fixtures verify arena, city and station presentation. Dedicated emotional/talking portraits and bespoke worker/building art remain in Cursor's lane. See [art integration](ART_INTEGRATION.md) and [Cursor brief](CURSOR_ART_BRIEF.md). Publishing/deployment is recorded separately in the owning issue.
+
 
 ## Five-bloc favor and release — 2026-09-15-favor-1
 

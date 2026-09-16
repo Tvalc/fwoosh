@@ -2,7 +2,7 @@
 
 Tony's direction, September 15: present events belong in Final Fantasy-style bottom-screen text boxes with simple Makko talking/emotional portraits. Past revelations belong mostly in the optional diary. Duy arrives in an ongoing emergency; the world does not wait for him to understand.
 
-The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He administers the covenant and announces and executes the rebuilt Ratkin community's collective verdict; he cannot personally forgive Duy's debt. The Hearth, Bowl, Hand, Claw and Memory judge Duy. The Shrine clearly states that four votes release him and a fifth improves the reward rather than withholding freedom. The final five-line verdict confirms the community's decision, ends the fire's authority over Duy and points him back toward Cuong and Diep. He will receive a Ratkin Makko design under issue #39; the current human Makko art remains temporarily behind the compatibility key `keith`.
+The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He administers the covenant and announces and executes the rebuilt Ratkin community's collective verdict; he cannot personally forgive Duy's debt. The Hearth, Bowl, Hand, Claw and Memory judge Duy. The Shrine clearly states that four votes release him and a fifth improves the reward rather than withholding freedom. The final five-line verdict confirms the community's decision, ends the fire's authority over Duy and points him back toward Cuong and Diep. The Makko Ratkin design is integrated under the compatibility key `keith`; dedicated emotional portraits remain under issue #39.
 
 ## Current runtime
 
@@ -17,7 +17,7 @@ The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He ad
 
 ## Makko portrait handoff — Cursor art lane
 
-Status: **requested; dedicated clips are not yet generated or integrated in this build.** Runtime currently displays static crops of the existing verified Makko hero and legacy jailer sprites. Cursor is producing Khet-Tak-Tor's Ratkin replacement before the three non-Duy dialogue performances are finalized. The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
+Status: **dedicated clips requested; saved portrait exports not yet verified or integrated.** Runtime displays an existing Makko Duy crop and a static close-up from the new Makko Ratkin Arbiter idle sheet. The Arbiter full-body design is integrated. The expanded emotion set is specified in [CURSOR_ART_BRIEF.md](CURSOR_ART_BRIEF.md). The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
 
 Use the established Duy reference and Khet-Tak-Tor's Tony-approved Ratkin reference, not Cuong's Sunday-morning sprite or the deprecated human Keith reference. FWOOSH collection: https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277. Preserve raw sources and record actual Makko asset links and export settings. Tony must approve Khet-Tak-Tor's visual reference before the portrait set is integrated.
 
