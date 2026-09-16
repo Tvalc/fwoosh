@@ -151,7 +151,7 @@ const DIARY = [
 function diaryUnlocked(e){ try{ return !!e.when(); }catch(_){ return false; } }
 function diaryIsRead(id){ return META.diary && META.diary.read && META.diary.read.indexOf(id)>=0; }
 function diaryMarkRead(id){ if(!META.diary) META.diary={read:[]}; if(!META.diary.read) META.diary.read=[];
-  if(META.diary.read.indexOf(id)<0){ META.diary.read.push(id); saveMeta(); } }
+  if(META.diary.read.indexOf(id)<0){ META.diary.read.push(id); saveMeta(); if(typeof favorEvaluate==='function')favorEvaluate(false); } }
 function diaryFreshCount(){ return DIARY.filter(e=>diaryUnlocked(e) && !diaryIsRead(e.id)).length; }
 
 const INTRO = { WALK: 205, CHAR: 0.028, HOLD: 1.5, START_Y: 0.90, IGNITE_Y: 0.5 };

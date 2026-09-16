@@ -10,7 +10,8 @@ function loadMeta(){
   const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1, clearedDistricts:0,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
     hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh(),
-    judgment:{eligible:false,heard:false} };
+    judgment:{eligible:false,heard:false,favorBegun:false,baseSaved:0,baseFood:0,baseMaterials:0,
+      baseBurrows:0,baseDuelWins:0,votes:[],verdictReady:false,verdictHeard:false,released:false,unanimous:false} };
   if(!s || s.v!==1) return d;
   // Old saves prove only the districts BEFORE the highest unlocked one were cleared.
   // Keep v1 saves compatible; district 5 being unlocked does not prove it was beaten.
@@ -26,7 +27,13 @@ function loadMeta(){
   s.diary = Object.assign({}, d.diary, s.diary||{});
   s.city = cityNormalize(s.city);
   s.judgment = Object.assign({}, d.judgment, s.judgment||{});
-  s.judgment.eligible=!!s.judgment.eligible;s.judgment.heard=!!s.judgment.heard;
+  for(const key of ['eligible','heard','favorBegun','verdictReady','verdictHeard','released','unanimous'])s.judgment[key]=!!s.judgment[key];
+  for(const key of ['baseSaved','baseFood','baseMaterials','baseBurrows','baseDuelWins'])s.judgment[key]=Math.max(0,Math.trunc(Number(s.judgment[key])||0));
+  const validVotes=new Set(['hearth','bowl','hand','claw','memory']);
+  s.judgment.votes=[...new Set((Array.isArray(s.judgment.votes)?s.judgment.votes:[]).filter(v=>validVotes.has(v)))];
+  if(s.judgment.votes.length>=4)s.judgment.verdictReady=true;
+  if(s.judgment.votes.length===5)s.judgment.unanimous=true;
+  if(s.judgment.released){s.judgment.verdictReady=true;s.judgment.verdictHeard=true;}
   return Object.assign({}, d, s);
 }
 function saveMeta(){ try{ localStorage.setItem('fwoosh.meta', JSON.stringify(META)); }catch(e){} }
@@ -138,7 +145,72 @@ function judgmentOpen(){
 function judgmentAdvance(){
   if(hubSheet!=='judgment')return;
   if(judgmentPage<JUDGMENT_LINES.length-1){judgmentPage++;rememberDialogue(JUDGMENT_LINES[judgmentPage]);return;}
-  META.judgment.heard=true;saveMeta();hubSheet='shrine';hubToast=4;hubToastMsg='RESTORATION ACKNOWLEDGED · FAVOR REMAINS';
+  META.judgment.heard=true;favorBegin();saveMeta();hubSheet='shrine';hubToast=4;hubToastMsg='RESTORATION ACKNOWLEDGED · FIVE BLOCS WILL JUDGE';
+}
+
+// Favor begins only after the restoration hearing, so old accomplishments prove
+// survival while new choices prove what Duy does with the society he restored.
+const FAVOR_DEFS=[
+  {id:'hearth',name:'THE HEARTH',role:'shelter',need:1,desc:'seal one more connected Burrow'},
+  {id:'bowl',name:'THE BOWL',role:'sustenance',need:8,desc:'produce 8 food after the hearing'},
+  {id:'hand',name:'THE HAND',role:'rebuilding',need:6,desc:'produce 6 materials after the hearing'},
+  {id:'claw',name:'THE CLAW',role:'protection',need:12,desc:'ascend 12 Ratkin and win one trial'},
+  {id:'memory',name:'THE MEMORY',role:'truth',need:DIARY.length,desc:'read Duy’s full diary'}
+];
+let verdictPage=0,verdictScene=[];
+function favorBegin(){
+  const j=META.judgment;if(!j.heard||j.favorBegun)return false;
+  const c=cityData();j.favorBegun=true;j.baseSaved=Math.max(0,META.saved||0);
+  j.baseFood=Math.max(0,c.producedFood||0);j.baseMaterials=Math.max(0,c.producedMaterials||0);
+  j.baseBurrows=citySealedConnectedCount('burrow');j.baseDuelWins=Math.max(0,(typeof opp!=='undefined'&&opp.duelWins)||0);
+  j.votes=[];return true;
+}
+function favorTerms(){
+  const j=META.judgment,c=cityData(),earned=new Set(j.votes||[]),begun=!!j.favorBegun;
+  const homes=Math.max(0,citySealedConnectedCount('burrow')-(j.baseBurrows||0));
+  const food=Math.max(0,(c.producedFood||0)-(j.baseFood||0));
+  const materials=Math.max(0,(c.producedMaterials||0)-(j.baseMaterials||0));
+  const ascended=Math.max(0,(META.saved||0)-(j.baseSaved||0));
+  const trials=Math.max(0,((typeof opp!=='undefined'&&opp.duelWins)||0)-(j.baseDuelWins||0));
+  const memories=DIARY.filter(e=>diaryIsRead(e.id)).length;
+  const raw={
+    hearth:{value:Math.min(1,homes),progress:Math.min(1,homes)+' / 1',met:begun&&homes>=1},
+    bowl:{value:Math.min(8,food),progress:Math.min(8,food)+' / 8',met:begun&&food>=8},
+    hand:{value:Math.min(6,materials),progress:Math.min(6,materials)+' / 6',met:begun&&materials>=6},
+    claw:{value:Math.min(12,ascended),progress:Math.min(12,ascended)+' / 12 · '+(trials>=1?'TRIAL WON':'WIN A TRIAL'),met:begun&&ascended>=12&&trials>=1},
+    memory:{value:memories,progress:memories+' / '+DIARY.length,met:begun&&memories>=DIARY.length}
+  };
+  return FAVOR_DEFS.map(def=>({...def,...raw[def.id],done:earned.has(def.id)||raw[def.id].met}));
+}
+function favorVotes(){return favorTerms().filter(t=>t.done).length;}
+function finalVerdictLines(unanimous){return [
+  {who:ARBITER_NAME,emotion:'stern',text:unanimous?'The vote is counted. Every Ratkin voice speaks for your release.':'The vote is counted. Four of the five Ratkin voices speak for your release.'},
+  {who:'DUY',emotion:'questioning',text:'Then the ratkin are letting me go?'},
+  {who:ARBITER_NAME,emotion:'stern',text:'They are. Your sentence is paid. The fire is no longer your prison.'},
+  {who:'DUY',emotion:'concerned',text:"Cuong. Diep. I'm coming back."},
+  {who:ARBITER_NAME,emotion:'stern',text:unanimous?"Go. Chit-tat-to's Invoice will record that no voice stood against you.":"Go. Chit-tat-to's Invoice will record what you restored."}
+];}
+function favorEvaluate(autoOpen=false){
+  const j=META.judgment;if(!j.heard)return 0;
+  let changed=favorBegin(),newVote=null;const votes=new Set(j.votes||[]);
+  for(const term of favorTerms())if(term.met&&!votes.has(term.id)){votes.add(term.id);newVote=term;changed=true;}
+  j.votes=[...votes];const count=j.votes.length;
+  if(count>=4&&!j.verdictReady){j.verdictReady=true;changed=true;hubToast=4;hubToastMsg='FOUR RATKIN BLOCS CALL FOR RELEASE';}
+  if(count===5&&!j.unanimous){j.unanimous=true;changed=true;hubToast=4;hubToastMsg=j.released?'UNANIMOUS · INVOICE AND RECRUIT UPGRADED':'THE RATKIN VERDICT IS UNANIMOUS';}
+  else if(newVote&&!j.verdictReady){hubToast=3.2;hubToastMsg=newVote.name+' SUPPORTS YOU · '+count+' / 5';}
+  if(changed)saveMeta();
+  if(autoOpen&&j.verdictReady&&!j.verdictHeard){verdictPage=0;verdictScene=finalVerdictLines(count===5);hubSheet='verdict';rememberDialogue(verdictScene[0]);}
+  return count;
+}
+function verdictAdvance(){
+  if(hubSheet!=='verdict')return;
+  if(verdictPage<verdictScene.length-1){verdictPage++;rememberDialogue(verdictScene[verdictPage]);return;}
+  const j=META.judgment;j.verdictHeard=true;j.released=true;saveMeta();hubSheet='shrine';hubToast=5;
+  hubToastMsg=j.unanimous?'DUY RELEASED · UNANIMOUS VERDICT':'DUY RELEASED · FOUR VOICES CARRY THE VERDICT';
+}
+function verdictOpen(){
+  const j=META.judgment;if(!j.verdictReady||j.verdictHeard)return;
+  verdictPage=0;verdictScene=finalVerdictLines(favorVotes()===5);hubSheet='verdict';rememberDialogue(verdictScene[0]);
 }
 
 // land in the town after a run; raise any building whose saves-milestone you just crossed
@@ -157,7 +229,7 @@ function enterHub(){
     hubToastMsg=raised.join(' + ')+(raised.length>1 ? ' STAND AGAIN' : ' STANDS AGAIN'); }
   saveMeta();
   if(starterAvailable()) hubSheet='starter';
-  else judgmentEvaluate(true);
+  else {judgmentEvaluate(true);if(!hubSheet)favorEvaluate(true);}
 }
 
 let META = loadMeta();

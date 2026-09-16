@@ -40,6 +40,8 @@ The first playable Ratkin Quarter uses a 5×5 plan with a fixed gate. Its initia
 
 The first Ratkin Judgment recognizes a minimum self-sustaining society rather than demanding a large copy quota. It requires five actually cleared districts, nineteen ascended Ratkin, two connected sealed Burrows, a connected sealed Farm that has produced food, and a connected sealed Yard plus Storehouse after material production. Khet-Tak-Tor summons the hearing and acknowledges that Ratkin society can survive. The hearing explicitly does not release Duy: Ratkin favor and the final verdict remain separate. Larger settlements and optimized layouts are optional for this judgment.
 
+After that hearing, five social blocs judge what Duy does with the restored society. The Hearth asks for another connected sealed home. The Bowl asks for eight new food. The Hand asks for six new materials. The Claw asks for twelve more ascensions and another Arbiter trial victory. The Memory asks Duy to read all fifteen diary chapters and face the truth of his path. Earned support is permanent. Any four votes release and resurrect Duy, so the diary remains optional to finish the standalone game. A fifth vote creates the unanimous Invoice and recruit outcome.
+
 ## Release and the wider RPG
 
 Completing Duy's restoration/favor path releases and resurrects him. Fwoosh must provide a satisfying, comprehensible ending even when no other game is present.
@@ -56,7 +58,6 @@ Ledger also has a route where Duy survives and older language saying dead guests
 
 ## Open design decisions
 
-- The identities of the five Ratkin voting blocs and which acts earn each bloc's support after the implemented first restoration judgment.
 - The exact powers and limits of Khet-Tak-Tor's mandate under the divine covenant.
 - Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
 - How district/Arbiter progress contributes without making one combat victory the release condition.

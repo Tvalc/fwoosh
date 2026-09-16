@@ -238,8 +238,8 @@ window.addEventListener('keydown', e=>{
     return;
   }
   if(mode === 'hub'){                                 // in the town: Space/Enter = PLAY, Esc closes a sheet
-    if(k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat){if(hubSheet==='judgment')judgmentAdvance();else if(hubSheet==='city')cityAction('cityclose');else if(hubSheet)hubSheet=null;else reset();} }
-    else if(k==='escape'){if(hubSheet==='city')cityAction('cityclose');else hubSheet=null;}
+    if(k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat){if(hubSheet==='judgment')judgmentAdvance();else if(hubSheet==='verdict')verdictAdvance();else if(hubSheet==='city')cityAction('cityclose');else if(hubSheet){hubSheet=null;favorEvaluate(true);}else reset();} }
+    else if(k==='escape'){if(hubSheet==='city')cityAction('cityclose');else if(hubSheet!=='judgment'&&hubSheet!=='verdict'){hubSheet=null;favorEvaluate(true);}}
     return;
   }
   if(KEYVEC[k]){ e.preventDefault(); keys[k] = true; hinted = true; }

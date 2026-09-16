@@ -12,7 +12,7 @@ Well: `{built, hearts, regen}`. Forge: `{built, charges, recharge}`. Shrine: `{b
 
 City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, food, producedFood, producedMaterials, nextId}`. A building is `{id,type:'burrow'|'yard'|'farm'|'store',x,y,state:'building'|'ready'|'sealed',remaining,work,priority}`. `priority` is 0 low, 1 normal or 2 high for production stations. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current production-cycle seconds. The production totals prove that each chain has operated and never decrease when resources are spent. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, clamps resources and progress to nonnegative values, and defaults older city saves to four food, zero production proof and normal priorities.
 
-Judgment: `{eligible:boolean, heard:boolean}`. `eligible` persists the first summons once all five restoration terms have been met. `heard` is set only after the player reaches the end of the three-line judgment scene. Old saves default both fields to false; existing resources are not retroactively counted as production.
+Judgment retains its original `eligible` and `heard` flags and adds the favor phase: `{favorBegun,baseSaved,baseFood,baseMaterials,baseBurrows,baseDuelWins,votes[],verdictReady,verdictHeard,released,unanimous}`. The first hearing captures the five baselines. Food, material, shelter, ascension and trial proofs therefore count only after favor begins; diary reads are lifetime truth progress. Votes use stable IDs `hearth`, `bowl`, `hand`, `claw` and `memory` and remain earned after their conditions are met. Four votes set verdict readiness. Completing the final scene persists release; a later fifth vote can still persist unanimity. Missing and malformed fields normalize without changing outer meta version 1. An older save with `heard:true` captures current baselines on its next town evaluation rather than receiving retroactive votes.
 
 ## Persistence timing
 
@@ -32,7 +32,7 @@ The simulation stops the frame after terminal boss outcomes so a later rescue ca
 
 ## Intro revisions
 
-The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. The current present-dialogue release uses revision 5. Revision changes replay revised opening dialogue once while preserving ember balances, district completion, upgrades and diary read state. City-1 adds its optional city record without changing the outer v1 version. Invoice fields do not exist yet.
+The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. The current present-dialogue release uses revision 5. Revision changes replay revised opening dialogue once while preserving ember balances, district completion, upgrades and diary read state. City and favor records remain optional additions under outer version 1. Invoice redemption fields do not exist yet; `released` and `unanimous` are Fwoosh-side outcome records, not proof that Ledger has redeemed a payload.
 
 ## Ratkin Quarter persistence
 
