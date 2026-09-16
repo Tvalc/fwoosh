@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Five-bloc favor and release — 2026-09-15-favor-1
+
+Ratkin favor now continues from the first restoration hearing through five social blocs. The Hearth supports Duy after one additional connected sealed Burrow; the Bowl after eight new food; the Hand after six new materials; the Claw after twelve new ascensions plus another Arbiter trial victory; and the Memory after all fifteen optional diary chapters are read. Post-hearing baselines prevent earlier city production and combat from granting the new votes retroactively. Once earned, support persists.
+
+The Ratkin Judgment screen replaces the restoration checklist with named bloc progress after the hearing and explains the outcome before the player commits: four votes release Duy, while five make the verdict unanimous. Four votes summon a five-line final scene in which Khet-Tak-Tor reports the community's decision, ends the fire's authority over Duy and sends him back toward Cuong and Diep. The optional diary vote is not required for the standalone ending. A fifth vote before or after release records the best Invoice tier and Ratkin recruit eligibility for the future Ledger handoff.
+
+The compatible v1 save adds favor baselines, stable earned-vote IDs, verdict, release and unanimity flags under `judgment`. Existing saves retain all progress; a save that already heard the first judgment starts favor from its current state on the next town evaluation. The release does not yet calculate Invoice debt credit, award cross-game items or export/redeem a Ledger payload. All 155 gameplay/state/input/render-operation checks and 11 asset checks pass. Local phone-scale fixtures verified the bloc checklist and four-vote verdict layout. No new visual asset was added; current verified Makko portraits remain until issue #39 supplies Khet-Tak-Tor's Ratkin replacement.
+
 ## Flaming Burst arrow and demon heat — 2026-09-15-flame-arrow-1
 
 The slingshot trajectory no longer appears as a yellow dashed line and plain triangle. Touch and desktop mouse now preview a compact burning arrow assembled from the existing approved Makko flame frames: an ember-red directional spine, animated flame tail and larger forward-pointing flame at the collision-limited endpoint. Unavailable and blocked Bursts dim the same effect. The gesture, inversion, charge spending and cancellation rules are unchanged.

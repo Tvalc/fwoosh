@@ -2,7 +2,7 @@
 
 Tony's direction, September 15: present events belong in Final Fantasy-style bottom-screen text boxes with simple Makko talking/emotional portraits. Past revelations belong mostly in the optional diary. Duy arrives in an ongoing emergency; the world does not wait for him to understand.
 
-The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He administers the covenant and eventually announces and executes the rebuilt Ratkin community's collective verdict; he cannot personally forgive Duy's debt. Five Ratkin voting blocs judge Duy. Khet-Tak-Tor must clearly communicate that four votes release him and that a fifth vote improves the reward rather than withholding freedom. He will receive a Ratkin Makko design under issue #39; the current human Makko art remains temporarily behind the compatibility key `keith`.
+The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He administers the covenant and announces and executes the rebuilt Ratkin community's collective verdict; he cannot personally forgive Duy's debt. The Hearth, Bowl, Hand, Claw and Memory judge Duy. The Shrine clearly states that four votes release him and a fifth improves the reward rather than withholding freedom. The final five-line verdict confirms the community's decision, ends the fire's authority over Duy and points him back toward Cuong and Diep. He will receive a Ratkin Makko design under issue #39; the current human Makko art remains temporarily behind the compatibility key `keith`.
 
 ## Current runtime
 

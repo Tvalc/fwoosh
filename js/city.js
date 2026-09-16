@@ -96,7 +96,7 @@ function cityStationStatus(b){
   if(b.type==='farm'&&cityData().food>=cityStorageCapacity())return 'STOPPED · FOOD FULL';
   return cityStationActive(b)?'OPERATING · '+cityCycleSeconds(b)+'s CYCLE':'WAITING FOR A WORKER';
 }
-function cityPersist(){cityData().lastAt=Date.now();cityLastPersist=Date.now();saveMeta();}
+function cityPersist(){cityData().lastAt=Date.now();cityLastPersist=Date.now();saveMeta();if(typeof favorEvaluate==='function')favorEvaluate(false);}
 function cityAdvance(now=Date.now(),force=false){
   const c=cityData();if(!c)return;
   let dt=Math.max(0,(now-c.lastAt)/1000);dt=Math.min(CITY_OFFLINE_CAP,dt);c.lastAt=now;
@@ -166,7 +166,7 @@ function cityRush(id){
 function citySetPriority(id,priority){const b=cityBuilding(id);if(!b||!['yard','farm'].includes(b.type))return;b.priority=Math.max(0,Math.min(2,Math.trunc(priority)));b.work=0;citySetMessage(CITY_DEF[b.type].short+' PRIORITY SET TO '+['LOW','NORMAL','HIGH'][b.priority]+'.');cityPersist();}
 function cityAction(action){
   if(action==='city'){cityOpen();return true;}
-  if(action==='cityclose'){cityAdvance(Date.now(),true);hubSheet=null;cityView='map';judgmentEvaluate(true);return true;}
+  if(action==='cityclose'){cityAdvance(Date.now(),true);hubSheet=null;cityView='map';judgmentEvaluate(true);if(!hubSheet)favorEvaluate(true);return true;}
   if(action==='cityback'){cityView='map';return true;}
   if(action.indexOf('citytool:')===0){cityTool=action.split(':')[1];cityMovingId=null;cityMessage=cityTool==='move'?'SELECT A BUILDING, THEN ITS NEW SITE.':'';return true;}
   if(action.indexOf('citycell:')===0){const p=action.split(':').slice(1).map(Number);cityCellAct(p[0],p[1]);return true;}

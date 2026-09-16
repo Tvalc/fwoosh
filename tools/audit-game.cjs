@@ -957,9 +957,46 @@ test('Qualifying town summons one persistent judgment and records only delivered
  const reload=game(Object.fromEntries(g.storage));reload.run('onTitle=false;mode="hub";enterHub()');assert.equal(reload.run('META.judgment.heard'),true);assert.notEqual(reload.run('hubSheet'),'judgment');
 });
 test('Judgment dialogue advances once per fresh keyboard press',()=>{
- const g=game();g.run(completeJudgmentCity+';META.saved=19;META.clearedDistricts=5;META.flags.starterChecked=true;onTitle=false;mode="hub";judgmentEvaluate(true)');
- g.dispatch('keydown',{key:'Enter',repeat:true});assert.equal(g.run('judgmentPage'),0);
- g.dispatch('keydown',{key:'Enter',repeat:false});assert.equal(g.run('judgmentPage'),1);
+  const g=game();g.run(completeJudgmentCity+';META.saved=19;META.clearedDistricts=5;META.flags.starterChecked=true;onTitle=false;mode="hub";judgmentEvaluate(true)');
+  g.dispatch('keydown',{key:'Enter',repeat:true});assert.equal(g.run('judgmentPage'),0);
+  g.dispatch('keydown',{key:'Enter',repeat:false});assert.equal(g.run('judgmentPage'),1);
+});
+test('Favor begins from the first hearing instead of retroactively counting old production',()=>{
+  const g=game();g.run(completeJudgmentCity+';META.saved=44;META.city.producedFood=20;META.city.producedMaterials=14;opp.duelWins=6;META.judgment.heard=true;favorBegin();saveMeta()');
+  assert.equal(g.run('META.judgment.baseSaved'),44);assert.equal(g.run('META.judgment.baseFood'),20);
+  assert.equal(g.run('META.judgment.baseMaterials'),14);assert.equal(g.run('META.judgment.baseBurrows'),2);assert.equal(g.run('META.judgment.baseDuelWins'),6);
+  assert.equal(g.run('favorVotes()'),0);
+  const reload=game(Object.fromEntries(g.storage));reload.run('favorEvaluate(false)');assert.equal(reload.run('favorVotes()'),0);
+});
+test('Five social blocs earn persistent votes through distinct game systems',()=>{
+  const g=game();g.run(completeJudgmentCity+';META.saved=40;META.city.lastAt=Date.now();opp.duelWins=5;META.judgment.heard=true;favorBegin();saveMeta()');
+  g.run("META.city.buildings.push({id:6,type:'burrow',x:3,y:2,state:'sealed',remaining:0,work:0,priority:1});favorEvaluate(false)");
+  assert.equal(g.run("META.judgment.votes.includes('hearth')"),true);
+  g.run('META.city.producedFood+=8;favorEvaluate(false)');assert.equal(g.run("META.judgment.votes.includes('bowl')"),true);
+  g.run('META.city.producedMaterials+=6;favorEvaluate(false)');assert.equal(g.run("META.judgment.votes.includes('hand')"),true);
+  g.run('META.saved+=12;opp.duelWins+=1;favorEvaluate(false)');assert.equal(g.run("META.judgment.votes.includes('claw')"),true);
+  g.run('META.diary.read=DIARY.map(e=>e.id);favorEvaluate(false)');assert.equal(g.run("META.judgment.votes.includes('memory')"),true);
+  g.run("META.city.roads=['2,4'];META.city.producedFood=0;META.city.producedMaterials=0;META.saved=0;opp.duelWins=0");
+  assert.equal(g.run('favorVotes()'),5,'Earned community support must not disappear when the town layout later changes.');
+});
+test('Four votes release Duy without requiring the optional diary vote',()=>{
+  const g=game();g.run(completeJudgmentCity+';META.saved=40;META.city.lastAt=Date.now();opp.duelWins=5;META.judgment.heard=true;favorBegin();META.city.buildings.push({id:6,type:"burrow",x:3,y:2,state:"sealed",remaining:0,work:0,priority:1});META.city.producedFood+=8;META.city.producedMaterials+=6;META.saved+=12;opp.duelWins+=1;favorEvaluate(true)');
+  assert.equal(g.run('favorVotes()'),4);assert.equal(g.run("META.judgment.votes.includes('memory')"),false);
+  assert.equal(g.run('META.judgment.verdictReady'),true);assert.equal(g.run('hubSheet'),'verdict');
+  assert.match(g.run('verdictScene[0].text'),/Four of the five/);
+  g.run('for(let i=0;i<verdictScene.length;i++)verdictAdvance()');
+  assert.equal(g.run('META.judgment.released'),true);assert.equal(g.run('META.judgment.verdictHeard'),true);assert.equal(g.run('META.judgment.unanimous'),false);
+  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.judgment.released'),true);assert.equal(reload.run('favorVotes()'),4);
+});
+test('The optional Memory vote upgrades a completed verdict to unanimous',()=>{
+  const g=game();g.run('META.judgment={...META.judgment,heard:true,favorBegun:true,votes:["hearth","bowl","hand","claw"],verdictReady:true,verdictHeard:true,released:true};META.diary.read=DIARY.map(e=>e.id);favorEvaluate(false)');
+  assert.equal(g.run('favorVotes()'),5);assert.equal(g.run('META.judgment.unanimous'),true);
+  assert.match(g.run('hubToastMsg'),/INVOICE AND RECRUIT UPGRADED/);
+  const before=g.run('dialogueSave().history.length');g.run('favorEvaluate(true)');assert.equal(g.run('dialogueSave().history.length'),before);
+});
+test('Ratkin Judgment shows named blocs, release threshold and unanimous reward',()=>{
+  const g=game();g.run('onTitle=false;mode="hub";META.judgment.heard=true;favorBegin();drawShrineSheet(ctx)');
+  for(const label of ['THE HEARTH','THE BOWL','THE HAND','THE CLAW','THE MEMORY','4 release · 5 unanimous'])assert.ok(g.drawnText.some(t=>t.includes(label)),'Missing favor guidance: '+label);
 });
 
 test('Old v1 saves gain a clean city without losing existing progress',()=>{
