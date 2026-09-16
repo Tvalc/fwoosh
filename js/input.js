@@ -77,18 +77,19 @@ function lungeDir(dx,dy){
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
 }
 
-// Mobile Burst is one direct-touch gesture. The vector is anchored to Duy's position when the
-// touch begins, so auto-run cannot skew or reverse the player's intent while they hold to preview.
-function touchBurstAim(){
+// Pointer Burst is a slingshot gesture on touch and mouse. Pull opposite the desired travel
+// direction. The vector is anchored to Duy's position at pointer-down so auto-run cannot skew it.
+function pointerBurstAim(){
   if(!ptr.down || mode!=='play')return null;
-  const target=screenToWorld(ptr.x,ptr.y), dx=target.x-ptr.px, dy=target.y-ptr.py, m=Math.hypot(dx,dy);
-  if(m<K.TOUCH_BURST_CANCEL_R)return {cancel:true,dx,dy};
+  const target=screenToWorld(ptr.x,ptr.y), pullX=target.x-ptr.px, pullY=target.y-ptr.py;
+  const dx=-pullX,dy=-pullY,m=Math.hypot(pullX,pullY);
+  if(m<K.POINTER_BURST_CANCEL_R)return {cancel:true,dx,dy};
   return {cancel:false,dx,dy,ux:dx/m,uy:dy/m};
 }
 
 // Match the fixed-step dash closely enough to preview its collision-limited endpoint. This uses a
 // throwaway body; the live player and obstacle state are never changed by aiming.
-function touchBurstEnd(aim){
+function pointerBurstEnd(aim){
   const q={x:player.x,y:player.y}, total=K.LUNGE_SPD*K.LUNGE_T;
   let left=total, blocked=false;
   while(left>0.0001){
@@ -105,16 +106,15 @@ function touchBurstEnd(aim){
 
 // A line and chevron communicate the result without adding another permanent button or a circular
 // effect to the arena. Nothing is spent until release.
-function drawTouchBurstAim(ctx){
-  if(!isTouch)return;
-  const aim=touchBurstAim();if(!aim)return;
+function drawPointerBurstAim(ctx){
+  const aim=pointerBurstAim();if(!aim)return;
   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
   if(aim.cancel){
     ctx.strokeStyle='rgba(220,213,224,0.70)';ctx.lineWidth=4;
     const r=9;ctx.beginPath();ctx.moveTo(player.x-r,player.y-r);ctx.lineTo(player.x+r,player.y+r);
     ctx.moveTo(player.x+r,player.y-r);ctx.lineTo(player.x-r,player.y+r);ctx.stroke();ctx.restore();return;
   }
-  const end=touchBurstEnd(aim), ready=player.charges>0&&player.dashCd<=0;
+  const end=pointerBurstEnd(aim), ready=player.charges>0&&player.dashCd<=0;
   const col=ready?'255,224,162':'145,136,151', sx=player.x+aim.ux*(player.r+8), sy=player.y+aim.uy*(player.r+8);
   ctx.strokeStyle='rgba('+col+',0.88)';ctx.lineWidth=5;ctx.setLineDash([14,10]);ctx.lineDashOffset=-frame*0.8;
   ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(end.x,end.y);ctx.stroke();ctx.setLineDash([]);
@@ -162,7 +162,7 @@ function onMove(x,y){
 function onUp(){
   if(debugMenu.open)return;
   if(ptr.onVent){ ptr.onVent = false; setVentHeld(false); }
-  else if(ptr.down){const aim=touchBurstAim();if(aim&&!aim.cancel)lungeDir(aim.dx,aim.dy);}
+  else if(ptr.down){const aim=pointerBurstAim();if(aim&&!aim.cancel)lungeDir(aim.dx,aim.dy);}
   ptr.down = false;
 }
 // An interrupted gesture is not a completed tap: cancel without spending a dash.

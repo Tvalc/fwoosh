@@ -260,7 +260,7 @@ test('Touch release finishes exactly one unit without spending a dash', () => {
   assert.equal(g.run('demons.length'),1);assert.equal(g.run('player.charges'),3);
 });
 
-test('Touch drag previews without spending and release uses one charge', () => {
+test('Pointer drag previews without spending and release uses one charge', () => {
   const g=game();g.run('onTitle=false; intro=null; introT=0');
   g.dispatch('pointerdown',{pointerType:'touch',clientX:200,clientY:600});
   g.dispatch('pointermove',{pointerType:'touch',clientX:350,clientY:600});
@@ -268,23 +268,23 @@ test('Touch drag previews without spending and release uses one charge', () => {
   g.dispatch('pointerup');
   assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.down'),false);
 });
-test('Touch Burst direction stays anchored to Duy at touch-down',()=>{
+test('Slingshot Burst direction stays anchored to Duy at pointer-down',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
   g.run('var q=worldToScreen(620,640);onDown(q.x,q.y);player.x=680;onUp()');
-  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')>0.99,'Autorun movement reversed the intended Burst');
+  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<-.99,'Autorun movement reversed the intended slingshot Burst');
 });
-test('Dragging can revise Touch Burst aim until release',()=>{
+test('Dragging can revise slingshot Burst aim until release',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
   g.run('var a=worldToScreen(620,640),b=worldToScreen(360,900);onDown(a.x,a.y);onMove(b.x,b.y)');
   assert.equal(g.run('player.charges'),3);
-  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hy')>0.99);
+  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hy')<-.99);
 });
-test('Releasing Touch Burst near Duy cancels without spending',()=>{
+test('Releasing slingshot Burst near Duy cancels without spending',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
   g.run('var q=worldToScreen(380,640);onDown(q.x,q.y);onUp()');
   assert.equal(g.run('player.charges'),3);assert.equal(g.run('ptr.down'),false);
 });
-test('A second finger cannot hijack an active Touch Burst',()=>{
+test('A second finger cannot hijack an active slingshot Burst',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
   const q=g.run('(()=>{const p=worldToScreen(620,640);return {x:p.x*scale,y:p.y*scale,vx:ventBtn().x*scale,vy:ventBtn().y*scale};})()');
   g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:q.x,clientY:q.y});
@@ -802,14 +802,20 @@ test('HUD, dialogue dock and gutters cannot consume a dash',()=>{
  g.run('onDown(300,600);onMove(400,600)');assert.equal(g.run('player.charges'),3);
  g.run('onUp()');assert.equal(g.run('player.charges'),2);
 });
-test('Tap directions track rendered world targets at phone and desktop sizes',()=>{
+test('Slingshot directions invert rendered world targets at phone and desktop sizes',()=>{
  for(const width of [320,375,430,1280])for(const [x,y] of [[100,40],[620,40],[100,1240],[620,1240]]){
   const g=game();g.run(`innerWidth=${width};innerHeight=900;fit();onTitle=false;intro=null;introT=0;player.x=360;player.y=640`);
   const q=g.run(`(()=>{const p=worldToScreen(${x},${y});return {clientX:p.x*scale,clientY:p.y*scale};})()`);
   g.dispatch('pointerdown',q);g.dispatch('pointerup');
   assert.equal(g.run('player.charges'),2);
-  const m=Math.hypot(x-360,y-640);assert.ok(Math.abs(g.run('player.hx')-(x-360)/m)<1e-9);assert.ok(Math.abs(g.run('player.hy')-(y-640)/m)<1e-9);
+  const m=Math.hypot(x-360,y-640);assert.ok(Math.abs(g.run('player.hx')-(360-x)/m)<1e-9);assert.ok(Math.abs(g.run('player.hy')-(640-y)/m)<1e-9);
  }
+});
+test('Desktop mouse hold draws the same slingshot trajectory preview',()=>{
+ const g=game();const strokes=g.run('onTitle=false;intro=null;introT=0;isTouch=false;player.x=360;player.y=640;var q=worldToScreen(620,760);onDown(q.x,q.y);var burstPreviewStrokes=0;ctx.stroke=()=>burstPreviewStrokes++;drawPointerBurstAim(ctx);burstPreviewStrokes');
+ assert.ok(strokes>0,'Desktop pointer aim did not draw a trajectory preview');
+ assert.equal(g.run('player.charges'),3,'Desktop preview spent a charge before release');
+ g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<0&&g.run('player.hy')<0);
 });
 test('Resizing cancels incomplete gestures without an accidental dash',()=>{
  const g=game();g.run('onTitle=false;intro=null;introT=0;onDown(300,600);innerWidth=375;fit();onUp()');assert.equal(g.run('player.charges'),3);
