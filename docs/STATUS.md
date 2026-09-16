@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Flaming Burst arrow and demon heat — 2026-09-15-flame-arrow-1
+
+The slingshot trajectory no longer appears as a yellow dashed line and plain triangle. Touch and desktop mouse now preview a compact burning arrow assembled from the existing approved Makko flame frames: an ember-red directional spine, animated flame tail and larger forward-pointing flame at the collision-limited endpoint. Unavailable and blocked Bursts dim the same effect. The gesture, inversion, charge spending and cancellation rules are unchanged.
+
+Killing any demon now adds exactly one carried heat, capped at the existing heat maximum. Town and Arbiter demons retain their ember payouts; vent-created demons still pay zero embers. The callout states the +1 heat result explicitly, making demon interception another way to fuel hot rescues or damage Khet-Tak-Tor while increasing Duy's heat risk.
+
+All 150 gameplay/state/input/render-operation checks and 11 asset checks pass. A phone-scale browser fixture verified the Makko flame arrow with no console warnings or errors. No save schema or new art asset was added.
+
 ## Slingshot Burst input — 2026-09-15-slingshot-1
 
 Touch and desktop mouse now share one inverted Burst rule: point, hold or drag opposite the direction Duy should travel, see the actual collision-limited trajectory, and release to commit. A quick tap Bursts away from the tapped point. Returning near Duy cancels without spending. The mouse receives the same visible trajectory as touch; desktop WASD/arrow steering and Shift Burst remain unchanged.
