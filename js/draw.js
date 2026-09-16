@@ -1519,6 +1519,8 @@ function render(){
     ag.addColorStop(0,'rgba(255,225,140,0)'); ag.addColorStop(0.6,'rgba(255,225,140,'+(aa*0.6).toFixed(3)+')'); ag.addColorStop(1,'rgba(255,210,110,0)');
     ctx.fillStyle=ag; ctx.beginPath(); ctx.arc(X,p.y,ar,0,7); ctx.fill(); }); }
   wrapDraw(p.x, X=> SK.player(ctx, X, p));
+  // Mobile direct-touch Burst preview: release commits; returning the pointer to Duy cancels.
+  drawTouchBurstAim(ctx);
 
   // ---- DUEL FX: allies, wake (absorbable trail), ember-spit shots, siphon pulses
   if(duelActive){

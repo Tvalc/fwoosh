@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------- input
-let ptr = { down:false, sx:0, sy:0, t:0, swiped:false, onVent:false };
+let ptr = { down:false, id:null, sx:0, sy:0, x:0, y:0, px:0, py:0, onVent:false };
 // The VENT button — a fixed thumb-target, bottom-right. Vent fires ONLY from here (or SPACE), never from a
 // stray tap, so it can't happen by accident.
 function ventBtn(){ const r = 62; return { x: 634, y: 1176, r }; }
@@ -73,8 +73,55 @@ function lungeDir(dx,dy){
   player.hx = dx/m; player.hy = dy/m;
   player.autoTarget=null;player.autoSightT=0;
   player.lunge = K.LUNGE_T;
-  player.charges--; player.dashCd = K.DASH_CD;   // spend a charge (+ a tiny gap so one swipe can't double-fire)
+  player.charges--; player.dashCd = K.DASH_CD;   // spend a charge (+ a tiny gap so one release can't double-fire)
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
+}
+
+// Mobile Burst is one direct-touch gesture. The vector is anchored to Duy's position when the
+// touch begins, so auto-run cannot skew or reverse the player's intent while they hold to preview.
+function touchBurstAim(){
+  if(!ptr.down || mode!=='play')return null;
+  const target=screenToWorld(ptr.x,ptr.y), dx=target.x-ptr.px, dy=target.y-ptr.py, m=Math.hypot(dx,dy);
+  if(m<K.TOUCH_BURST_CANCEL_R)return {cancel:true,dx,dy};
+  return {cancel:false,dx,dy,ux:dx/m,uy:dy/m};
+}
+
+// Match the fixed-step dash closely enough to preview its collision-limited endpoint. This uses a
+// throwaway body; the live player and obstacle state are never changed by aiming.
+function touchBurstEnd(aim){
+  const q={x:player.x,y:player.y}, total=K.LUNGE_SPD*K.LUNGE_T;
+  let left=total, blocked=false;
+  while(left>0.0001){
+    const step=Math.min(K.LUNGE_SPD*DT,left);left-=step;
+    q.x+=aim.ux*step;q.y+=aim.uy*step;
+    if(q.x<K.EDGE){q.x=K.EDGE;blocked=true;break;}
+    if(q.x>VW-K.EDGE){q.x=VW-K.EDGE;blocked=true;break;}
+    if(q.y<40){q.y=40;blocked=true;break;}
+    if(q.y>VH-40){q.y=VH-40;blocked=true;break;}
+    if(collideObstacles(q,player.r)){blocked=true;break;}
+  }
+  return {x:q.x,y:q.y,blocked};
+}
+
+// A line and chevron communicate the result without adding another permanent button or a circular
+// effect to the arena. Nothing is spent until release.
+function drawTouchBurstAim(ctx){
+  if(!isTouch)return;
+  const aim=touchBurstAim();if(!aim)return;
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  if(aim.cancel){
+    ctx.strokeStyle='rgba(220,213,224,0.70)';ctx.lineWidth=4;
+    const r=9;ctx.beginPath();ctx.moveTo(player.x-r,player.y-r);ctx.lineTo(player.x+r,player.y+r);
+    ctx.moveTo(player.x+r,player.y-r);ctx.lineTo(player.x-r,player.y+r);ctx.stroke();ctx.restore();return;
+  }
+  const end=touchBurstEnd(aim), ready=player.charges>0&&player.dashCd<=0;
+  const col=ready?'255,224,162':'145,136,151', sx=player.x+aim.ux*(player.r+8), sy=player.y+aim.uy*(player.r+8);
+  ctx.strokeStyle='rgba('+col+',0.88)';ctx.lineWidth=5;ctx.setLineDash([14,10]);ctx.lineDashOffset=-frame*0.8;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(end.x,end.y);ctx.stroke();ctx.setLineDash([]);
+  const backX=end.x-aim.ux*18,backY=end.y-aim.uy*18,sideX=-aim.uy*10,sideY=aim.ux*10;
+  ctx.fillStyle='rgba('+col+','+(end.blocked?'0.62':'0.95')+')';ctx.beginPath();ctx.moveTo(end.x,end.y);
+  ctx.lineTo(backX+sideX,backY+sideY);ctx.lineTo(backX-sideX,backY-sideY);ctx.closePath();ctx.fill();
+  ctx.restore();
 }
 
 // Results have explicit actions; a held movement/vent key must never dismiss them.
@@ -105,29 +152,24 @@ function onDown(x,y){
   if(isTouch && mode === 'play'){ const vb = ventBtn();
     if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; setVentHeld(true); return; } }
   if(!inWorldView(x,y)){cancelPointer();return;}
-  ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.t = 0; ptr.swiped = false;
+  ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.x=x; ptr.y=y; ptr.px=player.x; ptr.py=player.y;
 }
 function onMove(x,y){
   if(debugMenu.open)return;
-  if(!ptr.down || ptr.swiped) return;
-  const dx = x-ptr.sx, dy = y-ptr.sy;
-  if(Math.hypot(dx,dy) >= K.SWIPE_MIN){ ptr.swiped = true; lungeDir(dx,dy); }   // swipe/drag = dash that way
+  if(!ptr.down)return;
+  ptr.x=x;ptr.y=y;                              // aim may change freely; crossing a threshold never commits
 }
 function onUp(){
   if(debugMenu.open)return;
   if(ptr.onVent){ ptr.onVent = false; setVentHeld(false); }
-  else if(ptr.down && !ptr.swiped){                       // a click / tap (no drag) = DASH toward the point
-    const target=screenToWorld(ptr.sx,ptr.sy);
-    const dx = target.x-player.x, dy = target.y-player.y;
-    if(Math.hypot(dx,dy) >= 12) lungeDir(dx,dy);
-  }
-  ptr.down = false; ptr.swiped = false;
+  else if(ptr.down){const aim=touchBurstAim();if(aim&&!aim.cancel)lungeDir(aim.dx,aim.dy);}
+  ptr.down = false;
 }
 // An interrupted gesture is not a completed tap: cancel without spending a dash.
 function cancelPointer(){
   if(ptr.onVent) setVentHeld(false);
   player.ventDash=null;
-  ptr.down = false; ptr.swiped = false; ptr.onVent = false;
+  ptr.down = false; ptr.onVent = false; ptr.id=null;
 }
 
 
@@ -136,10 +178,23 @@ function local(e){
   const r = cv.getBoundingClientRect();
   return { x:(e.clientX-r.left)/scale, y:(e.clientY-r.top)/scale };
 }
-cv.addEventListener('pointerdown', e=>{ e.preventDefault(); if(e.pointerType==='touch') isTouch=true; const q=local(e); onDown(q.x,q.y); });
-cv.addEventListener('pointermove', e=>{ const q=local(e); onMove(q.x,q.y); });
-window.addEventListener('pointerup', onUp);
-window.addEventListener('pointercancel', cancelPointer);
+cv.addEventListener('pointerdown', e=>{
+  e.preventDefault();if(ptr.id!==null)return;if(e.pointerType==='touch')isTouch=true;
+  const q=local(e);onDown(q.x,q.y);
+  ptr.id=(ptr.down||ptr.onVent)?(e.pointerId??0):null;
+});
+cv.addEventListener('pointermove', e=>{
+  if(ptr.id===null||(e.pointerId??0)!==ptr.id)return;e.preventDefault();
+  const q=local(e);onMove(q.x,q.y);
+});
+window.addEventListener('pointerup', e=>{
+  if(ptr.id===null||(e.pointerId??0)!==ptr.id)return;
+  if(ptr.down&&Number.isFinite(e.clientX)&&Number.isFinite(e.clientY)){
+    const q=local(e);onMove(q.x,q.y);             // use the actual release point even if no final move event fired
+  }
+  onUp();ptr.id=null;
+});
+window.addEventListener('pointercancel', e=>{if(ptr.id!==null&&(e.pointerId??0)===ptr.id)cancelPointer();});
 // desktop: WASD/arrows steer, SHIFT dashes, SPACE braces
 window.addEventListener('keydown', e=>{
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();

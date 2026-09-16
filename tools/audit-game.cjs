@@ -260,11 +260,39 @@ test('Touch release finishes exactly one unit without spending a dash', () => {
   assert.equal(g.run('demons.length'),1);assert.equal(g.run('player.charges'),3);
 });
 
-test('Touch swipe uses one charge; its release does not add a second dash', () => {
+test('Touch drag previews without spending and release uses one charge', () => {
   const g=game();g.run('onTitle=false; intro=null; introT=0');
   g.dispatch('pointerdown',{pointerType:'touch',clientX:200,clientY:600});
-  g.dispatch('pointermove',{pointerType:'touch',clientX:350,clientY:600});g.dispatch('pointerup');
+  g.dispatch('pointermove',{pointerType:'touch',clientX:350,clientY:600});
+  assert.equal(g.run('player.charges'),3,'Aiming must not commit before release');
+  g.dispatch('pointerup');
   assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.down'),false);
+});
+test('Touch Burst direction stays anchored to Duy at touch-down',()=>{
+  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
+  g.run('var q=worldToScreen(620,640);onDown(q.x,q.y);player.x=680;onUp()');
+  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')>0.99,'Autorun movement reversed the intended Burst');
+});
+test('Dragging can revise Touch Burst aim until release',()=>{
+  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
+  g.run('var a=worldToScreen(620,640),b=worldToScreen(360,900);onDown(a.x,a.y);onMove(b.x,b.y)');
+  assert.equal(g.run('player.charges'),3);
+  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hy')>0.99);
+});
+test('Releasing Touch Burst near Duy cancels without spending',()=>{
+  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
+  g.run('var q=worldToScreen(380,640);onDown(q.x,q.y);onUp()');
+  assert.equal(g.run('player.charges'),3);assert.equal(g.run('ptr.down'),false);
+});
+test('A second finger cannot hijack an active Touch Burst',()=>{
+  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
+  const q=g.run('(()=>{const p=worldToScreen(620,640);return {x:p.x*scale,y:p.y*scale,vx:ventBtn().x*scale,vy:ventBtn().y*scale};})()');
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:q.x,clientY:q.y});
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:q.vx,clientY:q.vy});
+  g.dispatch('pointerup',{pointerType:'touch',pointerId:2,clientX:q.vx,clientY:q.vy});
+  assert.equal(g.run('player.charges'),3);assert.equal(g.run('player.venting'),false);assert.equal(g.run('ptr.down'),true);
+  g.dispatch('pointerup',{pointerType:'touch',pointerId:1,clientX:q.x,clientY:q.y});
+  assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.id'),null);
 });
 test('Every upgrade track caps correctly and reload applies the completed build', () => {
   const g=game();g.run('META.saved=100; META.embers=10000; enterHub()');
@@ -771,7 +799,8 @@ test('HUD, dialogue dock and gutters cannot consume a dash',()=>{
  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true');
  for(const [x,y] of [[300,80],[300,1160],[20,600]])g.run(`onDown(${x},${y});onMove(${x+100},${y});onUp()`);
  assert.equal(g.run('player.charges'),3);
- g.run('onDown(300,600);onMove(400,600);onUp()');assert.equal(g.run('player.charges'),2);
+ g.run('onDown(300,600);onMove(400,600)');assert.equal(g.run('player.charges'),3);
+ g.run('onUp()');assert.equal(g.run('player.charges'),2);
 });
 test('Tap directions track rendered world targets at phone and desktop sizes',()=>{
  for(const width of [320,375,430,1280])for(const [x,y] of [[100,40],[620,40],[100,1240],[620,1240]]){

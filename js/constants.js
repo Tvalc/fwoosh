@@ -35,7 +35,7 @@ const K = {
   VENT_ANIM_ANCH: 0.5,              // vent-anim vertical anchor (cell bottom = the player's feet)
   CHARGES: 3,
   CHARGE_REFILL: 0.9,
-  SWIPE_MIN: 40,
+  TOUCH_BURST_CANCEL_R: 42,        // releasing this close to the touch-down Duy cancels without spending a charge
   BRACE_STOP: 0.060,                // velocity -> 0 in 60ms
   BRACE_FUSE_MULT: 1.6,
   R_PLAYER: 14,
