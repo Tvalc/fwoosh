@@ -8,7 +8,7 @@ Build `2026-09-15-flame-arrow-1` is the release candidate. Touch and desktop mou
 
 ## Active now
 
-1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **runtime identity complete; Cursor Makko art pending**. Name, player-facing text, combat terminology and shared-near-death covenant are migrated. The Ratkin character/portrait replacement and exact judgment mandate remain.
+1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **runtime identity complete; Cursor Makko art pending**. Name, player-facing text, combat terminology and shared-near-death covenant are migrated. The collective Ratkin verdict is locked; the Ratkin character/portrait replacement and remaining limits of his covenant mandate remain.
 2. [#36 Restore the adaptive well/beacon and replace duplicated town icons](https://github.com/Tvalc/fwoosh/issues/36) — **Cursor Makko art; Codex integration**. Beacon gameplay is live. The duplicated Shrine card is hidden until favor/judgment; a distinct Makko Well icon remains useful when available.
 3. [#26 Playtest and tune the arcade loop and ember economy](https://github.com/Tvalc/fwoosh/issues/26) — **Codex**, awaiting Tony's run feedback. Validate vent/heat/Edge/Arbiter pressure, phone usability, real earnings and the 2–3 ordinary-run purchase target.
 4. [#31 Complete Makko animation and illustration production](https://github.com/Tvalc/fwoosh/issues/31) — **Cursor production; Codex integration**. Ratkin, character locomotion, dialogue portraits, Arbiter replacement, cinder vent correction and diary art. Every visual asset must come from Makko.
@@ -18,7 +18,7 @@ Build `2026-09-15-flame-arrow-1` is the release candidate. Touch and desktop mou
 
 6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **release candidate complete**. The exterior, first two buildings, offline timers, sealing, worker assignment, material production and explanatory station view are implemented. Tony's phone playtest and approved Makko replacements remain.
 7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **release candidate complete**. Food, storage, visible carriers, shared-road congestion, automatic recovery and optional priorities are implemented. Approved Makko Ratkin locomotion and Tony's phone balance/readability playtest remain.
-8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — **first restoration judgment implemented; favor and ending remain**. The five visible terms prove district completion, ascensions, homes and a working food/material chain. The Arbiter administers the process; beating him never grants release by itself.
+8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — **first restoration judgment implemented; collective authority locked; favor and ending remain**. The five visible terms prove district completion, ascensions, homes and a working food/material chain. The Ratkin community renders the verdict; Khet-Tak-Tor presents evidence, announces it and executes the sentence. Beating him never grants release by itself.
 9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
 10. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
 
@@ -33,6 +33,7 @@ Build `2026-09-15-flame-arrow-1` is the release candidate. Touch and desktop mou
 - Sealing and upgrade milestones can unlock permanent cosmetic variants. Cosmetic rarity never gates favor or release and grants no randomized Fwoosh power.
 - The character currently called Keith becomes **Khet-Tak-Tor** (KET-tak-TOR), the Ratkin Arbiter—“the voice that closes the debt.” He remains Duy's jailer, administers punishment and judgment, and receives new Makko art. Beating him never grants release by itself.
 - Duy earns release by rebuilding Ratkin society and winning Ratkin favor. Ratkin society supplies the authority; rescuing nineteen people or clearing five districts is insufficient by itself.
+- The rebuilt Ratkin community delivers the collective release verdict. Khet-Tak-Tor administers the covenant, presents evidence, announces their decision and executes the resulting sentence; he cannot personally forgive the debt.
 - Fwoosh must have a comprehensible standalone ending and later support Duy's return in the larger RPG.
 - All artwork is Makko artwork with preserved provenance.
 
