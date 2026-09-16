@@ -1,5 +1,11 @@
 # Fwoosh status — September 15, 2026
 
+## Slingshot Burst input — 2026-09-15-slingshot-1
+
+Touch and desktop mouse now share one inverted Burst rule: point, hold or drag opposite the direction Duy should travel, see the actual collision-limited trajectory, and release to commit. A quick tap Bursts away from the tapped point. Returning near Duy cancels without spending. The mouse receives the same visible trajectory as touch; desktop WASD/arrow steering and Shift Burst remain unchanged.
+
+The gesture retains active-pointer isolation, safe HUD/dock/gutter handling and release-only charge spending. All 149 gameplay/state/input checks and 11 asset checks pass. No save, economy, combat or art data changed.
+
 ## Direct-touch mobile Burst — 2026-09-15-burst-1
 
 Mobile no longer fires a dash when a swipe crosses an invisible distance threshold. A touch anywhere inside the arena now establishes one Burst direction from Duy's position at touch-down. Holding or dragging displays a dashed path and chevron at the collision-limited endpoint; the player may revise the direction freely, and only release spends one charge. Returning the pointer within 42 world pixels of touch-down Duy cancels. Autorun movement during a hold cannot skew or reverse the intended vector.
