@@ -1,6 +1,12 @@
 // ---------------------------------------------------------------- render
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 let scale = 1;
+// World actors grow around their existing ground anchor; props and hitboxes do not.
+const ACTOR_SCALE = 1.5;
+function drawWorldActor(ctx,X,y,feet,draw){
+  ctx.save();ctx.translate(X,y+feet);ctx.scale(ACTOR_SCALE,ACTOR_SCALE);
+  ctx.translate(-X,-y-feet);draw();ctx.restore();
+}
 // Screen docks never change the 720 × 1280 simulation or obstacle coordinates.
 const PLAY_VIEW = {top:128, bottom:1100, overhangTop:80, overhangBottom:24};
 function worldView(){
@@ -716,16 +722,11 @@ const SKINS = {
       const gr=16+k*18+5*Math.sin(frame*0.45), g=ctx.createRadialGradient(X,y,2,X,y,gr);  // engulfing fire glow
       g.addColorStop(0,'rgba(255,150,50,0.62)'); g.addColorStop(0.5,'rgba(255,90,30,0.35)'); g.addColorStop(1,'rgba(255,90,30,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill();
-      // a villager, panicking, ON FIRE (townsfolk sprite + rising flames) — someone to save, not a monster
+      // Fire stays behind the Ratkin, leaving its face and panic performance visible.
+      drawFlame(ctx,X,y+K.R_CELL*1.6,K.R_CELL*4.6,frame*.32+X*.09,.65);
       if(!drawVillager(ctx,X,y,c,'panic',K.R_CELL*4.2,{flip, fps:13,t:Math.floor((c?.ph||0)*3)}))
         SKINS.vector.hunter(ctx,X,y,a,t);
-      // ACTUAL animated flames engulfing the villager (Makko 5-frame fire, per-villager desynced)
-      const ph = frame*0.32 + X*0.09;
-      if(!drawFlame(ctx, X, y+K.R_CELL*1.6, K.R_CELL*5.4, ph, 0.9)){
-        const base=y+K.R_CELL*1.4;                          // fallback lick if the sheet isn't loaded
-        ctx.fillStyle='rgba(255,150,40,0.75)'; ctx.beginPath(); ctx.moveTo(X-6,base);
-        ctx.quadraticCurveTo(X,base-K.R_CELL*3,X+6,base); ctx.fill();
-      } },
+    },
     player(ctx,X,p){ const y=p.y, r=p.r;
       // BURN = the FRACTION of health you've lost. Everything keys off this fraction, never a fixed heart
       // count — so it holds identically whether you have 5 hearts or 12.
@@ -1438,8 +1439,8 @@ function render(){
       // the coal body: the cinder-imp silhouette, darkened
       ctx.save();
       ctx.globalAlpha = cracking ? (0.7 + 0.3*Math.abs(Math.sin(frame*1.3))) : 1;
-      if(!drawAnim(ctx,'ashimp', gx, h.y, K.HUSK_R*2.6, {fps:6}) &&
-         !drawSpr(ctx,'ashimp', gx, h.y, K.HUSK_R*2.5, {})){
+      if(!drawAnim(ctx,'ashimp', gx, h.y-K.HUSK_R*.45, K.HUSK_R*2.6*ACTOR_SCALE, {fps:6}) &&
+         !drawSpr(ctx,'ashimp', gx, h.y-K.HUSK_R*.45, K.HUSK_R*2.5*ACTOR_SCALE, {})){
         ctx.fillStyle = '#3a2a24'; ctx.beginPath(); ctx.ellipse(gx, h.y, K.HUSK_R, K.HUSK_R*1.15, 0, 0, 7); ctx.fill();
         ctx.fillStyle = 'rgba(255,120,50,'+(0.5+0.4*near).toFixed(2)+')';   // ember veins
         for(let v=0;v<3;v++){ const a=(h.ph+v*2.1); ctx.beginPath();
@@ -1456,16 +1457,27 @@ function render(){
     });
   }
 
-  // ---- cells (crowd + hunters), distant ones dimmed
+  for(const a of arson){
+    // Directional warning beneath the actors; no target overlay.
+    if(a.tgt){
+      const pulse = 0.5 + 0.3*Math.sin(frame*0.3 + (a.ph||0));
+      ctx.save();
+      ctx.globalAlpha = (a.warn>0 ? 0.28 : 0.5) * pulse;
+      ctx.strokeStyle = '#ff7a4d'; ctx.lineWidth = 2; ctx.setLineDash([6,8]); ctx.lineDashOffset = -frame*0.6;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.tgt.x, a.tgt.y); ctx.stroke();
+      ctx.setLineDash([]); ctx.restore();
+    }
+  }
+
+  // ---- residents stay readable at every distance
   for(const c of cells){
-    const far = dist(c.x,c.y,p.x,p.y) > 300;
-    ctx.globalAlpha = far ? 0.30 : 1;
+    ctx.globalAlpha = 1;
     if(c.hunter){
       const t = 1 - (c.fuse/hunterFuse);
       const a = Math.atan2(c.vy, c.vx);
-      wrapDraw(c.x, X=> SK.hunter(ctx, X, c.y, a, t, c));
+      wrapDraw(c.x, X=> drawWorldActor(ctx,X,c.y,K.R_CELL*1.5,()=>SK.hunter(ctx, X, c.y, a, t, c)));
     } else {
-      wrapDraw(c.x, X=> SK.cell(ctx, X, c.y, c));
+      wrapDraw(c.x, X=> drawWorldActor(ctx,X,c.y,K.R_CELL*1.5,()=>SK.cell(ctx, X, c.y, c)));
     }
     ctx.globalAlpha = 1;
   }
@@ -1494,7 +1506,7 @@ function render(){
   // ---- FIRE DEMONS: vent-bred (orange, persistent) and TOWN wraiths (ashen-violet, persistent, dash to kill)
   for(const d of demons){
     const town = d.source === 'town';
-    wrapDraw(d.x, X=>{
+    wrapDraw(d.x, X=>drawWorldActor(ctx,X,d.y,K.DEMON_R*1.2,()=>{
       const gr=(town?K.DEMON_R*2.15:K.DEMON_R*1.7)+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
       if(town){ g.addColorStop(0,'rgba(198,128,190,0.72)'); g.addColorStop(0.6,'rgba(150,95,155,0.30)'); g.addColorStop(1,'rgba(140,90,140,0)'); }
       else { g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)'); }
@@ -1506,25 +1518,12 @@ function render(){
          !drawSpr(ctx,'firedemon', X, d.y, K.DEMON_R*3.0, {flip})){
         ctx.fillStyle= town?'#b06a8a':'#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
       ctx.globalAlpha = 1;
-    });
+    }));
   }
 
   // ---- ARSON IMPS: Khet-Tak-Tor's fire messengers + a telegraph to their mark, so you can read the threat and cut it off
   for(const a of arson){
-    // telegraph: a faint dashed FUSE LINE to the mark (a line, not a ring) + a warning GLOW on the villager
-    if(a.tgt){
-      const pulse = 0.5 + 0.3*Math.sin(frame*0.3 + (a.ph||0));
-      ctx.save();
-      ctx.globalAlpha = (a.warn>0 ? 0.28 : 0.5) * pulse;
-      ctx.strokeStyle = '#ff7a4d'; ctx.lineWidth = 2; ctx.setLineDash([6,8]); ctx.lineDashOffset = -frame*0.6;
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.tgt.x, a.tgt.y); ctx.stroke();
-      ctx.setLineDash([]); ctx.restore();
-      const tr = K.R_CELL+11, tg = ctx.createRadialGradient(a.tgt.x,a.tgt.y,1,a.tgt.x,a.tgt.y,tr);
-      const ta = (0.34*pulse+0.12).toFixed(3);
-      tg.addColorStop(0,'rgba(255,80,50,'+ta+')'); tg.addColorStop(0.6,'rgba(255,80,50,'+(ta*0.5).toFixed(3)+')'); tg.addColorStop(1,'rgba(255,80,50,0)');
-      ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(a.tgt.x,a.tgt.y,tr,0,7); ctx.fill();
-    }
-    wrapDraw(a.x, X=>{
+    wrapDraw(a.x, X=>drawWorldActor(ctx,X,a.y,K.ARSON_R*1.2,()=>{
       const R = K.ARSON_R;
       const gr = R*1.9 + 3*Math.sin(frame*0.5+(a.ph||0)), g = ctx.createRadialGradient(X,a.y,1,X,a.y,gr);
       g.addColorStop(0,'rgba(255,150,60,0.7)'); g.addColorStop(1,'rgba(255,80,30,0)');
@@ -1534,7 +1533,7 @@ function render(){
       if(!drawAnim(ctx,'firedemon', X, a.y+bob, R*2.5, {fps:14, flip}) &&
          !drawSpr(ctx,'firedemon', X, a.y+bob, R*2.4, {flip})){
         ctx.fillStyle='#ff7a3a'; ctx.beginPath(); ctx.arc(X,a.y+bob,R*0.9,0,7); ctx.fill(); }
-    });
+    }));
   }
 
   // ---- rings -> soft GLOW POPS: a bloom of light that expands and fades. No hard stroked circles.
@@ -1567,7 +1566,7 @@ function render(){
     const ag = ctx.createRadialGradient(X,p.y,p.r*0.5,X,p.y,ar);
     ag.addColorStop(0,'rgba(255,225,140,0)'); ag.addColorStop(0.6,'rgba(255,225,140,'+(aa*0.6).toFixed(3)+')'); ag.addColorStop(1,'rgba(255,210,110,0)');
     ctx.fillStyle=ag; ctx.beginPath(); ctx.arc(X,p.y,ar,0,7); ctx.fill(); }); }
-  wrapDraw(p.x, X=> SK.player(ctx, X, p));
+  wrapDraw(p.x, X=> drawWorldActor(ctx,X,p.y,p.r*1.55,()=>SK.player(ctx, X, p)));
   // Touch and mouse slingshot preview: pull opposite the travel direction; release commits.
   drawPointerBurstAim(ctx);
 
@@ -1585,11 +1584,11 @@ function render(){
         const g=ctx.createRadialGradient(dx,dy,0,dx,dy,9); g.addColorStop(0,'rgba(210,150,240,'+(0.6*a).toFixed(3)+')'); g.addColorStop(1,'rgba(180,120,220,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(dx,dy,9,0,7); ctx.fill(); } }
     // allies — rescued villagers at your side
-    for(const al of allies){ wrapDraw(al.x, X=>{
+    for(const al of allies){ wrapDraw(al.x, X=>drawWorldActor(ctx,X,al.y,13,()=>{
       const bob=2*Math.sin(al.ph*3);
       if(!drawSpr(ctx,'happy',X,al.y+bob,26,{})){ ctx.fillStyle='#8affc1'; ctx.beginPath(); ctx.arc(X,al.y,9,0,7); ctx.fill(); }
       const g=ctx.createRadialGradient(X,al.y,1,X,al.y,20); g.addColorStop(0,'rgba(138,255,193,0.28)'); g.addColorStop(1,'rgba(138,255,193,0)');
-      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,al.y,20,0,7); ctx.fill(); }); }
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,al.y,20,0,7); ctx.fill(); })); }
     // ember-spit fireballs
     for(const s of shots){ wrapDraw(s.x, X=>{
       const g=ctx.createRadialGradient(X,s.y,0,X,s.y,K.SPIT_R*2.2); g.addColorStop(0,'rgba(255,210,120,0.95)'); g.addColorStop(0.5,'rgba(255,120,40,0.7)'); g.addColorStop(1,'rgba(255,90,30,0)');
@@ -1615,7 +1614,7 @@ function render(){
       if((b.move==='charge'||b.move==='wake') && b.moveData && b.moveData.dir){ const d=b.moveData.dir;
         ctx.save(); ctx.globalAlpha=0.4+0.4*k; ctx.strokeStyle='#ff6a4a'; ctx.lineWidth=3; ctx.setLineDash([8,10]); ctx.lineDashOffset=-frame*0.7;
         ctx.beginPath(); ctx.moveTo(X,b.y); ctx.lineTo(X+d.x*260, b.y+d.y*260); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); } }); }
-    wrapDraw(b.x, X=> SK.boss(ctx, X, b, grow, rr, flat));
+    wrapDraw(b.x, X=> drawWorldActor(ctx,X,b.y,rr*1.5,()=>SK.boss(ctx, X, b, grow, rr, flat)));
   }
 
   // ---- the opp's snipe: converging reticle on the predicted lead point + a strike travelling in

@@ -10,6 +10,10 @@ Current production is tracked in [issue #31](https://github.com/Tvalc/fwoosh/iss
 
 Tony's September 14 instruction: if background stripping contaminates a sprite's colors, remake the sprite in Makko and request a flat solid red, green, or blue chroma background. Choose a background color absent from the character palette. Inspect the original and stripped result for correct skin/clothing colors and clean edges before integration; preserve source provenance. Do not accept a discolored sprite as finished. This arose from Cuong's Sunday morning sprite in Vovinam Ledger turning green; that replacement is assigned to the Ledger task.
 
+## Arena character readability
+
+September 16: world actors render at 1.5x around their existing ground anchors; background props and collision geometry retain their scale. Ratkin are fully visible at distance. Do not paint a target glow over panicking civilians. Draw imp warning lines and burning-villager Makko flames behind the actors so faces and limb motion remain clear. Presentation must distinguish frightened, unburned Ratkin from burning rescue targets.
+
 ## What the art communicates
 
 Do not add drawn charge, blast-radius or countdown circles around fire demons. Tony rejected those overlays on September 15. Keep the Makko demon animation during windup; cinder-eating danger uses a straight threat tether, compact countdown bar and the existing Makko flame animation.
