@@ -46,7 +46,64 @@ const MAKKO_FLAME_SRC = "./media/fx/flame.png";
 
 const MAKKO_IMG = {};
 const MAKKO_ANIM_IMG = {};
-// Village-only sheets do not delay the first arcade run.
+// Civilian appearances only: never use the Arbiter as someone Duy can rescue.
+// Selection uses the existing identity, not simulation RNG or render timing.
+const RATKIN_VILLAGERS = ['ratkin','baker','elder','child','merchant','farmer',
+  'lantern','weaver','cook','mason','herbalist','wellkeeper'];
+function villagerType(c){
+  return RATKIN_VILLAGERS[Math.abs((c?.villagerId??c?.id??0)|0)%RATKIN_VILLAGERS.length];
+}
+// BEGIN VILLAGE SOURCES (tools/prepare-village-runtime.py)
+Object.assign(MAKKO_SPR_SRC, {
+  "wellkeeper": "./media/spr/wellkeeper.png",
+  "herbalist": "./media/spr/herbalist.png",
+  "mason": "./media/spr/mason.png",
+  "cook": "./media/spr/cook.png",
+  "weaver": "./media/spr/weaver.png",
+  "lantern": "./media/spr/lantern.png",
+  "farmer": "./media/spr/farmer.png",
+  "merchant": "./media/spr/merchant.png",
+  "child": "./media/spr/child.png",
+  "elder": "./media/spr/elder.png",
+  "baker": "./media/spr/baker.png"
+});
+Object.assign(MAKKO_ANIM_SRC, {
+  "wellkeeper_idle": "./media/anim/wellkeeper_idle.png",
+  "wellkeeper_walk": "./media/anim/wellkeeper_walk.png",
+  "wellkeeper_run": "./media/anim/wellkeeper_run.png",
+  "herbalist_idle": "./media/anim/herbalist_idle.png",
+  "herbalist_walk": "./media/anim/herbalist_walk.png",
+  "herbalist_run": "./media/anim/herbalist_run.png",
+  "mason_idle": "./media/anim/mason_idle.png",
+  "mason_walk": "./media/anim/mason_walk.png",
+  "mason_run": "./media/anim/mason_run.png",
+  "cook_idle": "./media/anim/cook_idle.png",
+  "cook_walk": "./media/anim/cook_walk.png",
+  "cook_run": "./media/anim/cook_run.png",
+  "weaver_idle": "./media/anim/weaver_idle.png",
+  "weaver_walk": "./media/anim/weaver_walk.png",
+  "weaver_run": "./media/anim/weaver_run.png",
+  "lantern_idle": "./media/anim/lantern_idle.png",
+  "lantern_walk": "./media/anim/lantern_walk.png",
+  "lantern_run": "./media/anim/lantern_run.png",
+  "farmer_idle": "./media/anim/farmer_idle.png",
+  "farmer_walk": "./media/anim/farmer_walk.png",
+  "farmer_run": "./media/anim/farmer_run.png",
+  "merchant_idle": "./media/anim/merchant_idle.png",
+  "merchant_walk": "./media/anim/merchant_walk.png",
+  "merchant_run": "./media/anim/merchant_run.png",
+  "child_idle": "./media/anim/child_idle.png",
+  "child_walk": "./media/anim/child_walk.png",
+  "child_run": "./media/anim/child_run.png",
+  "elder_idle": "./media/anim/elder_idle.png",
+  "elder_walk": "./media/anim/elder_walk.png",
+  "elder_run": "./media/anim/elder_run.png",
+  "baker_idle": "./media/anim/baker_idle.png",
+  "baker_walk": "./media/anim/baker_walk.png",
+  "baker_run": "./media/anim/baker_run.png"
+});
+// END VILLAGE SOURCES
+// Shared with the arcade cast; loadCityArt also tolerates a future lazy loader.
 const MAKKO_CITY_ANIM_SRC = {
   "farmer_idle": "./media/anim/farmer_idle.png",
   "farmer_walk": "./media/anim/farmer_walk.png",

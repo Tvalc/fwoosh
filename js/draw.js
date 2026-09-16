@@ -383,6 +383,15 @@ function arbiterAnimation(b,flat){
   return 'arbiter_idle';
 }
 
+function drawVillager(ctx,X,y,c,action,H,o){
+  const role=villagerType(c),key=role+'_'+action;
+  // If a clip is still loading, keep this citizen's face with its own idle/still.
+  if(drawAnim(ctx,key,X,y,H,o))return true;
+  if(action!=='idle'&&drawAnim(ctx,role+'_idle',X,y,H,{...o,frame:0}))return true;
+  if(drawSpr(ctx,role==='ratkin'?'townsfolk':role,X,y,H,o))return true;
+  return drawAnim(ctx,'ratkin_'+action,X,y,H,o)||drawSpr(ctx,'townsfolk',X,y,H,o);
+}
+
 // Full-body clips remain full-body clips. Dedicated dialogue exports take priority;
 // until they arrive use a still head-and-shoulders crop of the Makko Ratkin.
 function drawDialoguePortrait(ctx,actor,emotion,x,y,size,talking,t){
@@ -691,16 +700,14 @@ const SKINS = {
         const sh=1-Math.min(1,t*1.4);                          // ground shadow fades as they lift into the light
         if(sh>0){ ctx.save(); ctx.globalAlpha=sh; groundShadow(ctx, X, y+K.R_CELL*1.4, K.R_CELL*1.0, K.R_CELL*0.3); ctx.restore(); }
         const alpha=1-Math.max(0,(t-.4)/.6),lift=H*t*t;
-        if(!drawAnim(ctx,'ratkin_idle',X,y-lift,H,{frame:0,alpha,flip:(c.vx||0)<0}))
-          drawSpr(ctx,'townsfolk',X,y-lift,H,{alpha});
+        drawVillager(ctx,X,y-lift,c,'idle',H,{frame:0,alpha,flip:(c.vx||0)<0});
         if(t<.45)drawFlame(ctx,X,y+K.R_CELL*1.6-lift,H*1.2,frame*.32,1-t/.45);
         return;
       }
-      // CALM — running around the square: the Makko 12-frame townsfolk animation, faster legs while running
+      // Residents walk while calm and use their own run clip when burning.
       const spd=Math.hypot(c.vx||0,c.vy||0), run=spd>10, flip=(c.vx||0)<0;
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
-      if(!drawAnim(ctx,run?'ratkin_walk':'ratkin_idle',X,y,K.R_CELL*4.2,{fps:run?10:5, flip, t:Math.floor((c.ph||0)*3)}) &&
-         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*4.2,{flip}))
+      if(!drawVillager(ctx,X,y,c,run?'walk':'idle',K.R_CELL*4.2,{fps:run?10:5, flip, t:Math.floor((c.ph||0)*3)}))
         SKINS.vector.cell(ctx,X,y,c); },
     hunter(ctx,X,y,a,t,c){ const flip=c?(c.vx||0)<0:Math.cos(a)<0, k=Math.max(0,Math.min(1,1-t));
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
@@ -708,8 +715,7 @@ const SKINS = {
       g.addColorStop(0,'rgba(255,150,50,0.62)'); g.addColorStop(0.5,'rgba(255,90,30,0.35)'); g.addColorStop(1,'rgba(255,90,30,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill();
       // a villager, panicking, ON FIRE (townsfolk sprite + rising flames) — someone to save, not a monster
-      if(!drawAnim(ctx,'ratkin_run',X,y,K.R_CELL*4.2,{flip, fps:13,t:Math.floor((c?.ph||0)*3)}) &&
-         !drawSpr(ctx,'townsfolk',X,y,K.R_CELL*4.2,{flip}))
+      if(!drawVillager(ctx,X,y,c,'run',K.R_CELL*4.2,{flip, fps:13,t:Math.floor((c?.ph||0)*3)}))
         SKINS.vector.hunter(ctx,X,y,a,t);
       // ACTUAL animated flames engulfing the villager (Makko 5-frame fire, per-villager desynced)
       const ph = frame*0.32 + X*0.09;

@@ -1,5 +1,13 @@
 # Fwoosh status — September 16, 2026
 
+## Full civilian cast - 2026-09-16-villagers-1
+
+All twelve existing Makko civilian designs now populate the arena: vest villager, baker, elder, child, merchant, farmer, lantern carrier, weaver, cook, mason, herbalist and wellkeeper. Khet-Tak-Tor is excluded. Each civilian uses its own idle, walk and run export, retains its appearance during rescue and survives the husk/rekindle transition with the same appearance. Selection uses existing entity identities without consuming simulation RNG. Collision, speeds, rewards and persistent saves are unchanged.
+
+Added 29 exported sheets to the first batch; all 41 imported raw sources have provenance. The shared farmer/mason sheets now load with the arena cast. All 160 gameplay/render checks and 52 resource/atlas checks pass. Contact pages cover every imported locomotion frame; local browser fixtures loaded all 47 active sheets without console errors and checked walking, burning and rescue at desktop and 390px phone width. Physical-phone feel remains Tony's playtest.
+
+Ascension audit: none of the 113 named sprite sheets observed in the FWOOSH collection was labelled ascension/rescue. The inspected vest death sheet falls down; it is not ascension. Unexported source animations have not been exhaustively identified. Rescue still rises/fades the matching Ratkin still, so a dedicated ascension clip remains unverified rather than presumed nonexistent.
+
 ## Ratkin cast and village workers — 2026-09-16-ratkin-1
 
 The first existing Makko art batch is integrated: Ratkin arena walk/run/idle, state-driven Arbiter idle/run/cast/hit, a static Ratkin dialogue close-up, and farmer/mason route and station animations. Rescues retain the Ratkin body while ascending instead of changing to the old human rescue sheet. Existing save keys, simulation, economy and collision remain unchanged. Village sheets load on entry.

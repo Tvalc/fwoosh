@@ -1166,6 +1166,2900 @@
           204
         ]
       ]
+    },
+    {
+      "key": "wellkeeper_idle",
+      "name": "fwoosh_fwoosh_ratkin_wellkeeper_idle",
+      "animation_id": "b9a8806e-67f8-469f-8655-8cce3a4e6647",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/b9a8806e-67f8-469f-8655-8cce3a4e6647/fwoosh_fwoosh_ratkin_wellkeeper_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/b9a8806e-67f8-469f-8655-8cce3a4e6647",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_wellkeeper_idle.webp",
+      "raw_sha256": "f9da87829d2d176fd5dd00a64f852cc2d387772e3f912fe9f783c02939ad566f",
+      "source_size": [
+        1040,
+        636
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 147,
+      "anchorX": 91.29,
+      "native_cell": [
+        260,
+        212
+      ],
+      "output": "media/anim/wellkeeper_idle.png",
+      "output_sha256": "3238890a7502bf18ee1e0287e49e644cd0d6b1759fc2319b1309e51f72874ee0",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          3,
+          2,
+          252,
+          210
+        ],
+        [
+          2,
+          2,
+          251,
+          210
+        ],
+        [
+          4,
+          5,
+          253,
+          210
+        ],
+        [
+          6,
+          7,
+          255,
+          210
+        ],
+        [
+          8,
+          7,
+          257,
+          210
+        ],
+        [
+          9,
+          7,
+          258,
+          210
+        ],
+        [
+          7,
+          6,
+          257,
+          210
+        ],
+        [
+          5,
+          4,
+          254,
+          210
+        ],
+        [
+          3,
+          2,
+          251,
+          210
+        ],
+        [
+          3,
+          2,
+          252,
+          210
+        ],
+        [
+          4,
+          4,
+          253,
+          210
+        ],
+        [
+          6,
+          4,
+          256,
+          210
+        ]
+      ]
+    },
+    {
+      "key": "wellkeeper_walk",
+      "name": "fwoosh_fwoosh_ratkin_wellkeeper_walk",
+      "animation_id": "c86bc64f-1bf6-490b-9e6f-73e7cdddbe4d",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/c86bc64f-1bf6-490b-9e6f-73e7cdddbe4d/fwoosh_fwoosh_ratkin_wellkeeper_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/c86bc64f-1bf6-490b-9e6f-73e7cdddbe4d",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_wellkeeper_walk.webp",
+      "raw_sha256": "ccaa960375afdd52a64f6607e4bf5a8277c241246e2c15f57951f0c422f5ac85",
+      "source_size": [
+        1040,
+        699
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 161,
+      "anchorX": 96.88,
+      "native_cell": [
+        260,
+        233
+      ],
+      "output": "media/anim/wellkeeper_walk.png",
+      "output_sha256": "298730ce2f52f8de159bb3a4a7386f64624120c7b40ca3aedb97a99201192480",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          8,
+          4,
+          252,
+          229
+        ],
+        [
+          6,
+          5,
+          254,
+          225
+        ],
+        [
+          2,
+          2,
+          257,
+          225
+        ],
+        [
+          7,
+          7,
+          258,
+          231
+        ],
+        [
+          3,
+          3,
+          255,
+          231
+        ],
+        [
+          7,
+          5,
+          252,
+          229
+        ],
+        [
+          4,
+          4,
+          254,
+          225
+        ],
+        [
+          3,
+          3,
+          257,
+          225
+        ],
+        [
+          7,
+          6,
+          257,
+          231
+        ],
+        [
+          2,
+          2,
+          254,
+          231
+        ],
+        [
+          7,
+          6,
+          252,
+          229
+        ],
+        [
+          3,
+          4,
+          255,
+          225
+        ]
+      ]
+    },
+    {
+      "key": "wellkeeper_run",
+      "name": "fwoosh_fwoosh_ratkin_wellkeeper_run",
+      "animation_id": "e6a60234-3953-481e-8c62-9cd1f0fda6f3",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/e6a60234-3953-481e-8c62-9cd1f0fda6f3/fwoosh_fwoosh_ratkin_wellkeeper_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/e6a60234-3953-481e-8c62-9cd1f0fda6f3",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_wellkeeper_run.webp",
+      "raw_sha256": "653a763fe20f5af549b48af81c0e65aed6d46b85f35d48d826386439fe98a469",
+      "source_size": [
+        1040,
+        621
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 143,
+      "anchorX": 98.56,
+      "native_cell": [
+        260,
+        207
+      ],
+      "output": "media/anim/wellkeeper_run.png",
+      "output_sha256": "65e3bece80097c76654c5e679a5c62716a92c7b246fa294bf37e59f075718719",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          14,
+          4,
+          244,
+          196
+        ],
+        [
+          15,
+          4,
+          238,
+          199
+        ],
+        [
+          17,
+          8,
+          239,
+          204
+        ],
+        [
+          15,
+          3,
+          246,
+          192
+        ],
+        [
+          6,
+          3,
+          256,
+          199
+        ],
+        [
+          16,
+          7,
+          257,
+          205
+        ],
+        [
+          13,
+          5,
+          247,
+          197
+        ],
+        [
+          2,
+          2,
+          239,
+          196
+        ],
+        [
+          13,
+          7,
+          239,
+          204
+        ],
+        [
+          15,
+          7,
+          245,
+          200
+        ],
+        [
+          5,
+          3,
+          254,
+          189
+        ],
+        [
+          15,
+          6,
+          254,
+          204
+        ]
+      ]
+    },
+    {
+      "key": "herbalist_idle",
+      "name": "fwoosh_fwoosh_ratkin_herbalist_idle",
+      "animation_id": "0008db9d-05e9-4201-b160-e82f2887c0d2",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/0008db9d-05e9-4201-b160-e82f2887c0d2/fwoosh_fwoosh_ratkin_herbalist_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/0008db9d-05e9-4201-b160-e82f2887c0d2",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_herbalist_idle.webp",
+      "raw_sha256": "fc2849f019795bfbc1bac7208c4b8c66a443ba499d5faf815d9aec363935be35",
+      "source_size": [
+        888,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 154,
+      "fh": 180,
+      "anchorX": 95.2,
+      "native_cell": [
+        222,
+        260
+      ],
+      "output": "media/anim/herbalist_idle.png",
+      "output_sha256": "6b1b75fae3a2f48c63d9042d6fd57b17b7c253ba81f8e6ab5bfe8764fb090251",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          31,
+          2,
+          220,
+          258
+        ],
+        [
+          27,
+          2,
+          219,
+          258
+        ],
+        [
+          23,
+          3,
+          217,
+          258
+        ],
+        [
+          18,
+          3,
+          216,
+          258
+        ],
+        [
+          14,
+          3,
+          216,
+          258
+        ],
+        [
+          11,
+          3,
+          217,
+          258
+        ],
+        [
+          7,
+          3,
+          215,
+          258
+        ],
+        [
+          3,
+          3,
+          212,
+          258
+        ],
+        [
+          2,
+          3,
+          212,
+          258
+        ],
+        [
+          4,
+          3,
+          212,
+          258
+        ],
+        [
+          8,
+          3,
+          214,
+          258
+        ],
+        [
+          13,
+          3,
+          215,
+          258
+        ]
+      ]
+    },
+    {
+      "key": "herbalist_walk",
+      "name": "fwoosh_fwoosh_ratkin_herbalist_walk",
+      "animation_id": "de9f5838-5e36-46b8-a96f-dcf531af14c2",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/de9f5838-5e36-46b8-a96f-dcf531af14c2/fwoosh_fwoosh_ratkin_herbalist_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/de9f5838-5e36-46b8-a96f-dcf531af14c2",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_herbalist_walk.webp",
+      "raw_sha256": "e3891011c84e13f46471607de9b61b9f87f052d22d474eda62bb577e4e6f1c35",
+      "source_size": [
+        1040,
+        714
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 165,
+      "anchorX": 109.27,
+      "native_cell": [
+        260,
+        238
+      ],
+      "output": "media/anim/herbalist_walk.png",
+      "output_sha256": "d6f661a6d02745d46da8cb61beaa3aa9f9b0ae7eeeb46cb7c6b47f3d103a75ba",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          30,
+          7,
+          253,
+          233
+        ],
+        [
+          40,
+          6,
+          226,
+          233
+        ],
+        [
+          16,
+          3,
+          241,
+          232
+        ],
+        [
+          28,
+          8,
+          258,
+          232
+        ],
+        [
+          8,
+          4,
+          240,
+          235
+        ],
+        [
+          23,
+          5,
+          237,
+          234
+        ],
+        [
+          44,
+          6,
+          226,
+          232
+        ],
+        [
+          19,
+          3,
+          246,
+          232
+        ],
+        [
+          29,
+          8,
+          257,
+          236
+        ],
+        [
+          3,
+          3,
+          231,
+          235
+        ],
+        [
+          30,
+          8,
+          238,
+          233
+        ],
+        [
+          32,
+          3,
+          230,
+          233
+        ]
+      ]
+    },
+    {
+      "key": "herbalist_run",
+      "name": "fwoosh_fwoosh_ratkin_herbalist_run",
+      "animation_id": "beed4b8c-a6c1-4049-b3b9-636b6dd92106",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/beed4b8c-a6c1-4049-b3b9-636b6dd92106/fwoosh_fwoosh_ratkin_herbalist_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/beed4b8c-a6c1-4049-b3b9-636b6dd92106",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_herbalist_run.webp",
+      "raw_sha256": "2a9bcd055c016967d2ce9f7e316d6f370b25ead28006bf4f3b098578a1ced6b9",
+      "source_size": [
+        1040,
+        711
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 164,
+      "anchorX": 108.91,
+      "native_cell": [
+        260,
+        237
+      ],
+      "output": "media/anim/herbalist_run.png",
+      "output_sha256": "f1c5a77c1fb29e63fa5c7593a8f58c40c0cbe1fa27550114ba1ebafd50a2dc58",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          22,
+          4,
+          254,
+          222
+        ],
+        [
+          19,
+          10,
+          252,
+          233
+        ],
+        [
+          29,
+          13,
+          252,
+          235
+        ],
+        [
+          3,
+          3,
+          245,
+          210
+        ],
+        [
+          17,
+          9,
+          255,
+          232
+        ],
+        [
+          32,
+          13,
+          249,
+          235
+        ],
+        [
+          3,
+          5,
+          246,
+          213
+        ],
+        [
+          13,
+          5,
+          256,
+          223
+        ],
+        [
+          25,
+          14,
+          237,
+          234
+        ],
+        [
+          15,
+          10,
+          240,
+          228
+        ],
+        [
+          19,
+          3,
+          257,
+          208
+        ],
+        [
+          20,
+          11,
+          238,
+          234
+        ]
+      ]
+    },
+    {
+      "key": "mason_run",
+      "name": "fwoosh_fwoosh_ratkin_mason_run",
+      "animation_id": "c55b9c52-968f-41e2-befc-038fbf7d2194",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/c55b9c52-968f-41e2-befc-038fbf7d2194/fwoosh_fwoosh_ratkin_mason_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/c55b9c52-968f-41e2-befc-038fbf7d2194",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_fwoosh_ratkin_mason_run.webp",
+      "raw_sha256": "f270368410e9849d021789e41424a4fce1416ea241c5a1e8b83d9a12336fe0b9",
+      "source_size": [
+        1040,
+        693
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 160,
+      "anchorX": 107.29,
+      "native_cell": [
+        260,
+        231
+      ],
+      "output": "media/anim/mason_run.png",
+      "output_sha256": "5cb0f402adfeb3d1ff0d55c422167ab961a807ccde6c782e0a69cca794e89ec3",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          11,
+          7,
+          252,
+          226
+        ],
+        [
+          23,
+          8,
+          247,
+          228
+        ],
+        [
+          13,
+          15,
+          251,
+          226
+        ],
+        [
+          5,
+          4,
+          254,
+          209
+        ],
+        [
+          29,
+          10,
+          248,
+          228
+        ],
+        [
+          10,
+          14,
+          251,
+          225
+        ],
+        [
+          4,
+          5,
+          249,
+          211
+        ],
+        [
+          11,
+          6,
+          257,
+          221
+        ],
+        [
+          30,
+          14,
+          250,
+          228
+        ],
+        [
+          7,
+          9,
+          252,
+          221
+        ],
+        [
+          13,
+          2,
+          255,
+          212
+        ],
+        [
+          12,
+          12,
+          253,
+          226
+        ]
+      ]
+    },
+    {
+      "key": "cook_idle",
+      "name": "fwoosh_ratkin_cook_idle",
+      "animation_id": "1f1c51ff-c682-4667-8264-6744ef3ff712",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/1f1c51ff-c682-4667-8264-6744ef3ff712/fwoosh_ratkin_cook_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/1f1c51ff-c682-4667-8264-6744ef3ff712",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_cook_idle.webp",
+      "raw_sha256": "70e704f2648d4d4bd1868b56235446684fe5d6b8258a39948a2ee8e06e69a3ab",
+      "source_size": [
+        796,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 138,
+      "fh": 180,
+      "anchorX": 84.74,
+      "native_cell": [
+        199,
+        260
+      ],
+      "output": "media/anim/cook_idle.png",
+      "output_sha256": "3157c5d97b92c5bc074e5dcd77576e005e993fda09d2e89f6c4042f38eae8d31",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          23,
+          2,
+          197,
+          258
+        ],
+        [
+          23,
+          2,
+          197,
+          258
+        ],
+        [
+          19,
+          2,
+          197,
+          258
+        ],
+        [
+          8,
+          4,
+          196,
+          258
+        ],
+        [
+          3,
+          3,
+          196,
+          258
+        ],
+        [
+          8,
+          3,
+          196,
+          258
+        ],
+        [
+          23,
+          3,
+          196,
+          258
+        ],
+        [
+          21,
+          4,
+          196,
+          258
+        ],
+        [
+          8,
+          4,
+          196,
+          258
+        ],
+        [
+          3,
+          2,
+          197,
+          258
+        ],
+        [
+          3,
+          2,
+          197,
+          258
+        ],
+        [
+          8,
+          2,
+          197,
+          258
+        ]
+      ]
+    },
+    {
+      "key": "cook_walk",
+      "name": "fwoosh_ratkin_cook_walk",
+      "animation_id": "642114fa-da7b-4c0f-910d-c09719636a23",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/642114fa-da7b-4c0f-910d-c09719636a23/fwoosh_ratkin_cook_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/642114fa-da7b-4c0f-910d-c09719636a23",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_cook_walk.webp",
+      "raw_sha256": "f031467107d5e026e7cf91b07c1cd7bf9293ae6cdea5b248ffda4e08692e3e6e",
+      "source_size": [
+        1032,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 179,
+      "fh": 180,
+      "anchorX": 109.92,
+      "native_cell": [
+        258,
+        260
+      ],
+      "output": "media/anim/cook_walk.png",
+      "output_sha256": "9771344126cbd49f27bdf58a14a1f179a5c707422f7aa673518c39161834f75c",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          45,
+          7,
+          252,
+          253
+        ],
+        [
+          39,
+          6,
+          239,
+          255
+        ],
+        [
+          12,
+          6,
+          250,
+          253
+        ],
+        [
+          20,
+          5,
+          245,
+          258
+        ],
+        [
+          35,
+          5,
+          244,
+          255
+        ],
+        [
+          48,
+          7,
+          239,
+          255
+        ],
+        [
+          15,
+          5,
+          249,
+          253
+        ],
+        [
+          32,
+          7,
+          247,
+          258
+        ],
+        [
+          27,
+          4,
+          238,
+          256
+        ],
+        [
+          57,
+          8,
+          239,
+          255
+        ],
+        [
+          10,
+          4,
+          244,
+          254
+        ],
+        [
+          3,
+          9,
+          240,
+          255
+        ]
+      ]
+    },
+    {
+      "key": "cook_run",
+      "name": "fwoosh_ratkin_cook_run",
+      "animation_id": "f67cff1d-4110-4df0-b585-885d427f1450",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/f67cff1d-4110-4df0-b585-885d427f1450/fwoosh_ratkin_cook_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/f67cff1d-4110-4df0-b585-885d427f1450",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_cook_run.webp",
+      "raw_sha256": "9c237ea60991806c6e709235e68bf44050172e79b334d6e1934d235697dba29e",
+      "source_size": [
+        1040,
+        654
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 151,
+      "anchorX": 111.69,
+      "native_cell": [
+        260,
+        218
+      ],
+      "output": "media/anim/cook_run.png",
+      "output_sha256": "5d9cc24b69bf130a54f2612400b2d27b87f23eb4426b5f37f83ff2078cdb9b37",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          5,
+          5,
+          257,
+          205
+        ],
+        [
+          43,
+          8,
+          241,
+          216
+        ],
+        [
+          28,
+          12,
+          244,
+          213
+        ],
+        [
+          2,
+          3,
+          256,
+          194
+        ],
+        [
+          43,
+          7,
+          242,
+          216
+        ],
+        [
+          27,
+          12,
+          244,
+          213
+        ],
+        [
+          4,
+          3,
+          256,
+          197
+        ],
+        [
+          42,
+          5,
+          242,
+          214
+        ],
+        [
+          38,
+          13,
+          243,
+          212
+        ],
+        [
+          5,
+          5,
+          255,
+          207
+        ],
+        [
+          35,
+          3,
+          242,
+          209
+        ],
+        [
+          47,
+          11,
+          244,
+          212
+        ]
+      ]
+    },
+    {
+      "key": "weaver_idle",
+      "name": "fwoosh_ratkin_weaver_idle",
+      "animation_id": "31af996d-de11-4a8d-ab51-dc9fa4cdc106",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/31af996d-de11-4a8d-ab51-dc9fa4cdc106/fwoosh_ratkin_weaver_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/31af996d-de11-4a8d-ab51-dc9fa4cdc106",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_weaver_idle.webp",
+      "raw_sha256": "8f7deaef21aa17ed9c1c091626a02f57248eb99970b06ac9c9c500a4916209fa",
+      "source_size": [
+        900,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 156,
+      "fh": 180,
+      "anchorX": 94.06,
+      "native_cell": [
+        225,
+        260
+      ],
+      "output": "media/anim/weaver_idle.png",
+      "output_sha256": "35e689f094f7b60c4aff652b0ca1494b3450c524c5127191f3988b909c6d237c",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          19,
+          2,
+          220,
+          258
+        ],
+        [
+          19,
+          2,
+          220,
+          258
+        ],
+        [
+          17,
+          2,
+          220,
+          258
+        ],
+        [
+          10,
+          6,
+          221,
+          258
+        ],
+        [
+          5,
+          5,
+          220,
+          258
+        ],
+        [
+          3,
+          2,
+          220,
+          258
+        ],
+        [
+          3,
+          2,
+          220,
+          258
+        ],
+        [
+          3,
+          3,
+          219,
+          258
+        ],
+        [
+          2,
+          8,
+          221,
+          258
+        ],
+        [
+          2,
+          10,
+          222,
+          258
+        ],
+        [
+          3,
+          11,
+          223,
+          258
+        ],
+        [
+          6,
+          9,
+          219,
+          258
+        ]
+      ]
+    },
+    {
+      "key": "weaver_walk",
+      "name": "fwoosh_ratkin_weaver_walk",
+      "animation_id": "49de4431-f182-416f-b1c9-0250b74f4f6f",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/49de4431-f182-416f-b1c9-0250b74f4f6f/fwoosh_ratkin_weaver_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/49de4431-f182-416f-b1c9-0250b74f4f6f",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_weaver_walk.webp",
+      "raw_sha256": "e58d6eeb8044b8d78683327ecf2830c0df04da916d615d40275ef45df9a5833d",
+      "source_size": [
+        1040,
+        660
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 152,
+      "anchorX": 101.35,
+      "native_cell": [
+        260,
+        220
+      ],
+      "output": "media/anim/weaver_walk.png",
+      "output_sha256": "9d8332c7bdb6398d5dcc926e72c1cdd08ea7bdcfb0a0a7c5c658b81dc826703d",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          31,
+          4,
+          256,
+          217
+        ],
+        [
+          20,
+          6,
+          235,
+          217
+        ],
+        [
+          2,
+          2,
+          237,
+          217
+        ],
+        [
+          27,
+          7,
+          255,
+          217
+        ],
+        [
+          8,
+          2,
+          233,
+          217
+        ],
+        [
+          32,
+          8,
+          234,
+          217
+        ],
+        [
+          7,
+          2,
+          233,
+          217
+        ],
+        [
+          34,
+          7,
+          257,
+          217
+        ],
+        [
+          15,
+          2,
+          233,
+          218
+        ],
+        [
+          26,
+          8,
+          234,
+          217
+        ],
+        [
+          9,
+          2,
+          233,
+          217
+        ],
+        [
+          37,
+          7,
+          257,
+          217
+        ]
+      ]
+    },
+    {
+      "key": "weaver_run",
+      "name": "fwoosh_ratkin_weaver_run",
+      "animation_id": "d07245e8-eadf-44f4-812c-f6e73392cb3d",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/d07245e8-eadf-44f4-812c-f6e73392cb3d/fwoosh_ratkin_weaver_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/d07245e8-eadf-44f4-812c-f6e73392cb3d",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_weaver_run.webp",
+      "raw_sha256": "be5005dd8bb5cd6b45f3cac95768466e9c5d47c116f5e7e4bb26fa1d4c097fcb",
+      "source_size": [
+        1040,
+        696
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 161,
+      "anchorX": 101.24,
+      "native_cell": [
+        260,
+        232
+      ],
+      "output": "media/anim/weaver_run.png",
+      "output_sha256": "519fb62577189cf0ae9e18efcc1a584f09b6530a636e591f847fd7fb414ba152",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          20,
+          8,
+          248,
+          213
+        ],
+        [
+          27,
+          9,
+          258,
+          226
+        ],
+        [
+          16,
+          10,
+          255,
+          227
+        ],
+        [
+          26,
+          6,
+          225,
+          228
+        ],
+        [
+          16,
+          13,
+          229,
+          226
+        ],
+        [
+          21,
+          4,
+          257,
+          224
+        ],
+        [
+          31,
+          14,
+          249,
+          229
+        ],
+        [
+          9,
+          2,
+          237,
+          218
+        ],
+        [
+          33,
+          14,
+          230,
+          226
+        ],
+        [
+          7,
+          2,
+          257,
+          209
+        ],
+        [
+          40,
+          13,
+          227,
+          228
+        ],
+        [
+          7,
+          7,
+          236,
+          213
+        ]
+      ]
+    },
+    {
+      "key": "lantern_idle",
+      "name": "fwoosh_ratkin_lantern_idle",
+      "animation_id": "d6a82428-90ac-4da2-ac36-8f0bd8fcecf3",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/d6a82428-90ac-4da2-ac36-8f0bd8fcecf3/fwoosh_ratkin_lantern_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/d6a82428-90ac-4da2-ac36-8f0bd8fcecf3",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_lantern_idle.webp",
+      "raw_sha256": "4d19a667fe7bce8c85d929e018dac4f3ef716bc20481ed01767c6b7115c6d5e8",
+      "source_size": [
+        904,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 156,
+      "fh": 180,
+      "anchorX": 89.08,
+      "native_cell": [
+        226,
+        260
+      ],
+      "output": "media/anim/lantern_idle.png",
+      "output_sha256": "23b556a7df88b96b2268567ea1729302b272fa46564d4bafe8c8bbe606d15976",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          25,
+          3,
+          213,
+          258
+        ],
+        [
+          19,
+          3,
+          216,
+          258
+        ],
+        [
+          14,
+          3,
+          224,
+          258
+        ],
+        [
+          5,
+          2,
+          221,
+          258
+        ],
+        [
+          5,
+          2,
+          221,
+          258
+        ],
+        [
+          11,
+          2,
+          220,
+          258
+        ],
+        [
+          20,
+          3,
+          218,
+          258
+        ],
+        [
+          28,
+          3,
+          217,
+          258
+        ],
+        [
+          23,
+          3,
+          217,
+          258
+        ],
+        [
+          17,
+          3,
+          220,
+          258
+        ],
+        [
+          9,
+          2,
+          221,
+          258
+        ],
+        [
+          3,
+          2,
+          221,
+          258
+        ]
+      ]
+    },
+    {
+      "key": "lantern_walk",
+      "name": "fwoosh_ratkin_lantern_walk",
+      "animation_id": "ad366cc6-4049-43d5-8260-8a12eaf9dfd6",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/ad366cc6-4049-43d5-8260-8a12eaf9dfd6/fwoosh_ratkin_lantern_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/ad366cc6-4049-43d5-8260-8a12eaf9dfd6",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_lantern_walk.webp",
+      "raw_sha256": "889c3a4537fe3e53ce31fdbf7de063db05fcc7b646e7a5ad2a20d9f2638fddc1",
+      "source_size": [
+        1040,
+        615
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 142,
+      "anchorX": 108.46,
+      "native_cell": [
+        260,
+        205
+      ],
+      "output": "media/anim/lantern_walk.png",
+      "output_sha256": "b017ba1719334cad4ddaf535780842a450e45d90c4281c36ec25cb852d549345",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          7,
+          5,
+          256,
+          201
+        ],
+        [
+          11,
+          4,
+          258,
+          201
+        ],
+        [
+          4,
+          3,
+          258,
+          200
+        ],
+        [
+          13,
+          7,
+          258,
+          202
+        ],
+        [
+          4,
+          3,
+          257,
+          202
+        ],
+        [
+          7,
+          5,
+          256,
+          201
+        ],
+        [
+          11,
+          4,
+          257,
+          200
+        ],
+        [
+          3,
+          3,
+          257,
+          200
+        ],
+        [
+          15,
+          6,
+          258,
+          203
+        ],
+        [
+          2,
+          2,
+          257,
+          202
+        ],
+        [
+          11,
+          6,
+          256,
+          201
+        ],
+        [
+          8,
+          3,
+          258,
+          200
+        ]
+      ]
+    },
+    {
+      "key": "lantern_run",
+      "name": "fwoosh_ratkin_lantern_run",
+      "animation_id": "68fc7bce-a629-4252-913f-57983f936bc3",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/68fc7bce-a629-4252-913f-57983f936bc3/fwoosh_ratkin_lantern_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/68fc7bce-a629-4252-913f-57983f936bc3",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_lantern_run.webp",
+      "raw_sha256": "e31fbc8525d391c2ceeee0e3db2ad55303f8fb248955c67d53bcd82cf056dc90",
+      "source_size": [
+        1040,
+        561
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 129,
+      "anchorX": 110.59,
+      "native_cell": [
+        260,
+        187
+      ],
+      "output": "media/anim/lantern_run.png",
+      "output_sha256": "44793116b7de48186dc5b1675d41e75832d3cde14df9f42bc3e36700bd6b40bd",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          10,
+          4,
+          256,
+          178
+        ],
+        [
+          8,
+          8,
+          256,
+          180
+        ],
+        [
+          7,
+          13,
+          255,
+          185
+        ],
+        [
+          4,
+          4,
+          250,
+          175
+        ],
+        [
+          13,
+          5,
+          256,
+          180
+        ],
+        [
+          8,
+          12,
+          256,
+          185
+        ],
+        [
+          4,
+          5,
+          251,
+          175
+        ],
+        [
+          10,
+          3,
+          256,
+          178
+        ],
+        [
+          11,
+          10,
+          255,
+          185
+        ],
+        [
+          5,
+          8,
+          253,
+          181
+        ],
+        [
+          9,
+          2,
+          257,
+          176
+        ],
+        [
+          11,
+          9,
+          254,
+          185
+        ]
+      ]
+    },
+    {
+      "key": "farmer_run",
+      "name": "fwoosh_ratkin_farmer_run",
+      "animation_id": "01bce06f-754e-40c8-baaa-94220b5bbcf7",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/01bce06f-754e-40c8-baaa-94220b5bbcf7/fwoosh_ratkin_farmer_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/01bce06f-754e-40c8-baaa-94220b5bbcf7",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_farmer_run.webp",
+      "raw_sha256": "639b5daa60e7e3f9bf17c0c1652e631eae142767498e52a6e26b9995c440e0a3",
+      "source_size": [
+        1040,
+        585
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 11,
+      "fw": 180,
+      "fh": 135,
+      "anchorX": 87.37,
+      "native_cell": [
+        260,
+        195
+      ],
+      "output": "media/anim/farmer_run.png",
+      "output_sha256": "ed5fed7047af82a3f10a1c2f9c973359d23d167f90ccfaf552b1962255c25531",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          5,
+          5,
+          223,
+          176
+        ],
+        [
+          17,
+          11,
+          228,
+          190
+        ],
+        [
+          13,
+          12,
+          226,
+          193
+        ],
+        [
+          4,
+          6,
+          224,
+          181
+        ],
+        [
+          28,
+          5,
+          197,
+          190
+        ],
+        [
+          29,
+          10,
+          244,
+          193
+        ],
+        [
+          26,
+          6,
+          255,
+          191
+        ],
+        [
+          25,
+          5,
+          255,
+          188
+        ],
+        [
+          26,
+          11,
+          249,
+          193
+        ],
+        [
+          24,
+          5,
+          254,
+          191
+        ],
+        [
+          56,
+          7,
+          235,
+          191
+        ]
+      ]
+    },
+    {
+      "key": "merchant_idle",
+      "name": "fwoosh_ratkin_merchant_idle",
+      "animation_id": "547d2787-24b0-465e-a4b2-a50e4d9f9dbe",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/547d2787-24b0-465e-a4b2-a50e4d9f9dbe/fwoosh_ratkin_merchant_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/547d2787-24b0-465e-a4b2-a50e4d9f9dbe",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_merchant_idle.webp",
+      "raw_sha256": "cb323c505ac86a5a33337a49b681dbba296dda1fee2af57093623d254aa9c649",
+      "source_size": [
+        896,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 155,
+      "fh": 180,
+      "anchorX": 91.98,
+      "native_cell": [
+        224,
+        260
+      ],
+      "output": "media/anim/merchant_idle.png",
+      "output_sha256": "5daaff7d31ffd6850a7e85b4cb5a777aef7748edad789ed2e339f9dd99d56df6",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          26,
+          2,
+          215,
+          258
+        ],
+        [
+          26,
+          2,
+          215,
+          258
+        ],
+        [
+          26,
+          2,
+          216,
+          258
+        ],
+        [
+          13,
+          4,
+          218,
+          258
+        ],
+        [
+          5,
+          3,
+          221,
+          258
+        ],
+        [
+          5,
+          3,
+          222,
+          258
+        ],
+        [
+          5,
+          4,
+          220,
+          258
+        ],
+        [
+          4,
+          2,
+          217,
+          258
+        ],
+        [
+          15,
+          2,
+          215,
+          258
+        ],
+        [
+          27,
+          2,
+          215,
+          258
+        ],
+        [
+          26,
+          2,
+          216,
+          258
+        ],
+        [
+          18,
+          3,
+          219,
+          258
+        ]
+      ]
+    },
+    {
+      "key": "merchant_walk",
+      "name": "fwoosh_ratkin_merchant_walk",
+      "animation_id": "bdd49cf9-2898-49cb-aee7-52f21e76f286",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/bdd49cf9-2898-49cb-aee7-52f21e76f286/fwoosh_ratkin_merchant_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/bdd49cf9-2898-49cb-aee7-52f21e76f286",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_merchant_walk.webp",
+      "raw_sha256": "393becd061a7e9aeb7a141689059e648b84ad36babe6dde8eab0b0ba4eceec99",
+      "source_size": [
+        1040,
+        750
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 173,
+      "anchorX": 109.15,
+      "native_cell": [
+        260,
+        250
+      ],
+      "output": "media/anim/merchant_walk.png",
+      "output_sha256": "31521d03e96e7c6c5e1119a565b7eba2ef5a8b2ab3b0390a369e845305ef8b5e",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          28,
+          5,
+          247,
+          243
+        ],
+        [
+          27,
+          4,
+          234,
+          240
+        ],
+        [
+          13,
+          2,
+          241,
+          239
+        ],
+        [
+          3,
+          7,
+          256,
+          244
+        ],
+        [
+          10,
+          4,
+          244,
+          246
+        ],
+        [
+          25,
+          5,
+          243,
+          244
+        ],
+        [
+          24,
+          4,
+          231,
+          240
+        ],
+        [
+          10,
+          3,
+          246,
+          239
+        ],
+        [
+          3,
+          6,
+          255,
+          247
+        ],
+        [
+          15,
+          3,
+          236,
+          245
+        ],
+        [
+          29,
+          6,
+          248,
+          243
+        ],
+        [
+          17,
+          3,
+          237,
+          240
+        ]
+      ]
+    },
+    {
+      "key": "merchant_run",
+      "name": "fwoosh_ratkin_merchant_run",
+      "animation_id": "9f8a9b94-71ce-449b-bf9f-ccf3a9d50d5f",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/9f8a9b94-71ce-449b-bf9f-ccf3a9d50d5f/fwoosh_ratkin_merchant_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/9f8a9b94-71ce-449b-bf9f-ccf3a9d50d5f",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_merchant_run.webp",
+      "raw_sha256": "19d418e3b4a7431239bef72be9bad0f8158d2d314813a2ef5727718da4e26ff8",
+      "source_size": [
+        1040,
+        696
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 161,
+      "anchorX": 107.37,
+      "native_cell": [
+        260,
+        232
+      ],
+      "output": "media/anim/merchant_run.png",
+      "output_sha256": "4a7d822c369bbef064408553580f82c1d6a78f9b9280faaf79b66ba144778372",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          16,
+          4,
+          253,
+          226
+        ],
+        [
+          9,
+          11,
+          252,
+          228
+        ],
+        [
+          10,
+          3,
+          254,
+          220
+        ],
+        [
+          15,
+          14,
+          247,
+          229
+        ],
+        [
+          11,
+          2,
+          254,
+          223
+        ],
+        [
+          20,
+          11,
+          244,
+          227
+        ],
+        [
+          11,
+          3,
+          257,
+          215
+        ],
+        [
+          21,
+          9,
+          240,
+          229
+        ],
+        [
+          8,
+          6,
+          254,
+          219
+        ],
+        [
+          28,
+          7,
+          250,
+          225
+        ],
+        [
+          9,
+          11,
+          257,
+          230
+        ],
+        [
+          17,
+          4,
+          238,
+          226
+        ]
+      ]
+    },
+    {
+      "key": "child_idle",
+      "name": "fwoosh_ratkin_child_idle",
+      "animation_id": "15c082ae-a968-4de4-8055-899df91aa5f3",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/15c082ae-a968-4de4-8055-899df91aa5f3/fwoosh_ratkin_child_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/15c082ae-a968-4de4-8055-899df91aa5f3",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_child_idle.webp",
+      "raw_sha256": "7a5efca7b8f820f0861d504da4bbe15dd5dbdcb0b7f5e2f84c9403dc00c40fc1",
+      "source_size": [
+        904,
+        780
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 156,
+      "fh": 180,
+      "anchorX": 99.34,
+      "native_cell": [
+        226,
+        260
+      ],
+      "output": "media/anim/child_idle.png",
+      "output_sha256": "c1d05fc7d5c10b104f26bb7e9d5cd421e229879c94eaab32f5c05ebb660e4d28",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          49,
+          2,
+          212,
+          258
+        ],
+        [
+          46,
+          3,
+          212,
+          258
+        ],
+        [
+          29,
+          5,
+          214,
+          258
+        ],
+        [
+          9,
+          7,
+          222,
+          258
+        ],
+        [
+          4,
+          6,
+          222,
+          258
+        ],
+        [
+          16,
+          4,
+          212,
+          258
+        ],
+        [
+          37,
+          2,
+          212,
+          258
+        ],
+        [
+          48,
+          2,
+          212,
+          258
+        ],
+        [
+          51,
+          2,
+          212,
+          258
+        ],
+        [
+          41,
+          2,
+          212,
+          258
+        ],
+        [
+          21,
+          2,
+          212,
+          258
+        ],
+        [
+          5,
+          2,
+          215,
+          258
+        ]
+      ]
+    },
+    {
+      "key": "child_walk",
+      "name": "fwoosh_ratkin_child_walk",
+      "animation_id": "1edeede0-3b53-43c5-8a73-ccf95cb7b71b",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/1edeede0-3b53-43c5-8a73-ccf95cb7b71b/fwoosh_ratkin_child_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/1edeede0-3b53-43c5-8a73-ccf95cb7b71b",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_child_walk.webp",
+      "raw_sha256": "e56eec4137fbc1ef0341b33e0ebd7006f544e16bd88133d3e73af66f409690de",
+      "source_size": [
+        1040,
+        768
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 177,
+      "anchorX": 117.29,
+      "native_cell": [
+        260,
+        256
+      ],
+      "output": "media/anim/child_walk.png",
+      "output_sha256": "6e8c1247ee461818a756a4170c6625db9510dc31ee013c5be4c4b5e33a44500a",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          27,
+          8,
+          254,
+          251
+        ],
+        [
+          30,
+          5,
+          250,
+          251
+        ],
+        [
+          6,
+          4,
+          254,
+          250
+        ],
+        [
+          19,
+          9,
+          257,
+          254
+        ],
+        [
+          13,
+          3,
+          237,
+          253
+        ],
+        [
+          9,
+          9,
+          242,
+          251
+        ],
+        [
+          23,
+          4,
+          243,
+          251
+        ],
+        [
+          5,
+          6,
+          255,
+          249
+        ],
+        [
+          30,
+          7,
+          255,
+          254
+        ],
+        [
+          7,
+          2,
+          235,
+          252
+        ],
+        [
+          20,
+          9,
+          238,
+          252
+        ],
+        [
+          16,
+          3,
+          250,
+          251
+        ]
+      ]
+    },
+    {
+      "key": "child_run",
+      "name": "fwoosh_ratkin_child_run",
+      "animation_id": "66d91650-e7c1-4ab7-ba6e-abfb53adeab2",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/66d91650-e7c1-4ab7-ba6e-abfb53adeab2/fwoosh_ratkin_child_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/66d91650-e7c1-4ab7-ba6e-abfb53adeab2",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_child_run.webp",
+      "raw_sha256": "00690544dffc828e3cb68db803d136624d0661b18654eac9332fb7730ce84cf0",
+      "source_size": [
+        1040,
+        618
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 143,
+      "anchorX": 112.74,
+      "native_cell": [
+        260,
+        206
+      ],
+      "output": "media/anim/child_run.png",
+      "output_sha256": "c58686441ae43204893223592f391423be7de14a3e13c12a8db5684b44b33753",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          10,
+          3,
+          257,
+          185
+        ],
+        [
+          23,
+          5,
+          251,
+          203
+        ],
+        [
+          34,
+          13,
+          246,
+          203
+        ],
+        [
+          4,
+          5,
+          245,
+          185
+        ],
+        [
+          25,
+          5,
+          253,
+          202
+        ],
+        [
+          36,
+          12,
+          246,
+          203
+        ],
+        [
+          12,
+          6,
+          245,
+          191
+        ],
+        [
+          16,
+          2,
+          257,
+          195
+        ],
+        [
+          36,
+          10,
+          246,
+          204
+        ],
+        [
+          19,
+          9,
+          246,
+          202
+        ],
+        [
+          3,
+          2,
+          257,
+          183
+        ],
+        [
+          31,
+          8,
+          246,
+          204
+        ]
+      ]
+    },
+    {
+      "key": "elder_idle",
+      "name": "fwoosh_ratkin_elder_idle",
+      "animation_id": "625e0dca-1545-4aae-9c20-c43a170a246e",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/625e0dca-1545-4aae-9c20-c43a170a246e/fwoosh_ratkin_elder_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/625e0dca-1545-4aae-9c20-c43a170a246e",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_elder_idle.webp",
+      "raw_sha256": "265c1c109d9128aa48fd151090c080d777a54ae2b000e7fcfd2acceb113793d8",
+      "source_size": [
+        1040,
+        681
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 157,
+      "anchorX": 107.68,
+      "native_cell": [
+        260,
+        227
+      ],
+      "output": "media/anim/elder_idle.png",
+      "output_sha256": "7f6251227f20a541f2c4e46600f12b5c26b4684e436b7de1fc2f716120eb8417",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          45,
+          2,
+          249,
+          225
+        ],
+        [
+          45,
+          2,
+          249,
+          225
+        ],
+        [
+          36,
+          3,
+          251,
+          225
+        ],
+        [
+          19,
+          3,
+          255,
+          225
+        ],
+        [
+          6,
+          4,
+          258,
+          225
+        ],
+        [
+          5,
+          4,
+          258,
+          225
+        ],
+        [
+          8,
+          3,
+          254,
+          225
+        ],
+        [
+          5,
+          3,
+          250,
+          225
+        ],
+        [
+          2,
+          2,
+          247,
+          225
+        ],
+        [
+          2,
+          2,
+          247,
+          225
+        ],
+        [
+          6,
+          2,
+          250,
+          225
+        ],
+        [
+          13,
+          3,
+          253,
+          225
+        ]
+      ]
+    },
+    {
+      "key": "elder_walk",
+      "name": "fwoosh_ratkin_elder_walk",
+      "animation_id": "3b1a35ca-8bba-46f3-9155-aa19f3d7dfa5",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/3b1a35ca-8bba-46f3-9155-aa19f3d7dfa5/fwoosh_ratkin_elder_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/3b1a35ca-8bba-46f3-9155-aa19f3d7dfa5",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_elder_walk.webp",
+      "raw_sha256": "8d4391b6a478d6379ba8e780a5f0651dbfd80260117db266d1091946615d62b7",
+      "source_size": [
+        1040,
+        678
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 156,
+      "anchorX": 119.46,
+      "native_cell": [
+        260,
+        226
+      ],
+      "output": "media/anim/elder_walk.png",
+      "output_sha256": "5ec451f24ef275dc3398ab301e99e7f5faad6bbce09e6225eeead90b23518f89",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          21,
+          5,
+          253,
+          223
+        ],
+        [
+          17,
+          5,
+          246,
+          223
+        ],
+        [
+          7,
+          3,
+          244,
+          223
+        ],
+        [
+          17,
+          8,
+          258,
+          224
+        ],
+        [
+          5,
+          3,
+          244,
+          224
+        ],
+        [
+          8,
+          5,
+          253,
+          224
+        ],
+        [
+          8,
+          5,
+          245,
+          223
+        ],
+        [
+          6,
+          3,
+          247,
+          223
+        ],
+        [
+          16,
+          7,
+          255,
+          224
+        ],
+        [
+          2,
+          3,
+          243,
+          224
+        ],
+        [
+          11,
+          6,
+          254,
+          223
+        ],
+        [
+          7,
+          4,
+          245,
+          223
+        ]
+      ]
+    },
+    {
+      "key": "elder_run",
+      "name": "fwoosh_ratkin_elder_run",
+      "animation_id": "a598df72-a07e-432f-ac93-84a55fc0a938",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/a598df72-a07e-432f-ac93-84a55fc0a938/fwoosh_ratkin_elder_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/a598df72-a07e-432f-ac93-84a55fc0a938",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_elder_run.webp",
+      "raw_sha256": "0ca500ce263b0b2a96be0af05731dd2141be9f97d0777e03340a9f3de96a6151",
+      "source_size": [
+        1040,
+        555
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 128,
+      "anchorX": 103.7,
+      "native_cell": [
+        260,
+        185
+      ],
+      "output": "media/anim/elder_run.png",
+      "output_sha256": "d5dc91fab8d5469eb6eeaf69f8bb160a84160e8d270fc219408aa1009e186054",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          25,
+          3,
+          256,
+          177
+        ],
+        [
+          20,
+          8,
+          253,
+          179
+        ],
+        [
+          12,
+          6,
+          257,
+          179
+        ],
+        [
+          4,
+          5,
+          252,
+          182
+        ],
+        [
+          5,
+          10,
+          253,
+          180
+        ],
+        [
+          18,
+          2,
+          258,
+          173
+        ],
+        [
+          16,
+          9,
+          254,
+          182
+        ],
+        [
+          6,
+          7,
+          253,
+          179
+        ],
+        [
+          13,
+          4,
+          252,
+          182
+        ],
+        [
+          28,
+          11,
+          254,
+          180
+        ],
+        [
+          11,
+          2,
+          258,
+          172
+        ],
+        [
+          5,
+          7,
+          253,
+          183
+        ]
+      ]
+    },
+    {
+      "key": "baker_idle",
+      "name": "fwoosh_ratkin_baker_idle",
+      "animation_id": "e1bc25fd-d182-4491-9c97-ceab040fd5bd",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/e1bc25fd-d182-4491-9c97-ceab040fd5bd/fwoosh_ratkin_baker_idle.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/e1bc25fd-d182-4491-9c97-ceab040fd5bd",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_baker_idle.webp",
+      "raw_sha256": "82a725a78dff99af616fd56dae3aacc045f76665a647ddb2bf6982e86fb25300",
+      "source_size": [
+        1040,
+        747
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 172,
+      "anchorX": 102.99,
+      "native_cell": [
+        260,
+        249
+      ],
+      "output": "media/anim/baker_idle.png",
+      "output_sha256": "2c12a55f579723bd56e753c86073200f52fe9142ffb8866264cbf000f896bd12",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          27,
+          2,
+          249,
+          247
+        ],
+        [
+          23,
+          2,
+          251,
+          247
+        ],
+        [
+          14,
+          3,
+          254,
+          247
+        ],
+        [
+          5,
+          4,
+          257,
+          247
+        ],
+        [
+          4,
+          4,
+          257,
+          247
+        ],
+        [
+          12,
+          3,
+          253,
+          247
+        ],
+        [
+          22,
+          2,
+          250,
+          247
+        ],
+        [
+          27,
+          2,
+          249,
+          247
+        ],
+        [
+          26,
+          2,
+          249,
+          247
+        ],
+        [
+          16,
+          3,
+          252,
+          247
+        ],
+        [
+          8,
+          4,
+          255,
+          247
+        ],
+        [
+          2,
+          5,
+          257,
+          247
+        ]
+      ]
+    },
+    {
+      "key": "baker_walk",
+      "name": "fwoosh_ratkin_baker_walk",
+      "animation_id": "9d6b1469-9eb1-4243-b476-183e55967754",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/9d6b1469-9eb1-4243-b476-183e55967754/fwoosh_ratkin_baker_walk.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/9d6b1469-9eb1-4243-b476-183e55967754",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_baker_walk.webp",
+      "raw_sha256": "50d76347e8998875a9a78973148b2021aa217853ec30b4299f183faf1a2f3752",
+      "source_size": [
+        1040,
+        684
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 158,
+      "anchorX": 107.35,
+      "native_cell": [
+        260,
+        228
+      ],
+      "output": "media/anim/baker_walk.png",
+      "output_sha256": "fcd06bc09e347dc573086be4bb4cab453e18f11bca11845f0ca3019dbd307fa3",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          25,
+          5,
+          252,
+          223
+        ],
+        [
+          29,
+          4,
+          257,
+          223
+        ],
+        [
+          7,
+          3,
+          255,
+          221
+        ],
+        [
+          2,
+          4,
+          254,
+          225
+        ],
+        [
+          22,
+          4,
+          252,
+          223
+        ],
+        [
+          29,
+          4,
+          256,
+          223
+        ],
+        [
+          5,
+          4,
+          255,
+          221
+        ],
+        [
+          4,
+          3,
+          253,
+          225
+        ],
+        [
+          26,
+          5,
+          253,
+          223
+        ],
+        [
+          19,
+          3,
+          256,
+          223
+        ],
+        [
+          3,
+          6,
+          254,
+          226
+        ],
+        [
+          18,
+          3,
+          252,
+          224
+        ]
+      ]
+    },
+    {
+      "key": "baker_run",
+      "name": "fwoosh_ratkin_baker_run",
+      "animation_id": "3523e13d-6a6e-4f29-acbb-7f35d83b339e",
+      "source_url": "https://api.makko.ai/storage/v1/object/public/sprite-sheets/3523e13d-6a6e-4f29-acbb-7f35d83b339e/fwoosh_ratkin_baker_run.webp",
+      "animation_url": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/3523e13d-6a6e-4f29-acbb-7f35d83b339e",
+      "raw": "source-art/makko-ratkin-2026-09-16/fwoosh_ratkin_baker_run.webp",
+      "raw_sha256": "d64698af29e0630aaea6d4d6dcd2f8d736d07b11d77244e85c44949cd2572176",
+      "source_size": [
+        1040,
+        678
+      ],
+      "source_columns": 4,
+      "source_rows": 3,
+      "frames": 12,
+      "fw": 180,
+      "fh": 156,
+      "anchorX": 105.48,
+      "native_cell": [
+        260,
+        226
+      ],
+      "output": "media/anim/baker_run.png",
+      "output_sha256": "9749bfa9fd5fd1cca5c8ca457510bd56f647097030c1c6bbd23e85d574bb0281",
+      "fps_note": "Runtime playback is tuned separately; export preview did not specify fps.",
+      "frame_alpha_bounds": [
+        [
+          14,
+          2,
+          250,
+          213
+        ],
+        [
+          16,
+          8,
+          253,
+          222
+        ],
+        [
+          2,
+          10,
+          258,
+          224
+        ],
+        [
+          13,
+          8,
+          238,
+          222
+        ],
+        [
+          5,
+          10,
+          253,
+          224
+        ],
+        [
+          13,
+          3,
+          250,
+          213
+        ],
+        [
+          13,
+          10,
+          258,
+          222
+        ],
+        [
+          8,
+          6,
+          255,
+          222
+        ],
+        [
+          18,
+          2,
+          233,
+          216
+        ],
+        [
+          17,
+          10,
+          258,
+          222
+        ],
+        [
+          9,
+          7,
+          257,
+          224
+        ],
+        [
+          13,
+          2,
+          231,
+          218
+        ]
+      ]
     }
   ]
 }

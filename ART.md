@@ -41,7 +41,7 @@ Actors/forms, townsfolk, the legacy jailer placeholder for Khet-Tak-Tor, imps/de
 | ventfire | 10 | 171 × 280 |
 | ventcinder | 18 | 139 × 200 |
 
-The earlier non-Makko prototype was removed. Real Makko Ratkin walk/run/idle exports now replace the arena cast; remaining cast expansion still needs export QA and integration. The cinder sheet is restored to its original Makko version, so the visual clipping/scale request remains open. Historical fire-vent processing includes a synthesized taper; verify its compliance with Tony before further visual work rather than calling every historical pixel verified Makko.
+The earlier non-Makko prototype was removed. Real Makko Ratkin walk/run/idle exports now replace the arena cast; all twelve civilian families now have their own idle/walk/run exports integrated. The cinder sheet is restored to its original Makko version, so the visual clipping/scale request remains open. Historical fire-vent processing includes a synthesized taper; verify its compliance with Tony before further visual work rather than calling every historical pixel verified Makko.
 
 ## Diary
 

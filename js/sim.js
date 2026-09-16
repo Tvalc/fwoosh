@@ -849,7 +849,7 @@ function becomeSlag(c){
 // literally stands up and walks. Always reclaimable: touch it with heat to REKINDLE (spend fire, save them).
 function becomeHusk(c){
   c.dead = true;
-  husks.push({ x:c.x, y:c.y, t:0, heatAt: player.heat, ph: rnd()*7 });
+  husks.push({ x:c.x, y:c.y, t:0, heatAt: player.heat, ph: rnd()*7, villagerId:c.villagerId??c.id });
   edge -= K.LOSS_EDGE + player.heat*K.LOSS_EDGE_HEAT;   // THE EDGE swings toward Khet-Tak-Tor when the town burns
   edgePop = 0.5;
   ring(c.x, c.y, K.R_CELL, 50, '#8a5a2e', 0.42);
@@ -880,7 +880,7 @@ function stepHusks(dt){
 function rekindleHusk(h){
   const p = player;
   p.heat = Math.max(0, p.heat - K.REKINDLE_COST);      // spend YOUR fire (inverse of absorb's +1)
-  cells.push({ id: nextId++, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
+  cells.push({ id: nextId++, villagerId:h.villagerId, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
                hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
   saved++;
   META.saved++;

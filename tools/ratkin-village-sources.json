@@ -1,0 +1,13 @@
+{
+  "wellkeeper": {"prefix":"fwoosh_fwoosh_ratkin_wellkeeper", "idle":"b9a8806e-67f8-469f-8655-8cce3a4e6647", "walk":"c86bc64f-1bf6-490b-9e6f-73e7cdddbe4d", "run":"e6a60234-3953-481e-8c62-9cd1f0fda6f3"},
+  "herbalist": {"prefix":"fwoosh_fwoosh_ratkin_herbalist", "idle":"0008db9d-05e9-4201-b160-e82f2887c0d2", "walk":"de9f5838-5e36-46b8-a96f-dcf531af14c2", "run":"beed4b8c-a6c1-4049-b3b9-636b6dd92106"},
+  "mason": {"prefix":"fwoosh_fwoosh_ratkin_mason", "idle":"6914c4f5-2a7a-4ef8-a4af-c29fe9ac99f6", "walk":"a079eb58-80ac-450a-bc0e-2797ef1e0fcb", "run":"c55b9c52-968f-41e2-befc-038fbf7d2194"},
+  "cook": {"prefix":"fwoosh_ratkin_cook", "idle":"1f1c51ff-c682-4667-8264-6744ef3ff712", "walk":"642114fa-da7b-4c0f-910d-c09719636a23", "run":"f67cff1d-4110-4df0-b585-885d427f1450"},
+  "weaver": {"prefix":"fwoosh_ratkin_weaver", "idle":"31af996d-de11-4a8d-ab51-dc9fa4cdc106", "walk":"49de4431-f182-416f-b1c9-0250b74f4f6f", "run":"d07245e8-eadf-44f4-812c-f6e73392cb3d"},
+  "lantern": {"prefix":"fwoosh_ratkin_lantern", "idle":"d6a82428-90ac-4da2-ac36-8f0bd8fcecf3", "walk":"ad366cc6-4049-43d5-8260-8a12eaf9dfd6", "run":"68fc7bce-a629-4252-913f-57983f936bc3"},
+  "farmer": {"prefix":"fwoosh_ratkin_farmer", "idle":"85d8a119-c7d1-4fec-b5a8-739429311fe3", "walk":"15d9ff65-7bf6-48c9-8036-e808eb01f487", "run":"01bce06f-754e-40c8-baaa-94220b5bbcf7", "runFrames":11},
+  "merchant": {"prefix":"fwoosh_ratkin_merchant", "idle":"547d2787-24b0-465e-a4b2-a50e4d9f9dbe", "walk":"bdd49cf9-2898-49cb-aee7-52f21e76f286", "run":"9f8a9b94-71ce-449b-bf9f-ccf3a9d50d5f"},
+  "child": {"prefix":"fwoosh_ratkin_child", "idle":"15c082ae-a968-4de4-8055-899df91aa5f3", "walk":"1edeede0-3b53-43c5-8a73-ccf95cb7b71b", "run":"66d91650-e7c1-4ab7-ba6e-abfb53adeab2"},
+  "elder": {"prefix":"fwoosh_ratkin_elder", "idle":"625e0dca-1545-4aae-9c20-c43a170a246e", "walk":"3b1a35ca-8bba-46f3-9155-aa19f3d7dfa5", "run":"a598df72-a07e-432f-ac93-84a55fc0a938"},
+  "baker": {"prefix":"fwoosh_ratkin_baker", "idle":"e1bc25fd-d182-4491-9c97-ceab040fd5bd", "walk":"9d6b1469-9eb1-4243-b476-183e55967754", "run":"3523e13d-6a6e-4f29-acbb-7f35d83b339e"}
+}
