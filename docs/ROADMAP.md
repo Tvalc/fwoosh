@@ -18,8 +18,8 @@ Build `2026-09-15-flame-arrow-1` is the release candidate. Touch and desktop mou
 
 6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **release candidate complete**. The exterior, first two buildings, offline timers, sealing, worker assignment, material production and explanatory station view are implemented. Tony's phone playtest and approved Makko replacements remain.
 7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **release candidate complete**. Food, storage, visible carriers, shared-road congestion, automatic recovery and optional priorities are implemented. Approved Makko Ratkin locomotion and Tony's phone balance/readability playtest remain.
-8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — **first restoration judgment implemented; collective authority locked; favor and ending remain**. The five visible terms prove district completion, ascensions, homes and a working food/material chain. The Ratkin community renders the verdict; Khet-Tak-Tor presents evidence, announces it and executes the sentence. Beating him never grants release by itself.
-9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop, missable Ratkin recruit and exactly-once cross-game redemption.
+8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — **first restoration judgment implemented; verdict structure locked; favor and ending remain**. The five visible terms prove district completion, ascensions, homes and a working food/material chain. Five Ratkin voting blocs render the final verdict: four votes release Duy, while unanimous support grants the best cross-game rewards. Khet-Tak-Tor presents evidence, announces the verdict and executes the sentence. Beating him never grants release by itself.
+9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — ember-based debt reduction, rewards, Duy's System Shop and exactly-once cross-game redemption. A unanimous five-bloc verdict grants the strongest Invoice reward tier and Ratkin recruit eligibility; the exact rewards and recruit acquisition remain.
 10. [#32 Add audio, final effects and CrazyGames release readiness](https://github.com/Tvalc/fwoosh/issues/32) — sound, presentation polish, platform validation and accurate submission materials.
 
 ## Locked product decisions
@@ -34,6 +34,7 @@ Build `2026-09-15-flame-arrow-1` is the release candidate. Touch and desktop mou
 - The character currently called Keith becomes **Khet-Tak-Tor** (KET-tak-TOR), the Ratkin Arbiter—“the voice that closes the debt.” He remains Duy's jailer, administers punishment and judgment, and receives new Makko art. Beating him never grants release by itself.
 - Duy earns release by rebuilding Ratkin society and winning Ratkin favor. Ratkin society supplies the authority; rescuing nineteen people or clearing five districts is insufficient by itself.
 - The rebuilt Ratkin community delivers the collective release verdict. Khet-Tak-Tor administers the covenant, presents evidence, announces their decision and executes the resulting sentence; he cannot personally forgive the debt.
+- Five Ratkin voting blocs judge Duy. Four votes release and resurrect him. Unanimous support is optional and grants the strongest Invoice reward tier plus eligibility for the missable Ratkin recruit.
 - Fwoosh must have a comprehensible standalone ending and later support Duy's return in the larger RPG.
 - All artwork is Makko artwork with preserved provenance.
 
@@ -52,10 +53,10 @@ Build `2026-09-15-flame-arrow-1` is the release candidate. Touch and desktop mou
 
 - Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
-- Favor-earning actions and final release thresholds after the implemented first restoration judgment.
+- The identities of the five Ratkin voting blocs and the favor-earning actions that win each vote after the implemented first restoration judgment.
 - The powers and limits of Khet-Tak-Tor's covenant mandate and why he maintains or uses the recurring fire.
 - Which ember total funds the Invoice; conversion, caps, reward thresholds and spending interaction.
-- Duy System Shop inventory; Ratkin recruit identity, abilities and miss condition.
+- Duy System Shop inventory; Ratkin recruit identity, abilities, acquisition window and miss condition after unanimous support establishes eligibility.
 - The Duy-survives route and the exact reconciliation of Cuong's nineteen-life balance plus Duy's transferred five.
 - Private off-device source-art backup destination and access model.
 

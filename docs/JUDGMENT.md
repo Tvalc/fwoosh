@@ -12,7 +12,7 @@ The two Burrows supply enough workers for the Farm and Yard to operate together.
 
 The town displays all five terms from the start. When the final term completes, the next return to Ashford or exit from the Quarter opens a three-line present-tense judgment. Khet-Tak-Tor acknowledges that Duy rebuilt enough for Ratkin society to survive, then states that release still requires Ratkin favor. This hearing does not release or resurrect Duy.
 
-The final authority belongs collectively to the rebuilt Ratkin community. Khet-Tak-Tor administers the covenant, presents the evidence, announces their verdict and executes the resulting sentence; he cannot personally forgive Duy's debt or replace the community's judgment with his own. The exact favor acts, voting or consensus presentation and final threshold remain to be designed under issue #29.
+The final authority belongs collectively to the rebuilt Ratkin community. Five distinct Ratkin voting blocs judge Duy after the restoration hearing. Four votes release and resurrect him. A unanimous five-vote verdict is optional and awards the strongest Chit-tat-to's Invoice reward tier plus eligibility for the missable Ratkin recruit. Khet-Tak-Tor administers the covenant, presents the evidence, announces their verdict and executes the resulting sentence; he cannot personally forgive Duy's debt or replace the community's judgment with his own. The identity of each bloc, its favor acts and the presentation of its vote remain to be designed under issue #29.
 
 Larger settlements, shorter roads, extra storage and optimized priorities remain optional. They may later affect Invoice rewards, cosmetics or postgame progression; copy quotas do not gate this first judgment.
 

@@ -16,7 +16,7 @@ After the team's deaths and the gods' offer, Duy and Cuong arrive in a dark cell
 
 Khet-Tak-Tor was Duy's Ratkin jailer before the gate fell. The collapse kills him briefly alongside Duy. The Ratkin revive Khet-Tak-Tor in time; they cannot revive Duy. During their shared interval near death, the Ratkin god, Adonai and Odin bind Ratkin and humanity through Khet-Tak-Tor and Duy. The bond can endure only if the two peoples overcome the heinous violence of their introduction. Khet-Tak-Tor returns as the Ratkin Arbiter and Duy remains among the dead, making their afterlife conflict a continuation of personal history and a trial of that larger covenant.
 
-The current human presentation will be replaced with a Ratkin Makko design. Khet-Tak-Tor can punish, test and obstruct Duy, and he administers the judgment process; defeating him never grants freedom by itself. Duy must rebuild what Ratkin society lost and earn their favor. The rebuilt Ratkin community alone supplies the authority behind his release. Khet-Tak-Tor presents the evidence, announces their collective verdict and executes the resulting sentence under the covenant, but he cannot personally forgive the debt or substitute his will for theirs. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
+The current human presentation will be replaced with a Ratkin Makko design. Khet-Tak-Tor can punish, test and obstruct Duy, and he administers the judgment process; defeating him never grants freedom by itself. Duy must rebuild what Ratkin society lost and earn their favor. The rebuilt Ratkin community alone supplies the authority behind his release through five distinct voting blocs. Four votes release and resurrect Duy. A unanimous five-vote verdict is optional: it grants the strongest Chit-tat-to's Invoice reward tier and makes the missable Ratkin recruit eligible. Khet-Tak-Tor presents the evidence, announces the collective verdict and executes the resulting sentence under the covenant, but he cannot personally forgive the debt or substitute his will for theirs. Nineteen rescues and five district victories are meaningful progress, but neither automatically earns release.
 
 Rescuing a burning ratkin draws its heat into Duy. The process hurts, and the pain grows as he carries more heat. A released ratkin ascends rather than merely stumbling away.
 
@@ -44,7 +44,7 @@ The first Ratkin Judgment recognizes a minimum self-sustaining society rather th
 
 Completing Duy's restoration/favor path releases and resurrects him. Fwoosh must provide a satisfying, comprehensible ending even when no other game is present.
 
-Duy's return also reduces Cuong's debt by an amount determined by embers Duy collected. Chit-tat-to's Invoice applies that credit and can provide bonuses, rare or unique items and upgrades. After Duy rejoins the RPG party, a System Shop can sell Duy-specific upgrades funded by embers. A Ratkin character can become a missable recruit after Duy returns having rebuilt ratkin society.
+Duy's return also reduces Cuong's debt by an amount determined by embers Duy collected. Chit-tat-to's Invoice applies that credit and can provide bonuses, rare or unique items and upgrades. A four-of-five verdict is sufficient for Duy's return; unanimous support upgrades the Invoice to its strongest reward tier and makes a Ratkin character eligible to become a missable recruit. After Duy rejoins the RPG party, a System Shop can sell Duy-specific upgrades funded by embers.
 
 Keep the connection small; the full city economy does not need to transfer into the RPG.
 
@@ -56,7 +56,7 @@ Ledger also has a route where Duy survives and older language saying dead guests
 
 ## Open design decisions
 
-- Which acts earn ratkin favor after the implemented first restoration judgment, and what completes final restoration for release.
+- The identities of the five Ratkin voting blocs and which acts earn each bloc's support after the implemented first restoration judgment.
 - The exact powers and limits of Khet-Tak-Tor's mandate under the divine covenant.
 - Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
 - How district/Arbiter progress contributes without making one combat victory the release condition.
@@ -64,7 +64,7 @@ Ledger also has a route where Duy survives and older language saying dead guests
 - Whether the Invoice uses lifetime collected embers, unspent embers or another auditable total.
 - Invoice conversion, caps, reward thresholds and interaction with Fwoosh spending.
 - System Shop inventory and relationship to Invoice rewards.
-- Ratkin recruit identity, abilities, eligibility and miss condition.
+- Ratkin recruit identity, abilities, acquisition window and miss condition after unanimous support establishes eligibility.
 - The exact 19-plus-5 debt reconciliation and Duy-survives route treatment.
 
 Do not invent these values during implementation. Resolve them through the owning issues and update this file plus the Fwoosh/Ledger shared handoff together.
