@@ -1,5 +1,13 @@
 # Fwoosh status — September 15, 2026
 
+## Direct-touch mobile Burst — 2026-09-15-burst-1
+
+Mobile no longer fires a dash when a swipe crosses an invisible distance threshold. A touch anywhere inside the arena now establishes one Burst direction from Duy's position at touch-down. Holding or dragging displays a dashed path and chevron at the collision-limited endpoint; the player may revise the direction freely, and only release spends one charge. Returning the pointer within 42 world pixels of touch-down Duy cancels. Autorun movement during a hold cannot skew or reverse the intended vector.
+
+HUD, dialogue dock and gutter touches remain inert. Vent retains its separate button. The active pointer owns the gesture so a second finger cannot trigger Vent, replace the aim or prematurely release the Burst. Pointer cancellation, resize and focus loss spend nothing. Desktop WASD/arrow steering and Shift dash are unchanged. The trajectory is code-native feedback; no artwork was added or replaced.
+
+All 148 actual-script state/input checks and 11 asset checks pass. A local browser fixture visually verified the phone-scale trajectory, endpoint chevron, Vent clearance and charge row with no console warning or error. The fixture is evidence of rendering, not physical-phone feel; Tony's live-device playtest remains the acceptance test.
+
 ## Demon hit interruption — 2026-09-15-knockback-1
 
 A demon bite now cancels the active vent or heal unit, discards its partial progress, releases the held input and clears a queued vent-dash. The player must deliberately press again after recovering from the hit. A short forced knockback moves Duy away from the attacking demon; walls and solid props stop the knockback safely instead of allowing either body to remain stacked inside scenery.

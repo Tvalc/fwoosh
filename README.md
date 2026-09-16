@@ -11,7 +11,7 @@ The non-Makko ratkin prototype remains removed; villagers use the existing Makko
 From the game folder: `python -m http.server 8080 --bind 127.0.0.1`, then open `http://127.0.0.1:8080`. This works with both layouts. Local saves are separate from GitHub Pages; use the same browser and origin to retain test progress.
 
 - Desktop: click toward a point or drag to dash; WASD/arrows steer; Shift dashes; hold Space to vent.
-- Touch: swipe or tap to dash; hold the VENT button to vent. Dashing cancels venting, and a demon hit interrupts the current unit and knocks Duy clear.
+- Touch: tap anywhere in the arena to Burst there; hold or drag to preview and revise the path, then release. Return to Duy to cancel. Hold the VENT button to vent. A Burst queues after a committed vent unit; a demon hit interrupts the current unit and knocks Duy clear.
 - Heat persists until vented. It increases rescue rewards and chain reach but drains health.
 - Embers bank at run end. Well and Forge upgrades persist.
 
