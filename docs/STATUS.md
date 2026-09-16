@@ -1,5 +1,11 @@
 # Fwoosh status — September 16, 2026
 
+## Threat-triggered Ratkin panic - 2026-09-16-panic-1
+
+Unburned civilians now flee and use their own Makko panic animation when a demon or arson imp targets them anywhere in the arena, or either approaches within 140 world pixels. Nearby burning villagers also trigger panic within the existing 98-pixel range. Escape uses the existing 130px/s flee speed, below pursuer speed so imps can still catch their targets. Panic persists for 0.65 seconds after danger passes to prevent boundary flicker. Rescue retains its ascension animation; panic alone does not ignite a villager, award a rescue or change persistent saves.
+
+166 gameplay/render checks and 77 asset checks pass, including distant lock-on in the actual simulation step, imp targeting, passing vent demons, recovery, coincident threats and all twelve panic/rescue renders. A local browser fixture showed an unburned target fleeing a distant demon without console errors. Physical-device feel remains playtesting. Deployment evidence belongs on #26/#31 and the board.
+
 ## Ratkin ascension and first talking portrait - 2026-09-16-ascension-1
 
 All twelve civilians now use their own saved Makko panic and ascension animations. Burning villagers play panic; rescue plays the matching ascension sheet once over the existing 1.5-second rise/fade path. Ten-frame lantern ascension and eleven-frame panic exports retain their actual counts. The herbalist panic source faces left and is mirrored during import to match the runtime convention. Raw exports remain intact. The unused civilian run atlases stay archived but no longer preload.
