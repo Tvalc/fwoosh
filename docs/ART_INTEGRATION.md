@@ -1,5 +1,13 @@
 # Makko Ratkin integration — September 16
 
+## Civilian expansion - 2026-09-16-villagers-1
+
+The twelve civilian families (vest, baker, elder, child, merchant, farmer, lantern carrier, weaver, cook, mason, herbalist, wellkeeper) all use their own idle/walk/run sheets in the arcade population. The Arbiter is excluded. Visual identity survives ignition, rescue and husk recovery; no new character stats or roles are invented. All active arena sheets preload, including shared farmer/mason city art. The initial batch notes below describe the earlier release.
+
+29 additional sheets are preserved in the manifest. Run `python tools/import-ratkin-art.py` followed by `python tools/prepare-village-runtime.py` to reproduce atlases, metadata, explicit runtime URLs and six review contact pages. All 160 gameplay/render and 52 asset checks pass.
+
+No dedicated ascension export was verified in the 113 named Makko sheets audited on September 16. The vest death sheet visibly collapses rather than ascends. Some source animations remain unidentified; do not commission duplicates without checking them. Current rescue uses the matching civilian still rising/fading over the existing rescue duration.
+
 ## First integrated batch
 
 Build: `2026-09-16-ratkin-1`. Source provenance and exact grid/frame metadata: [ratkin-art-manifest.json](ratkin-art-manifest.json). Original WEBP exports are versioned under `source-art/makko-ratkin-2026-09-16/`. `tools/import-ratkin-art.py` reproducibly downloads the observed sources and repacks their row-major grids into horizontal PNGs. Runtime cells are downsampled uniformly to a 180px maximum dimension; original exports and full-resolution static fallbacks are retained.
@@ -23,7 +31,7 @@ Village/town/city/civilization backgrounds exist; choose their presentation afte
 - Individually placeable Burrow, Farm, Yard and Storehouse art and construction/sealing states.
 - Distinct menu art, council portraits and remaining diary illustrations after auditing existing concepts.
 
-Suggested next integrations: additional adult Ratkin variants; the five favor-bloc representatives; village backdrop. No new building systems, character stats, named recruit identity or story lines are implied by the art inventory.
+Suggested next integrations: verified Ratkin ascension clips; the five favor-bloc representatives; village backdrop. No new building systems, character stats, named recruit identity or story lines are implied by the art inventory.
 
 ## Verification
 

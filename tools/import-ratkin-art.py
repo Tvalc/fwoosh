@@ -27,6 +27,17 @@ ENTRIES = [
     ('ratkin_run','d626cabb-b167-4a09-b942-91d331d8f8e2','fwoosh_ratkin_run',10,4),
 ]
 
+# Sources observed in the FWOOSH collection, September 16. These are civilians;
+# the Arbiter is deliberately not part of the village population.
+village_sources = json.loads((ROOT/'tools'/'ratkin-village-sources.json').read_text())
+for role, sources in village_sources.items():
+    for action in ('idle', 'walk', 'run'):
+        key = role+'_'+action
+        if any(entry[0] == key for entry in ENTRIES):
+            continue
+        ENTRIES.append((key, sources[action], sources['prefix']+'_'+action,
+                        sources.get(action+'Frames', 12), 4))
+
 manifest = {'collection':'https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277',
             'observed':'2026-09-16', 'processing':'Row-major grid to horizontal PNG; uniform downsample to 180px maximum cell dimension. No recoloring or synthesized frames. Static fallbacks preserve original resolution.', 'assets':[]}
 contact = Image.new('RGB',(12*170, len(ENTRIES)*205),'#18202c')

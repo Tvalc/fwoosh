@@ -1117,6 +1117,37 @@ test('Ratkin rescue retains identity without a death or human sheet',()=>{
  assert.ok(!g.drawnImages.some(i=>/save\.png|death|townsfolk\.png/.test(i.src||'')));
 });
 
+test('Civilian roster covers all twelve designs and never includes the Arbiter',()=>{
+ const g=game();
+ const roster=g.run('JSON.stringify(RATKIN_VILLAGERS)');
+ assert.equal(new Set(JSON.parse(roster)).size,12);assert.ok(!roster.includes('arbiter'));
+ g.run('reset(901);while(cells.length<24)spawnCrowd(false)');
+ assert.equal(g.run('new Set(cells.map(villagerType)).size'),12);
+ const before=g.run('rnd()');
+ g.run('for(let i=0;i<100;i++)cells.map(villagerType)');
+ const after=g.run('rnd()');
+ const reference=game();reference.run('reset(901);while(cells.length<24)spawnCrowd(false)');
+ assert.equal(before,reference.run('rnd()'));assert.equal(after,reference.run('rnd()'));
+});
+
+test('Each Ratkin keeps its appearance through calm, burning and rescue rendering',()=>{
+ const g=game();g.run(`for(const [key,im] of Object.entries(MAKKO_ANIM_IMG))Object.assign(im,{complete:true,naturalWidth:MAKKO_ANIM[key].fw*MAKKO_ANIM[key].frames});`);
+ for(let i=0;i<12;i++){
+   const role=g.run(`villagerType({id:${i}})`);g.drawnImages.length=0;
+   g.run(`SKINS.makko.cell(ctx,300,500,{id:${i},vx:100,ph:0});SKINS.makko.hunter(ctx,300,500,0,.5,{id:${i},vx:100,ph:0});SKINS.makko.cell(ctx,300,500,{id:${i},saving:true,saveT:.4,vx:100});`);
+   for(const state of ['walk','run','idle'])assert.ok(g.drawnImages.some(a=>a.src.endsWith('/'+role+'_'+state+'.png')),role+' '+state);
+   assert.ok(!g.drawnImages.some(a=>/arbiter|save\.png|death/.test(a.src)));
+ }
+});
+
+test('Rekindling a husk restores the original villager appearance with a fresh entity ID',()=>{
+ const g=game();g.run('reset(44);cells=[];husks=[];nextId=3;spawnCrowd(false)');
+ const type=g.run('villagerType(cells[0])');
+ g.run('becomeHusk(cells[0]);nextId=100;player.heat=K.HEAT_MAX;rekindleHusk(husks[0])');
+ assert.equal(g.run('cells.at(-1).id'),100);
+ assert.equal(g.run('villagerType(cells.at(-1))'),type);
+});
+
 test('Canonical Arbiter portrait keys resolve before legacy compatibility keys',()=>{
  const g=game();g.run(`MAKKO_ANIM.dialogue_arbiter_stern={frames:3,fw:128,fh:128};MAKKO_ANIM_IMG.dialogue_arbiter_stern={src:'portrait-test',complete:true,naturalWidth:384};drawDialoguePortrait(ctx,'keith','stern',0,0,76,true,.2)`);
  assert.equal(g.drawnImages.at(-1).src,'portrait-test');assert.equal(g.drawnImages.at(-1).args[0],256);
