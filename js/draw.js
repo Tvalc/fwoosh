@@ -706,10 +706,10 @@ const SKINS = {
         if(t<.45)drawFlame(ctx,X,y+K.R_CELL*1.6-lift,H*1.2,frame*.32,1-t/.45);
         return;
       }
-      // Residents walk while calm and use their own run clip when burning.
+      // Panic begins with danger, before ignition; only burning residents get flames.
       const spd=Math.hypot(c.vx||0,c.vy||0), run=spd>10, flip=(c.vx||0)<0;
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);
-      if(!drawVillager(ctx,X,y,c,run?'walk':'idle',K.R_CELL*4.2,{fps:run?10:5, flip, t:Math.floor((c.ph||0)*3)}))
+      if(!drawVillager(ctx,X,y,c,c.panicT>0?'panic':run?'walk':'idle',K.R_CELL*4.2,{fps:c.panicT>0?13:run?10:5, flip, t:Math.floor((c.ph||0)*3)}))
         SKINS.vector.cell(ctx,X,y,c); },
     hunter(ctx,X,y,a,t,c){ const flip=c?(c.vx||0)<0:Math.cos(a)<0, k=Math.max(0,Math.min(1,1-t));
       groundShadow(ctx, X, y+K.R_CELL*1.5, K.R_CELL*1.35, K.R_CELL*0.4);

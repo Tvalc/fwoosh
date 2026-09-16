@@ -197,6 +197,41 @@ function hexRGB(h){ if(typeof h!=='string' || h[0]!=='#') return '255,210,150';
   const n=parseInt(h,16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); }
 
 
+// A targeted Ratkin sees its pursuer even across the arena. Passing threats
+// also frighten nearby residents; panic does not ignite them or award a rescue.
+function villagerThreat(c){
+  let best=null, nearest=Infinity;
+  for(const threat of [...demons,...arson]){
+    const distance=dist(c.x,c.y,threat.x,threat.y);
+    if(!threat.dead && (threat.tgt===c || distance<=K.FLEE_RANGE) && distance<nearest){
+      best=threat;nearest=distance;
+    }
+  }
+  for(const other of cells){
+    if(other===c || other.dead || other.saving || !other.hunter)continue;
+    const distance=dist(c.x,c.y,other.x,other.y);
+    if(distance<K.FLEE_RANGE*.7 && distance<nearest){best=other;nearest=distance;}
+  }
+  return best;
+}
+function stepCalmVillager(c,dt){
+  const threat=villagerThreat(c);
+  if(threat){
+    c.panicT=K.PANIC_HOLD;
+    const dx=wrapDX(c.x-threat.x),dy=c.y-threat.y;
+    c.panicDir=Math.hypot(dx,dy)>.001?Math.atan2(dy,dx):(c.dir||0);
+  }else c.panicT=Math.max(0,(c.panicT||0)-dt);
+  if(c.panicT>0){
+    c.vx=Math.cos(c.panicDir)*K.FLEE_SPD;c.vy=Math.sin(c.panicDir)*K.FLEE_SPD;
+  }else{
+    c.ph+=c.ps*dt;
+    c.wanderT=(c.wanderT||0)+dt;
+    if(c.wanderT>(c.wanderNext||0)){c.dir=rnd()*Math.PI*2;c.wanderT=0;c.wanderNext=.7+rnd()*1.6;}
+    c.vx=Math.cos(c.dir+Math.sin(c.ph)*.7)*K.WANDER_SPD;
+    c.vy=Math.sin(c.dir+Math.sin(c.ph)*.7)*K.WANDER_SPD;
+  }
+}
+
 // ---------------------------------------------------------------- step
 function step(){
   if(debugMenu.open)return;
@@ -350,22 +385,10 @@ function step(){
           dist(c.x,c.y,o.x,o.y) < K.SPREAD_R && rnd() < K.SPREAD_CHANCE){ ignite(o,'spread'); break; } }
       }
     } else {
-      // calm villager: wander, shy away from a nearby flame (or a 'saved' one sprints off-screen)
+      // Unburned residents flee incoming threats; rescued residents ascend in place.
       if(c.saving){ c.vx = 0; c.vy = 0;                // TELEPORT: frozen while the save animation plays out
         c.saveT = (c.saveT||0)+dt; if(c.saveT > K.SAVE_ANIM_DUR) c.dead = true; }
-      else {
-        let fx = 0, fy = 0, fleeing = false;
-        for(const o of cells){ if(o.hunter){ const dx = wrapDX(c.x-o.x), dy = c.y-o.y, d = Math.hypot(dx,dy)||1;
-          if(d < K.FLEE_RANGE*0.7){ fx += dx/d; fy += dy/d; fleeing = true; } } }
-        if(fleeing){ const m = Math.hypot(fx,fy)||1; c.vx = fx/m*K.FLEE_SPD; c.vy = fy/m*K.FLEE_SPD; }
-        else{
-          c.ph += c.ps*dt;
-          c.wanderT = (c.wanderT||0)+dt;                  // scurry: pick a new heading every ~1-2s = running around
-          if(c.wanderT > (c.wanderNext||0)){ c.dir = rnd()*Math.PI*2; c.wanderT = 0; c.wanderNext = 0.7+rnd()*1.6; }
-          c.vx = Math.cos(c.dir + Math.sin(c.ph)*0.7)*K.WANDER_SPD;
-          c.vy = Math.sin(c.dir + Math.sin(c.ph)*0.7)*K.WANDER_SPD;
-        }
-      }
+      else stepCalmVillager(c,dt);
     }
     c.x += c.vx*dt; c.y += c.vy*dt;
     if(c.x < K.EDGE){ c.x = K.EDGE; c.vx = Math.abs(c.vx); c.dir = Math.PI - c.dir; }

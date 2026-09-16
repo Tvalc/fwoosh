@@ -1130,6 +1130,53 @@ test('Civilian roster covers all twelve designs and never includes the Arbiter',
  assert.equal(before,reference.run('rnd()'));assert.equal(after,reference.run('rnd()'));
 });
 
+test('Demon lock-on triggers unburned panic beyond proximity range in the live step',()=>{
+ const g=game();g.run(`onTitle=false;intro=null;introT=0;god=true;hitstop=0;boss=null;arson=[];husks=[];slag=[];
+ cells=[{id:0,x:360,y:600,vx:0,vy:0,dir:0,ph:0,ps:1,hunter:false,grace:0}];
+ demons=[{x:360,y:250,t:0,hitCd:0,source:'town',huntVill:true}];step();`);
+ assert.equal(g.run('demons[0].tgt===cells[0]'),true);
+ assert.ok(g.run('cells[0].panicT>0 && cells[0].vy>0'));
+ assert.equal(g.run('cells[0].hunter'),false);assert.equal(g.run('saved'),0);
+ assert.ok(Math.abs(g.run('Math.hypot(cells[0].vx,cells[0].vy)-K.FLEE_SPD'))<1e-8);
+});
+
+test('Marked fire imps and passing vent demons frighten civilians without igniting them',()=>{
+ const g=game();g.run(`cells=[{id:0,x:360,y:600,dir:0,ph:0,ps:1,hunter:false}];demons=[];
+ arson=[{x:360,y:40,tgt:cells[0],warn:K.ARSON_WARN}];stepCalmVillager(cells[0],DT)`);
+ assert.ok(g.run('cells[0].panicT>0 && cells[0].vy>0'));
+ g.run(`arson=[];demons=[{x:460,y:600,source:'vent',tgt:null}];stepCalmVillager(cells[0],DT)`);
+ assert.ok(g.run('cells[0].panicT>0 && cells[0].vx<0'));
+ assert.equal(g.run('cells[0].hunter'),false);
+ g.run(`demons[0].x=650;stepCalmVillager(cells[0],DT)`);
+ assert.ok(g.run('cells[0].panicT>0'),'Recovery should not flicker at the detection boundary');
+ g.run('stepCalmVillager(cells[0],K.PANIC_HOLD)');
+ assert.equal(g.run('cells[0].panicT'),0);
+ assert.ok(Math.abs(g.run('Math.hypot(cells[0].vx,cells[0].vy)-K.WANDER_SPD'))<1e-8);
+});
+
+test('Interception removes distant lock-on panic and overlapping threats cannot cancel escape',()=>{
+ const g=game();g.run(`cells=[{id:0,x:360,y:600,dir:1,ph:0,ps:1,hunter:false}];
+ arson=[{x:360,y:40,tgt:cells[0]}];demons=[];stepCalmVillager(cells[0],DT);
+ arson=[];stepCalmVillager(cells[0],K.PANIC_HOLD)`);
+ assert.equal(g.run('cells[0].panicT'),0);
+ g.run('demons=[{x:360,y:600},{x:360,y:600}];stepCalmVillager(cells[0],DT)');
+ assert.ok(Math.abs(g.run('Math.hypot(cells[0].vx,cells[0].vy)-K.FLEE_SPD'))<1e-8);
+});
+
+test('Unburned panic uses matching Makko poses without flames and yields to ascension',()=>{
+ const g=game();g.run(`for(const [key,im] of Object.entries(MAKKO_ANIM_IMG))Object.assign(im,{complete:true,naturalWidth:MAKKO_ANIM[key].fw*MAKKO_ANIM[key].frames});`);
+ for(let id=0;id<12;id++){
+  const role=g.run(`villagerType({id:${id}})`);g.drawnImages.length=0;
+  g.run(`SKINS.makko.cell(ctx,300,500,{id:${id},panicT:.5,vx:130,ph:0})`);
+  assert.ok(g.drawnImages.some(a=>a.src.endsWith('/'+role+'_panic.png')));
+  assert.ok(!g.drawnImages.some(a=>a.src.includes('/flame')));
+  g.drawnImages.length=0;
+  g.run(`SKINS.makko.cell(ctx,300,500,{id:${id},panicT:.5,saving:true,saveT:.4,vx:0})`);
+  assert.ok(g.drawnImages.some(a=>a.src.endsWith('/'+role+'_ascend.png')));
+  assert.ok(!g.drawnImages.some(a=>a.src.endsWith('_panic.png')));
+ }
+});
+
 test('Each Ratkin keeps its appearance through calm, burning and rescue rendering',()=>{
  const g=game();g.run(`for(const [key,im] of Object.entries(MAKKO_ANIM_IMG))Object.assign(im,{complete:true,naturalWidth:MAKKO_ANIM[key].fw*MAKKO_ANIM[key].frames});`);
  for(let i=0;i<12;i++){

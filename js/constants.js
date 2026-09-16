@@ -100,6 +100,7 @@ const K = {
   CROWD_RESPAWN: 6.0,
   FLEE_RANGE: 140,
   FLEE_SPD: 130,
+  PANIC_HOLD: 0.65,                 // brief recovery after a pursuer disappears or leaves detection range
   WANDER_SPD: 84,                   // calm villagers actively run around the square (was a slow drift)
 
   // hunters
