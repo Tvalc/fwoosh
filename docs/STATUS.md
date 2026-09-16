@@ -1,5 +1,13 @@
 # Fwoosh status — September 16, 2026
 
+## Ratkin ascension and first talking portrait - 2026-09-16-ascension-1
+
+All twelve civilians now use their own saved Makko panic and ascension animations. Burning villagers play panic; rescue plays the matching ascension sheet once over the existing 1.5-second rise/fade path. Ten-frame lantern ascension and eleven-frame panic exports retain their actual counts. The herbalist panic source faces left and is mirrored during import to match the runtime convention. Raw exports remain intact. The unused civilian run atlases stay archived but no longer preload.
+
+Khet-Tak-Tor's first stern talking portrait uses existing transparent Makko source frames, a fixed head/shoulders crop and selected original mouth/blink poses. It speaks during typing and rests while the player reads. Other expressions and Duy's dedicated portraits remain pending; the newer wide, arms-out portrait take is not used. No generation, balance, save, collision or narrative changes.
+
+162 gameplay/render checks and 77 asset checks pass. Every imported frame was reviewed on dark contact pages. Phone-width browser fixtures verify panic, ascent and portrait presentation; all 60 active sheets loaded without console errors. Physical-device approval remains Tony's playtest. Deployment evidence is recorded separately on #31/#39 and the board.
+
 ## Full civilian cast - 2026-09-16-villagers-1
 
 All twelve existing Makko civilian designs now populate the arena: vest villager, baker, elder, child, merchant, farmer, lantern carrier, weaver, cook, mason, herbalist and wellkeeper. Khet-Tak-Tor is excluded. Each civilian uses its own idle, walk and run export, retains its appearance during rescue and survives the husk/rekindle transition with the same appearance. Selection uses existing entity identities without consuming simulation RNG. Collision, speeds, rewards and persistent saves are unchanged.

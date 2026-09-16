@@ -1134,9 +1134,20 @@ test('Each Ratkin keeps its appearance through calm, burning and rescue renderin
  const g=game();g.run(`for(const [key,im] of Object.entries(MAKKO_ANIM_IMG))Object.assign(im,{complete:true,naturalWidth:MAKKO_ANIM[key].fw*MAKKO_ANIM[key].frames});`);
  for(let i=0;i<12;i++){
    const role=g.run(`villagerType({id:${i}})`);g.drawnImages.length=0;
-   g.run(`SKINS.makko.cell(ctx,300,500,{id:${i},vx:100,ph:0});SKINS.makko.hunter(ctx,300,500,0,.5,{id:${i},vx:100,ph:0});SKINS.makko.cell(ctx,300,500,{id:${i},saving:true,saveT:.4,vx:100});`);
-   for(const state of ['walk','run','idle'])assert.ok(g.drawnImages.some(a=>a.src.endsWith('/'+role+'_'+state+'.png')),role+' '+state);
+   g.run(`SKINS.makko.cell(ctx,300,500,{id:${i},vx:0,ph:0});SKINS.makko.cell(ctx,300,500,{id:${i},vx:100,ph:0});SKINS.makko.hunter(ctx,300,500,0,.5,{id:${i},vx:100,ph:0});SKINS.makko.cell(ctx,300,500,{id:${i},saving:true,saveT:.4,vx:100});`);
+   for(const state of ['walk','panic','ascend','idle'])assert.ok(g.drawnImages.some(a=>a.src.endsWith('/'+role+'_'+state+'.png')),role+' '+state);
    assert.ok(!g.drawnImages.some(a=>/arbiter|save\.png|death/.test(a.src)));
+ }
+});
+
+test('Ascension plays once from rescue time, handles ten-frame lantern, and never restarts with the global clock',()=>{
+ const g=game();g.run(`for(const [key,im] of Object.entries(MAKKO_ANIM_IMG))Object.assign(im,{complete:true,naturalWidth:MAKKO_ANIM[key].fw*MAKKO_ANIM[key].frames});`);
+ for(const id of [0,6]){
+  const key=g.run(`villagerType({id:${id}})+'_ascend'`),meta=JSON.parse(g.run(`JSON.stringify(MAKKO_ANIM['${key}'])`));
+  for(const [t,expected] of [[0,0],[.5,Math.floor(meta.frames/2)],[1,meta.frames-1]]){
+   g.drawnImages.length=0;g.run(`frame=937;SKINS.makko.cell(ctx,300,500,{id:${id},saving:true,saveT:K.SAVE_ANIM_DUR*${t},vx:100})`);
+   const drawn=g.drawnImages.find(a=>a.src.endsWith('/'+key+'.png'));assert.ok(drawn);assert.equal(drawn.args[0],expected*meta.fw);
+  }
  }
 });
 
@@ -1146,6 +1157,14 @@ test('Rekindling a husk restores the original villager appearance with a fresh e
  g.run('becomeHusk(cells[0]);nextId=100;player.heat=K.HEAT_MAX;rekindleHusk(husks[0])');
  assert.equal(g.run('cells.at(-1).id'),100);
  assert.equal(g.run('villagerType(cells.at(-1))'),type);
+});
+
+test('Authored stern portrait speaks while typing and returns to its listening pose',()=>{
+ const g=game();g.run(`Object.assign(MAKKO_ANIM_IMG.dialogue_arbiter_stern,{complete:true,naturalWidth:2048});drawDialoguePortrait(ctx,'keith','stern',0,0,76,true,.25)`);
+ assert.equal(g.drawnImages.at(-1).src,'./media/anim/dialogue_arbiter_stern.png');
+ assert.equal(g.drawnImages.at(-1).args[0],3*256);
+ g.run(`drawDialoguePortrait(ctx,'keith','stern',0,0,76,false,.25)`);
+ assert.equal(g.drawnImages.at(-1).args[0],0);
 });
 
 test('Canonical Arbiter portrait keys resolve before legacy compatibility keys',()=>{

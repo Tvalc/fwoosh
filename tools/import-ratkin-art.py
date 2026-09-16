@@ -38,6 +38,13 @@ for role, sources in village_sources.items():
         ENTRIES.append((key, sources[action], sources['prefix']+'_'+action,
                         sources.get(action+'Frames', 12), 4))
 
+rescue_sources = json.loads((ROOT/'tools'/'ratkin-rescue-sources.json').read_text())
+for role, sources in rescue_sources.items():
+    for action in ('ascend', 'panic'):
+        suffix = sources.get(action+'Suffix', 'walk_panic' if action=='panic' else action)
+        ENTRIES.append((role+'_'+action, sources[action], sources['prefix']+'_'+suffix,
+                        sources.get(action+'Frames', 12), 4))
+
 manifest = {'collection':'https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277',
             'observed':'2026-09-16', 'processing':'Row-major grid to horizontal PNG; uniform downsample to 180px maximum cell dimension. No recoloring or synthesized frames. Static fallbacks preserve original resolution.', 'assets':[]}
 contact = Image.new('RGB',(12*170, len(ENTRIES)*205),'#18202c')
@@ -52,6 +59,10 @@ for key, aid, name, count, columns in ENTRIES:
     assert im.width%columns == 0 and im.height%rows == 0, (key, im.size)
     fw,fh=im.width//columns,im.height//rows
     frames=[im.crop(((i%columns)*fw,(i//columns)*fh,(i%columns+1)*fw,(i//columns+1)*fh)) for i in range(count)]
+    role, action = key.rsplit('_', 1)
+    flip_x = bool(rescue_sources.get(role, {}).get(action+'FlipX'))
+    if flip_x:
+        frames = [f.transpose(Image.Transpose.FLIP_LEFT_RIGHT) for f in frames]
     assert all(f.getchannel('A').getbbox() for f in frames), key
     native_fw,native_fh=fw,fh
     scale=min(1,180/max(fw,fh)); fw,fh=round(fw*scale),round(fh*scale)
@@ -80,6 +91,8 @@ for key, aid, name, count, columns in ENTRIES:
            'fps_note':'Runtime playback is tuned separately; export preview did not specify fps.',
            'frame_alpha_bounds':[f.getchannel('A').getbbox() for f in frames]}
     manifest['assets'].append(entry)
+    if flip_x:
+        entry['processing_note']='Horizontal mirror: source herbalist panic faces left; runtime clips face right before velocity-based mirroring.'
     row=len(manifest['assets'])-1
     pen.text((4,row*205+2),key,fill='white')
     for i,f in enumerate(frames):
