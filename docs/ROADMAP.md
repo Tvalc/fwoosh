@@ -4,7 +4,7 @@ Reviewed September 15, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Build `2026-09-15-judgment-1` is the release candidate. The arcade loop keeps renewable rescue/heat sources active through the boss encounter, and all player-facing runtime text identifies the jailer as Khet-Tak-Tor, the Ratkin Arbiter. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. The Shrine now shows the five first-judgment terms and presents the restoration hearing when they are complete. Automated checks and browser fixtures do not replace Tony's playtest.
+Build `2026-09-15-knockback-1` is the release candidate. Demon contact now interrupts an active vent/heal unit, releases the held input and knocks Duy out of the overlap. The arcade loop keeps renewable rescue/heat sources active through the boss encounter, and all player-facing runtime text identifies the jailer as Khet-Tak-Tor, the Ratkin Arbiter. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. The Shrine shows the five first-judgment terms and presents the restoration hearing when they are complete. Automated checks and browser fixtures do not replace Tony's playtest.
 
 ## Active now
 

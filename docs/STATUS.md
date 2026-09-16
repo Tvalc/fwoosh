@@ -1,5 +1,11 @@
 # Fwoosh status — September 15, 2026
 
+## Demon hit interruption — 2026-09-15-knockback-1
+
+A demon bite now cancels the active vent or heal unit, discards its partial progress, releases the held input and clears a queued vent-dash. The player must deliberately press again after recovering from the hit. A short forced knockback moves Duy away from the attacking demon; walls and solid props stop the knockback safely instead of allowing either body to remain stacked inside scenery.
+
+The damage value, invulnerability window and demon attack cadence are unchanged. Two new regressions cover interrupted healing and physical separation; all 144 game/state checks pass.
+
 ## First Ratkin Judgment — 2026-09-15-judgment-1
 
 The town now exposes a five-term Ratkin Judgment record: clear all five districts, ascend nineteen Ratkin, connect and seal two Burrows, operate a connected sealed Mushroom Farm, and operate a connected sealed Salvage Yard with a connected sealed Storehouse. The production terms require at least one food and one material created after tracking begins; starting resources and loaded balances do not count as proof.

@@ -26,6 +26,7 @@ const K = {
   MAX_DEMONS: 6, DEMON_SPD: 135,    // legacy Khet-Tak-Tor cap; vent units always release their demon
   DEMON_TGT_VILL: 0.6,
   DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,
+  DEMON_KNOCK_SPD: 520, DEMON_KNOCK_T: 0.14, // a bite breaks the heal stack and throws Duy clear
   HURT_IFRAME: 0.5,
   DEMON_LIFE: 2.5, DEMON_R: 16,     // expiry remains only for Khet-Tak-Tor's temporary summons
   CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
