@@ -1,5 +1,13 @@
 # Makko Ratkin integration — September 16
 
+## Rescue and portrait batch - 2026-09-16-ascension-1
+
+The collection now contains dedicated civilian ascension and panic exports. All twelve matching sets are integrated (24 new sheets); the earlier unverified-ascension status below is historical. Rescue selects frames from each entity's save timer, then lifts/fades the authored motion over the existing 1.5-second duration. Raw sources and one herbalist-facing correction are recorded in ratkin-art-manifest.json and tools/ratkin-rescue-sources.json. The Arbiter's ascend/panic sheets are excluded from the civilian pool.
+
+The first stern Arbiter portrait is integrated from transparent frame exports at source animation fcb7b367-d01c-4702-9914-2ff81b7d1925. The original frames, fixed crop, selected frame indices and playback rate are recorded in arbiter-portrait-manifest.json; tools/import-arbiter-portrait.py reproduces it. This is one stern speech loop, not the complete emotion set. The alternative d2cc10d5-d375-475b-8bc1-d91ad705809f take has wide outstretched arms and is not used. Duy and the other Arbiter emotions still need finished art.
+
+162 gameplay/render and 77 asset checks pass; four rescue contact pages and the portrait source/runtime pages cover every used frame. Calm walk/idle remain; panic replaces the loaded generic running clips, preserving their originals on disk. All 60 active sheets loaded in the phone-layout browser fixture.
+
 ## Civilian expansion - 2026-09-16-villagers-1
 
 The twelve civilian families (vest, baker, elder, child, merchant, farmer, lantern carrier, weaver, cook, mason, herbalist, wellkeeper) all use their own idle/walk/run sheets in the arcade population. The Arbiter is excluded. Visual identity survives ignition, rescue and husk recovery; no new character stats or roles are invented. All active arena sheets preload, including shared farmer/mason city art. The initial batch notes below describe the earlier release.

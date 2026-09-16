@@ -1,0 +1,1079 @@
+{
+  "checkpoint": "C:\\Users\\19415\\Documents\\Codex\\2026-09-14\\create-an-image-of\\work\\fwoosh-flame-arrow",
+  "generated_at": "2026-09-16T21:20:04.145Z",
+  "method": "Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.",
+  "source_sha256": {
+    "./js/media-meta.js": "91f47f8545557383b58bc6a6dc198497df18d94f0b90cb6f8d9fc3153ce31161",
+    "./js/media.js": "cc4626c0d2ed03179960cc7d3b94b351f246f6e464815674f979c9dc20ee5a53",
+    "./js/constants.js": "3c9eec3c48346f1cc2e0031e3a80b40994ac0879d33c254810522a6d1e96a4ec",
+    "./js/story.js": "532079ba8b40af012dd1bac37ff39e79f27b23bcdb427afe1a95d11b6bb482df",
+    "./js/cg.js": "2a93a761b976e395bcebeeebabc7589636c052636c30193bc939507e443097f9",
+    "./js/city.js": "134d728d710bb33161a38b800d1fd658b4c395430ec1b57651be133759e57575",
+    "./js/meta.js": "dab5102a1b1c425c90575ed53cbf2a8a842f14d88fd05b4c590398d39f38a4ba",
+    "./js/opp.js": "a4f4627a6411f06d26fe452b40d573395a643232a4a5a9bd6099425e1504e7f2",
+    "./js/sim.js": "1add228881c04529f4ffbb058db21e2a7062b2d4700494fe160f3816ddd1bb85",
+    "./js/draw.js": "a94309b9ae44f05b994c9bf708e29deedc79e28cc67eb57ec872db481346befd",
+    "./js/input.js": "8dadaedff829d7de54810828dfc1dd463aae67f69b924867a56ba081f5d51001",
+    "./js/main.js": "8ea19e2c490deb0e37f8aec9a86ee614ec8bb59ca7e1fe781b03de8031995991"
+  },
+  "pass": 162,
+  "fail": 0,
+  "results": [
+    {
+      "name": "Boot initializes title and a valid first run",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Five districts set rescue quotas and cumulative boss moves",
+      "status": "pass",
+      "detail": [
+        {
+          "district": 1,
+          "quota": 12,
+          "moves": [
+            "charge"
+          ],
+          "heatToWin": 8
+        },
+        {
+          "district": 2,
+          "quota": 14,
+          "moves": [
+            "charge",
+            "spit"
+          ],
+          "heatToWin": 10
+        },
+        {
+          "district": 3,
+          "quota": 16,
+          "moves": [
+            "charge",
+            "spit",
+            "wake"
+          ],
+          "heatToWin": 12
+        },
+        {
+          "district": 4,
+          "quota": 18,
+          "moves": [
+            "charge",
+            "spit",
+            "wake",
+            "demon"
+          ],
+          "heatToWin": 14
+        },
+        {
+          "district": 5,
+          "quota": 20,
+          "moves": [
+            "charge",
+            "spit",
+            "wake",
+            "demon",
+            "siphon"
+          ],
+          "heatToWin": 16
+        }
+      ]
+    },
+    {
+      "name": "Wins unlock districts 2–5 and bank the district-scaled bounty",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Replaying an earlier district does not skip unlocks",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "The fifth district has a persistent completion record",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A first run crossing both milestones raises both buildings",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Separate visits raise Well at 6 and Forge at 16",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Upgrade prices, limits, and persistence survive reload",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Unaffordable purchase does not spend embers or grant an upgrade",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Forge upgrades increase dash capacity and reduce recharge time",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Rescue counts persist; earned embers bank at run end",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Repeated game-over dispatch does not bank the same loss twice",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Repeated win dispatch pays the bounty and records the win only once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A late loss event cannot replace a settled win",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A late win event cannot replace a settled loss",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A new run can bank normally after an earlier settled run",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Direct duplicate banking cannot alter rewards or opponent history",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Unlocking both buildings gives one accurate combined message and persists",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A lethal demon bite while carrying heat settles a run exactly once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Diary reading neither pays currency nor changes rescue count",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Missing or invalid JSON saves start safely",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A partial v1 meta save retains progress and receives building defaults",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Legacy district saves migrate only the completion they prove",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Many old wins do not falsely complete the unlocked fifth district",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Replaying after final completion never reduces the saved count",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Each consecutive district win advances the completion count exactly once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Edge advantage leaves a fight; disadvantage remains bounded",
+      "status": "pass",
+      "detail": [
+        {
+          "district": 1,
+          "edge": -1000,
+          "dumped": 0,
+          "required": 14
+        },
+        {
+          "district": 1,
+          "edge": 1000,
+          "dumped": 6,
+          "required": 8
+        },
+        {
+          "district": 5,
+          "edge": -1000,
+          "dumped": 0,
+          "required": 22
+        },
+        {
+          "district": 5,
+          "edge": 1000,
+          "dumped": 6,
+          "required": 16
+        }
+      ]
+    },
+    {
+      "name": "A dash at an idle boundary spends one charge",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "All five boss move handlers can advance without a simulation exception",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Canceled touch does not spend a dash charge or leave a held gesture",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Focus loss cancels a pending tap instead of dashing on a later release",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Desktop dash waits for vent unit and held keys do not rearm chaining",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Touch release finishes exactly one unit without spending a dash",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Pointer drag previews without spending and release uses one charge",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Slingshot Burst direction stays anchored to Duy at pointer-down",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Dragging can revise slingshot Burst aim until release",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Releasing slingshot Burst near Duy cancels without spending",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A second finger cannot hijack an active slingshot Burst",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Every upgrade track caps correctly and reload applies the completed build",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Khet-Tak-Tor duel keeps valid villagers and a renewable fire source",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Duel fire can be intercepted for heat and dumped into Khet-Tak-Tor",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Existing Well recovery purchases become faster committed vent healing",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Five districts complete through rescue quotas and heat-contact combat at base and max upgrades",
+      "status": "pass",
+      "detail": [
+        {
+          "district": 1,
+          "upgraded": false,
+          "earned": 61,
+          "bank": 61
+        },
+        {
+          "district": 2,
+          "upgraded": false,
+          "earned": 92,
+          "bank": 153
+        },
+        {
+          "district": 3,
+          "upgraded": false,
+          "earned": 123,
+          "bank": 276
+        },
+        {
+          "district": 4,
+          "upgraded": false,
+          "earned": 154,
+          "bank": 430
+        },
+        {
+          "district": 5,
+          "upgraded": false,
+          "earned": 185,
+          "bank": 615
+        },
+        {
+          "district": 1,
+          "upgraded": true,
+          "earned": 61,
+          "bank": 61
+        },
+        {
+          "district": 2,
+          "upgraded": true,
+          "earned": 92,
+          "bank": 153
+        },
+        {
+          "district": 3,
+          "upgraded": true,
+          "earned": 123,
+          "bank": 276
+        },
+        {
+          "district": 4,
+          "upgraded": true,
+          "earned": 154,
+          "bank": 430
+        },
+        {
+          "district": 5,
+          "upgraded": true,
+          "earned": 185,
+          "bank": 615
+        }
+      ]
+    },
+    {
+      "name": "Five-district simulation soak keeps positions, health and economy finite",
+      "status": "pass",
+      "detail": [
+        {
+          "district": 1,
+          "seed": 11,
+          "seconds": 59.83333333333058,
+          "mode": "play"
+        },
+        {
+          "district": 1,
+          "seed": 42,
+          "seconds": 59.66666666666392,
+          "mode": "play"
+        },
+        {
+          "district": 1,
+          "seed": 99,
+          "seconds": 59.57499999999726,
+          "mode": "play"
+        },
+        {
+          "district": 2,
+          "seed": 11,
+          "seconds": 59.92499999999724,
+          "mode": "play"
+        },
+        {
+          "district": 2,
+          "seed": 42,
+          "seconds": 59.69999999999725,
+          "mode": "play"
+        },
+        {
+          "district": 2,
+          "seed": 99,
+          "seconds": 59.83333333333058,
+          "mode": "play"
+        },
+        {
+          "district": 3,
+          "seed": 11,
+          "seconds": 59.68333333333059,
+          "mode": "play"
+        },
+        {
+          "district": 3,
+          "seed": 42,
+          "seconds": 59.849999999997245,
+          "mode": "play"
+        },
+        {
+          "district": 3,
+          "seed": 99,
+          "seconds": 59.75833333333058,
+          "mode": "play"
+        },
+        {
+          "district": 4,
+          "seed": 11,
+          "seconds": 59.34999999999727,
+          "mode": "play"
+        },
+        {
+          "district": 4,
+          "seed": 42,
+          "seconds": 59.83333333333058,
+          "mode": "play"
+        },
+        {
+          "district": 4,
+          "seed": 99,
+          "seconds": 59.31666666666394,
+          "mode": "play"
+        },
+        {
+          "district": 5,
+          "seed": 11,
+          "seconds": 59.60833333333059,
+          "mode": "play"
+        },
+        {
+          "district": 5,
+          "seed": 42,
+          "seconds": 59.849999999997245,
+          "mode": "play"
+        },
+        {
+          "district": 5,
+          "seed": 99,
+          "seconds": 59.69999999999725,
+          "mode": "play"
+        }
+      ]
+    },
+    {
+      "name": "Winning contact ends the frame before another rescue can change settled rewards",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Title boot does not consume the live intro; first start gives control during Khet-Tak-Tor dialogue",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Updated intro replays once for an older save while preserving progression and diary reads",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Mobile vent HUD remains visible and usable during the live intro",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Holding chains heat units then full-heart heals, one demon per completed unit",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Final partial heat and heart still complete one bounded unit; no overheal",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Full health with no heat does not lock or generate enemies",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A full-heart heal scales correctly after heart upgrades",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Focus loss stops chaining and clears queued dash, but finishes committed unit",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Venting roots actual movement until the released unit finishes",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A demon bite cancels the current vent unit and requires a fresh press",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A demon bite knocks Duy away instead of leaving both bodies stacked",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Vent demons persist after release and into Khet-Tak-Tor encounter; new run clears them",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Each completed unit spawns even above the old demon cap; emergence cannot bite",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Vent demons emerge far from rooted Duy and outside solid props",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Nearby cinders take priority; outside the search radius demons chase Duy",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Eating cinder telegraphs then consumes both bodies, ignites multiple villagers and deals one heart",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Dash interception prevents an eating demon from consuming its cinder",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Rekindling interrupts eating and preserves the rescue instead of exploding",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Two demons cannot consume one cinder twice",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Cinder blast leaves rescued villagers safe, respects damage immunity and cannot pay twice on death",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Cinder blasts ignite victims even at the ordinary fire cap instead of instantly killing them",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A zero-rescue first loss funds either starter before buildings unlock",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Starter top-up pays only the shortfall and leaves earned run tally honest",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A strong first run keeps all earnings without an unnecessary bonus",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Starter funding cannot repeat after duplicate settlement, reload, skip or another run",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Heart starter purchases once, persists, and occupies the normal first tier",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Mobility starter applies next run and does not grant a separate bonus tier",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Starter purchase rejects insufficient funds, unavailable offer and wrong mode",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Older saves without upgrades get one catch-up offer on the next settlement",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Existing upgraded saves get neither an unsolicited grant nor starter offer",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Skipping starter leaves it reopenable; buying a normal upgrade ends the first-purchase offer",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Every demon kill adds one heat; vent kills still award zero embers",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Every ordinary reward source pays its full amount across and beyond the former 160 cap",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Uncapped loss earnings bank once, render honestly, persist and leave old upgrades intact",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A district clear adds its bounty to uncapped rewards exactly once",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Next goal finds cheaper tracks across both shops and respects unlocks",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Town upgrade names stay out of live action and remain available in town",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Town exposes distinct Diary and Ratkin Judgment destinations",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Upgrade progress includes current earnings once and keeps starter funding separate",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Direct retry banks once, raises unlocked buildings, and clears input without spending a dash",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Win retry advances one district, including replays, without skipping or exceeding five",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Held result keys and stray movement do not retry; fresh Enter does",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Town action opens the affordable shop and held Enter cannot close it",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Run history records once, keeps the newest twenty, and survives older saves and reload",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Win history includes the bounty; zero-rescue loss records top-up separately",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Rescue reward feedback groups a chain, includes rekindling, and clears on timeout and reset",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Results show earned embers, available upgrade and explicit retry; live HUD exposes earnings",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Assumed event profiles exercise real rewards and expose initial price cadence for playtesting",
+      "status": "pass",
+      "detail": {
+        "method": "Constructed event profiles, not observed human performance; no duration assumption.",
+        "ordinary": [
+          44,
+          50,
+          55
+        ],
+        "skilled": [
+          88,
+          97,
+          105
+        ],
+        "price": 100,
+        "midpointRatio": 1.94,
+        "laterTiers": [
+          240,
+          540
+        ]
+      }
+    },
+    {
+      "name": "Present rescue exchange follows a witnessed rescue without pausing control",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Unwitnessed and stale events do not create a dialogue backlog",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Two-line exchanges save delivered text, leave silence, and survive reload",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Interrupted speech does not mark the whole exchange as completed",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Heat observation needs rescue knowledge and follows current heat",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Run dialogue budget suppresses extra exchanges and combat cannot interrupt",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Return after death is not delivered after a win and never freezes the street",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Conversation archive excludes unrevealed text and tolerates old malformed saves",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Legacy Keith dialogue records display under Khet-Tak-Tor without losing text",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Present dialogue contains no past-life reveals and all templates use named speakers",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Original upper route is reachable by running and upward dash",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Spawns and remembered opponent cells cover the original top and bottom",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Full map corners fit between docks and inverse mapping preserves coordinates",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "HUD, dialogue dock and gutters cannot consume a dash",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Slingshot directions invert rendered world targets at phone and desktop sizes",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Desktop mouse hold draws the same slingshot trajectory preview",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Burst preview builds its arrow from the approved Makko flame frames",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Resizing cancels incomplete gestures without an accidental dash",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "World art shares a uniform transform and screen feedback stays in the HUD",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Backtick pauses every game screen and ignores key repeat",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Auto-run prioritizes nearest fire, then nearest demon, then wandering",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Automatic pursuit turns smoothly while manual steering wins immediately",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Auto-run follows periodic runner sightings instead of perfect live tracking",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A newly burning villager initially bolts away from Duy",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Burning runners outrun an ordinary jog but a dash closes the gap",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Automatic pursuit closes an open lane and rescues its burning target",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Automatic pursuit follows collision deflection around a large prop",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Cinder-eating warning draws no stroked countdown or blast-radius circles",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Debug menu cancels held input and blocks gameplay actions",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Debug reset requires confirmation and cancel preserves saves",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Confirmed debug reset starts first dialogue with clean persistent progress",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Storage failure rolls reset back and keeps a visible paused error",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Direct rescues teach the adaptive beacon using current heat and position",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Adaptive beacon fires on vent and damages Duy if he stays on the read",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Queued dash escapes the beacon after the committed vent unit",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Dashing through the adaptive beacon disarms it before it fires",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "First-run dialogue suppresses the adaptive beacon and its attack",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "First judgment requires all five approved restoration terms",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Qualifying town summons one persistent judgment and records only delivered lines",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Judgment dialogue advances once per fresh keyboard press",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Favor begins from the first hearing instead of retroactively counting old production",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Five social blocs earn persistent votes through distinct game systems",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Four votes release Duy without requiring the optional diary vote",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "The optional Memory vote upgrades a completed verdict to unanimous",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Ratkin Judgment shows named blocs, release threshold and unanimous reward",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Old v1 saves gain a clean city without losing existing progress",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Malformed city data normalizes to valid unique cells and safe values",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Roads extend only from the connected gate network",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Foundations reject occupied or disconnected sites without spending",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Construction advances offline, caps at eight hours and requires sealing",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Rush spends exact embers, removes thirty seconds and cannot overspend",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "A sealed connected Burrow automatically staffs one sealed Yard",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Road distance slows output and disconnected Yards stop without banking work",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Automatic staffing is stable and extra Yards wait for more Burrows",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Moving a building persists its new connected route and clears partial work",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Town exposes the Ratkin Quarter and its station explains inputs, output and route",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Fresh and older city saves receive bootstrap food and normal priorities",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Mushroom Farms bootstrap food and Yards consume one ration per material",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Connected sealed Storehouses expand both resource caps",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Shared-road carrier traffic slows station cycles",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Player priorities reorder automatic worker assignment and persist",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Map and station render visible logistics and congestion information",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Ratkin rescue retains identity without a death or human sheet",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Civilian roster covers all twelve designs and never includes the Arbiter",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Each Ratkin keeps its appearance through calm, burning and rescue rendering",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Ascension plays once from rescue time, handles ten-frame lantern, and never restarts with the global clock",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Rekindling a husk restores the original villager appearance with a fresh entity ID",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Authored stern portrait speaks while typing and returns to its listening pose",
+      "status": "pass",
+      "detail": null
+    },
+    {
+      "name": "Canonical Arbiter portrait keys resolve before legacy compatibility keys",
+      "status": "pass",
+      "detail": null
+    }
+  ]
+}

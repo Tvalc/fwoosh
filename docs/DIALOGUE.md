@@ -17,7 +17,7 @@ The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He ad
 
 ## Makko portrait handoff — Cursor art lane
 
-Status: **dedicated clips requested; saved portrait exports not yet verified or integrated.** Runtime displays an existing Makko Duy crop and a static close-up from the new Makko Ratkin Arbiter idle sheet. The Arbiter full-body design is integrated. The expanded emotion set is specified in [CURSOR_ART_BRIEF.md](CURSOR_ART_BRIEF.md). The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
+Status: **first stern Arbiter talking portrait integrated in 2026-09-16-ascension-1; other expressions and Duy portraits pending.** Runtime uses the authored stern portrait during matching lines, with an existing Makko Duy crop and static Arbiter fallback for expressions not yet supplied. Source details are in arbiter-portrait-manifest.json. The Arbiter full-body design is integrated. The expanded emotion set is specified in [CURSOR_ART_BRIEF.md](CURSOR_ART_BRIEF.md). The old simulated portrait bob is removed. Do not call those crops talking or emotional animations.
 
 Use the established Duy reference and Khet-Tak-Tor's Tony-approved Ratkin reference, not Cuong's Sunday-morning sprite or the deprecated human Keith reference. FWOOSH collection: https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277. Preserve raw sources and record actual Makko asset links and export settings. Tony must approve Khet-Tak-Tor's visual reference before the portrait set is integrated.
 

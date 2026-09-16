@@ -1,0 +1,66 @@
+{
+  "ratkin": {
+    "prefix": "fwoosh_ratkin_vest",
+    "ascend": "a2b9ba70-f9b3-443e-82b4-90899ff599cc",
+    "panic": "3e8e8b48-67df-4980-a46a-ebe60dd5e439"
+  },
+  "baker": {
+    "prefix": "fwoosh_ratkin_baker",
+    "ascend": "cde64be0-6a02-4162-9df9-8bf74202fbf1",
+    "panic": "e3406ebd-6fbd-4241-9854-9128c82a1bb0"
+  },
+  "elder": {
+    "prefix": "fwoosh_ratkin_elder",
+    "ascend": "99284a22-4ee5-4009-b08e-d9fe3a88d7b5",
+    "panic": "5fc07e05-e0d7-482b-b6c8-bea015e7c087"
+  },
+  "child": {
+    "prefix": "fwoosh_ratkin_child",
+    "ascend": "46f8f79f-1d7a-40e7-bc0b-d5bf4b161a4d",
+    "panic": "e4e342ce-a6ef-4071-9aff-1b68712d7f15"
+  },
+  "merchant": {
+    "prefix": "fwoosh_ratkin_merchant",
+    "ascend": "1cf917bd-dca1-4c50-8bf6-635c659127fc",
+    "panic": "36dd62b2-ce87-4e9a-94d6-906515070e6a"
+  },
+  "farmer": {
+    "prefix": "fwoosh_ratkin_farmer",
+    "ascend": "b037aefc-d0fb-44e1-96d9-8828066bbe85",
+    "panic": "6bee2de9-a09b-4461-9415-07cb57ab6132"
+  },
+  "lantern": {
+    "prefix": "fwoosh_ratkin_lantern",
+    "ascend": "bb4b6112-81aa-4902-8f5a-806093d3536e",
+    "ascendFrames": 10,
+    "panic": "aba4bcae-b742-46a5-aeff-363be39ededd",
+    "panicFrames": 11,
+    "panicSuffix": "walk_panic2"
+  },
+  "weaver": {
+    "prefix": "fwoosh_ratkin_weaver",
+    "ascend": "309fe799-05ca-40e5-b11f-0622923be2da",
+    "panic": "cdeb82bc-73d1-4876-8423-cf96e2dd020b"
+  },
+  "cook": {
+    "prefix": "fwoosh_ratkin_cook",
+    "ascend": "92b01f1c-8431-422f-aac3-5e6735c44f87",
+    "panic": "681693c9-40de-4e22-bda4-4f15d197622a"
+  },
+  "mason": {
+    "prefix": "fwoosh_ratkin_mason",
+    "ascend": "54b2785c-7aef-4775-bbca-b01482f9484f",
+    "panic": "ddfb581c-c918-4262-a3be-e7a15100dbaa"
+  },
+  "herbalist": {
+    "prefix": "fwoosh_ratkin_herbalist",
+    "ascend": "245447a0-6cfa-41a7-bebd-d73eacafb1a2",
+    "panic": "7087b375-148d-43cc-99b1-db3dd95cb9a2",
+    "panicFlipX": true
+  },
+  "wellkeeper": {
+    "prefix": "fwoosh_ratkin_wellkeeper",
+    "ascend": "faa9e684-b8bd-4bb7-a9de-a954aef7b04a",
+    "panic": "b41f07a3-979a-4f79-8f1b-20b31381edf3"
+  }
+}

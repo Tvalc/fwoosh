@@ -1,7 +1,9 @@
 // Sprite / atlas metadata (no binary).
+// Authored Makko portrait poses; source/crop/selection in docs/arbiter-portrait-manifest.json.
 const MAKKO_SPR_SIZE={"hero": [221, 256], "ashimp": [176, 256], "townsfolk": [227, 256], "powerup": [219, 256], "firedemon": [256, 241], "husk": [174, 256], "keith": [120, 256], "bg": [720, 1290], "ui_charge": [88, 96], "ui_pip": [87, 96]};
 const MAKKO_ANIM={"ashimp": {"frames": 12, "fw": 141, "fh": 180}, "firedemon": {"frames": 12, "fw": 249, "fh": 180}, "hero": {"frames": 12, "fw": 114, "fh": 180}, "keith": {"frames": 12, "fw": 108, "fh": 180}, "townsfolk": {"frames": 12, "fw": 176, "fh": 180}};
 MAKKO_ANIM.hero_run={"frames": 4, "fw": 189, "fh": 308};
+MAKKO_ANIM.dialogue_arbiter_stern={"frames":8,"fw":256,"fh":256};
 MAKKO_ANIM.save={"frames":18,"fw":174,"fh":224};
 MAKKO_ANIM.ventfire={"frames":10,"fw":171,"fh":280};
 MAKKO_ANIM.ventcinder={"frames":18,"fw":139,"fh":200};
@@ -52,3 +54,27 @@ MAKKO_ANIM.elder_run={"frames": 12, "fw": 180, "fh": 128, "anchorX": 103.7};
 MAKKO_ANIM.baker_idle={"frames": 12, "fw": 180, "fh": 172, "anchorX": 102.99};
 MAKKO_ANIM.baker_walk={"frames": 12, "fw": 180, "fh": 158, "anchorX": 107.35};
 MAKKO_ANIM.baker_run={"frames": 12, "fw": 180, "fh": 156, "anchorX": 105.48};
+MAKKO_ANIM.ratkin_ascend={"frames": 12, "fw": 165, "fh": 180, "anchorX": 85.02};
+MAKKO_ANIM.ratkin_panic={"frames": 12, "fw": 152, "fh": 180, "anchorX": 80.09};
+MAKKO_ANIM.baker_ascend={"frames": 12, "fw": 136, "fh": 180, "anchorX": 73.63};
+MAKKO_ANIM.baker_panic={"frames": 12, "fw": 170, "fh": 180, "anchorX": 95.24};
+MAKKO_ANIM.elder_ascend={"frames": 12, "fw": 168, "fh": 180, "anchorX": 92.71};
+MAKKO_ANIM.elder_panic={"frames": 12, "fw": 173, "fh": 180, "anchorX": 88.34};
+MAKKO_ANIM.child_ascend={"frames": 12, "fw": 174, "fh": 180, "anchorX": 94.62};
+MAKKO_ANIM.child_panic={"frames": 12, "fw": 177, "fh": 180, "anchorX": 98.05};
+MAKKO_ANIM.merchant_ascend={"frames": 12, "fw": 162, "fh": 180, "anchorX": 80.47};
+MAKKO_ANIM.merchant_panic={"frames": 12, "fw": 180, "fh": 141, "anchorX": 90.96};
+MAKKO_ANIM.farmer_ascend={"frames": 12, "fw": 161, "fh": 180, "anchorX": 83.21};
+MAKKO_ANIM.farmer_panic={"frames": 12, "fw": 159, "fh": 180, "anchorX": 79.12};
+MAKKO_ANIM.lantern_ascend={"frames": 10, "fw": 180, "fh": 175, "anchorX": 96.86};
+MAKKO_ANIM.lantern_panic={"frames": 11, "fw": 180, "fh": 140, "anchorX": 99.21};
+MAKKO_ANIM.weaver_ascend={"frames": 12, "fw": 159, "fh": 180, "anchorX": 86.78};
+MAKKO_ANIM.weaver_panic={"frames": 12, "fw": 177, "fh": 180, "anchorX": 89.0};
+MAKKO_ANIM.cook_ascend={"frames": 12, "fw": 171, "fh": 180, "anchorX": 85.56};
+MAKKO_ANIM.cook_panic={"frames": 12, "fw": 180, "fh": 174, "anchorX": 97.37};
+MAKKO_ANIM.mason_ascend={"frames": 12, "fw": 156, "fh": 180, "anchorX": 77.65};
+MAKKO_ANIM.mason_panic={"frames": 12, "fw": 171, "fh": 180, "anchorX": 96.6};
+MAKKO_ANIM.herbalist_ascend={"frames": 12, "fw": 175, "fh": 180, "anchorX": 97.73};
+MAKKO_ANIM.herbalist_panic={"frames": 12, "fw": 180, "fh": 159, "anchorX": 102.27};
+MAKKO_ANIM.wellkeeper_ascend={"frames": 12, "fw": 180, "fh": 179, "anchorX": 89.67};
+MAKKO_ANIM.wellkeeper_panic={"frames": 12, "fw": 180, "fh": 124, "anchorX": 88.96};

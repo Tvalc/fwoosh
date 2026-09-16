@@ -693,14 +693,16 @@ const SKINS = {
       if(!drawSpr(ctx,'husk',X,y,H,{})) return SKINS.vector.wall(ctx,X,y,grudge,scarred); },
     cell(ctx,X,y,c){
       if(c.saving){
-        // Keep the rescued Ratkin's identity as it rises; the legacy save sheet
-        // contains a human actor, so it cannot replace this character mid-rescue.
+        // Play this Ratkin's authored weightless rescue motion once, lifted along
+        // the existing ascent path. Never switch to the legacy human save actor.
         const t=Math.min(1,(c.saveT||0)/K.SAVE_ANIM_DUR);
         const H=K.R_CELL*4.2;
         const sh=1-Math.min(1,t*1.4);                          // ground shadow fades as they lift into the light
         if(sh>0){ ctx.save(); ctx.globalAlpha=sh; groundShadow(ctx, X, y+K.R_CELL*1.4, K.R_CELL*1.0, K.R_CELL*0.3); ctx.restore(); }
         const alpha=1-Math.max(0,(t-.4)/.6),lift=H*t*t;
-        drawVillager(ctx,X,y-lift,c,'idle',H,{frame:0,alpha,flip:(c.vx||0)<0});
+        const clip=MAKKO_ANIM[villagerType(c)+'_ascend'];
+        const rescueFrame=clip?Math.min(clip.frames-1,Math.floor(t*clip.frames)):0;
+        drawVillager(ctx,X,y-lift,c,'ascend',H,{frame:rescueFrame,alpha,flip:(c.vx||0)<0});
         if(t<.45)drawFlame(ctx,X,y+K.R_CELL*1.6-lift,H*1.2,frame*.32,1-t/.45);
         return;
       }
@@ -715,7 +717,7 @@ const SKINS = {
       g.addColorStop(0,'rgba(255,150,50,0.62)'); g.addColorStop(0.5,'rgba(255,90,30,0.35)'); g.addColorStop(1,'rgba(255,90,30,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,y,gr,0,7); ctx.fill();
       // a villager, panicking, ON FIRE (townsfolk sprite + rising flames) — someone to save, not a monster
-      if(!drawVillager(ctx,X,y,c,'run',K.R_CELL*4.2,{flip, fps:13,t:Math.floor((c?.ph||0)*3)}))
+      if(!drawVillager(ctx,X,y,c,'panic',K.R_CELL*4.2,{flip, fps:13,t:Math.floor((c?.ph||0)*3)}))
         SKINS.vector.hunter(ctx,X,y,a,t);
       // ACTUAL animated flames engulfing the villager (Makko 5-frame fire, per-villager desynced)
       const ph = frame*0.32 + X*0.09;

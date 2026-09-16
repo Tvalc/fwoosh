@@ -1,0 +1,134 @@
+{
+  "source_animation": "https://www.makko.ai/studio/collection/f9872b5e-a186-43d7-9888-46cf3e575277/animation/fcb7b367-d01c-4702-9914-2ff81b7d1925",
+  "sample_fps": 4,
+  "runtime_fps": 8,
+  "selected_source_frame_indices": [
+    11,
+    2,
+    3,
+    4,
+    7,
+    8,
+    9,
+    1
+  ],
+  "crop": [
+    70,
+    0,
+    540,
+    470
+  ],
+  "processing": "Fixed head/shoulders crop, uniform resize to 248px, 4px transparent margin in 256px cells; selected original mouth/blink frames, no synthesis.",
+  "output": "media/anim/dialogue_arbiter_stern.png",
+  "sha256": "dbc63958c2c0aa265c62c297e1572a7720ac5a8a0e9bef309a9dba626847b69c",
+  "sources": [
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_006.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_006.webp",
+      "sha256": "905f746d74a6b7447701a793e83133e825bc6c76ebb948aaf1a37de6c08d4ce5",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_012.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_012.webp",
+      "sha256": "94ef20e538a64d3d8da869972b93a35c4502a0399fb3d90be22ee979335e9e3f",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_018.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_018.webp",
+      "sha256": "a485000fb7ed3f9bd0829dee78e440f4ac6e2b92a19754e5fb700bbf88fe8dce",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_024.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_024.webp",
+      "sha256": "59e0804f1da1233a61d3b045f893d79eb557bcb19b185a5ec46580a1b727ac3a",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_030.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_030.webp",
+      "sha256": "e0868352c932548fd2073b9cb4bb65e21282a5b0fe7643fcc59e3b0a0ea8d30d",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_036.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_036.webp",
+      "sha256": "e1ba5fe39c677049b5e881283398d1ce613d7da413f04aaa5c39a9cd293930f2",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_042.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_042.webp",
+      "sha256": "d91936312899e2d67cdb96e967d5a28245599d32e6bb3a4ad7f6a5c38956595b",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_048.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_048.webp",
+      "sha256": "235075ad9cc52224660aca17b1e00ba3270ceb88dcf05a752b4213b225bea5b3",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_054.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_054.webp",
+      "sha256": "3c0cf7c06ffae398d697f95243f83a98497a952ecbe864005b78df6e651f258d",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_060.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_060.webp",
+      "sha256": "dfdd697bbe9a75d6ede07d82af2e4727d3881239a94267a73b2ef69ff46e60ed",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_066.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_066.webp",
+      "sha256": "f7465f9789ed87ab690e9a1e3a6efeec249b2df266c7d0750bdaeac2cfcd2aca",
+      "size": [
+        604,
+        633
+      ]
+    },
+    {
+      "url": "https://api.makko.ai/storage/v1/object/public/animation-frames/fcb7b367-d01c-4702-9914-2ff81b7d1925/frames/1789579033336_frame_072.webp",
+      "raw": "source-art/makko-portraits-2026-09-16/arbiter-stern/1789579033336_frame_072.webp",
+      "sha256": "642aafe9d26d109e0bb8a2cb6c690d7183847000fe8126b05bd327af7977392f",
+      "size": [
+        604,
+        633
+      ]
+    }
+  ]
+}
