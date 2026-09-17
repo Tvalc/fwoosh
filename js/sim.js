@@ -70,6 +70,7 @@ let intro = null;   // { phase:'walkin'|'talk', i, lineT }  (null = not running)
 
 
 function reset(seed){
+  cancelPointer();
   if(seed !== undefined){ SEED = seed; }
   rnd = mulberry32(SEED);
   cells = []; slag = []; trail = []; rings = []; hist = [];
@@ -1120,6 +1121,7 @@ function setDelayedCallout(text, delay, good){ pendCall = { text, t:delay, good:
 
 function winDuel(){
   if(mode !== 'play' || runSettled) return;
+  cancelPointer();
   won = true; mode = 'over'; popCause = 'he yielded';
   CG.stop(); CG.happy();                       // CrazyGames: round ended, a win
   score += K.DUEL_BONUS;
@@ -1213,6 +1215,7 @@ function cooldown(){
 
 function pop(cause){
   if(mode !== 'play' || runSettled) return;
+  cancelPointer();
   mode = 'over'; popCause = cause;
   CG.stop();                                    // CrazyGames: round ended
   foldOpp();                                    // this run's decisions teach the opp

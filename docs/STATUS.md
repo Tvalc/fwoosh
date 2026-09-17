@@ -1,5 +1,11 @@
 # Fwoosh status — September 17, 2026
 
+## Anywhere joystick and second-finger Burst - 2026-09-17-joystick-1
+
+Touch anywhere in gameplay except Vent to summon a floating, trailing joystick. Drag continuously to steer; lift to return to auto-run. A second-finger press elsewhere triggers one Burst along the steering direction immediately, regardless of tap location. Vent keeps independent touch ownership and its committed-unit rules. Release-to-dash touch gestures are retired. Desktop controls, balance and save2 progress remain unchanged. Existing Makko ember/flame assets supply the handle and direction preview.
+
+198 gameplay/save/render checks and 77 asset checks pass. A 390px browser fixture verifies dispatched steering/Burst/release events and the presentation; physical-phone feel remains Tony's playtest. The browser logged a MutationObserver error absent from game source; interaction assertions passed. [Control contract and research](MOBILE_BURST.md). Commit, merge and verified deployment are recorded on #26 and the board after publication.
+
 ## Direct phone swipe dash - 2026-09-17-swipe-1
 
 Tony reported inverted phone dragging as broken and requested dashes in the swipe direction. Touch now derives direction from finger-down to release, independent of Duy's position or auto-run movement. The existing Makko flame preview uses that same vector. Release commits one charge; a tap or return to the swipe-origin dead zone cancels. The final release coordinates are used even without a final move event. Mouse retains its existing slingshot behavior, with gesture type captured per pointer so prior touch use cannot flip mouse controls.

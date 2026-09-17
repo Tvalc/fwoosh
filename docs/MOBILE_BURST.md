@@ -1,30 +1,30 @@
-# Slingshot Burst input
+# Mobile steering and Burst
 
-Build `2026-09-15-flame-arrow-1` gives touch and desktop mouse the same predictable Burst gesture.
+Build: `2026-09-17-joystick-1`. Replaces release-to-dash touch gestures. Tony approved the floating joystick anywhere except Vent and a second-finger tap for Burst.
 
 ## Player contract
 
-- Point, hold or drag on the side opposite the direction Duy should travel.
-- A quick tap releases immediately and Bursts away from that point.
-- Holding or dragging previews the actual fixed-distance path and collision-limited endpoint.
-- Release performs one Burst and spends one charge.
-- Return within 42 world pixels of Duy's pointer-down position to cancel without spending.
-- HUD, dialogue, gutters and the separate Vent button cannot start a Burst.
-- Desktop WASD/arrow steering and Shift Burst remain unchanged.
+- Touch anywhere on the gameplay canvas except Vent: the joystick appears under that finger, on either side, including HUD docks and gutters. Menus retain their normal touch actions.
+- Drag to steer continuously. Manual direction overrides auto-targeting. Duy keeps running; the small dead zone holds the last heading rather than stopping him.
+- The center follows long drags so a reversal never requires returning to a distant original touch point. Radius is 36 CSS pixels and dead zone 6 CSS pixels, independent of game/world scaling.
+- While the steering finger remains down, tap elsewhere with another finger to Burst immediately in the steering direction. The second tap's location never chooses a target or direction. A held second finger does not repeat Burst, and lifting either finger never triggers another.
+- Vent is the exception: touching it holds Vent, regardless of whether steering already has a finger. Releasing it completes the existing committed unit; Burst cannot bypass that commitment and queues at its boundary as before.
+- Lift the steering finger to hide the joystick and resume existing gradual auto-run steering. Another already-held finger is not promoted into steering.
+- Charges, recharge, cooldowns, dash distance and combat balance are unchanged. A failed Burst during cooldown/empty charges does not fire later on finger release.
+- Desktop mouse retains slingshot/release aiming; keyboard movement and Shift are unchanged. Stable save2 keys remain unchanged.
 
-The pull vector is anchored to Duy's position at pointer-down, so autorun cannot skew the player's aim while the preview is held. The trajectory points in the resulting travel direction on both touchscreens and desktop mouse input. Its visual is a burning arrow assembled from the approved Makko flame frames over an ember-red directional spine; the former yellow dashed line and plain chevron are retired.
+The stick uses existing Makko ember artwork for its handle with functional base/connector indicators. The Makko flame arrow previews the steering direction and collision-limited Burst endpoint. It dims while unavailable, including during a committed vent unit. Independent pointer ownership lets steering, Vent and Burst coexist. Pointer cancellation, lost capture, blur, resize and run/menu transitions clear ownership.
 
-## Design basis
+## Design research
 
-Apple's game-control guidance favors predictable movement, broad touch regions and immediate visible control state. Its touch-game session recommends designing around touch rather than copying a controller layout. EA's published mobile-shooter experiments show that reducing control complexity works best when the player can see what an assisted system selected. Fwoosh therefore uses the arena as the broad aim region, inverts the player's pull like a slingshot and shows the result before commitment. It adds no permanent Burst button or hidden target lock.
+This is a design hypothesis for Fwoosh, not evidence of physical-phone usability. The prior touch gesture only aimed a brief dash; auto-steering continued around it. Continuous steering addresses that loss of control.
 
-- https://developer.apple.com/design/human-interface-guidelines/game-controls
-- https://developer.apple.com/videos/play/wwdc2024/10085/
-- https://www.ea.com/news/what-weve-learned-about-making-mobile-shooters-so-far
-- https://www.gamedeveloper.com/business/postmortem-shadow-blade
+- [Suzy Cube developer: floating and draggable centers](https://www.gamedeveloper.com/design/lessons-from-suzy-cube-mobile-controls-that-feel-great)
+- [Apple: dynamic thumbsticks, tap-to-move and simultaneous actions](https://developer.apple.com/videos/play/wwdc2024/10085/)
+- [Nintendo: tap timing with constrained automatic forward movement](https://supermariorun.com/en/)
 
 ## Verification
 
-The actual-script suite covers inverted direction at phone and desktop widths, release-only spending, direction changes during a drag, pointer-down anchoring while Duy moves, near-Duy cancellation, second-finger isolation, desktop mouse preview, Vent release, pointer cancellation, focus loss, resize, dock/gutter exclusion and world/screen mapping at 320, 375, 430 and 1280 pixel widths. The full gameplay, progression, city and save suite remains in the same run.
+198 actual-script gameplay/save/render checks and 77 asset checks pass. Coverage includes all eight directions at three phone widths, physical stick radius, fast reversal, manual-over-auto steering, independent Vent, second-finger Burst direction/timing, duplicate/third-pointer isolation, charge/cooldown limits, vent commitment, release order and cancellation. The 390px browser fixture exercised dispatched touch events and showed the Makko joystick handle and flame preview. A browser MutationObserver error was logged; no MutationObserver exists in game source and the fixture's interaction assertions passed. Browser dispatch is not a real multi-touch phone test. Tony's phone playtest remains the feel/readability acceptance step.
 
-A local browser fixture verifies that pulling down-right previews a Makko flame arrow traveling up-left at phone scale. Physical-phone and desktop-mouse feel remain human playtest requirements.
+Deployment evidence belongs on issue #26 and the board; a local/pushed build is not a verified deployment.
