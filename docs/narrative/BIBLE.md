@@ -7,6 +7,17 @@ Living document. Base: `main` @ 8f23fdc (PR #75). Status labels used everywhere 
 - **APPROVED (AD-n)** — Tony explicitly approved in the narrative conversation; listed in NARRATIVE_HANDOFF.md with what it supersedes.
 - **DRAFT** — prose. Never canon by itself.
 
+## 0. House style (added batch 09)
+
+Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is in it. I found it in batch 09; earlier batches were written without it and have been swept for the hard bans only. Binding on all player-facing text from here on:
+- No em or en dashes. No rhetorical questions in narration. No "not X but Y". No dramatic colons. No rule-of-three flourishes. Minimal adjectives.
+- Agency stays with people. Every perception has its cause on the page. Dramatize or cut. Confessions are cornered, never volunteered (`dia-home-r2`: Duy corners Khet-Tak-Tor by catching him at it).
+- **System text is the Auditor speaking**, dry and procedural, never database output, no exclamation points, one format per chapter. `CONSTITUTION +1` in `dia-home-r1/r2` was wrong and is replaced. This supersedes NP-13.
+- Human-POV chapters (Duy's diary) take the Griffin register: procedure explained plainly, understatement. Ratkin material has no assigned register in the skill; the Brooks register (earnest, fellowship, grief underneath) is the nearest fit and is what the chronicles already lean toward. **Proposal NP-14**, needs Tony.
+- The skill says "Permadeath is absolute… Gods CAN resurrect at ruinous cost; that cost is plot." Duy's resurrection is that case: the cost is this trial. Consistent with CANON's stated exception.
+- The skill holds style only. The story bible (facts) is a file Tony keeps and uploads; I do not have it. Diary chapters `morning` through `gods`, `debt` and `gate` retell bible events and **will not be revised until it is in context**.
+- Tension to resolve: the citizen brief asks for qualities Tony admires in Sanderson; the skill sets Griffin/Brooks/Auditor registers. I read these as compatible (Sanderson for structure: clues, costs, payoffs; the skill for sentence-level voice). Flagged, not assumed closed.
+
 ## 1. Contradictions and gaps found on first read (batch 01)
 
 | # | Issue | Where | Effect on writing |

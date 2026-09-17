@@ -1,4 +1,4 @@
-# Admission scenes — batch 05 (DRAFT prose on approved structure AD-02, AD-06, AD-19)
+# Admission scenes · batch 05 (DRAFT prose on approved structure AD-02, AD-06, AD-19)
 
 **AD-19 (approved):** each bloc's favor opens its own door to Duy.
 
@@ -25,7 +25,7 @@ The argument in every bloc is the same one: **does being carried out of the fire
 
 ## Scenes
 
-### `adm-hearth` — a threshold
+### `adm-hearth` · a threshold
 Escort: cit-022. Place: the propped-open burrow door from `home`.
 1. HAL-NE-DUR (dry): "Wipe your feet. You're the first outsider through a door of ours in longer than anyone has counted."
 2. DUY (questioning): "Whose house is it?"
@@ -37,7 +37,7 @@ Chronicle echoes (display only after `adm-hearth`):
 - cit-006: "Came home to find a chair moved an inch. Left it there."
 - cit-010: "Took Kip to the far lane for the afternoon. Has not changed her mind. Was not asked to."
 
-### `adm-bowl` — a seat
+### `adm-bowl` · a seat
 Escort: cit-003. Place: the long table at the refuge.
 1. DOF-MA-REK (stern): "You'll be sitting there, won't you? End of the bench. Not the head."
 2. DUY (startled): "I can't eat. I'm dead."
@@ -49,7 +49,7 @@ Chronicle echoes:
 - cit-003: "Fed the man who shot him. Filled the bowl to the same line as everyone's. Checked twice that it was the same line."
 - cit-002: "Sat across from him and asked eleven questions. He answered nine."
 
-### `adm-hand` — the yards
+### `adm-hand` · the yards
 Escort: cit-021. Place: Salvage Yard.
 1. DAK-RO-FEN (dry): "Orr-Ve-Kan says you're to be let work. He says it's cheaper than watching you."
 2. DUY (questioning): "What needs doing?"
@@ -61,19 +61,19 @@ Chronicle echoes:
 - cit-005: "Opened a cord for the human. First knot: one afternoon's labour, received."
 - cit-009: "Inspected the joint the human made, after he'd gone. Said nothing. Did not redo it."
 
-### `adm-claw` — unescorted
+### `adm-claw` · unescorted
 No escort; that is the point. Place: the gate.
 1. ASE-RO-WEN (stern): "The Claw waited on me. They said it was mine to give or keep."
-2. DUY (concerned): "You don't have to—"
+2. DUY (concerned): "You don't have to..."
 3. ASE-RO-WEN (stern): "Don't tell me what I have to. You went back into that fire twelve more times. One of the twelve was me."
-4. DUY (pain): "Your daughter—"
-5. ASE-RO-WEN (angry): "Is up a tree, where I can see her and you can't reach. This isn't forgiveness. It's a count, and you met it. Walk where you like."
+4. DUY (pain): "Your daughter..."
+5. ASE-RO-WEN (angry): "Is up a tree, where I can see her and you can't reach. I haven't forgiven you. You met the count. Walk where you like."
 
 Chronicle echoes:
 - cit-004: "Stopped telling people the count." (already in registry; same trigger)
 - cit-020: "Voted. Did not explain her vote, and nobody asked twice." (already in registry). **AD-20:** the Claw does not move until she does; scene revised (`adm-claw` r2).
 
-### `adm-memory` — the Road Song
+### `adm-memory` · the Road Song
 Escort: cit-001. Place: the refuge at evening. Prerequisite already enforced by the live goal: all fifteen chapters read.
 1. SEK-RA-TUN (stern): "You've looked at all of it, then. Your part. Good. Now sit and hear ours."
 2. DUY (questioning): "What is it?"

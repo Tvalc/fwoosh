@@ -4,6 +4,32 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 09 — 2026-09-17 · branch `claude/narrative-batch-09` (stacked on 08) · base `main` 8f23fdc
+
+### 1. Approved decisions
+None new.
+
+### 2. Finished content (DRAFT): style conformance pass
+Tony's `blood-debt-writing` skill (universe style rules) was found and applied. See docs/narrative/BIBLE.md §0.
+- All em/en dashes removed from player-facing prose: backgrounds, first-meeting lines, chronicle entries, admission lines, diary pages. Registry scaffolding now uses `·` and `→`. (Handoff and bible notes, which are not player-facing, still contain dashes.)
+- `dia-home-r2` page 3: raw stat readout replaced with an Auditor-voice notice. **Codex: if any runtime text renders System messages as bare stat output, the same rule applies.**
+- `adm-claw` line 5: removed a "not X but Y" construction.
+- Not yet done: a full line-by-line audit of all 22 profiles against the craft rules (rule-of-three, agency, adjectives). Scheduled next.
+
+### 3. Reveal order / 4. Triggers / 5. Art
+Unchanged.
+
+### 6. Open
+- **Blocked:** diary chapters `morning`, `walk`, `vendor`, `gunfire`, `betrayal`, `death`, `void`, `gods`, `debt`, `gate` retell Blood Debt bible events. The skill's rule zero forbids canon work without the bible in context. I cannot see Tony's other chats. Needs upload: story bible (esp. Continuity Anchors §7, Planted Payoffs §11) and the Book 1 chapters covering market through gate.
+- Still unread: vovinam-ledger's three docs.
+- NP-14 (Brooks register for Ratkin material); Sanderson-vs-skill reading; NP-13 withdrawn.
+- Existing approved runtime text (`fire`, PRESENT lines) contains constructions the skill bans (e.g. flames as the acting subject). Not touched; Tony's call whether the skill applies retroactively to approved Fwoosh text.
+
+### 7. Files and commit
+`git log claude/narrative-batch-09 -1`. Not pushed. Delivered as `narrative-batches-01-09.patch` (nine commits).
+
+---
+
 ## Batch 08 — 2026-09-17 · branch `claude/narrative-batch-08` (stacked on 07) · base `main` 8f23fdc
 
 ### 1. Approved decisions

@@ -1,24 +1,24 @@
-# Diary revision — batch 01: three-chapter audit and one DRAFT rewrite
+# Diary revision · batch 01: three-chapter audit and one DRAFT rewrite
 
 Chapter IDs, unlock predicates, read flags and art keys are untouched. Nothing here is approved text. The runtime diary is unchanged.
 
 ## Audit against the brief
 
-### Early — `walk` ("Cuong")
+### Early · `walk` ("Cuong")
 - **Works:** clear geography, Duy's voice, the corn debt planted lightly. The corn is the diary's best long clue; it pays off at `gate`.
 - **Weak:** Diep and Mei arrive as a list of facts ("was nineteen and already a martial arts champion"). Mei gets no detail, so `betrayal` lands as plot, not loss.
 - **Fix:** give Mei one small kindness here (she is the one who remembers Duy takes his coffee sweet, or saves him a seat). One sentence. Then the knife costs something.
 - **"Debt" motif:** Duy jokes that "a debt was a serious matter". Keep. It is the fairest clue in the book and should recur once more before `debt`.
 
-### Middle — `cell` ("The Dark Cell")
+### Middle · `cell` ("The Dark Cell")
 - **Works:** the facts are right and the door reveal is the right reversal.
 - **Weak:** the reader gets no sensory reason for the panic (dark plus footsteps is thin), so the shooting reads as arbitrary. The door appears only at the end, so the reversal is not fair: nothing earlier let the reader feel it behind them. The teaser gives away the turn. The last page explains ("decided they were coming to hurt us") instead of letting the image do it.
 - **Fix:** plant the draft on the back of the neck in page one. Put the market an hour behind him so the fear has a cause. Let the muzzle flashes show fragments he only understands afterward. End on the hands. Rewrite below.
 
-### Late — `home` ("The Door")
+### Late · `home` ("The Door")
 - **Works:** correct about who decides.
 - **Weak:** summary of rules the player already has from the Shrine. No scene, no place, no Ratkin individual. Title promises a door and there is none. It repeats `keith` p2 nearly point for point.
-- **Fix (batch 02, needs X-02/X-03 answered):** build it around one concrete thing Duy sees in the rebuilt quarter — a door someone has left open on purpose — and one named citizen. This is where the diary should first use a name. Candidate: Yan-Su-Bel's open burrow door, or Nim asking him "and then what?"
+- **Fix (batch 02, needs X-02/X-03 answered):** build it around one concrete thing Duy sees in the rebuilt quarter (a door someone has left open on purpose) and one named citizen. This is where the diary should first use a name. Candidate: Yan-Su-Bel's open burrow door, or Nim asking him "and then what?"
 
 ### Approach taken from the audit
 1. Every reversal gets a physical clue at least a page earlier.
@@ -29,7 +29,7 @@ Chapter IDs, unlock predicates, read flags and art keys are untouched. Nothing h
 
 ---
 
-## DRAFT rewrite — `cell` · scene ID `dia-cell-r1`
+## DRAFT rewrite · `cell` · scene ID `dia-cell-r1`
 
 **Purpose:** the act the whole game answers for. **Prerequisite knowledge:** `gods` (they accepted an offer; they are armed police an hour out of a massacre). **New information:** nineteen unarmed people were shot while running for an open door behind the shooters; someone screamed first. **Clue planted:** the draft (paid this chapter); the scream (paid later by cit-004's chronicle; who opened the door stays open). **Art note:** no illustration requested; if one is made, show the open door and the grey light only. No bodies.
 
@@ -61,10 +61,10 @@ Cuong took my arm and tried to get me up. I stayed where I was a while longer, l
 ## `cell` follow-up
 AD-04 makes "one hand closed around another" Sek-Ra-Tun and Nim. No text change. AD-11 keeps the scream unexplained in the diary; cit-004's chronicle says who screamed, never who opened the door.
 
-## `keith` — clue to plant (one sentence, DRAFT, scene ID `dia-keith-c1`)
+## `keith` · clue to plant (one sentence, DRAFT, scene ID `dia-keith-c1`)
 Add to page 1, after "checking his notes": *"When he turned the page I saw his forearms. The fur was gone from wrist to elbow, and the skin under it looked like mine."* Pairs with the existing `dialogue_arbiter_strained` flinch portrait. Paid off in `home`.
 
-## DRAFT rewrite — `home` ("The Door") · scene ID `dia-home-r2` (supersedes r1)
+## DRAFT rewrite · `home` ("The Door") · scene ID `dia-home-r2` (supersedes r1)
 
 **Purpose:** final chapter. Pays AD-07 (why the fire is kept), shows AD-02 (Duy barred, wanting to be asked in), and gives Duy a reason to stay that is not his own release. **Prerequisite knowledge:** `keith` clue; the player has seen the quarter gate. **New information:** the Arbiter carries the burning himself; the fire is the only road out; stats are rising the slow way. **Clue/payoff:** forearms and flinch (from `keith`) paid; the propped door (cit-006) and the child's question (cit-002) planted for chronicle readers, unnamed here on purpose. **Art note:** request `dia-home-r1-a`: Khet-Tak-Tor kneeling in the street holding a burning Ratkin by the shoulders, seen from behind. Must not unlock before this chapter.
 
@@ -95,7 +95,11 @@ I didn't have one. I told her I didn't know yet. She nodded as if that were a se
 **Page 3**
 When I went back down I arrived early, before he called my name. Khet-Tak-Tor was kneeling at the end of the street with his back to me, holding a burning man by the shoulders. The fire went up his arms the way it goes up mine. He didn't cry out. He shook, and held on, and the man rose into the light.
 
-Then Khet-Tak-Tor sat down in the road, because he couldn't stand. Small grey letters hung over him for a moment. I have seen the same ones over myself. CONSTITUTION +1.
+Then Khet-Tak-Tor sat down in the road, because he couldn't stand. Grey writing came up over him, the kind I get myself.
+
+Constitution increased by one. You remain unsuited to this work. This notice has been issued before. It did not help.
+
+He waved it away without reading it.
 
 I have carried six in a run and kept my feet. He had managed one.
 
