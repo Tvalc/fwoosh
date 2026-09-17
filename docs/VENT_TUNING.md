@@ -5,6 +5,7 @@ Tony approved implementation after the core-loop interview. City expansion is de
 ## Confirmed behavior
 
 - Venting puts both Duy and the ratkin at risk.
+- Calm and cinder Ratkin now cost one carried heat to ascend. A heat unit already committed to venting is reserved and cannot also pay that cost; extra carried heat remains usable.
 - Starting a unit commits Duy until one heat is dispersed or one full heart is restored. Heat clears before healing begins.
 - Holding automatically starts the next unit. Releasing completes the current unit and stops. A dash requested while committed is queued for the boundary, with its charge spent only when executed.
 - Every completed unit releases one demon. There is no extra timer-based escalation or silent population cap that makes later units free.

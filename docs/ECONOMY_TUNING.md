@@ -1,5 +1,12 @@
 # Ember economy — 2026-09-14-loop-1
 
+## Current rescue rewards — September 17, 2026
+
+`2026-09-17-rescue-1` lets calm and cinder Ratkin ascend for one heat on contact. Flaming rescues still add heat. All three direct rescues use the same pre-transfer Blaze calculation for score, embers and Edge; the cinder half-reward penalty is removed. Rescues all count toward quotas, the persistent resident roster and lifetime rescue progress. The one heat already committed to a vent unit cannot pay twice. Existing flame-only chain behavior, demon/interception rewards, prices and save2 accounting are unchanged.
+
+The old constructed ordinary/skilled event profiles now yield 47/53/58 and 91/100/108 embers respectively because the cinder reward increased. Those scripted profiles still place the sampled 100-ember purchase within 2–3 ordinary runs, but are not measurements of the expanded loop. New real playtest earnings are required before claiming the economy is balanced. This section supersedes older rescue-payout descriptions below.
+
+
 Tony approved removing ember payouts from vent-created demons and making a meaningful permanent upgrade affordable after the first completed run, even a short loss. The opening choice is survivability versus mobility, at equal prices. Later upgrades should take longer. The 20-ember price and one-time top-up are initial implementation values for playtesting, not a completed economy balance pass.
 
 The latest **Reward and retry loop** section below supersedes historical prices and pending decisions in earlier checkpoints.

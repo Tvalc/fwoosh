@@ -129,7 +129,7 @@ const DIARY = [
   "The first rescue had hurt. The second left me shaking. Taking more fire meant adding to the heat I was still carrying; the pain grew with it. Farther down the street, another ratkin was burning. I started toward them, afraid of what the next touch would feel like. I still didn't know where my friends were, or why I had been brought here. But I could get the fire off these people. For the moment, that gave me something to do."
 ] },
   { id:"misses", title:"The Ones I Drop", art:"wraith", teaser:"A rescue can become a different kind of danger.",
-    when:()=>((META.flags&&META.flags.sawWraith)||META.saved>=30), hint:"let a rescue burn to a wraith",
+    when:()=>((META.flags&&META.flags.sawWraith)||META.saved>=30), hint:"ascend 30 Ratkin",
     pages:[
   "In the burning streets, I can't always reach everyone. Sometimes I see a ratkin fall while I'm still trying to get through the crowd. I keep moving toward them, hoping there is time. If I reach the cinder they leave while I am carrying fire, I can still help. I have seen one rise into the light afterward. I look for them among the things the fires leave behind.",
   "But sometimes the shape on the ground changes before I get there. It begins to move on its own, black along the limbs and bright in the cracks. Then it comes toward me, and I have to get out of its way. Now I watch the ground as well as the people running. When I see someone fall, I have a little time to decide how to reach them. Hesitating can use all of it."
@@ -161,6 +161,9 @@ const INTRO_VERSION = 5;   // bump to replay the intro once for everyone after a
 // Present-tense exchanges: witnessed events first, explanations on later returns.
 // No past-life revelations here. New art must come from Makko; see docs/DIALOGUE.md.
 const PRESENT = {
+  ascend:[
+    {who:'DUY',emotion:'questioning',text:"They weren't burning. I could still free them."},
+    {who:ARBITER_NAME,emotion:'stern',text:'The heat you carry opens the way. Take it from the demons.'}],
   rescue:[
     {who:'DUY',emotion:'pain',text:'The fire went into me. It hurts!'},
     {who:ARBITER_NAME,emotion:'stern',text:"Look. They're free of it. Get the next one."}],
@@ -239,8 +242,9 @@ function tickPresentDialogue(dt){
   if(presentGap>0 || presentCount>=2 || duelActive) return;
   const fresh=id=>presentEvents[id]!==undefined && elapsed-presentEvents[id]<6;
   if(fresh('rescue') && !presentSeen('rescue')){startPresentDialogue('rescue');return;}
-  if(player.heat>=3 && presentSeen('rescue') && !presentSeen('heat')){startPresentDialogue('heat');return;}
-  if(fresh('vent') && presentSeen('rescue') && !presentSeen('vent')){startPresentDialogue('vent');return;}
+  if(fresh('ascend') && !presentSeen('ascend')){startPresentDialogue('ascend');return;}
+  if(player.heat>=3 && (presentSeen('rescue')||presentSeen('ascend')) && !presentSeen('heat')){startPresentDialogue('heat');return;}
+  if(fresh('vent') && (presentSeen('rescue')||presentSeen('ascend')) && !presentSeen('vent')){startPresentDialogue('vent');return;}
   // Only one return-related exchange per run, near its beginning. Missed beats can recur later.
   if(elapsed<4 || elapsed>12 || presentEvents.returnUsed) return;
   const runs=opp.runs||0,last=META.recentRuns[META.recentRuns.length-1];

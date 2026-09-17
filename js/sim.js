@@ -103,7 +103,7 @@ function reset(seed){
   setupOpp();                                 // grudge wall + snipe, before crowd so they avoid it
   for(let i=0;i<K.CROWD_START;i++) spawnCrowd(true);
   // state the objective plainly on run start (the intro's dialogue box covers the very first boot)
-  if(!intro) callout = { text:'SAVE THE VILLAGERS — run into the burning ones', t:0, life:3.4, good:null };
+  if(!intro) callout = { text:'STOP DEMONS · CARRY HEAT · TOUCH RATKIN TO FREE THEM', t:0, life:3.4, good:null };
   if(typeof CG!=='undefined') CG.start();     // CrazyGames: a run begins
 }
 
@@ -171,8 +171,14 @@ function nearestFrom(p, items){
 // Default play does useful work: rescue first, clear demons second, wander only when safe.
 // Manual keys and dashes remain the optimization layer and always override this heading.
 function autoRunTarget(p){
-  const burning=hunters();
-  return burning.length ? nearestFrom(p,burning) : (demons.length ? nearestFrom(p,demons) : null);
+  const burning=hunters().filter(c=>!c.dead&&!c.saving&&!c.sanctuaryId);
+  if(burning.length)return nearestFrom(p,burning);
+  if(rescueHeatAvailable(p)>=K.REKINDLE_COST){
+    const rescuable=crowd().filter(c=>!c.dead&&!c.sanctuaryId&&!(c.grace>0)).concat(husks.filter(h=>!h.sanctuaryId));
+    if(rescuable.length)return nearestFrom(p,rescuable);
+  }
+  // Intercept incoming imps for heat before they ignite a villager.
+  return nearestFrom(p,demons.concat(arson));
 }
 // Runner guidance follows periodic sightings rather than calculating a perfect live intercept.
 // Demons retain live tracking because touching one without an intentional dash still hurts Duy.
@@ -499,11 +505,12 @@ function step(){
   if(rescueReward){rescueReward.t-=dt;if(rescueReward.t<=0)rescueReward=null;}
   if(saveIconPop) saveIconPop = Math.max(0, saveIconPop - dt*2.2);
 
-  // ---- contact: run into a FLAMING villager and ABSORB their fire (save them, take the heat)
+  // Contact frees burning Ratkin by absorbing heat, or calm Ratkin by spending one heat.
   for(const c of (ghost ? [] : cells)){
-    if(!c.hunter || c.grace > 0 || c.saving) continue;
+    if(c.dead || c.grace > 0 || c.saving || c.sanctuaryId) continue;
     if(dist(p.x,p.y,c.x,c.y) > p.r + K.R_CELL) continue;
-    absorb(c); break;
+    if(c.hunter){absorb(c);break;}
+    if(releaseCell(c))break;
   }
 
   // ---- Khet-Tak-Tor no longer ignites villagers from thin air: he SENDS fire imps in from the edges, each flying to a
@@ -630,34 +637,46 @@ function showRescueReward(embers){
   if(rescueReward && rescueReward.t>0.8){rescueReward.embers+=embers;rescueReward.count++;rescueReward.t=1.15;}
   else rescueReward={embers,count:1,t:1.15};
 }
-function saveCell(c, chained){
-  if(c.saving||c.sanctuaryId)return;
+// A heat unit already committed to venting cannot also pay for an ascension.
+function rescueHeatAvailable(p=player){return Math.max(0,p.heat-(p.ventUnit?.kind==='heat'?1:0));}
+function saveCell(c, chained, spendHeat=false){
+  if(c.dead||c.saving||c.sanctuaryId)return false;
   const p = player;
+  if(spendHeat && rescueHeatAvailable(p)<K.REKINDLE_COST)return false;
   if(!chained) recordOppRescue(c,p.heat);
   if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Khet-Tak-Tor's shield
     if(boss.shieldN <= 0){ boss.shield = false; callout = { text:'SHIELD BROKEN — DUMP NOW!', t:0, life:1.2, good:true }; } }
+  c.rescueState=spendHeat?(c.rekindled?'cinder':'calm'):'flaming';
   c.hunter = false; c.fuse = 0; c.grace = K.GRACE;
   c.saving = true; c.saveT = 0; c.dir = 0; c.svx = 0; c.svy = 0;   // freeze in place — the anim lifts them into the light
   saved++;
-  if(!chained) notePresentEvent('rescue');
+  if(!chained) notePresentEvent(spendHeat?'ascend':'rescue');
   const blaze = 1 + p.heat*K.BLAZE_MULT;                  // the more fire you're carrying, the bigger the save
   score += Math.round(K.SAVE_SCORE * blaze);
   if(blaze > META.bestBlaze) META.bestBlaze = blaze;
   const em = Math.round(K.EMBER_BASE * blaze);
   runEmbers += em; societyArrive(c);META.saved++;showRescueReward(em);
   for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
-    sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
+    sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:spendHeat?150:20+rnd()*35 }); }
   saveIconPop = 0.6; ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);
   edge += chained ? 0.5 : (K.SAVE_EDGE + p.heat*K.SAVE_EDGE_HEAT);   // THE EDGE: hotter saves win more of the town
   edgePop = 0.5;
-  if(!chained){ p.heat = Math.min(K.HEAT_MAX, p.heat + 1);   // ONE +1 heat per absorb (not per chained villager)
-    p.absorbPop = 0.28; ring(p.x, p.y, p.r+6, 80, '#ffcf7a', 0.55); hitstop = K.HITSTOP*0.8; flash = DT*1.5; }
+  if(spendHeat)p.heat=Math.max(0,p.heat-K.REKINDLE_COST);
+  else if(!chained)p.heat=Math.min(K.HEAT_MAX,p.heat+1);
+  p.lit=p.heat>0;
+  if(!chained){p.absorbPop=0.28;ring(p.x,p.y,p.r+6,80,'#ffcf7a',0.55);hitstop=K.HITSTOP*0.8;flash=DT*1.5;}
+  return true;
+}
+function releaseCell(c){
+  if(c.hunter || !saveCell(c,false,true))return false;
+  callout={text:'ASCENDED! -1 HEAT',t:0,life:1.0,good:true};
+  return true;
 }
 // ABSORB: run into a flaming villager. The fire you ALREADY carry arcs to nearby flaming villagers and saves
 // up to floor(heat) more in the same beat — so holding heat = pop a whole burning cluster at once.
 function absorb(c){
   const p = player, reach = Math.floor(p.heat);
-  saveCell(c, false);
+  if(!saveCell(c, false))return;
   let chained = 0;
   if(reach > 0){
     const near = cells.filter(o=>o!==c && o.hunter && o.grace<=0 && !o.saving && dist(o.x,o.y,c.x,c.y)<=K.CHAIN_R)
@@ -878,14 +897,14 @@ function becomeHusk(c){
   edge -= K.LOSS_EDGE + player.heat*K.LOSS_EDGE_HEAT;   // THE EDGE swings toward Khet-Tak-Tor when the town burns
   edgePop = 0.5;
   ring(c.x, c.y, K.R_CELL, 50, '#8a5a2e', 0.42);
-  if(!huskSeen){ huskSeen = true; callout = { text:'A VILLAGER IS LOST — REKINDLE THEM (touch w/ fire) BEFORE THEY TURN', t:0, life:2.4, good:false }; }
+  if(!huskSeen){ huskSeen = true; callout = { text:'A CINDER PERSON — TOUCH WITH HEAT TO FREE THEM', t:0, life:2.4, good:false }; }
 }
 function stepHusks(dt){
   const p = player;
   for(let i=husks.length-1;i>=0;i--){ const h = husks[i]; h.t += dt;
     // REKINDLE: pour your own fire back in (spend heat) to still save them — the mirror of absorb
-    if(!god && p.heat >= K.REKINDLE_COST && dist(h.x,h.y,p.x,p.y) <= p.r + K.HUSK_R + 2){
-      rekindleHusk(h); husks.splice(i,1); continue; }
+    if(!ghost && dist(h.x,h.y,p.x,p.y) <= p.r + K.HUSK_R + 2 && rekindleHusk(h)){
+      husks.splice(i,1); continue; }
     // soft-solid: shove the player off (keeps the wall's cornering role, but temporary)
     { const dx = wrapDX(p.x-h.x), dy = p.y-h.y, d = Math.hypot(dx,dy), min = p.r + K.HUSK_R;
       if(d < min && d > 0.001 && p.lunge <= 0){ p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d); p.hx = dx/d; p.hy = dy/d; } }
@@ -903,21 +922,13 @@ function stepHusks(dt){
   }
 }
 function rekindleHusk(h){
-  if(h.sanctuaryId)return;
-  const p = player;
-  p.heat = Math.max(0, p.heat - K.REKINDLE_COST);      // spend YOUR fire (inverse of absorb's +1)
-  cells.push({ id: nextId++, villagerId:h.villagerId, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
-               hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
-  saved++;
-  h.sanctuaryId=societyArrive(cells[cells.length-1]);META.saved++;
-  edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
-  const em = Math.round(K.EMBER_BASE*0.5); runEmbers += em;showRescueReward(em);
-  score += Math.round(K.SAVE_SCORE*0.5);
-  saveIconPop = 0.6; p.absorbPop = 0.28; flash = DT*1.5; hitstop = K.HITSTOP*0.6;
-  ring(h.x, h.y, K.R_CELL+2, 90, '#8affc1', 0.6);
-  for(let k=0;k<10;k++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);
-    sparks.push({ x:h.x+Math.cos(a)*r, y:h.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:150 }); }
-  callout = { text:'REKINDLED!', t:0, life:1.0, good:true };
+  if(h.sanctuaryId || rescueHeatAvailable()<K.REKINDLE_COST)return false;
+  const c={id:nextId++,villagerId:h.villagerId,x:h.x,y:h.y,vx:0,vy:0,dir:0,ph:0,ps:1,
+           grace:K.GRACE,hunter:false,rekindled:true};
+  if(!saveCell(c,false,true))return false;
+  cells.push(c);h.sanctuaryId=c.sanctuaryId;
+  callout={text:'ASCENDED! -1 HEAT',t:0,life:1.0,good:true};
+  return true;
 }
 let demonKillSeen = false;
 function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat you can bank + embers to spend

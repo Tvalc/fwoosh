@@ -124,7 +124,7 @@ const K = {
   HUSK_CRACK_T: 8.0,                // husk life before it cracks into a wraith
   HUSK_R: 12,                       // soft-solid radius (inherits the wall's cornering role, temporarily)
   CRACK_TELE: 0.9,                  // convulsion telegraph before the wraith rises
-  REKINDLE_COST: 1,                 // heat you SPEND to pour fire back into a husk and save them (mirror of absorb)
+  REKINDLE_COST: 1,                 // heat spent to ascend a calm Ratkin or cinder person
   WRAITH_CAP: 5,                    // persistent town-wraiths roaming at once (over-cap cracks don't add a body)
   DEMON_KILL_HEAT: 1,              // dash-kill ANY fire monster: one heat to bank into a save or dump
   DEMON_KILL_EMBERS: 2,            // + embers per shattered monster (your reward for clearing them)
