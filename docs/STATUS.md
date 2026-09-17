@@ -1,5 +1,11 @@
 # Fwoosh status — September 17, 2026
 
+## Steer then release to Burst - 2026-09-17-release-1
+
+Tony changed the mobile contract: drag the anywhere-except-Vent joystick to steer continuously, then release that same finger to Burst once in the final direction. Second-finger taps no longer dash. A tap/jitter within the 6 CSS-pixel dead zone spends nothing. Canceled touches, lost capture, blur and resize do not Burst. Vent keeps separate touch ownership and committed-unit behavior, including a queued Burst when steering is released during a vent unit. Desktop controls, balance and save2 progress are unchanged.
+
+198 gameplay/save/render checks and 77 asset checks pass. A 390px browser fixture verifies steering, ignored second-finger input and a single release Burst matching the preview. Physical-phone feel remains Tony's test. Release evidence belongs on #26 and the board.
+
 ## Anywhere joystick and second-finger Burst - 2026-09-17-joystick-1
 
 Touch anywhere in gameplay except Vent to summon a floating, trailing joystick. Drag continuously to steer; lift to return to auto-run. A second-finger press elsewhere triggers one Burst along the steering direction immediately, regardless of tap location. Vent keeps independent touch ownership and its committed-unit rules. Release-to-dash touch gestures are retired. Desktop controls, balance and save2 progress remain unchanged. Existing Makko ember/flame assets supply the handle and direction preview.

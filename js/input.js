@@ -6,25 +6,24 @@ function ventBtn(){ const r = 62; return { x: 634, y: 1176, r }; }
 
 // keyboard: WASD/arrows steer, SHIFT dashes, SPACE braces
 // Touch control distances are CSS pixels, independent of canvas/world scaling.
-const touchStick={id:null,x:0,y:0,cx:0,cy:0,ux:0,uy:-1};
-let touchVentId=null, touchBurstId=null;
+const touchStick={id:null,x:0,y:0,cx:0,cy:0,ux:0,uy:-1,dragged:false};
+let touchVentId=null;
 const TOUCH_STICK_RADIUS=36, TOUCH_STICK_DEADZONE=6;
 function touchControlsActive(){return mode==='play'&&!onTitle&&introT<=0&&!debugMenu.open;}
 function touchVentHit(x,y){const b=ventBtn();return Math.hypot(x-b.x,y-b.y)<=b.r+14;}
 function moveTouchStick(x,y){
   touchStick.x=x;touchStick.y=y;
   const dx=x-touchStick.cx,dy=y-touchStick.cy,m=Math.hypot(dx,dy),r=TOUCH_STICK_RADIUS/scale;
-  if(m>TOUCH_STICK_DEADZONE/scale){touchStick.ux=dx/m;touchStick.uy=dy/m;}
+  if(m>TOUCH_STICK_DEADZONE/scale){touchStick.ux=dx/m;touchStick.uy=dy/m;touchStick.dragged=true;}
   // A trailing center bounds the distance needed to reverse after a long drag.
   if(m>r){touchStick.cx=x-dx/m*r;touchStick.cy=y-dy/m*r;}
 }
 function startTouchStick(id,x,y){
   touchStick.id=id;touchStick.cx=x;touchStick.cy=y;touchStick.x=x;touchStick.y=y;
-  touchStick.ux=player.hx;touchStick.uy=player.hy;
+  touchStick.ux=player.hx;touchStick.uy=player.hy;touchStick.dragged=false;
   player.autoTarget=null;player.autoSightT=0;hinted=true;
 }
 function endTouchControl(id){
-  if(id===touchBurstId)touchBurstId=null;
   if(id===touchStick.id){touchStick.id=null;player.autoTarget=null;player.autoSightT=0;}
   if(id===touchVentId){touchVentId=null;setVentHeld(false);}
 }
@@ -109,7 +108,7 @@ function lungeDir(dx,dy){
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
 }
 
-// Touch previews the held steering direction; a second finger commits it on press.
+// Touch previews continuous steering; releasing that same finger commits one Burst.
 // Mouse retains its existing slingshot aim and commits on release.
 function pointerBurstAim(){
   if(touchStick.id!==null&&touchControlsActive()){
@@ -227,7 +226,7 @@ function onUp(){
 // An interrupted gesture is not a completed tap: cancel without spending a dash.
 function cancelPointer(){
   if(ptr.onVent||touchVentId!==null) setVentHeld(false);
-  touchStick.id=null;touchVentId=null;touchBurstId=null;
+  touchStick.id=null;touchVentId=null;touchStick.dragged=false;
   if(player)player.ventDash=null;
   ptr.down = false; ptr.onVent = false; ptr.id=null;
 }
@@ -243,14 +242,10 @@ cv.addEventListener('pointerdown', e=>{
   e.preventDefault();const id=e.pointerId??0,q=local(e),touch=e.pointerType==='touch';
   if(touch)isTouch=true;
   if(touch&&touchControlsActive()){
-    if(id===touchStick.id||id===touchVentId||id===touchBurstId)return;
+    if(id===touchStick.id||id===touchVentId)return;
     if(touchVentHit(q.x,q.y)){
       if(touchVentId===null){touchVentId=id;setVentHeld(true);captureControlPointer(e);}
     }else if(touchStick.id===null){startTouchStick(id,q.x,q.y);captureControlPointer(e);}
-    else if(touchBurstId===null){
-      // Only the steering finger chooses direction. One additional press spends at most one charge.
-      touchBurstId=id;captureControlPointer(e);lungeDir(touchStick.ux,touchStick.uy);
-    }
     return;
   }
   if(ptr.id!==null)return;
@@ -264,7 +259,17 @@ cv.addEventListener('pointermove', e=>{
 });
 window.addEventListener('pointerup', e=>{
   const id=e.pointerId??0;
-  if(id===touchStick.id||id===touchVentId||id===touchBurstId){endTouchControl(id);return;}
+  if(id===touchStick.id){
+    // Capture direction before yielding to auto-run. Canceled pointers never enter this path.
+    if(Number.isFinite(e.clientX)&&Number.isFinite(e.clientY)){
+      const q=local(e);moveTouchStick(q.x,q.y);
+    }
+    const {ux,uy,dragged}=touchStick,active=touchControlsActive();
+    endTouchControl(id);
+    if(active&&dragged)lungeDir(ux,uy);
+    return;
+  }
+  if(id===touchVentId){endTouchControl(id);return;}
   if(ptr.id===null||id!==ptr.id)return;
   if(ptr.down&&Number.isFinite(e.clientX)&&Number.isFinite(e.clientY)){
     const q=local(e);onMove(q.x,q.y);
