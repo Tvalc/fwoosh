@@ -43,6 +43,8 @@ The Sanctuary screen gathers existing verified Makko performances, lists residen
 
 Resident records now reserve a stable `profileId` for Claude's authored citizen registry. Existing and newly rescued residents keep an empty slot until an approved narrative handoff assigns a profile; the runtime must never synthesize a biography to fill it. Welcome records persist separately from household milestones so later celebration art and authored chronicle text can attach to the same event.
 
+The authored content contract lives in `js/society-content.js`. Claude supplies stable profile IDs in `SOCIETY_PROFILES` and their order in `SOCIETY_PROFILE_ORDER`; the runtime backfills only those published profiles into empty slots, preserving assigned IDs through reloads. Profiles may provide a name, pronunciation, life stage, former role, voice, chronicle introduction, background, desire and keyed milestone text. `societyRecordMilestone` records a milestone only when its authored profile text exists, so missing narrative cannot become procedural biography.
+
 Tony subsequently authorized wiping all old progress once in `2026-09-17-reset-1`. Current saves start with a complete resident record from the first rescue. The historical rescue-count reserve and unidentified-resident migration have been removed; do not restore them.
 
 ## Next slices
