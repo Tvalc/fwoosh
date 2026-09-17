@@ -20,6 +20,16 @@ The Ratkin Makko design now replaces the earlier human presentation. Khet-Tak-To
 
 Rescuing a burning ratkin draws its heat into Duy. The process hurts, and the pain grows as he carries more heat. A released ratkin ascends rather than merely stumbling away. Duy can free Ratkin in three states: flaming, non-flaming and cinder. Flaming rescues still draw one heat into him. Touching a non-flaming Ratkin or cinder person spends one carried heat to ascend them, so stopping demons and intercepting fire imps can enable rescue before anyone burns. All three states count fully toward rescue progress and sanctuary arrivals; at the same incoming heat their direct rescue rewards are equal. Heat already committed to a vent unit cannot also fund an ascension.
 
+## The Blackroot Company — approved September 17
+
+The attackers who destroyed the nomadic forest tribe's village and captured its last nineteen survivors were the Blackroot Company, a hobgoblin-led slaving company. Hobgoblin soldiers lead disciplined raids: surrounding camps, blocking escape routes and organizing captive transport. Goblin trackers follow the Ratkin's seasonal migration routes and locate family gathering places.
+
+Blackroot captures people for forced labor and sale. Ratkin woodland knowledge, climbing and ability to navigate narrow spaces make them valuable captives. The tribe resisted; Blackroot destroyed the village during the attack and carried away the nineteen survivors. Their later deaths in the cell at Duy and Cuong's hands are a separate event. Blackroot's responsibility does not erase the shooters' responsibility or change the recorded debt arithmetic.
+
+The faction's organization and choices make it cruel; cruelty is not an innate trait of all hobgoblins or goblins. Preserve room for the wider story's hobgoblin allies and other differing individuals. Specific raid witnesses, acts of resistance, officers, insignia and personal memories remain authored proposals. Reveal that history chiefly through the optional diary and citizen chronicles, not an opening exposition dump.
+
+Do not equate Blackroot with Fwoosh's fire demons. Its exact relationship to Ledger's pit network, the keeping place and Khet-Tak-Tor's former jailer role has not been settled. The existing presence of goblin trading posts or hobgoblins in Ledger is not proof of a specific membership or command relationship.
+
 ## Sanctuary and household life
 
 Rescued Ratkin ascend into sanctuary, keeping their individual identities. After centuries of injustice, they are granted eternal life there and must build the society that makes it fulfilling. Children may be born by resident choice, grow into adults and cease aging. Sanctuary protects residents from death. They may voluntarily leave, becoming mortal while away; returning restores their protection. This exception is specific to the Ratkin sanctuary, not a rule for every dead guest in Ledger. Departures remain lore/chronicles in the first release.

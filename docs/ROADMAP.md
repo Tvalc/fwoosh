@@ -14,6 +14,8 @@ The resident-chronicle interview adds an approved content requirement: individua
 
 Population clarification: monsters destroyed the tribe's village and captured its last nineteen survivors, who were subsequently killed by Duy and Cuong. Build the broader society and an authored citizen backlog beyond nineteen; this is not a nineteen-person settlement or content cap. The village destruction and later cell killings remain distinct in biographies and diary reveals.
 
+Attacker identity is approved: the Blackroot Company, hobgoblin-led slavers with goblin trackers, destroyed the resisting tribe's village and captured the nineteen. Integrate this history into authored citizen/diary content under the prose brief. Their links to the pit network, keeping place and Arbiter remain unresolved; no new arcade enemy replacement is implied.
+
 ## Active now
 
 1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **runtime identity and first Makko character integration complete; dedicated portraits pending**. Name, player-facing text, combat terminology and shared-near-death covenant are migrated. The collective verdict, full-body Ratkin actor and first stern talking portrait are integrated. Remaining emotion portraits and limits of his covenant mandate remain.

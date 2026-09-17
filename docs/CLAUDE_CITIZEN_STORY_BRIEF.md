@@ -16,6 +16,14 @@ Fetch origin and inspect current main. Preserve uncommitted work and use an isol
 - Flaming rescue draws painful heat into Duy; pain grows with carried heat. A calm/cinder rescue spends one carried heat, and demon kills supply heat. All three rescue states ascend the Ratkin. Do not write that Duy must let someone burn to rescue them.
 - Duy's opening confusion concerns the larger mystery. Readers must understand immediate action, physical cause/effect and stakes. The world keeps moving while he struggles to understand.
 
+## Locked attacker identity — September 17 update
+
+Tony approved the Blackroot Company, a hobgoblin-led slaving company, as the tribe's attackers. Hobgoblin soldiers surround camps, block escape routes and organize captive transport; goblin trackers follow seasonal migration routes and locate family gatherings. Blackroot captures people for forced labor and sale, valuing Ratkin woodland knowledge, climbing and movement through narrow spaces. The tribe resisted; Blackroot destroyed the village and captured its last nineteen survivors, whom Duy and Cuong later killed in the cell.
+
+Keep the two events distinct and do not transfer all responsibility to Blackroot. Its cruelty comes from the faction's choices, not an inherently evil species; preserve the wider story's possible hobgoblin allies. Named officers, individual acts of resistance and specific eyewitness memories are draft material for you to develop consistently. Prior illustrative examples were possibilities, not already-canonical incidents.
+
+Do not invent a settled relationship between Blackroot, the pit network, the keeping place, Khet-Tak-Tor or Fwoosh's fire demons. Flag that connective history for reconciliation. Deliver revelations mostly through optional diary/chronicles at a deliberate pace. Do not turn every citizen profile into a retelling of the raid.
+
 ## Citizen deliverables
 
 Write the nineteen captives as an initial connected batch, then continue an individually authored backlog of additional citizens from the wider tribe; do not stop at nineteen or defer all population growth until other worlds appear. Separate draft historical tribe members from future-born residents and other-world arrivals, so biography does not invent an unapproved arrival/death mechanism. Propose a release order for Codex to review. Give each a stable draft ID, name and pronunciation, life stage, former role, distinctive voice, temperament, skills, pleasures, shortcomings, a concrete pre-death memory where applicable, relationships to other named citizens, attitude toward Duy and a desired future in sanctuary. Use recognizable human motivations without flattening Ratkin culture into stereotypes. Relationships must agree in both profiles; shared events must agree in chronology. Mark newly proposed lore and visual details as draft additions.
