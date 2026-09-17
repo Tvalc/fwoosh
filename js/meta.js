@@ -3,6 +3,21 @@
 const DISTRICTS = ['MARKET ROW', 'THE ROWHOUSES', 'THE OLD MILL', 'THE CHAPEL', "THE ARBITER'S GATE"];
 let selDistrict = 1, runDistrict = 1, runQuota = 12;
 
+// Invoice credit records earnings, never the spendable balance. Older saves only
+// prove a floor: wallet and recent runs overlap, so never add them together.
+function emberCount(value){const n=Number(value);return Number.isFinite(n)?Math.max(0,Math.min(Number.MAX_SAFE_INTEGER,Math.trunc(n))):0;}
+function normalizeEmberLedger(value,s){
+  if(value&&value.v===1&&Number.isSafeInteger(value.earned)&&value.earned>=0){
+    return {v:1,earned:value.earned,historyComplete:value.historyComplete===true};
+  }
+  const recent=(s.recentRuns||[]).reduce((sum,r)=>Math.min(Number.MAX_SAFE_INTEGER,sum+emberCount(r&&r.earned)),0);
+  const wallet=Math.max(0,emberCount(s.embers)-emberCount(s.flags&&s.flags.starterBonus));
+  return {v:1,earned:Math.max(wallet,recent),historyComplete:false};
+}
+function recordEarnedEmbers(amount){
+  META.emberLedger.earned=Math.min(Number.MAX_SAFE_INTEGER,META.emberLedger.earned+emberCount(amount));
+}
+
 // ---- META: persistent progression, all minted by SAVING villagers. Separate key from opp; per-field
 // defaults so an old/partial blob degrades instead of crashing.
 function loadMeta(){
@@ -10,6 +25,7 @@ function loadMeta(){
   const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1, clearedDistricts:0,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
     hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh(),
+    emberLedger:{v:1,earned:0,historyComplete:true},
     judgment:{eligible:false,heard:false,favorBegun:false,baseSaved:0,baseFood:0,baseMaterials:0,
       baseBurrows:0,baseDuelWins:0,votes:[],verdictReady:false,verdictHeard:false,released:false,unanimous:false} };
   if(!s || s.v!==1) return d;
@@ -24,6 +40,7 @@ function loadMeta(){
   s.buildings.shrine = Object.assign({}, d.buildings.shrine, s.buildings.shrine||{});
   s.flags = Object.assign({}, s.flags||{});
   s.recentRuns = Array.isArray(s.recentRuns) ? s.recentRuns.slice(-20) : [];
+  s.emberLedger = normalizeEmberLedger(s.emberLedger,s);
   s.diary = Object.assign({}, d.diary, s.diary||{});
   s.city = cityNormalize(s.city);
   s.judgment = Object.assign({}, d.judgment, s.judgment||{});

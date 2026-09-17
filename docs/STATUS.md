@@ -1,5 +1,13 @@
 # Fwoosh status — September 16, 2026
 
+## Lifetime ember accounting - 2026-09-16-embers-1
+
+Tony confirmed that Chit-tat-to's Invoice counts lifetime earned embers, including those already spent rebuilding. The persistent versioned ember ledger now records each completed run once, including win bounty and excluding the separate first-upgrade grant. Purchases, construction, sealing and acceleration spend only the wallet. The Judgment panel shows the record after the first hearing; it does not introduce an early story reveal.
+
+Older saves recover only a proven lower bound: the larger of recent-run earnings or the remaining wallet minus the known starter grant. These overlapping sources are not added. Historical upgrade prices and unrecorded spending are not guessed. Such saves are marked as incomplete; future settlement is exact and reload does not count it twice. Interrupted, unbanked runs keep the existing settlement behavior. Debt conversion, item rewards, System Shop and cross-game redemption remain unimplemented.
+
+171 gameplay/save/render checks and 77 asset checks pass. The post-hearing record and old-save disclosure were reviewed at 390px phone width without console errors. Audit evidence is in reports/lifetime-embers-*.json. Deployment evidence is recorded on #30 and the board.
+
 ## Character readability - 2026-09-16-readable-1
 
 Removed the orange target glow drawn over marked Ratkin and moved the imp's directional warning line beneath the residents. Burning villagers now draw a smaller, softer Makko flame behind their panic performance; the old foreground flame and procedural fallback lick are removed. Residents remain fully visible across the map instead of dropping to 30% opacity at distance.

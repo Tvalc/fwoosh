@@ -60,6 +60,7 @@ function foldOpp(){
   // META: bank this run's embers (+ win bounty, scaled by how deep the district was). saved already counted.
   if(won) runEmbers += K.WIN_EMBERS * runDistrict;
   META.embers += runEmbers;
+  recordEarnedEmbers(runEmbers); // same once-only settlement as the wallet; grants are excluded
   prepareStarterOffer();
   META.recentRuns.push({seconds:Math.round(elapsed*10)/10,district:runDistrict,rescued:saved,
     earned:runEmbers,starterBonus:runStarterBonus,won:!!won});

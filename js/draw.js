@@ -1215,6 +1215,14 @@ function drawShrineSheet(ctx){
     ctx.textAlign='right';ctx.fillStyle=t.done?'#8affc1':'#c9a0ff';ctx.font='800 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText(progress,VW-52,yy);
   }
   ctx.textAlign='center';ctx.fillStyle='#d7cde5';ctx.font='500 16px "Chakra Petch",system-ui,sans-serif';ctx.fillText(j.heard?done+' of 5 blocs support Duy · 4 release · 5 unanimous':done+' of 5 terms fulfilled · connected and sealed buildings only',VW/2,y+526);
+  if(j.heard){
+    const ledger=META.emberLedger;
+    ctx.fillStyle='#ffcf80';ctx.font='700 17px "Chakra Petch",system-ui,sans-serif';
+    ctx.fillText('INVOICE RECORD · '+(ledger.historyComplete?'':'AT LEAST ')+ledger.earned+' EMBERS EARNED',VW/2,y+551);
+    ctx.fillStyle='#d7cde5';ctx.font='500 15px "Chakra Petch",system-ui,sans-serif';
+    ctx.fillText('Spending on the Ratkin does not reduce this total.',VW/2,y+575);
+    if(!ledger.historyComplete){ctx.font='500 13px "Chakra Petch",system-ui,sans-serif';ctx.fillText('Earlier earnings may be missing from this old save.',VW/2,y+595);}
+  }
   const bY=y+h-112,bX=60,bW=VW-120,bH=76;
   panel(ctx,bX,bY,bW,bH,14,'rgba(40,30,58,0.94)',META.judgment.eligible?'#8affc1':'#c9a0ff');
   ctx.fillStyle=META.judgment.eligible?'#b9ffda':'#eadfff';ctx.font='800 23px "Chakra Petch",system-ui,sans-serif';
