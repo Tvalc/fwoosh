@@ -30,6 +30,12 @@ The faction's organization and choices make it cruel; cruelty is not an innate t
 
 Do not equate Blackroot with Fwoosh's fire demons. Its exact relationship to Ledger's pit network, the keeping place and Khet-Tak-Tor's former jailer role has not been settled. The existing presence of goblin trading posts or hobgoblins in Ledger is not proof of a specific membership or command relationship.
 
+The tribe became stateless when its kingdom fell. Since then, its people have been driven from one temporary village to the next, repeatedly rebuilding what they could. The village Blackroot destroyed was the latest of those settlements. Their carried fire, road songs and seasonal movement are survival practices shaped by that history, not evidence that they lacked a society or a home.
+
+The dead have burned for centuries. The covenant did not begin the fire; it turned that old suffering into Duy's final test and a possible path toward repair. Keep the age of the fire separate from the duration of Duy's punishment and from the timing of sanctuary's creation.
+
+Nobody currently knows who opened the cell door toward which the nineteen ran. That answer remains a Ledger mystery. Fwoosh may show the open door and preserve competing memories, but must not resolve, name or imply the opener as established fact.
+
 ## Sanctuary and household life
 
 Rescued Ratkin ascend into sanctuary, keeping their individual identities. After centuries of injustice, they are granted eternal life there and must build the society that makes it fulfilling. Children may be born by resident choice, grow into adults and cease aging. Sanctuary protects residents from death. They may voluntarily leave, becoming mortal while away; returning restores their protection. This exception is specific to the Ratkin sanctuary, not a rule for every dead guest in Ledger. Departures remain lore/chronicles in the first release.

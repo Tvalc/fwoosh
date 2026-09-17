@@ -12,6 +12,8 @@ The permanent-settlement versus mobile-camp decision is still open. Start with r
 
 The tribe's attackers are now canonically the Blackroot Company: hobgoblin soldiers leading organized slaving raids, with goblin trackers following seasonal forest routes. They destroyed the resisting tribe's village and captured its final nineteen survivors. They are a faction, not a species-wide moral identity. This is historical story context, not authorization to replace arcade fire demons with hobgoblins. If diary illustrations require them, coordinate scene/reveal briefs with Claude and propose consistent faction references; uniforms, insignia and named officers are not yet approved. Sanctuary celebration art remains the current production priority.
 
+The tribe was stateless after its kingdom fell and had rebuilt from settlement to settlement; the destroyed village was the latest. Carried fire and road songs are cultural survival practices. The dead have burned for centuries, and the covenant repurposed that old fire as Duy's final test. The cell door's opener is an unresolved Ledger mystery. Preserve these facts if art briefs touch the historical scenes; do not resolve them in visuals.
+
 ## Work order
 
 1. Inventory the Fwoosh Makko collection and existing saved exports against the current art manifest. Reuse finished work. Do not regenerate the twelve civilian idle/walk/panic/ascend sets or the integrated stern Arbiter portrait. Report any ready assets Codex has not integrated.

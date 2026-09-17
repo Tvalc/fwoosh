@@ -22,6 +22,8 @@ Tony approved the Blackroot Company, a hobgoblin-led slaving company, as the tri
 
 Keep the two events distinct and do not transfer all responsibility to Blackroot. Its cruelty comes from the faction's choices, not an inherently evil species; preserve the wider story's possible hobgoblin allies. Named officers, individual acts of resistance and specific eyewitness memories are draft material for you to develop consistently. Prior illustrative examples were possibilities, not already-canonical incidents.
 
+The tribe became stateless when its kingdom fell and has been driven from settlement to settlement ever since. The Blackroot-destroyed village was the latest rebuilding. Carried fire and road songs are survival culture, not proof of a people without a home. The dead have burned for centuries; the covenant turned that old fire into Duy's final test. Nobody knows who opened the cell door toward which the nineteen ran. Preserve that as a Ledger mystery: do not name, reveal or imply the opener as established fact in Fwoosh.
+
 Do not invent a settled relationship between Blackroot, the pit network, the keeping place, Khet-Tak-Tor or Fwoosh's fire demons. Flag that connective history for reconciliation. Deliver revelations mostly through optional diary/chronicles at a deliberate pace. Do not turn every citizen profile into a retelling of the raid.
 
 ## Citizen deliverables
