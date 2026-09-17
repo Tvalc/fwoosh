@@ -19,7 +19,9 @@ Tony chose village life as the next development priority. The reward is watching
 
 Every Ratkin receives an individually authored name, background and personal lore as part of their chronicle. Build a substantial, expandable backlog of authored people; do not substitute procedural or recombined biographies for later arrivals.
 
-The first authored group comes from one connected community, with shared memories and relationships. Arrivals from other worlds follow later, revealing the breadth of the multiversal sanctuary over time. The first community's exact connection to Duy and Cuong remains under interview; do not assume all residents are among the nineteen victims.
+The nineteen Ratkin killed by Duy and Cuong came from a nomadic forest society. That directly affected community is the first society rebuilt in sanctuary, with shared memories and relationships. The goal extends beyond restoring what was lost: help the society grow, expand and build a better future. Arrivals from other worlds follow later, revealing the breadth of the multiversal sanctuary over time. Sanctuary is not limited to the nineteen victims.
+
+How their nomadic forest culture shapes new housing, settlement and travel remains under interview. Do not assume they abandon that culture, that nomadism was forced, or that every member of the wider community died in the massacre. The community's name, individual biographies and specific traditions have not yet been authored or approved.
 
 These are approved content directions, not shipped resident biographies. Current records preserve appearance and arrival/housing milestones. Authored identity assignment, the initial cast, disclosure pacing and behavior when the authored backlog is exhausted still need design before implementation.
 
