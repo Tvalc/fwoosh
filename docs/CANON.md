@@ -1,6 +1,6 @@
 # Fwoosh canon — approved decisions and open design
 
-Reviewed September 15, 2026. Tony's explicit decisions supersede contradictory prototype text. This file records current story and cross-game canon; implementation status belongs in [STATUS.md](STATUS.md), and planned work belongs in [ROADMAP.md](ROADMAP.md).
+Reviewed September 17, 2026. Tony's explicit decisions supersede contradictory prototype text. This file records current story and cross-game canon; implementation status belongs in [STATUS.md](STATUS.md), and planned work belongs in [ROADMAP.md](ROADMAP.md).
 
 ## Premise
 
@@ -20,6 +20,12 @@ The Ratkin Makko design now replaces the earlier human presentation. Khet-Tak-To
 
 Rescuing a burning ratkin draws its heat into Duy. The process hurts, and the pain grows as he carries more heat. A released ratkin ascends rather than merely stumbling away.
 
+## Sanctuary and household life
+
+Rescued Ratkin ascend into sanctuary, keeping their individual identities. After centuries of injustice, they are granted eternal life there and must build the society that makes it fulfilling. Children may be born by resident choice, grow into adults and cease aging. Sanctuary protects residents from death. They may voluntarily leave, becoming mortal while away; returning restores their protection. This exception is specific to the Ratkin sanctuary, not a rule for every dead guest in Ledger. Departures remain lore/chronicles in the first release.
+
+The communal refuge is a joyful place of welcome, shared living and celebration. Personal homes and apartments are equally valid choices; singles, friends, couples and families all belong. Residents choose their own relationships and life paths. Housing preferences and household development affect happiness and production. Every household keeps a persistent chronicle. Celebrations run without interrupting play, with optional zoomed-in visual vignettes. See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md) for the approved direction and explicit implementation boundaries.
+
 ## Rebuilding layer
 
 The action arcade game remains central. An incremental ratkin-city layer sits behind it.
@@ -38,7 +44,7 @@ The action arcade game remains central. An incremental ratkin-city layer sits be
 
 The first playable Ratkin Quarter uses a 5×5 plan with a fixed gate. Its initial playtest buildings are a worker-providing Burrow and a material-producing Salvage Yard. Current costs, timers, acceleration rate, offline cap and road-distance penalty are tuning values recorded in [CITY_FOUNDATION.md](CITY_FOUNDATION.md), not immutable story canon.
 
-The first Ratkin Judgment recognizes a minimum self-sustaining society rather than demanding a large copy quota. It requires five actually cleared districts, nineteen ascended Ratkin, two connected sealed Burrows, a connected sealed Farm that has produced food, and a connected sealed Yard plus Storehouse after material production. Khet-Tak-Tor summons the hearing and acknowledges that Ratkin society can survive. The hearing explicitly does not release Duy: Ratkin favor and the final verdict remain separate. Larger settlements and optimized layouts are optional for this judgment.
+The first Ratkin Judgment recognizes a minimum self-sustaining society rather than demanding a large copy quota. It requires five actually cleared districts, nineteen ascended Ratkin, two connected sealed residential buildings (Burrows or Apartments), a connected sealed Farm that has produced food, and a connected sealed Yard plus Storehouse after material production. Khet-Tak-Tor summons the hearing and acknowledges that Ratkin society can survive. The hearing explicitly does not release Duy: Ratkin favor and the final verdict remain separate. Larger settlements and optimized layouts are optional for this judgment.
 
 After that hearing, five social blocs judge what Duy does with the restored society. The Hearth asks for another connected sealed home. The Bowl asks for eight new food. The Hand asks for six new materials. The Claw asks for twelve more ascensions and another Arbiter trial victory. The Memory asks Duy to read all fifteen diary chapters and face the truth of his path. Earned support is permanent. Any four votes release and resurrect Duy, so the diary remains optional to finish the standalone game. A fifth vote creates the unanimous Invoice and recruit outcome.
 
@@ -72,4 +78,9 @@ Do not invent these values during implementation. Resolve them through the ownin
 
 ## Current implementation boundary
 
-The live dialogue, HUD and diary use Khet-Tak-Tor's approved identity and follow the gradual-discovery direction without promising freedom for a raw rescue or district count. The save-compatible `keith` media key now displays the Makko Ratkin Arbiter; dedicated emotional portraits remain under issue #39. The arcade loop and current town upgrades exist. Ratkin Quarter implements roads, four building types, offline construction, sealing, automatic staffing, food/material storage, visible route carriers, congestion and optional station priorities. The five-term Shrine record and first restoration hearing are implemented. Carriers now display Makko farmer/mason locomotion; dedicated cargo and work actions remain pending. Favor, the final verdict, resurrection ending, Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain tracked in issues #29–#30.
+The live dialogue, HUD and diary use Khet-Tak-Tor's approved identity and follow the gradual-discovery direction without promising freedom for a raw rescue or district count. The save-compatible `keith` media key now displays the Makko Ratkin Arbiter; dedicated emotional portraits remain under issue #39. The arcade loop and current town upgrades exist. Ratkin Quarter implements roads, five building types including apartments, offline construction, sealing, persistent sanctuary residents, automatic housing/staffing, household chronicles, happiness/work-rate effects, food/material storage, visible route carriers, congestion and optional station priorities. The five-term Shrine record and first restoration hearing are implemented. Carriers now display Makko farmer/mason locomotion; dedicated cargo and work actions remain pending. Favor, the final verdict and the standalone resurrection ending are implemented; Invoice redemption, System Shop, Ratkin recruit and cross-game payload remain under #30. Authored sanctuary celebrations, diverse shared households and generational growth remain under #27/#28/#31.
+
+
+## Shared-world clarification — September 17
+
+Tony clarified through the Ledger task: Ledger's Ratkin village is a related material-world settlement for living Ratkin. Fwoosh's sanctuary is the new afterlife awarded to the entire Ratkin race across the multiverse, preserving individual identity. When created, the System announced it to Ratkin societies everywhere, using pictograms where necessary and words where societies could receive them. Deaths remain permanent events in Ledger's mortal world; sanctuary continuation does not reverse a death or battle result or create a general resurrection rule for other guests. Keep the settlements' populations, geography and economies distinct. This is canon documentation, not a new cross-game runtime.

@@ -1,6 +1,6 @@
 # Prose delivery — 2026-09-15-prose-2
 
-Tony approved a clearer revision of The Town on Fire after finding prose-1 too cryptic. This release replaces that chapter and teaser only, with five manually advanced pages. The scene describes painful heat absorption, increasing pain as heat accumulates, and rescued ratkin ascending into light. Their destination remains unspecified. No movement penalty or new damage mechanic is implied by Duy's physical reactions.
+Tony approved a clearer revision of The Town on Fire after finding prose-1 too cryptic. This release replaces that chapter and teaser only, with five manually advanced pages. The scene describes painful heat absorption, increasing pain as heat accumulates, and rescued ratkin ascending into light. Their destination was unspecified in this historical prose release; the September 16 sanctuary decision in CANON.md now establishes it. No movement penalty or new damage mechanic is implied by Duy's physical reactions.
 
 ## Where players encounter it
 

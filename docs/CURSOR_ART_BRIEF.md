@@ -45,3 +45,16 @@ Distinct Well, Diary and Judgment card art; five bloc portraits (Weaver/Hearth, 
 HANDOFF EACH COMPLETED BATCH
 
 Provide Makko source/animation/export URLs; original files; stable names; frame count, dimensions, grid order, durations/fps, orientation and feet/face anchors; transparency QA; a contact sheet or preview; and approval status. Save a machine-readable manifest and a brief handoff document on your own branch, with exact commit and paths. Keep assets/provenance separate from story, balance, saves, runtime code and deployment. Do not claim 'live' just because an asset is saved in Makko. Codex will integrate, test and publish.
+
+
+## New approved sanctuary art lane — September 16
+
+See SANCTUARY_SOCIETY.md. Codex is implementing persistent residents, refuge/housing and chronicles. Cursor retains Makko production ownership. Do not interrupt an almost-finished asset batch; queue this next.
+
+Create a joyful communal refuge establishing freedom from burning, plus multiple welcome/reunion, shared-meal, housewarming, music/dance and neighborhood milestone performances. Tony has ample credits and explicitly wants varied celebrations. Use the existing twelve approved Ratkin civilian identities; children participate in care/play, never labor. Singles, friends, couples and families should all have meaningful scenes.
+
+Supply wide town-view event anchors and matching close-up vignette compositions/performances for optional tap-to-zoom scenes. Preserve character identities, scene framing and ground anchors across related takes. Do not burn flames or panic overlays into sanctuary assets.
+
+Add personal Burrow and apartment residences as equally desirable alternatives: distinct construction, completed-unsealed and sealed states, with occupancy/move-in moments. Existing building/work/cargo and dialogue portrait requests remain outstanding. Produce a reviewed sample welcome and housewarming set before scaling variations.
+
+All assets must originate in Makko's Fwoosh collection. Preserve raw exports, exact source URLs, actual frame count/cell sizes, alpha, reference identity and a dark-background preview. If background removal harms colors, regenerate with a red/green/blue chroma background that contrasts with the character and verify the final alpha export. Do not label generic idle or combat animations as authored celebrations. Hand off exact files/commit for Codex integration; do not overwrite runtime systems.

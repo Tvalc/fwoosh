@@ -1077,7 +1077,7 @@ test('Foundations reject occupied or disconnected sites without spending',()=>{
  g.run('cityPlaceBuilding("yard",1,4)');assert.equal(g.run('META.embers'),160);assert.equal(g.run('META.city.buildings.length'),1);
 });
 test('Construction advances offline, caps at eight hours and requires sealing',()=>{
- const g=game();g.run('META.embers=200;cityPlaceBuilding("burrow",1,4);const t=META.city.lastAt;cityAdvance(t+45*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'building');assert.equal(g.run('META.city.buildings[0].remaining'),45);
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run('META.embers=200;cityPlaceBuilding("burrow",1,4);const t=META.city.lastAt;cityAdvance(t+45*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'building');assert.equal(g.run('META.city.buildings[0].remaining'),45);
  g.run('cityAdvance(META.city.lastAt+9*60*60*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'ready');assert.equal(g.run('cityWorkerCapacity()'),0);
  g.run('citySeal(1)');assert.equal(g.run('META.embers'),140);assert.equal(g.run('META.city.buildings[0].state'),'sealed');assert.equal(g.run('cityWorkerCapacity()'),1);
  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings[0].state'),'sealed');
@@ -1087,20 +1087,20 @@ test('Rush spends exact embers, removes thirty seconds and cannot overspend',()=
  const before=g.run('META.city.buildings[0].remaining');g.run('cityRush(1)');assert.equal(g.run('META.embers'),0);assert.ok(g.run('META.city.buildings[0].remaining')<=before);
 });
 test('A sealed connected Burrow automatically staffs one sealed Yard',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityWorkerCapacity()'),1);assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');assert.equal(g.run('cityYardActive(META.city.buildings[1])'),true);
  g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.materials'),1);assert.ok(g.run('META.city.buildings[1].work<1e-6'));
 });
 test('Road distance slows output and disconnected Yards stop without banking work',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,food:4,nextId:3,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:0,y:2,state:'sealed',remaining:0,work:0}]}`);
- assert.equal(g.run('cityRoadDistanceTo(META.city.buildings[1])'),4);assert.equal(g.run('cityCycleSeconds(META.city.buildings[1])'),55);
+ assert.equal(g.run('cityRoadDistanceTo(META.city.buildings[1])'),4);assert.equal(g.run('cityCycleSeconds(META.city.buildings[1])'),50);
  g.run('cityAdvance(56000,true)');assert.equal(g.run('META.city.materials'),1);
  g.run("META.city.roads=['2,4'];META.city.buildings[1].work=40;cityAdvance(META.city.lastAt+100000,true)");assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings[1].work'),0);
 });
 test('Automatic staffing is stable and extra Yards wait for more Burrows',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,food:4,nextId:4,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,food:4,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0},{id:3,type:'yard',x:0,y:4,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');g.run('cityAdvance(1000+50000,true)');assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings.find(b=>b.id===3).work'),0);
 });
@@ -1120,7 +1120,7 @@ test('Fresh and older city saves receive bootstrap food and normal priorities',(
  assert.equal(old.run('META.city.food'),4);assert.equal(old.run('META.city.buildings[0].priority'),1);assert.equal(old.run('META.city.materials'),2);
 });
 test('Mushroom Farms bootstrap food and Yards consume one ration per material',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:0,nextId:4,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:0,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'farm',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0,priority:2}]}`);
@@ -1135,15 +1135,15 @@ test('Connected sealed Storehouses expand both resource caps',()=>{
  assert.equal(g.run('cityStorageCapacity()'),25);g.run("META.city.roads=['2,4','0,1'];");assert.equal(g.run('cityStorageCapacity()'),25,'A disconnected road island must not add storage.');
 });
 test('Shared-road carrier traffic slows station cycles',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2'],materials:0,food:4,nextId:5,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2'],materials:0,food:4,nextId:5,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'burrow',x:3,y:3,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'yard',x:1,y:2,state:'sealed',remaining:0,work:0,priority:1},
   {id:4,type:'farm',x:3,y:2,state:'sealed',remaining:0,work:0,priority:1}]}`);
- assert.equal(g.run('cityAssignedStations().length'),2);assert.equal(g.run('cityCongestionFor(META.city.buildings[2])'),1);assert.equal(g.run('cityCycleSeconds(META.city.buildings[2])'),54);
+ assert.equal(g.run('cityAssignedStations().length'),2);assert.equal(g.run('cityCongestionFor(META.city.buildings[2])'),1);assert.equal(g.run('cityCycleSeconds(META.city.buildings[2])'),49.1);
 });
 test('Player priorities reorder automatic worker assignment and persist',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:4,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:0,priority:1}]};citySetPriority(3,2)`);
@@ -1151,12 +1151,12 @@ test('Player priorities reorder automatic worker assignment and persist',()=>{
  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings.find(b=>b.id===3).priority'),2);
 });
 test('Map and station render visible logistics and congestion information',()=>{
- const g=game();g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
+ const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
-  {id:2,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:10,priority:1}]};citySelectedId=2;loadCityArt();for(const k of ['farmer_walk','farmer_idle'])Object.assign(MAKKO_ANIM_IMG[k],{complete:true,naturalWidth:2000});drawCityMap(ctx);drawCityStation(ctx)`);
+  {id:2,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:10,priority:1}]};citySelectedId=2;loadCityArt();for(const k of ['ratkin_walk','ratkin_idle'])Object.assign(MAKKO_ANIM_IMG[k],{complete:true,naturalWidth:2000});drawCityMap(ctx);drawCityStation(ctx)`);
  for(const label of ['FARM','MUSHROOM STATION','SPORE BED','GROW ROOM'])assert.ok(g.drawnText.includes(label),'Missing logistics rendering: '+label);
- assert.ok(g.drawnImages.some(i=>i.src.endsWith('/farmer_walk.png')),'Carrier must draw the farmer, not a letter marker.');
- assert.ok(g.drawnImages.some(i=>i.src.endsWith('/farmer_idle.png')),'Working station must display its farmer.');
+ assert.ok(g.drawnImages.some(i=>i.src.endsWith('/ratkin_walk.png')),'Carrier must draw the same archived resident shown at home.');
+ assert.ok(g.drawnImages.some(i=>i.src.endsWith('/ratkin_idle.png')),'Working station must display its assigned resident.');
  assert.ok(g.drawnText.some(t=>t.includes('shared-route traffic')));
 });
 
@@ -1270,6 +1270,103 @@ test('Canonical Arbiter portrait keys resolve before legacy compatibility keys',
  assert.equal(g.drawnImages.at(-1).src,'portrait-test');assert.equal(g.drawnImages.at(-1).args[0],256);
 });
 
+
+test('Rescue registers exact civilian appearance once and survives save reload',()=>{
+ const g=game();g.run('reset(80);const person={id:99,villagerId:7,x:300,y:600,hunter:true,grace:0};saveCell(person,false);saveCell(person,false);saveMeta()');
+ assert.equal(g.run('META.saved'),1);assert.equal(g.run('META.society.residents.length'),1);
+ assert.equal(g.run('META.society.residents[0].kind'),'weaver');assert.equal(g.run('META.society.residents[0].home'),0);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.society.residents[0].kind'),'weaver');assert.equal(reload.run('META.society.legacy'),0);
+ assert.equal(reload.run('META.society.residents[0].events[0].kind'),'arrival');
+});
+test('Husk rekindle adds its actual rescue actor once to sanctuary',()=>{
+ const g=game();g.run('player.heat=8;const h={villagerId:10,x:300,y:600};rekindleHusk(h);rekindleHusk(h)');
+ assert.equal(g.run('META.society.residents.length'),1);assert.equal(g.run('META.society.residents[0].kind'),'herbalist');assert.equal(g.run('META.saved'),1);
+ assert.equal(g.run('META.society.residents[0].kind===villagerType(cells.at(-1))'),true);
+});
+test('Registering a resident does not advance combat randomness',()=>{
+ const a=game(),b=game();a.run('reset(45);societyArrive({id:5})');b.run('reset(45)');assert.equal(a.run('rnd()'),b.run('rnd()'));
+});
+test('Legacy migration preserves large counts compactly without invented history',()=>{
+ const g=game({'fwoosh.meta':JSON.stringify({v:1,saved:1000000,embers:700})});
+ assert.equal(g.run('META.society.legacy'),1000000);assert.equal(g.run('META.society.residents.length'),0);
+ g.run(completeJudgmentCity+';societySync();saveMeta()');
+ assert.equal(g.run('META.society.residents.length'),2);assert.equal(g.run('META.society.legacy'),999998);
+ assert.equal(g.run('META.society.residents.every(r=>!r.known&&r.arrived===0)'),true);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.society.legacy+META.society.residents.length'),1000000);assert.equal(reload.run('META.embers'),700);
+});
+test('Malformed household records normalize without duplicate IDs or unsafe preferences',()=>{
+ const g=game({'fwoosh.meta':JSON.stringify({v:1,saved:4,society:{v:1,legacy:-1,nextId:1,residents:[null,{id:1,kind:'keith',preference:'palace',home:-3,events:[null,{kind:'death'},{kind:'arrival',at:-3}]},{id:1,kind:'baker'}, {id:2,kind:'child',known:true}]}})});
+ assert.equal(g.run('META.society.residents.length'),2);assert.equal(g.run('META.society.legacy'),2);assert.equal(g.run('META.society.nextId'),3);
+ assert.equal(g.run('META.society.residents[0].kind'),'ratkin');assert.equal(g.run('META.society.residents[0].preference'),'either');
+ assert.equal(g.run('META.society.residents[0].events.length'),1);
+});
+const householdCity=`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:4,nextId:4,buildings:[
+ {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
+ {id:2,type:'apartment',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
+ {id:3,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:0,priority:1}]}`;
+test('Automatic housing respects preferences, apartment capacity and child care',()=>{
+ const g=game();g.run(householdCity+';for(const id of [5,9,3,7,8,11])societyArrive({id});societySync()');
+ assert.equal(g.run('META.society.residents[0].home'),1);assert.equal(g.run('META.society.residents[1].home'),2);
+ assert.equal(g.run('META.society.residents[2].home'),0);assert.equal(g.run('cityWorkerCapacity()'),4);
+ assert.equal(g.run('META.society.residents.filter(r=>r.home===2).length'),3);
+ assert.equal(g.run('societyHappiness(META.society.residents[2])'),80);
+ assert.equal(g.run('societyHappiness(META.society.residents[0])'),95);
+});
+test('Empty housing and children alone never create a workforce',()=>{
+ const g=game();g.run(householdCity);assert.equal(g.run('cityWorkerCapacity()'),0);
+ g.run('societyArrive({id:3});societySync()');assert.equal(g.run('cityWorkerCapacity()'),0);assert.equal(g.run('cityAssignedStations().length'),0);
+});
+test('Preferred homes improve actual production and the exact resident works the station',()=>{
+ const g=game();g.run(householdCity+';societyArrive({id:7});societySync()');
+ assert.equal(g.run('societyStationResident(cityBuilding(3)).kind'),'weaver');assert.equal(g.run('cityCycleSeconds(cityBuilding(3))'),41.7);
+ g.run('cityAdvance(META.city.lastAt+41700,true)');assert.equal(g.run('META.city.producedFood'),1);
+ g.run("Object.assign(MAKKO_ANIM_IMG.weaver_walk,{complete:true,naturalWidth:3000});drawCityCarriers(ctx,80,154,112)");
+ assert.ok(g.drawnImages.some(i=>i.src.endsWith('/weaver_walk.png')));
+});
+test('An existing household moves to a preferred vacancy without losing its chronicle',()=>{
+ const g=game();g.run(householdCity+';META.city.buildings[0].state="ready";societyArrive({id:7});societySync()');
+ assert.equal(g.run('META.society.residents[0].home'),2);assert.equal(g.run('societyHappiness(META.society.residents[0])'),85);
+ g.run('META.city.buildings[0].state="sealed";societySync();societySync()');
+ assert.equal(g.run('META.society.residents[0].home'),1);assert.equal(g.run('META.society.residents[0].events.length'),3);
+ g.run('META.saved=1;saveMeta()');const reload=game(Object.fromEntries(g.storage));reload.run('societySync()');assert.equal(reload.run('META.society.residents[0].events.length'),3);
+});
+test('Moving a house preserves tenancy and does not duplicate move-in milestones',()=>{
+ const g=game();g.run(householdCity+';societyArrive({id:5});societySync();META.city.lastAt=Date.now();cityMoveCell(1,4);cityMoveCell(3,3);societySync()');
+ assert.equal(g.run('META.society.residents[0].home'),1);assert.equal(g.run('META.society.residents[0].events.length'),2);assert.equal(g.run('cityBuilding(1).x'),3);
+});
+test('Apartment construction, sealing and household tenancy survive reload',()=>{
+ const g=game();g.run('META.saved=5;META.society.legacy=5;META.embers=200;cityTool="apartment";cityCellAct(1,4)');
+ assert.equal(g.run('META.embers'),100);g.run('cityAdvance(META.city.lastAt+180000,true);citySeal(1)');
+ assert.equal(g.run('META.embers'),50);assert.equal(g.run('cityWorkerCapacity()'),3);g.run('saveMeta()');
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('cityBuilding(1).type'),'apartment');assert.equal(reload.run('cityWorkerCapacity()'),3);
+});
+test('Apartments count equally for restoration and the Hearth vote',()=>{
+ const g=game();g.run(completeJudgmentCity+';META.saved=19;META.clearedDistricts=5;META.city.buildings[0].type="apartment"');
+ assert.equal(g.run('judgmentReady()'),true);g.run('META.judgment.heard=true;favorBegin();META.city.buildings.push({id:6,type:"apartment",x:3,y:2,state:"sealed",remaining:0,work:0});favorEvaluate(false)');
+ assert.equal(g.run('META.judgment.votes.includes("hearth")'),true);
+});
+test('Sanctuary and household views route through hub actions with complete records',()=>{
+ const g=game();g.run('societyArrive({id:5});onTitle=false;mode="hub";cityAction("society");drawCitySheet(ctx)');
+ assert.equal(g.run('cityView'),'society');assert.ok(g.drawnText.includes('SANCTUARY'));assert.ok(g.run('hubBtns.some(b=>JSON.stringify(b).includes("household:1"))'));
+ g.run('cityAction("household:1");drawCitySheet(ctx)');assert.ok(g.drawnText.includes('HOUSEHOLD CHRONICLE'));assert.ok(g.drawnText.some(t=>t.includes('Ascended from the fire.')));
+});
+
+
+test('Sanctuary portraits always crop a whole animation frame',()=>{
+ const g=game();g.run("societyArrive({id:5});Object.assign(MAKKO_ANIM_IMG.farmer_idle,{complete:true,naturalWidth:2160});frame=43;societyDrawResident(ctx,META.society.residents[0],360,300,216)");
+ const draw=g.drawnImages.at(-1);assert.equal(draw.src,'./media/anim/farmer_idle.png');assert.equal(draw.args[0]%180,0);
+});
+test('Household chronicle keeps older milestones accessible through paging',()=>{
+ const g=game();g.run("societyArrive({id:5});societySelected=1;META.society.residents[0].events=Array.from({length:8},(_,i)=>({kind:'home',home:i+1,type:'burrow',at:0}));cityAction('chroniclepage:1');drawHousehold(ctx)");
+ assert.ok(g.drawnText.some(t=>t.includes('(4)')));assert.ok(g.drawnText.some(t=>t.includes('(6)')));assert.ok(!g.drawnText.some(t=>t.includes('(1)')));
+ assert.equal(g.run('META.society.residents[0].events.length'),8);
+});
+
+test('A newly rescued resident cannot produce resources for time before their arrival',()=>{
+ const g=game();g.run(householdCity+';META.city.lastAt=Date.now()-8*60*60*1000;societyArrive({id:5});cityAdvance(Date.now(),true)');
+ assert.equal(g.run('META.city.producedFood||0'),0);assert.equal(g.run('META.city.food'),4);
+ g.run('cityAdvance(META.city.lastAt+50000,true)');assert.equal(g.run('META.city.producedFood'),1);
+});
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),
   pass:results.filter(r=>r.status==='pass').length, fail:results.filter(r=>r.status==='fail').length, results};

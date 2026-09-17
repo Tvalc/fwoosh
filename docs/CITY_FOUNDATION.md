@@ -6,6 +6,10 @@ Build `2026-09-15-logistics-1` extends that foundation with Mushroom Farms, Stor
 
 Build `2026-09-15-judgment-1` makes the first complete restoration milestone playable. See [JUDGMENT.md](JUDGMENT.md).
 
+## Sanctuary extension — 2026-09-17-sanctuary-1
+
+Persistent rescued residents now occupy housing and supply actual workers. Burrows house one adult household; Apartments house three (100 foundation, 180 seconds, 50 seal, five materials for later copies). Empty houses and children do not generate workers. Housing grants +10% work rate, or +20% for a preferred type. Both housing types count equally toward restoration/favor. The city toolbar now has two readable rows. Sanctuary opens the refuge roster and household chronicles. See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md) for migration, canon and remaining celebration/routine work. The following original foundation values describe the earlier slice; the resident system supersedes its abstract worker-per-building rule.
+
 ## Player loop
 
 1. Extend free roads from the fixed gate across a 5×5 plan.

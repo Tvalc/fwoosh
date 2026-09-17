@@ -24,7 +24,7 @@ function loadMeta(){
   let s=null; try{ s=JSON.parse(localStorage.getItem('fwoosh.meta')); }catch(e){}
   const d = { v:1, embers:0, saved:0, bestBlaze:0, district:1, clearedDistricts:0,
     buildings:{ well:{ built:false, hearts:0, regen:0 }, forge:{ built:false, charges:0, recharge:0 }, shrine:{ built:true } },
-    hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh(),
+    hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh(), society:societyFresh(),
     emberLedger:{v:1,earned:0,historyComplete:true},
     judgment:{eligible:false,heard:false,favorBegun:false,baseSaved:0,baseFood:0,baseMaterials:0,
       baseBurrows:0,baseDuelWins:0,votes:[],verdictReady:false,verdictHeard:false,released:false,unanimous:false} };
@@ -43,6 +43,7 @@ function loadMeta(){
   s.emberLedger = normalizeEmberLedger(s.emberLedger,s);
   s.diary = Object.assign({}, d.diary, s.diary||{});
   s.city = cityNormalize(s.city);
+  s.society = societyNormalize(s.society,s.saved);
   s.judgment = Object.assign({}, d.judgment, s.judgment||{});
   for(const key of ['eligible','heard','favorBegun','verdictReady','verdictHeard','released','unanimous'])s.judgment[key]=!!s.judgment[key];
   for(const key of ['baseSaved','baseFood','baseMaterials','baseBurrows','baseDuelWins'])s.judgment[key]=Math.max(0,Math.trunc(Number(s.judgment[key])||0));
@@ -140,7 +141,7 @@ function judgmentTerms(){
   return [
     {id:'districts',label:'ASHFORD RECLAIMED',value:Math.min(5,META.clearedDistricts||0),need:5,done:(META.clearedDistricts||0)>=5},
     {id:'ascended',label:'RATKIN ASCENDED',value:Math.min(19,META.saved||0),need:19,done:(META.saved||0)>=19},
-    {id:'homes',label:'SEALED HOMES',value:Math.min(2,sealed('burrow')),need:2,done:sealed('burrow')>=2},
+    {id:'homes',label:'SEALED HOMES',value:Math.min(2,societyHomeCount()),need:2,done:societyHomeCount()>=2},
     {id:'food',label:'FOOD FOR THE LIVING',value:(sealed('farm')>=1&&c.producedFood>=1)?1:0,need:1,done:sealed('farm')>=1&&c.producedFood>=1},
     {id:'work',label:'WORK AND STORES',value:(sealed('yard')>=1&&sealed('store')>=1&&c.producedMaterials>=1)?1:0,need:1,done:sealed('yard')>=1&&sealed('store')>=1&&c.producedMaterials>=1}
   ];
@@ -179,12 +180,12 @@ function favorBegin(){
   const j=META.judgment;if(!j.heard||j.favorBegun)return false;
   const c=cityData();j.favorBegun=true;j.baseSaved=Math.max(0,META.saved||0);
   j.baseFood=Math.max(0,c.producedFood||0);j.baseMaterials=Math.max(0,c.producedMaterials||0);
-  j.baseBurrows=citySealedConnectedCount('burrow');j.baseDuelWins=Math.max(0,(typeof opp!=='undefined'&&opp.duelWins)||0);
+  j.baseBurrows=societyHomeCount();j.baseDuelWins=Math.max(0,(typeof opp!=='undefined'&&opp.duelWins)||0);
   j.votes=[];return true;
 }
 function favorTerms(){
   const j=META.judgment,c=cityData(),earned=new Set(j.votes||[]),begun=!!j.favorBegun;
-  const homes=Math.max(0,citySealedConnectedCount('burrow')-(j.baseBurrows||0));
+  const homes=Math.max(0,societyHomeCount()-(j.baseBurrows||0));
   const food=Math.max(0,(c.producedFood||0)-(j.baseFood||0));
   const materials=Math.max(0,(c.producedMaterials||0)-(j.baseMaterials||0));
   const ascended=Math.max(0,(META.saved||0)-(j.baseSaved||0));
