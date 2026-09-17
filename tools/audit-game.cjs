@@ -309,32 +309,33 @@ test('Pointer drag previews without spending and release uses one charge', () =>
   g.dispatch('pointerup');
   assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.down'),false);
 });
-test('Slingshot Burst direction stays anchored to Duy at pointer-down',()=>{
+test('Touch swipe direction stays anchored to the finger start while Duy moves',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  g.run('var q=worldToScreen(620,640);onDown(q.x,q.y);player.x=680;onUp()');
-  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<-.99,'Autorun movement reversed the intended slingshot Burst');
+  g.run('var q=worldToScreen(180,640),z=worldToScreen(300,640);onDown(q.x,q.y);player.x=680;onMove(z.x,z.y);onUp()');
+  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')>.99,'Moving Duy skewed a rightward swipe');
 });
-test('Dragging can revise slingshot Burst aim until release',()=>{
+test('Dragging can revise direct touch aim until release',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  g.run('var a=worldToScreen(620,640),b=worldToScreen(360,900);onDown(a.x,a.y);onMove(b.x,b.y)');
-  assert.equal(g.run('player.charges'),3);
-  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hy')<-.99);
+  g.run('var a=worldToScreen(360,640),b=worldToScreen(520,640),c=worldToScreen(360,900);onDown(a.x,a.y);onMove(b.x,b.y);onMove(c.x,c.y)');
+  assert.equal(g.run('player.charges'),3);assert.ok(g.run('pointerBurstAim().uy')>.99);
+  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hy')>.99);
 });
-test('Releasing slingshot Burst near Duy cancels without spending',()=>{
+test('Touch taps and returning to the swipe origin cancel without spending',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  g.run('var q=worldToScreen(380,640);onDown(q.x,q.y);onUp()');
+  g.run('var q=worldToScreen(620,640);onDown(q.x,q.y);onUp();onDown(q.x,q.y);onMove(q.x-100,q.y);onMove(q.x+3,q.y+2);onUp()');
   assert.equal(g.run('player.charges'),3);assert.equal(g.run('ptr.down'),false);
 });
-test('A second finger cannot hijack an active slingshot Burst',()=>{
+test('A second finger cannot hijack an active touch swipe',()=>{
   const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  const q=g.run('(()=>{const p=worldToScreen(620,640);return {x:p.x*scale,y:p.y*scale,vx:ventBtn().x*scale,vy:ventBtn().y*scale};})()');
+  const q=g.run('(()=>{const p=worldToScreen(480,640),z=worldToScreen(620,640);return {x:p.x*scale,y:p.y*scale,ex:z.x*scale,ey:z.y*scale,vx:ventBtn().x*scale,vy:ventBtn().y*scale};})()');
   g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:q.x,clientY:q.y});
   g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:q.vx,clientY:q.vy});
   g.dispatch('pointerup',{pointerType:'touch',pointerId:2,clientX:q.vx,clientY:q.vy});
   assert.equal(g.run('player.charges'),3);assert.equal(g.run('player.venting'),false);assert.equal(g.run('ptr.down'),true);
-  g.dispatch('pointerup',{pointerType:'touch',pointerId:1,clientX:q.x,clientY:q.y});
-  assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.id'),null);
+  g.dispatch('pointerup',{pointerType:'touch',pointerId:1,clientX:q.ex,clientY:q.ey});
+  assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.id'),null);assert.ok(g.run('player.hx')>.99);
 });
+
 test('Every upgrade track caps correctly and reload applies the completed build', () => {
   const g=game();g.run('META.saved=100; META.embers=10000; enterHub()');
   let spend=0;
@@ -845,7 +846,7 @@ test('HUD, dialogue dock and gutters cannot consume a dash',()=>{
  g.run('onDown(300,600);onMove(400,600)');assert.equal(g.run('player.charges'),3);
  g.run('onUp()');assert.equal(g.run('player.charges'),2);
 });
-test('Slingshot directions invert rendered world targets at phone and desktop sizes',()=>{
+test('Mouse slingshot directions still invert rendered world targets at all viewport sizes',()=>{
  for(const width of [320,375,430,1280])for(const [x,y] of [[100,40],[620,40],[100,1240],[620,1240]]){
   const g=game();g.run(`innerWidth=${width};innerHeight=900;fit();onTitle=false;intro=null;introT=0;player.x=360;player.y=640`);
   const q=g.run(`(()=>{const p=worldToScreen(${x},${y});return {clientX:p.x*scale,clientY:p.y*scale};})()`);
@@ -861,7 +862,7 @@ test('Desktop mouse hold draws the same slingshot trajectory preview',()=>{
  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<0&&g.run('player.hy')<0);
 });
 test('Burst preview builds its arrow from the approved Makko flame frames',()=>{
- const g=game();const ops=g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640;MAKKO_FLAME_IMG.complete=true;MAKKO_FLAME_IMG.naturalWidth=755;var flameDraws=0,flameRotations=0,dashPatterns=0;ctx.drawImage=()=>flameDraws++;ctx.rotate=()=>flameRotations++;ctx.setLineDash=()=>dashPatterns++;var q=worldToScreen(620,760);onDown(q.x,q.y);drawPointerBurstAim(ctx);({flameDraws,flameRotations,dashPatterns})');
+ const g=game();const ops=g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640;MAKKO_FLAME_IMG.complete=true;MAKKO_FLAME_IMG.naturalWidth=755;var flameDraws=0,flameRotations=0,dashPatterns=0;ctx.drawImage=()=>flameDraws++;ctx.rotate=()=>flameRotations++;ctx.setLineDash=()=>dashPatterns++;var q=worldToScreen(620,760);onDown(q.x-100,q.y);onMove(q.x,q.y);drawPointerBurstAim(ctx);({flameDraws,flameRotations,dashPatterns})');
  assert.ok(ops.flameDraws>=3,'The preview did not use enough Makko flame frames to read as a burning arrow');
  assert.equal(ops.flameRotations,ops.flameDraws);assert.equal(ops.dashPatterns,0,'The retired dashed trajectory returned');
  assert.equal(g.run('player.charges'),3);
@@ -1375,6 +1376,22 @@ test('Blocked retired-key deletion never imports or reconstructs old progress',(
  const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:999,saved:100}),'fwoosh.opp':JSON.stringify({terr:Array(48).fill(9),runs:50})},{blockRetiredRemoval:true});
  assert.equal(g.run('META.embers'),0);assert.equal(g.run('META.society.residents.length'),0);assert.equal(g.run('opp.runs'),0);
  g.run('META.embers=8;saveMeta()');const reload=game(Object.fromEntries(g.storage),{blockRetiredRemoval:true});assert.equal(reload.run('META.embers'),8);
+});
+
+test('Touch swipe matches all eight directions from different map positions and phone sizes',()=>{
+ for(const width of [320,390,430])for(const [sx,sy] of [[170,340],[540,900]])for(const [dx,dy] of [[120,0],[-120,0],[0,120],[0,-120],[90,90],[-90,90],[90,-90],[-90,-90]]){
+  const g=game();g.run(`innerWidth=${width};innerHeight=844;fit();onTitle=false;intro=null;introT=0;player.x=360;player.y=640;`);
+  const points=g.run(`(()=>{const a=worldToScreen(${sx},${sy}),b=worldToScreen(${sx+dx},${sy+dy});return {a:{clientX:a.x*scale,clientY:a.y*scale},b:{clientX:b.x*scale,clientY:b.y*scale}};})()`);
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:7,...points.a});g.dispatch('pointermove',{pointerType:'touch',pointerId:7,...points.b});
+  const aim=g.run('pointerBurstAim()'),m=Math.hypot(dx,dy);assert.ok(Math.abs(aim.ux-dx/m)<1e-9);assert.ok(Math.abs(aim.uy-dy/m)<1e-9);assert.equal(g.run('player.charges'),3);
+  g.dispatch('pointerup',{pointerType:'touch',pointerId:7,...points.b});assert.equal(g.run('player.charges'),2);assert.ok(Math.abs(g.run('player.hx')-aim.ux)<1e-9);assert.ok(Math.abs(g.run('player.hy')-aim.uy)<1e-9);
+ }
+});
+test('Mouse keeps its own gesture mode after the same device has used touch',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
+ const q=g.run('(()=>{const p=worldToScreen(620,640);return {clientX:p.x*scale,clientY:p.y*scale}})()');
+ g.dispatch('pointerdown',{pointerType:'mouse',pointerId:8,...q});g.dispatch('pointerup',{pointerType:'mouse',pointerId:8,...q});
+ assert.equal(g.run('ptr.swipe'),false);assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<-.99);
 });
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),

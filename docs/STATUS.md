@@ -1,5 +1,11 @@
 # Fwoosh status — September 17, 2026
 
+## Direct phone swipe dash - 2026-09-17-swipe-1
+
+Tony reported inverted phone dragging as broken and requested dashes in the swipe direction. Touch now derives direction from finger-down to release, independent of Duy's position or auto-run movement. The existing Makko flame preview uses that same vector. Release commits one charge; a tap or return to the swipe-origin dead zone cancels. The final release coordinates are used even without a final move event. Mouse retains its existing slingshot behavior, with gesture type captured per pointer so prior touch use cannot flip mouse controls.
+
+191 gameplay/save/render checks pass, including all eight swipe directions at two map positions and 320/390/430px widths, preview/release agreement, moving-player independence, revised aim, cancellation, second-finger isolation and mouse behavior after touch. 77 asset checks pass. These are dispatched-event/simulation checks, not a physical-phone playtest. Deployment evidence belongs on #26 and the board. The stable save2 generation is unchanged.
+
 ## Authorized fresh save generation - 2026-09-17-reset-1
 
 Tony requested one full wipe of old progress so development no longer carries old save/accounting paths. Startup removes retired `fwoosh.meta` and `fwoosh.opp` and uses stable `fwoosh.save2.meta` / `fwoosh.save2.opp` keys. The reset takes effect when each device/origin loads the new build. New progress survives subsequent reloads/releases, and older tabs cannot resurrect it. Skin preferences and unrelated origin storage remain untouched.

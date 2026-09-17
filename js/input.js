@@ -77,12 +77,13 @@ function lungeDir(dx,dy){
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
 }
 
-// Pointer Burst is a slingshot gesture on touch and mouse. Pull opposite the desired travel
-// direction. The vector is anchored to Duy's position at pointer-down so auto-run cannot skew it.
+// Touch follows the finger's swipe from its starting point, independent of Duy's
+// position. Mouse retains its existing slingshot aim. Preview and release share this vector.
 function pointerBurstAim(){
   if(!ptr.down || mode!=='play')return null;
-  const target=screenToWorld(ptr.x,ptr.y), pullX=target.x-ptr.px, pullY=target.y-ptr.py;
-  const dx=-pullX,dy=-pullY,m=Math.hypot(pullX,pullY);
+  const target=screenToWorld(ptr.x,ptr.y),start=screenToWorld(ptr.sx,ptr.sy);
+  const dx=ptr.swipe?target.x-start.x:ptr.px-target.x;
+  const dy=ptr.swipe?target.y-start.y:ptr.py-target.y,m=Math.hypot(dx,dy);
   if(m<K.POINTER_BURST_CANCEL_R)return {cancel:true,dx,dy};
   return {cancel:false,dx,dy,ux:dx/m,uy:dy/m};
 }
@@ -164,7 +165,7 @@ function resultClick(x,y){
   for(const b of resultButtons())if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h){resultAction(b.act);return;}
 }
 
-function onDown(x,y){
+function onDown(x,y,swipe=isTouch){
   if(debugMenu.open){debugMenuClick(x,y);return;}
   if(onTitle){ onTitle = false; hinted = false; reset(); return; }   // start from the title screen
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
@@ -175,7 +176,7 @@ function onDown(x,y){
   if(isTouch && mode === 'play'){ const vb = ventBtn();
     if(Math.hypot(x-vb.x, y-vb.y) <= vb.r + 14){ ptr.onVent = true; setVentHeld(true); return; } }
   if(!inWorldView(x,y)){cancelPointer();return;}
-  ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.x=x; ptr.y=y; ptr.px=player.x; ptr.py=player.y;
+  ptr.swipe=swipe;ptr.down = true; ptr.sx = x; ptr.sy = y; ptr.x=x; ptr.y=y; ptr.px=player.x; ptr.py=player.y;
 }
 function onMove(x,y){
   if(debugMenu.open)return;
@@ -203,7 +204,7 @@ function local(e){
 }
 cv.addEventListener('pointerdown', e=>{
   e.preventDefault();if(ptr.id!==null)return;if(e.pointerType==='touch')isTouch=true;
-  const q=local(e);onDown(q.x,q.y);
+  const q=local(e);onDown(q.x,q.y,e.pointerType==='touch');
   ptr.id=(ptr.down||ptr.onVent)?(e.pointerId??0):null;
 });
 cv.addEventListener('pointermove', e=>{
