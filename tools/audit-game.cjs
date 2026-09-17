@@ -654,10 +654,10 @@ test('Every ordinary reward source pays its full amount across and beyond the fo
     assert.equal(g.run('runEmbers'),start+6,'High-heat rescue must pay all six embers');
     g.run('player.lunge=0;interceptArson({x:300,y:400});player.lunge=.1;interceptArson({x:300,y:400})');
     assert.equal(g.run('runEmbers'),start+16,'Walking and dashing interceptions must pay four and six');
-    g.run('player.heat=1;rekindleHusk({x:300,y:400})');assert.equal(g.run('runEmbers'),start+18);
+    g.run('player.heat=1;rekindleHusk({x:300,y:400})');assert.equal(g.run('runEmbers'),start+21);
     for(const source of ['town','keith'])g.run(`killDemon({source:${JSON.stringify(source)},x:300,y:400})`);
     g.run('killDemon({x:300,y:400});killDemon({source:"vent",x:300,y:400})');
-    assert.equal(g.run('runEmbers'),start+24,'Three other demons pay two each; vent pays zero');
+    assert.equal(g.run('runEmbers'),start+27,'Three other demons pay two each; vent pays zero');
   }
 });
 test('Uncapped loss earnings bank once, render honestly, persist and leave old upgrades intact', () => {
@@ -762,7 +762,7 @@ test('Win history includes the bounty; zero-rescue loss records top-up separatel
 
 test('Rescue reward feedback groups a chain, includes rekindling, and clears on timeout and reset', () => {
   const g=game();g.run('onTitle=false;intro=null;player.heat=2;saveCell(cells[0],true);saveCell(cells[1],true);rekindleHusk({x:300,y:400})');
-  assert.equal(g.run('rescueReward.count'),3);assert.equal(g.run('rescueReward.embers'),14);
+  assert.equal(g.run('rescueReward.count'),3);assert.equal(g.run('rescueReward.embers'),18);
   g.run('god=true;cells=[];hitstop=0;for(let i=0;i<200;i++)step(DT)');assert.equal(g.run('rescueReward'),null);
   g.run('showRescueReward(8);reset()');assert.equal(g.run('rescueReward'),null);
 });
@@ -781,7 +781,7 @@ test('Assumed event profiles exercise real rewards and expose initial price cade
     if(hot)g.run('killDemon({source:"town",x:300,y:400});killDemon({source:"arbiter",x:300,y:400})');
     return g.run('runEmbers');}
   const ordinary=[7,8,9].map(n=>profile(n,false)),skilled=[9,10,11].map(n=>profile(n,true));
-  assert.deepEqual(ordinary,[44,50,55]);assert.deepEqual(skilled,[88,97,105]);
+  assert.deepEqual(ordinary,[47,53,58]);assert.deepEqual(skilled,[91,100,108]);
   const price=game().run('SHOPS.well.items[1].costs[0]');
   assert.ok(ordinary.every(n=>Math.ceil(price/n)>=2&&Math.ceil(price/n)<=3));
   return {method:'Constructed event profiles, not observed human performance; no duration assumption.',ordinary,skilled,price,midpointRatio:skilled[1]/ordinary[1],laterTiers:[240,540]};
@@ -1458,6 +1458,69 @@ test('Canceled dragged touches never Burst and cannot fire on a later release',(
   g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
   g.dispatch('pointermove',{pointerId:1,clientX:240,clientY:600});g.dispatch(action,{pointerId:1});
   g.dispatch('pointerup',{pointerId:1});assert.equal(g.run('player.charges'),3,action);assert.equal(g.run('heldVec()'),null);
+ }
+});
+test('Actual contact frees a calm Ratkin for one heat and registers a full rescue',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;hitstop=0;cells=[];husks=[];demons=[];arson=[];player.x=360;player.y=640;player.heat=1;player.hp=1;cells=[{id:99,villagerId:7,x:360,y:640,vx:0,vy:0,dir:0,ph:0,ps:1,grace:0,hunter:false}];step()');
+ assert.equal(g.run('saved'),1);assert.equal(g.run('META.saved'),1);assert.equal(g.run('player.heat'),0);
+ assert.equal(g.run('cells[0].saving'),true);assert.equal(g.run('META.society.residents[0].kind'),'weaver');
+ assert.equal(g.run('runEmbers'),5);assert.equal(g.run('score'),180);
+ g.run('hitstop=0;step()');assert.equal(g.run('saved'),1);
+});
+test('Zero or fractional heat cannot free calm or cinder Ratkin',()=>{
+ for(const heat of [0,.5]){
+ const g=game();g.run(`onTitle=false;intro=null;player.heat=${heat};const c={id:90,x:360,y:640,hunter:false};const h={villagerId:8,x:360,y:640};releaseCell(c);rekindleHusk(h)`);
+ assert.equal(g.run('saved'),0);assert.equal(g.run('META.society.residents.length'),0);assert.equal(g.run('player.heat'),heat);
+ }
+});
+test('Flaming contact still supplies heat when Duy starts empty',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;hitstop=0;player.x=360;player.y=640;player.heat=0;cells=[{id:90,x:360,y:640,vx:0,vy:0,dir:0,ph:0,ps:1,grace:0,hunter:true,fuse:100}];step()');
+ assert.equal(g.run('saved'),1);assert.equal(g.run('player.heat'),1);assert.equal(g.run('runEmbers'),3);
+});
+test('All three states award equal score, embers and Edge at the same incoming heat',()=>{
+ const rewards=[];
+ for(const state of ['flaming','calm','cinder']){
+ const g=game();g.run('onTitle=false;intro=null;player.heat=2;edge=0;const c={id:91,villagerId:6,x:360,y:640,hunter:true};');
+ g.run(state==='flaming'?'saveCell(c,false)':state==='calm'?'c.hunter=false;releaseCell(c)':'rekindleHusk(c)');
+ rewards.push(g.run('JSON.stringify({score,runEmbers,edge,saved,total:META.saved,residents:META.society.residents.length})'));
+ assert.equal(g.run('player.heat'),state==='flaming'?3:1);
+ }
+ assert.equal(rewards[0],rewards[1]);assert.equal(rewards[1],rewards[2]);
+});
+test('One heat cannot free two calm people and chains never free calm neighbors for free',()=>{
+ const g=game();g.run('onTitle=false;intro=null;player.heat=1;const a={id:81,x:360,y:640,hunter:false};const b={id:82,x:362,y:640,hunter:false};releaseCell(a);releaseCell(a);releaseCell(b)');
+ assert.equal(g.run('saved'),1);assert.equal(g.run('player.heat'),0);
+ g.run('player.heat=2;const fire={id:83,x:360,y:640,hunter:true};cells=[fire,b];absorb(fire)');assert.equal(g.run('saved'),2);assert.equal(g.run('b.saving'),undefined);
+});
+test('A demon can supply the heat for rescue without anyone igniting',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;cells=[];husks=[];arson=[];player.x=360;player.y=640;player.heat=0;player.lunge=.1;demons=[{x:360,y:640,t:0,ttl:100,hitCd:0,source:"town",warn:0,ph:0}];stepDemons(DT);const c={id:80,x:360,y:640,hunter:false};releaseCell(c);pop("test")');
+ assert.equal(g.run('demons.length'),0);assert.equal(g.run('META.saved'),1);assert.equal(g.run('player.heat'),0);
+ assert.equal(g.run('META.recentRuns[0].earned'),7);assert.equal(g.run('META.emberLedger.earned'),7);
+});
+test('Cinder contact rescues in god mode, prevents consumption and preserves appearance',()=>{
+ const g=game();g.run('onTitle=false;intro=null;god=true;cells=[];player.x=360;player.y=640;player.heat=1;const h={x:360,y:640,t:0,villagerId:10};husks=[h];demons=[{x:365,y:640,t:0,hitCd:0,source:"vent",warn:0,ph:0,feast:h,eatT:K.CINDER_EAT_T-DT/2}];stepHusks(DT);stepDemons(DT)');
+ assert.equal(g.run('husks.length'),0);assert.equal(g.run('saved'),1);assert.equal(g.run('cinderBlasts.length'),0);assert.equal(g.run('META.society.residents[0].kind'),'herbalist');
+});
+test('Auto-run seeks affordable calm and cinder rescues, otherwise intercepts incoming fire',()=>{
+ const g=game();g.run('cells=[{id:1,x:400,y:640,hunter:false,grace:0}];husks=[{x:600,y:640}];demons=[];arson=[{x:200,y:640}];player.x=360;player.y=640;player.heat=1');
+ assert.equal(g.run('autoRunTarget(player)===cells[0]'),true);
+ g.run('cells=[]');assert.equal(g.run('autoRunTarget(player)===husks[0]'),true);
+ g.run('player.heat=0');assert.equal(g.run('autoRunTarget(player)===arson[0]'),true);
+});
+test('Calm rescue explains heat-powered ascension without claiming burning absorption',()=>{
+ const g=game();g.run('onTitle=false;intro=null;player.heat=1;releaseCell({id:88,x:360,y:640,hunter:false});tickPresentDialogue(DT)');
+ assert.equal(g.run('presentDialogue.id'),'ascend');assert.equal(g.run("presentEvents.rescue"),undefined);
+});
+test('Committed vent heat cannot also purchase a calm or cinder ascension',()=>{
+ const g=game();g.run('onTitle=false;intro=null;player.heat=1;player.x=360;player.y=640;const calm={id:78,x:360,y:640,hunter:false};husks=[{x:360,y:640,t:0,villagerId:8}];setVentHeld(true);releaseCell(calm);stepHusks(DT)');
+ assert.equal(g.run('saved'),0);assert.equal(g.run('husks.length'),1);assert.equal(g.run('player.heat'),1);
+ g.run('player.heat=2;releaseCell(calm)');assert.equal(g.run('saved'),1);assert.equal(g.run('player.heat'),1);
+ g.run('setVentHeld(false);ventHold(K.VENT_PURGE)');assert.equal(g.run('player.heat'),0);assert.equal(g.run('demons.length'),1);
+});
+test('Calm and cinder ascensions show the Ratkin animation without a burning overlay',()=>{
+ for(const state of ['calm','cinder','flaming']){
+  const g=game();g.run(`var flames=0;drawFlame=()=>{flames++;return true;};SKINS.makko.cell(ctx,300,500,{id:3,saving:true,saveT:0,rescueState:'${state}',vx:0})`);
+  assert.equal(g.run('flames'),state==='flaming'?1:0);
  }
 });
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',

@@ -1,5 +1,13 @@
 # Fwoosh status — September 17, 2026
 
+## Rescue all three Ratkin states - 2026-09-17-rescue-1
+
+Calm Ratkin now ascend on contact for one carried heat. Cinder people use the same full rescue reward/accounting path, replacing their previous half payout. Flaming rescues retain their heat gain and existing burning-only chains. At the same incoming heat, all direct rescues award equal score, embers and Edge, plus one rescue and the correct persistent sanctuary resident. A committed vent heat unit is reserved against double spending. No new save generation or art is introduced.
+
+Auto-run prioritizes burning Ratkin, then affordable calm/cinder rescues, then demons/incoming fire imps. A dedicated witnessed ascension exchange explains using carried heat; calm/cinder ascension uses existing Makko clips without the burning overlay. The diary no longer tells players to let a Ratkin become a wraith: its ordinary 30-rescue unlock remains available.
+
+209 gameplay/save/render checks and 77 asset checks pass. New checks include actual calm/flaming contact, zero/fractional heat, equal rewards, exact costs, demon-to-rescue without ignition, lifetime earnings, cinder consumption interruption, vent reservation, auto-targeting and state-correct presentation/dialogue. A 390px browser fixture verifies all three ascensions, identities and heat transitions. Human balance/phone playtesting remains open. Commit/PR/deployment evidence belongs on #26 and the board.
+
 ## Steer then release to Burst - 2026-09-17-release-1
 
 Tony changed the mobile contract: drag the anywhere-except-Vent joystick to steer continuously, then release that same finger to Burst once in the final direction. Second-finger taps no longer dash. A tap/jitter within the 6 CSS-pixel dead zone spends nothing. Canceled touches, lost capture, blur and resize do not Burst. Vent keeps separate touch ownership and committed-unit behavior, including a queued Burst when steering is released during a vent unit. Desktop controls, balance and save2 progress are unchanged.

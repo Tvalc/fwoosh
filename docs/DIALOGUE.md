@@ -7,6 +7,7 @@ The runtime identifies the jailer as **Khet-Tak-Tor**, the Ratkin Arbiter. He ad
 ## Current runtime
 
 - A single brief arrival line, with movement, dash and vent available immediately.
+- A first calm/cinder ascension has its own short exchange explaining that carried heat can free someone who is not burning. It does not trigger the painful fire-absorption exchange.
 - Rescue, carried heat and completed vent units trigger short exchanges about something the player has witnessed. An event expires after six seconds rather than joining a queue of stale explanations.
 - At most two story exchanges per run. Each has two short lines, auto-typed with a reading hold. Sixteen seconds of silence follow an exchange. One optional Khet-Tak-Tor combat reaction per run shares the same box and cannot interrupt an exchange.
 - Death/return, Khet-Tak-Tor's role, ratkin judgment and the rebuild obligation unfold on separate later runs. Return explanations have a short opening window; the ratkin/freedom exchange requires at least four completed runs, rebuilding six plus sixteen lifetime rescues. These are initial pacing values for playtesting.

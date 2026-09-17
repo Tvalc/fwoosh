@@ -709,7 +709,7 @@ const SKINS = {
         const clip=MAKKO_ANIM[villagerType(c)+'_ascend'];
         const rescueFrame=clip?Math.min(clip.frames-1,Math.floor(t*clip.frames)):0;
         drawVillager(ctx,X,y-lift,c,'ascend',H,{frame:rescueFrame,alpha,flip:(c.vx||0)<0});
-        if(t<.45)drawFlame(ctx,X,y+K.R_CELL*1.6-lift,H*1.2,frame*.32,1-t/.45);
+        if(t<.45&&c.rescueState!=='calm'&&c.rescueState!=='cinder')drawFlame(ctx,X,y+K.R_CELL*1.6-lift,H*1.2,frame*.32,1-t/.45);
         return;
       }
       // Panic begins with danger, before ignition; only burning residents get flames.
