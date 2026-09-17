@@ -6,7 +6,7 @@ Fetch origin, inspect current main, and read AGENTS.md, docs/CANON.md, SANCTUARY
 
 ## Updated brief
 
-The nineteen victims came from a nomadic forest society. That community is the first society rebuilt in sanctuary, where it will grow and expand beyond what it previously had. The refuge should communicate relief, belonging and celebration from the beginning. Residents include singles, friends, couples and families; children play and receive care, never work. Forest culture should have its own considered visual identity. Avoid generic cultural caricatures or borrowing sacred real-world imagery to imply a vaguely tribal culture.
+Monsters wiped out the nomadic forest tribe's village and captured its last nineteen survivors, whom Duy and Cuong later killed. That whole society is the first rebuilt in sanctuary, where it will grow and expand beyond what it previously had. Nineteen is an initial cast batch, not a population or art-library cap: support an expanding authored citizen roster and larger community scenes. The refuge should communicate relief, belonging and celebration from the beginning. Residents include singles, friends, couples and families; children play and receive care, never work. Forest culture should have its own considered visual identity. Avoid generic cultural caricatures or borrowing sacred real-world imagery to imply a vaguely tribal culture.
 
 The permanent-settlement versus mobile-camp decision is still open. Start with reusable people, props and celebrations that suit either; do not finalize a fixed city plan or erase the nomadic roots. Existing placed buildings remain current gameplay, not proof that the cultural question is settled.
 

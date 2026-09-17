@@ -12,6 +12,8 @@ See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md). Persistent arrivals, the refug
 
 The resident-chronicle interview adds an approved content requirement: individually authored names, backgrounds and lore for every Ratkin, supported by an expanding backlog. Start with the nomadic forest society from which the nineteen victims came; rebuilding must support its growth and expansion beyond restoring the past. Introduce other worlds later. Scope and implement persistent authored identities and their chronicle presentation after the remaining design questions are resolved; do not use procedural biographies as a fallback. See SANCTUARY_SOCIETY.md for the implementation boundary.
 
+Population clarification: monsters destroyed the tribe's village and captured its last nineteen survivors, who were subsequently killed by Duy and Cuong. Build the broader society and an authored citizen backlog beyond nineteen; this is not a nineteen-person settlement or content cap. The village destruction and later cell killings remain distinct in biographies and diary reveals.
+
 ## Active now
 
 1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **runtime identity and first Makko character integration complete; dedicated portraits pending**. Name, player-facing text, combat terminology and shared-near-death covenant are migrated. The collective verdict, full-body Ratkin actor and first stern talking portrait are integrated. Remaining emotion portraits and limits of his covenant mandate remain.
