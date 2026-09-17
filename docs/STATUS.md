@@ -1,5 +1,9 @@
 # Fwoosh status — September 17, 2026
 
+## Sanctuary welcome vignette foundation — 2026-09-17-welcome-1
+
+PR #77 / merge `a38804c071a65d89f0ec8bb4e8bf27f3f2c5021c`; Pages deployment `35280998700` succeeded. New sanctuary arrivals reserve an empty authored `profileId` and create a durable welcome-celebration record. Ratkin Quarter → Visit Sanctuary → Open Gathering opens a zoomed welcome vignette. Existing verified Makko idle performances are used as a clearly temporary presentation layer; they are not mislabeled as bespoke celebration animations. Dedicated Makko welcome/reunion/meal art, authored citizen assignment and richer milestone triggers remain pending. 210 gameplay/save/render checks and 77 asset checks pass.
+
 ## Rescue all three Ratkin states - 2026-09-17-rescue-1
 
 Calm Ratkin now ascend on contact for one carried heat. Cinder people use the same full rescue reward/accounting path, replacing their previous half payout. Flaming rescues retain their heat gain and existing burning-only chains. At the same incoming heat, all direct rescues award equal score, embers and Edge, plus one rescue and the correct persistent sanctuary resident. A committed vent heat unit is reserved against double spending. No new save generation or art is introduced.
