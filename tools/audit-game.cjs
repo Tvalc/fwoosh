@@ -113,6 +113,57 @@ test('Rescue counts persist; earned embers bank at run end', () => {
   g.run('pop("audit")'); const reload=game(Object.fromEntries(g.storage));
   assert.equal(reload.run('META.saved'),1); assert.equal(reload.run('META.embers'),earned+g.run('runStarterBonus'));assert.equal(g.run('runEmbers'),earned);
 });
+test('Lifetime earnings count losses and wins once, excluding the starter grant',()=>{
+ const g=game();g.run('runEmbers=7;pop("audit");foldOpp();pop("duplicate")');
+ assert.equal(g.run('META.emberLedger.earned'),7);
+ assert.equal(g.run('META.embers'),20);
+ g.run('reset();runEmbers=12;startDuel();winDuel();winDuel();foldOpp()');
+ assert.equal(g.run('META.emberLedger.earned'),44);
+ const reloaded=game(Object.fromEntries(g.storage));
+ assert.equal(reloaded.run('META.emberLedger.earned'),44);
+ assert.equal(reloaded.run('META.emberLedger.historyComplete'),true);
+});
+
+test('Purchases and construction never reduce lifetime earned credit',()=>{
+ const g=game();g.run('runEmbers=1000;pop("audit");enterHub();buy("well","hearts");cityOpen();cityPlaceBuilding("burrow",1,4)');
+ // The shop and city spend from the wallet, not the Invoice record.
+ assert.equal(g.run('META.embers'),860);assert.equal(g.run('cityData().buildings.length'),1);
+ assert.equal(g.run('META.emberLedger.earned'),1000);
+ g.run('saveMeta()');const reloaded=game(Object.fromEntries(g.storage));
+ assert.equal(reloaded.run('META.emberLedger.earned'),1000);
+});
+
+test('Old saves recover overlapping evidence conservatively and preserve incomplete history',()=>{
+ const legacy={v:1,embers:100,flags:{starterBonus:20},recentRuns:[{earned:60},{earned:70}],saved:10};
+ const g=game({'fwoosh.meta':JSON.stringify(legacy)});
+ assert.equal(g.run('META.emberLedger.earned'),130); // max(80 wallet,130 recent), not 210
+ assert.equal(g.run('META.emberLedger.historyComplete'),false);
+ g.run('runEmbers=30;pop("audit");saveMeta()');
+ const reloaded=game(Object.fromEntries(g.storage));
+ assert.equal(reloaded.run('META.emberLedger.earned'),160);
+ assert.equal(reloaded.run('META.emberLedger.historyComplete'),false);
+ const wallet=game({'fwoosh.meta':JSON.stringify({...legacy,embers:500})});
+ assert.equal(wallet.run('META.emberLedger.earned'),480);
+});
+
+test('Lifetime credit survives rolling run history and rejects malformed ledger totals',()=>{
+ const g=game();g.run('for(let i=0;i<25;i++){reset();runEmbers=10;pop("audit");}');
+ assert.equal(g.run('META.recentRuns.length'),20);
+ assert.equal(g.run('META.emberLedger.earned'),250);
+ const bad=game({'fwoosh.meta':JSON.stringify({v:1,embers:45,emberLedger:{v:1,earned:-5,historyComplete:true},recentRuns:[null,{earned:-20},{earned:"bad"}]})});
+ assert.equal(bad.run('META.emberLedger.earned'),45);
+ assert.equal(bad.run('META.emberLedger.historyComplete'),false);
+});
+
+test('Invoice earning record appears only after the restoration hearing and labels old history',()=>{
+ const g=game();g.run('drawShrineSheet(ctx)');
+ assert.ok(!g.drawnText.some(t=>t.startsWith('INVOICE RECORD')));
+ g.run('META.judgment.heard=true;META.emberLedger={v:1,earned:600,historyComplete:false};drawShrineSheet(ctx)');
+ assert.ok(g.drawnText.includes('INVOICE RECORD · AT LEAST 600 EMBERS EARNED'));
+ assert.ok(g.drawnText.includes('Spending on the Ratkin does not reduce this total.'));
+ assert.ok(g.drawnText.includes('Earlier earnings may be missing from this old save.'));
+});
+
 test('Repeated game-over dispatch does not bank the same loss twice', () => {
   const g=game(); g.run('runEmbers=20; pop("audit")'); const once=g.run('META.embers');
   g.run('pop("audit")'); assert.equal(g.run('META.embers'),once);

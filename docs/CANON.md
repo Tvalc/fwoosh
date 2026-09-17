@@ -46,7 +46,7 @@ After that hearing, five social blocs judge what Duy does with the restored soci
 
 Completing Duy's restoration/favor path releases and resurrects him. Fwoosh must provide a satisfying, comprehensible ending even when no other game is present.
 
-Duy's return also reduces Cuong's debt by an amount determined by embers Duy collected. Chit-tat-to's Invoice applies that credit and can provide bonuses, rare or unique items and upgrades. A four-of-five verdict is sufficient for Duy's return; unanimous support upgrades the Invoice to its strongest reward tier and makes a Ratkin character eligible to become a missable recruit. After Duy rejoins the RPG party, a System Shop can sell Duy-specific upgrades funded by embers.
+Duy's return also reduces Cuong's debt by an amount determined by lifetime embers Duy earned. Embers already spent rebuilding or buying upgrades still count; Fwoosh spending never reduces the debt-relief basis. Chit-tat-to's Invoice applies that credit and can provide bonuses, rare or unique items and upgrades. A four-of-five verdict is sufficient for Duy's return; unanimous support upgrades the Invoice to its strongest reward tier and makes a Ratkin character eligible to become a missable recruit. After Duy rejoins the RPG party, a System Shop can sell Duy-specific upgrades funded by embers.
 
 Keep the connection small; the full city economy does not need to transfer into the RPG.
 
@@ -62,7 +62,7 @@ Ledger also has a route where Duy survives and older language saying dead guests
 - Why Khet-Tak-Tor maintains or uses the recurring fire as part of Duy's punishment without making Ratkin lives disposable.
 - How district/Arbiter progress contributes without making one combat victory the release condition.
 - Long-term city costs, construction times, production ratios and offline limits after playtesting the initial slice.
-- Whether the Invoice uses lifetime collected embers, unspent embers or another auditable total.
+- Ember-to-debt conversion, caps and reward thresholds; the lifetime-earned basis is locked.
 - Invoice conversion, caps, reward thresholds and interaction with Fwoosh spending.
 - System Shop inventory and relationship to Invoice rewards.
 - Ratkin recruit identity, abilities, acquisition window and miss condition after unanimous support establishes eligibility.
