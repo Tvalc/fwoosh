@@ -10,6 +10,8 @@ Monsters wiped out the nomadic forest tribe's village and captured its last nine
 
 The permanent-settlement versus mobile-camp decision is still open. Start with reusable people, props and celebrations that suit either; do not finalize a fixed city plan or erase the nomadic roots. Existing placed buildings remain current gameplay, not proof that the cultural question is settled.
 
+The tribe's attackers are now canonically the Blackroot Company: hobgoblin soldiers leading organized slaving raids, with goblin trackers following seasonal forest routes. They destroyed the resisting tribe's village and captured its final nineteen survivors. They are a faction, not a species-wide moral identity. This is historical story context, not authorization to replace arcade fire demons with hobgoblins. If diary illustrations require them, coordinate scene/reveal briefs with Claude and propose consistent faction references; uniforms, insignia and named officers are not yet approved. Sanctuary celebration art remains the current production priority.
+
 ## Work order
 
 1. Inventory the Fwoosh Makko collection and existing saved exports against the current art manifest. Reuse finished work. Do not regenerate the twelve civilian idle/walk/panic/ascend sets or the integrated stern Arbiter portrait. Report any ready assets Codex has not integrated.

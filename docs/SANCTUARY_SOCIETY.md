@@ -25,6 +25,8 @@ How their nomadic forest culture shapes new housing, settlement and travel remai
 
 These are approved content directions, not shipped resident biographies. Current records preserve appearance and arrival/housing milestones. Authored identity assignment, the initial cast, disclosure pacing and behavior when the authored backlog is exhausted still need design before implementation.
 
+The attackers are now identified as the Blackroot Company: hobgoblin-led slavers with goblin trackers, who followed seasonal routes, attacked the resisting tribe and carried off its final nineteen survivors. See CANON.md for the locked details. Citizen histories should distinguish this attack from the later cell killings and include lives, relationships and hopes beyond either tragedy. Blackroot is a faction, not a declaration that goblins or hobgoblins are inherently cruel.
+
 ## First implemented slice
 
 New rescues retain one resident record and the exact Makko civilian appearance, including husk rekindles. Personal and apartment households are initially single-adult households; children remain under communal care. This does not claim that relationships, chosen families, births or aging are implemented.
