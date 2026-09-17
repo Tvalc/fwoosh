@@ -1,4 +1,14 @@
-# Fwoosh status — September 16, 2026
+# Fwoosh status — September 17, 2026
+
+## Sanctuary households - 2026-09-17-sanctuary-1
+
+Rescued Ratkin now retain persistent identities and exact Makko civilian appearances, including rekindled husks. Ratkin Quarter → Visit Sanctuary opens the refuge roster and individual household chronicles. Arrival and move-in milestones persist, with paging for longer histories. Earlier saves retain every recorded rescue compactly and explicitly disclose missing historical appearances and dates.
+
+Personal Burrows house one adult household; Apartments house three. Residents automatically choose vacant preferred housing without evicting established occupants. Children remain in community care and never supply workers. Actual housed adults staff stations and appear on their carrier routes; empty homes do not invent workers. Happiness is initially 80 in the refuge, 85 housed, 95 in a preferred home. Housing supplies +10% work rate, or +20% when preferred. Newly rescued workers cannot retroactively produce for time before arrival. Both residence types qualify for restoration and the Hearth vote. Building tools now use two larger rows on phones.
+
+This is the resident/housing foundation, not the complete living village. It uses existing Makko idle/walk performances. Dedicated celebration vignettes, construction/work/cargo art, complete daily routines, shared relationships/families and generational growth remain pending. Departures remain lore only. Approved sanctuary canon and Cursor's art brief are recorded in SANCTUARY_SOCIETY.md and CURSOR_ART_BRIEF.md; Ledger mirrored the canon in commit 049e2ee.
+
+187 gameplay/save/render checks and 77 asset checks pass. Browser checks at 390px width cover the sanctuary roster, household portrait/chronicle, return navigation and larger town controls, with no console errors. Regression coverage includes exact rescue identity, duplicate prevention, old-save migration, housing preferences/capacity, child care, actual production bonuses, historical-work boundaries, apartments in judgment/favor, and whole-frame portrait cropping. Reports: sanctuary-game-audit.json and sanctuary-asset-audit.json. Source/merge/deployment evidence is recorded on #27 and the board after publication.
 
 ## Lifetime ember accounting - 2026-09-16-embers-1
 

@@ -4,7 +4,11 @@ Reviewed September 16, 2026. This is the current source of truth for unfinished 
 
 ## Current live baseline
 
-Latest integrated build is `2026-09-16-embers-1`; deployment evidence is recorded on the owning issue. Touch and desktop mouse use one slingshot Burst gesture: point, hold or drag opposite the desired travel direction, preview the collision-limited path as a Makko flame arrow, then release; returning to Duy cancels without spending a charge. Desktop keyboard steering and Shift remain unchanged. Every demon kill supplies one heat, while vent-created demons continue to pay no embers. Demon contact interrupts an active vent/heal unit, releases the held input and knocks Duy out of the overlap. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. Its first restoration hearing now opens five persistent social-bloc goals across the city, arcade and optional diary. Four votes trigger the standalone release verdict; five record the best future Invoice/recruit outcome. Automated checks and browser fixtures do not replace Tony's physical-phone and desktop-mouse playtests.
+Latest integrated build is `2026-09-17-sanctuary-1`; deployment evidence is recorded on the owning issue. Touch and desktop mouse use one slingshot Burst gesture: point, hold or drag opposite the desired travel direction, preview the collision-limited path as a Makko flame arrow, then release; returning to Duy cancels without spending a charge. Desktop keyboard steering and Shift remain unchanged. Every demon kill supplies one heat, while vent-created demons continue to pay no embers. Demon contact interrupts an active vent/heal unit, releases the held input and knocks Duy out of the overlap. The Ratkin Quarter includes food, material storage, Mushroom Farms, Storehouses, visible route carriers, shared-road congestion and optional station priorities. Its first restoration hearing now opens five persistent social-bloc goals across the city, arcade and optional diary. Four votes trigger the standalone release verdict; five record the best future Invoice/recruit outcome. Automated checks and browser fixtures do not replace Tony's physical-phone and desktop-mouse playtests.
+
+## Village-life priority — approved September 16
+
+See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md). Persistent arrivals, the refuge roster, automatic housing, apartments, happiness/work-rate effects and household chronicles are implemented in the current #27/#28 slice. Dedicated Makko celebrations and tap-to-zoom vignettes follow, then actual daily routines, autonomous diverse households and voluntary generational growth. Sanctuary immortality and temporary mortality while away are locked canon; departures are lore only initially. This work is approved, not parked.
 
 ## Active now
 
@@ -16,7 +20,7 @@ Latest integrated build is `2026-09-16-embers-1`; deployment evidence is recorde
 
 ## Next development sequence
 
-6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **release candidate complete**. The exterior, first two buildings, offline timers, sealing, worker assignment, material production and explanatory station view are implemented. Tony's phone playtest and approved Makko replacements remain.
+6. [#27 Adapt Wayfarer's Hearth into the playable ratkin city foundation](https://github.com/Tvalc/fwoosh/issues/27) — **village-life foundation implemented**. Persistent rescued residents, the refuge roster, apartments/personal homes, automatic housing, household chronicles and happiness/work-rate effects now extend the exterior, offline timers, sealing and station view. Tony's phone playtest and approved Makko replacements remain.
 7. [#28 Extend the adapted station loop into ratkin production, transport and optional optimization](https://github.com/Tvalc/fwoosh/issues/28) — **release candidate complete**. Food, storage, visible carriers, shared-road congestion, automatic recovery and optional priorities are implemented. Farmer/mason locomotion is integrated; dedicated work/cargo art and Tony's phone balance/readability playtest remain.
 8. [#29 Implement ratkin favor, judgment and Duy's standalone ending](https://github.com/Tvalc/fwoosh/issues/29) — **release candidate complete; Tony playtest pending**. The Hearth, Bowl, Hand, Claw and Memory now earn persistent votes through shelter, production, arcade protection and optional diary truth. Four votes trigger Khet-Tak-Tor's final collective verdict and release Duy; a fifth upgrades the cross-game outcome. Dedicated emotional Arbiter portraits remain under #39; the full-body replacement is integrated.
 9. [#30 Design the Chit-tat-to Invoice and Vovinam Ledger handoff](https://github.com/Tvalc/fwoosh/issues/30) — lifetime-earned accounting implemented; debt conversion, rewards, Duy's System Shop and exactly-once cross-game redemption pending. Spending does not reduce Invoice credit; old save history can be incomplete. A unanimous five-bloc verdict grants the strongest Invoice reward tier and Ratkin recruit eligibility; the exact rewards and recruit acquisition remain.
@@ -42,7 +46,7 @@ Latest integrated build is `2026-09-16-embers-1`; deployment evidence is recorde
 ## Initial city tuning now under playtest
 
 - 5×5 plan with a fixed gate road; roads are free and must extend from the connected gate.
-- Burrow: 40-ember foundation, 90 seconds, 20-ember seal; each sealed connected copy supplies one worker.
+- Burrow: 40-ember foundation, 90 seconds, 20-ember seal; each sealed connected copy houses one adult household; an actual resident supplies the worker. Apartments house three households for 100 foundation + 50 seal embers, 180 seconds and five materials for later copies. Housing grants +10% work rate, or +20% for a preferred type.
 - Salvage Yard: 60-ember foundation, 150 seconds, 30-ember seal; one material per 45 seconds on the shortest route.
 - Five embers accelerate construction by 30 seconds. Offline work is capped at eight hours.
 - Later copies cost two materials for a Burrow or three for a Yard. Distance beyond two road steps adds five seconds per production cycle.
@@ -62,7 +66,7 @@ Latest integrated build is `2026-09-16-embers-1`; deployment evidence is recorde
 
 ## Parking lot — not approved implementation
 
-These are ideas to revisit, not missing launch work: additional playable heroes/mastery, Tavern/Chapel/Watchtower/Dana's House, a separate Arbiter progression ladder, more villager vignettes, daily challenges, streaks, share cards, rewarded ads, revives, extra district themes and larger hero sets. Scope each item with Tony before implementation.
+These are ideas to revisit, not missing launch work: additional playable heroes/mastery, Tavern/Chapel/Watchtower/Dana's House, a separate Arbiter progression ladder, daily challenges, streaks, share cards, rewarded ads, revives, extra district themes and larger hero sets. Scope each item with Tony before implementation.
 
 ## Working rules
 

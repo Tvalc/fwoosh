@@ -630,6 +630,7 @@ function showRescueReward(embers){
   else rescueReward={embers,count:1,t:1.15};
 }
 function saveCell(c, chained){
+  if(c.saving||c.sanctuaryId)return;
   const p = player;
   if(!chained) recordOppRescue(c,p.heat);
   if(c.siphon && boss && boss.shield){ c.siphon = false; boss.shieldN = Math.max(0, (boss.shieldN||0)-1);   // strip Khet-Tak-Tor's shield
@@ -642,7 +643,7 @@ function saveCell(c, chained){
   score += Math.round(K.SAVE_SCORE * blaze);
   if(blaze > META.bestBlaze) META.bestBlaze = blaze;
   const em = Math.round(K.EMBER_BASE * blaze);
-  runEmbers += em; META.saved++;showRescueReward(em);
+  runEmbers += em; societyArrive(c);META.saved++;showRescueReward(em);
   for(let i=0;i<10;i++){ const a=rnd()*Math.PI*2, r=K.R_CELL*(0.4+rnd()*0.9);   // flourish: fire streams off them
     sparks.push({ x:c.x+Math.cos(a)*r, y:c.y+Math.sin(a)*r, t:0, life:0.30+rnd()*0.22, sw:(rnd()-0.5)*7, hue:20+rnd()*35 }); }
   saveIconPop = 0.6; ring(c.x, c.y, K.R_CELL+2, 90, '#8affc1', 0.6);
@@ -901,12 +902,13 @@ function stepHusks(dt){
   }
 }
 function rekindleHusk(h){
+  if(h.sanctuaryId)return;
   const p = player;
   p.heat = Math.max(0, p.heat - K.REKINDLE_COST);      // spend YOUR fire (inverse of absorb's +1)
   cells.push({ id: nextId++, villagerId:h.villagerId, x:h.x, y:h.y, vx:0, vy:0, dir:0, ph:0, ps:1, grace:K.GRACE,
                hunter:false, saving:true, saveT:0, rekindled:true });   // plays the teleport-to-light rescue
   saved++;
-  META.saved++;
+  h.sanctuaryId=societyArrive(cells[cells.length-1]);META.saved++;
   edge += 0.5 + p.heat*0.2; edgePop = 0.5;              // rekindle wins back half the town-edge a clean save would
   const em = Math.round(K.EMBER_BASE*0.5); runEmbers += em;showRescueReward(em);
   score += Math.round(K.SAVE_SCORE*0.5);

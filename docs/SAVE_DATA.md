@@ -63,3 +63,10 @@ dialogue-1 retains meta save version 1 and adds optional `dialogue: {seen: strin
 ## Debug reset
 
 Build `2026-09-15-debug-1` adds a confirmed desktop debug reset. It removes only `fwoosh.meta` and `fwoosh.opp`, preserves `fwoosh.skin` and unrelated origin storage, reloads clean defaults, and immediately starts district 1 with intro revision 5 at line 0. Deletion failure attempts to restore both snapshots and keeps the game paused with an error. Test resets must use disposable/local fixtures; never confirm reset against Tony's live save during verification.
+
+
+## Sanctuary extension (September 17, 2026)
+
+`fwoosh.meta.society` is `{v:1,nextId,legacy,residents:[]}`. Each resident has stable `id`, Makko civilian `kind`, `known` (original appearance recorded), `preference`, building `home` (0 is refuge), `arrived` timestamp and persistent `events` (`arrival`, `home`, `refuge`, with timestamp and housing identity/type). Households initially contain one adult; children remain in communal care. Preferences are initial deterministic simulation choices, independent of combat RNG. Relationship/family/birth simulation is not yet present. The full chronicle is retained and paged in the UI.
+
+Old rescue counts remain compact in `legacy`; no fake original appearance/date is recovered. Legacy individuals are materialized only when housing becomes available, explicitly marked unknown. Normalization preserves at least the historical rescue total and prevents duplicate resident IDs. Exact new appearances survive rescue, rekindle, reload and building relocation. City normalization accepts `apartment`; existing v1 currency/upgrades/favor fields stay intact. `judgment.baseBurrows` remains a compatible field name but counts sealed connected residential buildings of either type from this version. Previously earned votes remain permanent.
