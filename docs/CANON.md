@@ -26,6 +26,8 @@ Rescued Ratkin ascend into sanctuary, keeping their individual identities. After
 
 The communal refuge is a joyful place of welcome, shared living and celebration. Personal homes and apartments are equally valid choices; singles, friends, couples and families all belong. Residents choose their own relationships and life paths. Housing preferences and household development affect happiness and production. Every household keeps a persistent chronicle. Celebrations run without interrupting play, with optional zoomed-in visual vignettes. See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md) for the approved direction and explicit implementation boundaries.
 
+Every sanctuary resident is to have an individually authored name, background and personal lore in their chronicle. The first authored group shares one connected community; arrivals from other worlds come later. Their exact community and connection to Duy and Cuong are not yet settled. This does not limit sanctuary to the nineteen victims or claim the biographies are already implemented.
+
 ## Rebuilding layer
 
 The action arcade game remains central. An incremental ratkin-city layer sits behind it.

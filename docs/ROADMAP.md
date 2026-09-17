@@ -10,6 +10,8 @@ Latest integrated build is `2026-09-17-rescue-1`; deployment evidence is recorde
 
 See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md). Persistent arrivals, the refuge roster, automatic housing, apartments, happiness/work-rate effects and household chronicles are implemented in the current #27/#28 slice. Dedicated Makko celebrations and tap-to-zoom vignettes follow, then actual daily routines, autonomous diverse households and voluntary generational growth. Sanctuary immortality and temporary mortality while away are locked canon; departures are lore only initially. This work is approved, not parked.
 
+The resident-chronicle interview adds an approved content requirement: individually authored names, backgrounds and lore for every Ratkin, supported by an expanding backlog. Start with one connected community and introduce other worlds later. Scope and implement persistent authored identities and their chronicle presentation after the remaining design questions are resolved; do not use procedural biographies as a fallback. See SANCTUARY_SOCIETY.md for the implementation boundary.
+
 ## Active now
 
 1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **runtime identity and first Makko character integration complete; dedicated portraits pending**. Name, player-facing text, combat terminology and shared-near-death covenant are migrated. The collective verdict, full-body Ratkin actor and first stern talking portrait are integrated. Remaining emotion portraits and limits of his covenant mandate remain.
