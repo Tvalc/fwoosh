@@ -8,11 +8,11 @@ Tony confirmed September 16: debt relief uses lifetime earned embers. Spending o
 
 The Judgment screen displays the record only after the restoration hearing. It does not calculate debt or mint an export/reward.
 
-## Existing saves
+## Authorized fresh start — September 17
 
-The previous save format retains only 20 run records and no complete spending ledger. Recover a conservative floor as the maximum of recent-run earnings and the wallet less the known starter grant. Do not add these overlapping sources, estimate old earnings from saves/districts, or reconstruct purchases using current prices that may differ from historical prices. Mark migrated history incomplete. Preserve that flag after new earnings and reload.
+Tony explicitly requested a one-time wipe of all old progress so development no longer has to recover historical accounts. Build `2026-09-17-reset-1` retires `fwoosh.meta` and `fwoosh.opp` and starts the stable `fwoosh.save2.*` generation. On each device/origin the cutover takes effect when the new build loads. Subsequent releases retain these new saves. Old tabs cannot overwrite the new keys.
 
-A remedy for unrecorded legacy earnings must be agreed before enabling final debt redemption. Do not present this floor as an exact total or silently discard the missing-history distinction.
+Historical earnings are not estimated, migrated or owed a recovery path. Current-generation earnings start at zero and are recorded exactly from guarded settlement. Malformed current ledger data remains distinguishable from a complete record, but it is not repaired from wallet/recent-run guesses.
 
 ## Still to decide and implement
 

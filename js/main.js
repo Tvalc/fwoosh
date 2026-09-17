@@ -77,7 +77,7 @@ window.__fwoosh = {
   }; },
   resetOpp(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null,
     runs:0, readsBroken:0, timesSniped:0, seenIntro:false, duelWins:0, loreIdx:0 };
-    try{ localStorage.removeItem('fwoosh.opp'); }catch(e){} return this.oppState(); },
+    try{ localStorage.removeItem(SAVE_KEYS.opp); }catch(e){} return this.oppState(); },
   skipIntro(){ introT = 0; return true; },
   clearIntro(){ onTitle = false; intro = null; introT = 0; return this.state(); },   // dismiss title + LIVE walk-in/talk instantly (test setup)
   setIntro(t, kind){ introT = t; if(kind) introKind = kind; return introT; },  // hold a screen for preview
@@ -125,7 +125,7 @@ window.__fwoosh = {
   setSaved(n){ saved = Math.max(0, Math.round(n)); saveIconPop = 0.6; return { saved }; },
   meta(){ return META; },
   metaSet(o){ Object.assign(META, o); saveMeta(); return META; },
-  clearMeta(){ try{ localStorage.removeItem('fwoosh.meta'); }catch(e){} META = loadMeta(); return META; },
+  clearMeta(){ try{ localStorage.removeItem(SAVE_KEYS.meta); }catch(e){} META = loadMeta(); return META; },
   enterHub(){ enterHub(); return { mode }; },
   startIntro(){ opp = { terr:new Array(K.OPP_COLS*K.OPP_ROWS).fill(0), lat:[], grudge:null, medianLat:null,
     runs:0, readsBroken:0, timesSniped:0, seenIntro:false, duelWins:0, loreIdx:0 };

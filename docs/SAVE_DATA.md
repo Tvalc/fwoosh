@@ -1,72 +1,39 @@
 # Save-data contract — current live baseline
 
-Browser-local persistence; no cloud save/backend established in inspected code. Origins, profiles and devices have separate progress.
+Browser-local persistence; no cloud save/backend. Origins, browser profiles and devices have separate progress.
 
-| Key | Contents | Interpretation |
-|---|---|---|
-| fwoosh.meta | v:1, embers, saved, bestBlaze, district, clearedDistricts, buildings, hero, diary.read, flags, recentRuns, city, judgment | district is highest unlocked (1–5), not completed count. clearedDistricts records completion (0–5). hero:'stranger' is a placeholder. |
-| fwoosh.opp | Territory, latency history, grudge, runs, broken reads, snipes, wins, intro/lore progress | Feud still reads older run/win/read signals. |
-| fwoosh.skin | Selected skin | Separate from progression. |
+## Authorized one-time cutover
 
-Well: `{built, hearts, regen}`. Forge: `{built, charges, recharge}`. Shrine: `{built:true}`. Diary: `{read:[]}`. `flags.reachedDuel` opens a chapter. Meta loader fills missing defaults; it does not comprehensively validate arbitrary malformed values.
+Tony requested a full old-progress wipe on September 17, 2026, to stop carrying historical migration/accounting complexity. Build `2026-09-17-reset-1` runs `save-generation.js` before loading any progression. It removes only retired `fwoosh.meta` and `fwoosh.opp` records and never loads them. New progress uses the stable keys below. **Do not change these keys with normal releases.**
 
-City: `{v:1, lastAt, roads:string[], buildings:CityBuilding[], materials, food, producedFood, producedMaterials, nextId}`. A building is `{id,type:'burrow'|'yard'|'farm'|'store',x,y,state:'building'|'ready'|'sealed',remaining,work,priority}`. `priority` is 0 low, 1 normal or 2 high for production stations. `lastAt` is an epoch-millisecond checkpoint. `remaining` is construction seconds; `work` is current production-cycle seconds. The production totals prove that each chain has operated and never decrease when resources are spent. The city loader restores the fixed gate, removes invalid/duplicate roads and overlapping/unknown buildings, clamps resources and progress to nonnegative values, and defaults older city saves to four food, zero production proof and normal priorities.
+| Key | Contents |
+|---|---|
+| `fwoosh.save2.meta` | Currency, upgrades, district clears, diary/dialogue, city, society, judgment, recent runs, lifetime ember ledger |
+| `fwoosh.save2.opp` | Territory, rescue observations, runs/wins, intro/lore progress |
+| `fwoosh.skin` | Display preference, preserved through the cutover |
 
-Judgment retains its original `eligible` and `heard` flags and adds the favor phase: `{favorBegun,baseSaved,baseFood,baseMaterials,baseBurrows,baseDuelWins,votes[],verdictReady,verdictHeard,released,unanimous}`. The first hearing captures the five baselines. Food, material, shelter, ascension and trial proofs therefore count only after favor begins; diary reads are lifetime truth progress. Votes use stable IDs `hearth`, `bowl`, `hand`, `claw` and `memory` and remain earned after their conditions are met. Four votes set verdict readiness. Completing the final scene persists release; a later fifth vote can still persist unanimity. Missing and malformed fields normalize without changing outer meta version 1. An older save with `heard:true` captures current baselines on its next town evaluation rather than receiving retroactive votes.
+An old tab may write retired keys again; cleanup can remove them on a later load without affecting new progress. If removal is blocked, the old records remain unread and cannot populate the new generation. Never clear all origin storage: other games share the domain. The one-time reset takes effect separately on each device/origin when it next loads this build. It does not remotely erase unopened browsers.
 
-## Persistence timing
+## Current records
 
-Rescues update lifetime saved and pending embers in memory. `foldOpp()` banks pending embers at run end, adds a scaled win bounty when appropriate, and saves. Hub entry, purchases, diary reads and selected milestones also save. Every rescue is not immediately durable across tab closure.
+Meta retains outer `v:1`. `district` is highest unlocked (1–5); `clearedDistricts` is explicit completion (0–5). Never infer clears from unlocks or total wins. Well is `{built,hearts,regen}`; Forge is `{built,charges,recharge}`; Shrine is `{built:true}`. Diary read IDs and flags persist. Missing or malformed current fields receive safe defaults; this is defensive loading, not support for pre-cutover saves.
 
-## Requirements for future changes
+City: `{v:1,lastAt,roads,buildings,materials,food,producedFood,producedMaterials,nextId}`. Buildings have `{id,type,x,y,state,remaining,work,priority}`. Types: `burrow`, `apartment`, `yard`, `farm`, `store`. States: `building`, `ready`, `sealed`. Priority: 0 low, 1 normal, 2 high. `lastAt` uses epoch milliseconds; remaining/work use seconds. Catch-up is capped at eight hours. Roads/buildings normalize to valid cells and stations clear work when blocked. Foundation, sealing, movement and significant timer events save.
 
-- Preserve embers, upgrades, diary IDs and opponent history.
-- Keep v1 compatibility or test an explicit migration; merely changing the version currently resets progress.
-- v1 migration seeds clearedDistricts from district minus one and preserves an existing larger completed count, clamped to 0–5. An old district:5 proves four completions; wins do not prove a fifth. Currency, upgrades and diary reads are preserved. Winning district 5 explicitly saves completion 5.
-- A runSettled latch makes run banking and opponent statistics idempotent. Terminal handlers reject repeated/late events; reset clears the latch for a new run. This is defensive reliability, not a claim of a reproduced ordinary-play exploit.
-- Use stable identities for future per-face/hero features; cell IDs are run-scoped.
-- Keep one feud source of truth.
-- Test in a separate origin or in-memory fixtures; never reset the player's real saves.
+Society: `{v:1,nextId,residents:[]}`. Residents have stable `id`, Makko civilian `kind`, `preference`, building `home` (0 is refuge), `arrived`, and persistent `events` (`arrival`, `home`, `refuge`, with timestamp/home/type). Every resident comes from an actual rescue; there is no historical count reserve or unidentified-person migration. New workers cannot produce for time before arrival. Households initially contain one adult; children stay in community care. Preferences are deterministic simulation choices independent of combat RNG. Relationship/family/birth simulation remains pending. Chronicles retain all milestones and page them in the UI.
 
-The simulation stops the frame after terminal boss outcomes so a later rescue cannot change run totals after settlement. Regression checks compare the displayed run tally with banked embers and reloaded rescue counts.
+Judgment: `eligible`, `heard`, `favorBegun`, baselines `baseSaved/baseFood/baseMaterials/baseBurrows/baseDuelWins`, `votes`, `verdictReady/verdictHeard/released/unanimous`. `baseBurrows` counts sealed connected residential buildings of either type despite its historical field name. Votes (`hearth`, `bowl`, `hand`, `claw`, `memory`) remain earned. Four release Duy; five grant unanimity. These records do not prove Ledger redeemed anything.
 
-## Intro revisions
+Lifetime ember ledger: `{v:1,earned,historyComplete}`. Starts at zero/complete. Guarded settlement counts run earnings and win bounty once; starter grants are excluded. Spending never reduces it. Malformed ledger data is flagged incomplete and is not reconstructed from wallet or recent history. See INVOICE_ACCOUNTING.md.
 
-The live-action intro uses existing `fwoosh.opp.introVer`. Title loading does not mark it seen; starting a run does. The current present-dialogue release uses revision 5. Revision changes replay revised opening dialogue once while preserving ember balances, district completion, upgrades and diary read state. City and favor records remain optional additions under outer version 1. Invoice redemption fields do not exist yet; `released` and `unanimous` are Fwoosh-side outcome records, not proof that Ledger has redeemed a payload.
+Recent runs retain 20 records: seconds, district, rescued, earned, starterBonus and won. This is not the lifetime ledger. Starter-offer flags are `starterChecked`, `starterReady`, `starterBonus`, `starterChosen`; the grant and wallet save together.
 
-## Ratkin Quarter persistence
+Present dialogue: `{seen:[],history:[{who,text,emotion}]}`. At most 32 seen exchange IDs and 100 recent unique delivered lines. An exchange is seen only when completed; a line archives after typing. Intro revision 5 lives in opponent progress and is marked on starting a run, not title loading.
 
-City construction and production advance from `lastAt` on town entry, city entry, city actions and the visible city timer. Each catch-up step is capped at eight hours. Road/building placement, rushing, sealing, moving and important timer completions save immediately. Sealed connected Yards clear partial work when they lose their worker or road; disconnected time is never banked for later output. Older v1 saves gain a fresh gate-only city and retain all prior progression.
+## Persistence and verification
 
-Logistics-1 retains both the outer meta v1 and city v1. It adds optional `food` and `priority` fields using defaults that preserve city-1 playability. Production stations clear partial work when they become ineligible because of disconnection, staffing, missing food or full storage; blocked time cannot be reclaimed by reconnecting later.
+Rescues change in-memory resident/save counts and pending rewards. Guarded run settlement banks rewards and saves once. Hub entry, purchases, diary reads and milestones also save; closing an unsettled run is not guaranteed to bank it. City elapsed work is settled before a newly rescued worker joins.
 
-## First-upgrade offer
+Keep the current save namespace and preserve earned progress in future releases unless Tony explicitly requests another reset. Test migrations, reloads and failures using in-memory fixtures or isolated local previews. Never reset unrelated storage or a live player save merely for verification.
 
-Build 2026-09-14-economy-1 retains v1 and normalizes missing/null flags. Existing flags gain starterChecked (one settlement eligibility check), starterReady (offer issued), starterBonus (one-time amount granted), and starterChosen (hearts or charges when bought). Unupgraded saves get one catch-up offer on their next completed run; already-upgraded saves receive no grant. Earned embers bank before the wallet top-up; the wallet and grant marker save together. Purchases consume normal tier 1, so later shop tiers and old upgrades retain their meaning. See ECONOMY_TUNING.md. Lifetime collection/Invoice accounting remains undefined and unimplemented.
-
-## Uncapped earnings
-
-2026-09-14-economy-2 removes reward truncation at 160, with no new save fields or schema changes. The existing run-settlement guard banks all earned rewards once; win bounties still add normally and starter funding remains separate. Existing balances and upgrade tiers are retained. Historical foregone rewards are not recoverable from the stored save and are not estimated.
-
-## Recent run history — loop-1
-
-v1 `fwoosh.meta.recentRuns` retains at most 20 completed attempts. Each record contains seconds (one decimal), district, rescued, earned (including win bounty), starterBonus (separate) and won. Missing/non-array values normalize to an empty array; extra old entries are trimmed. The existing settlement guard prevents duplicates. It is local only, is not a lifetime ledger, and does not change existing balances, tiers or starter flags. Price changes apply to future purchases only; owned effects remain intact.
-
-## Prose revision
-
-prose-1 changes INTRO_VERSION from 3 to 4, using the existing one-time replay mechanism. Diary IDs and read flags are preserved; rewritten entries remain accessible at their existing unlocks. No new save fields, grants, economy changes or migration. The existing loreIdx is retained.
-
-## Present dialogue history
-
-dialogue-1 retains meta save version 1 and adds optional `dialogue: {seen: string[], history: {who,text,emotion}[]}`. Old/malformed values normalize on first use. Seen exchange IDs are capped at 32; delivered text at 100 unique recent lines. Only a completed exchange is marked seen. A line enters the archive when it has finished typing; an interrupted unread line is not archived. No wallet grants or chapter-unlock changes accompany this addition. INTRO_VERSION changes from 4 to 5 for the one-time short opening. The old `opp.loreIdx` is left intact but its timer has been removed.
-
-## Debug reset
-
-Build `2026-09-15-debug-1` adds a confirmed desktop debug reset. It removes only `fwoosh.meta` and `fwoosh.opp`, preserves `fwoosh.skin` and unrelated origin storage, reloads clean defaults, and immediately starts district 1 with intro revision 5 at line 0. Deletion failure attempts to restore both snapshots and keeps the game paused with an error. Test resets must use disposable/local fixtures; never confirm reset against Tony's live save during verification.
-
-
-## Sanctuary extension (September 17, 2026)
-
-`fwoosh.meta.society` is `{v:1,nextId,legacy,residents:[]}`. Each resident has stable `id`, Makko civilian `kind`, `known` (original appearance recorded), `preference`, building `home` (0 is refuge), `arrived` timestamp and persistent `events` (`arrival`, `home`, `refuge`, with timestamp and housing identity/type). Households initially contain one adult; children remain in communal care. Preferences are initial deterministic simulation choices, independent of combat RNG. Relationship/family/birth simulation is not yet present. The full chronicle is retained and paged in the UI.
-
-Old rescue counts remain compact in `legacy`; no fake original appearance/date is recovered. Legacy individuals are materialized only when housing becomes available, explicitly marked unknown. Normalization preserves at least the historical rescue total and prevents duplicate resident IDs. Exact new appearances survive rescue, rekindle, reload and building relocation. City normalization accepts `apartment`; existing v1 currency/upgrades/favor fields stay intact. `judgment.baseBurrows` remains a compatible field name but counts sealed connected residential buildings of either type from this version. Previously earned votes remain permanent.
+The backtick debug reset explicitly confirms deletion of the two current progress keys, preserves skin/unrelated storage, reloads defaults and starts district 1 with opening dialogue. On deletion failure it attempts snapshot restoration and remains paused with an error. Developer console clearing tools also target the current keys.

@@ -47,7 +47,7 @@ function resetDebugProgress(){
   const snapshots=[];
   try{
     // Never clear the origin: other games can share tvalc.github.io storage.
-    for(const key of ['fwoosh.meta','fwoosh.opp'])snapshots.push([key,localStorage.getItem(key)]);
+    for(const key of [SAVE_KEYS.meta,SAVE_KEYS.opp])snapshots.push([key,localStorage.getItem(key)]);
     for(const [key] of snapshots)localStorage.removeItem(key);
     for(const [key] of snapshots)if(localStorage.getItem(key)!==null)throw Error('Save was not removed');
   }catch(e){

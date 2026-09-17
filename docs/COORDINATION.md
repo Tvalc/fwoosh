@@ -32,7 +32,7 @@ All Fwoosh artwork must come from Makko. This includes characters, animation, en
 
 Every active issue states owner, status, scope, dependencies and acceptance criteria. Ideas without Tony's approval stay in the roadmap parking lot rather than appearing as committed work.
 
-Keep code, balance, prose and art changes separable. Preserve existing localStorage fields or test an explicit migration. A fixture or automated audit is evidence, not human balance or physical-device approval.
+Keep code, balance, prose and art changes separable. Preserve current-generation localStorage fields or test an explicit migration. Tony authorized a one-time full progress reset in `2026-09-17-reset-1`; pre-cutover `fwoosh.meta`/`fwoosh.opp` are retired. Keep the new `fwoosh.save2.*` namespace stable across ordinary releases and do not restore old progress. A fixture or automated audit is evidence, not human balance or physical-device approval.
 
 Tony authorized publishing each verified major change to the live site for testing. Codex coordinates merges and releases. Record the tested source, feature commit, merge commit, deployment and live URL; do not describe a local or pushed build as deployed.
 
