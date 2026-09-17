@@ -23,6 +23,8 @@ Living document. Base: `main` @ 8f23fdc (PR #75). Status labels used everywhere 
 ## 1a. Approved decisions
 
 **AD-01 (Tony, 2026-09-17): Before sanctuary existed, all Ratkin dead everywhere burned. The fire is the old Ratkin afterlife. Duy empties it, this tribe first.**
+
+
 - Resolves X-02. Every rescue is a real dead Ratkin with a real life. Residents beyond the nineteen are the tribe's other dead: raid victims and earlier generations. Other worlds' dead follow later.
 - Confirms SANCTUARY_SOCIETY's "centuries of burning" over CANON's vaguer "centuries of injustice".
 - Narrows X-03 but does not close it: the burning streets are the old afterlife, but *why it has the shape of a town* is unstated.
@@ -30,40 +32,74 @@ Living document. Base: `main` @ 8f23fdc (PR #75). Status labels used everywhere 
 - **Consequence for writing (NP-08, proposal):** the dead split into two groups with different standing toward Duy. The nineteen burned briefly and were killed by him. Ancestors and raid victims burned far longer and he never harmed them; to them he is only the stranger who carried them out. This gives the five blocs a real disagreement instead of nineteen versions of one grievance.
 - **Consequence (NP-09, proposal):** the dead burned without knowing how long. Nobody in my drafts reports a duration from inside the fire. They learn it on arrival, from who is already there and who is not.
 
-## 2. Naming (PROPOSAL NP-02)
+## 1b. Approved decisions AD-02 … AD-14 (Tony, 2026-09-17)
+
+**AD-02:** Duy is barred from sanctuary at first and admitted step by step as blocs grant favor.
+**AD-03:** Two beings were under the gate: a huge Warden monster (pinned) and Khet-Tak-Tor, the Ratkin jailer, nearby; the collapse killed Khet-Tak-Tor briefly. Resolves X-04. The Tony-approved `fire` p1 phrase "to stop the jailer following them" should read "the Warden"; awaiting Tony's OK on that one-word edit.
+**AD-04:** Two of the nineteen were children: Nim (cit-002, ~8) and Kip (cit-012, ~5). Resolves X-06.
+**AD-05:** Three-beat naming approved (milk-name, trail-name, hand-name). *Amended in effect by AD-09:* see NP-12.
+**AD-06:** The killed-by-Duy / only-rescued-by-Duy split drives bloc disagreement (was NP-08).
+**AD-07:** The burning purgatory is the Ratkin's **final test**: lifted into immortality and a world they can grow, in exchange for ages of abuse and persecution, or wiped out. Khet-Tak-Tor keeps the fire going because it is the only way through, and has been carrying his people out himself. His Constitution and HP are too low to both sustain the fire and pull more through; they rise as he burns (LitRPG stats are literal). Duy shares the load: faster, less pain for the Ratkin, better odds they make it. Resolves X-09 and the CANON open item "why Khet-Tak-Tor maintains the recurring fire".
+**AD-08:** They are **villagers, not forest nomads**. They have no kingdom of their own; it was destroyed centuries ago in this universe. Resolves X-03 (the fire looks like a town because they are town people).
+**AD-09:** Displaced villagers: since the kingdom fell they have been driven from village to village; the one Blackroot destroyed was the latest. Blackroot's trackers followed their moves. Settles the settled-vs-mobile question: settled, by longing and by right.
+**AD-10:** The dead have burned for centuries; the covenant turned that old fire into the final test. (Reconciles AD-01 and AD-07.)
+**AD-11:** Who opened the cell door is unknown and stays a mystery for Ledger to answer. The scream clue stays; no answer is written anywhere.
+**AD-12:** No collective name. They call themselves by whichever village they last built.
+**AD-13:** The last village held roughly 150–200 people.
+**AD-14:** The lost kingdom's name is lost even to the Ratkin. Recovering it is a payoff.
+
+### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
+- Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
+- Blackroot: "goblin trackers follow the Ratkin's seasonal migration routes and locate family gathering places" → trackers followed the people's moves from village to village and found the newest one (AD-09). "Ratkin woodland knowledge" as captive value: keep climbing and narrow spaces; woodland knowledge is no longer their defining trait.
+- "permanent-settlement versus mobile-camp decision is still open" → closed: settled (AD-09).
+- "Its name… remain open" → AD-12.
+- CANON open items closed: reason for the recurring fire (AD-07). Still open: exact limits of the Arbiter's mandate.
+- story.js `fire` p1 "the jailer" → "the Warden" (AD-03), pending Tony.
+- story.js `greet.obsessed` "yes, i keep the fires going." is now *true and sympathetic*; keep, do not soften.
+
+### New proposals from these decisions
+- **NP-10 Road Song restoration:** the oldest verses are garbled; the first, which should hold the kingdom's name, is only a sound. As ever-older ancestors arrive, each corrects the verse from their own lifetime. The name is recovered when someone arrives who lived there. This is AD-14's payoff without a new system: it needs only ancestor arrivals in roughly reverse-chronological order.
+- **NP-11 Hollowbeech:** draft name of the last village (stood nine years; creek crossing; split beech on the green). Under AD-12 the nineteen are "Hollowbeech folk". In sanctuary they will, for the first time, take a name from a village nobody can take away; the player-built quarter's name becomes their name.
+- **NP-12 Trail-name under AD-09:** a trail-name is earned by walking the road between villages on one's own feet. Every trail-name therefore commemorates an expulsion. Children born in a village that lasted (Nim, Kip) have one beat and no way to earn a second unless their home is destroyed. In sanctuary someone must invent the first trail-name for a journey chosen freely.
+- **NP-13 Stats on screen:** in diary prose, System text such as `CONSTITUTION +1` may appear over Khet-Tak-Tor and Duy. Prose only; no HUD request.
+
+## 2. Naming (APPROVED AD-05; see NP-12 for the AD-09 adjustment)
 
 Anchors from canon: **Khet-Tak-Tor** = "the voice that closes the debt"; **Chit-tat-to**. Ratkin names are therefore short phrases of three hard-edged beats.
 
-Proposal: a name is earned in three beats.
+Approved (AD-05): a name is earned in three beats.
 1. **Milk-name** — given by family at birth. Children have one beat (Nim).
-2. **Trail-name** — given by the community after a child walks one full seasonal circuit on their own feet. Adolescents have two (Tav-Ri).
+2. **Trail-name** — given by the community after a child walks the road between villages on their own feet (adjusted for AD-09; see NP-12). Adolescents have two (Tav-Ri).
 3. **Hand-name** — chosen by the person when they take up their life's work.
 
 A beat can be re-given after a life-changing event, which leaves room for "Khet-Tak-Tor" to be the name the Arbiter returned with rather than the one he was born to. Reserved beats I will not reuse with another meaning: khet (voice), tak (close), tor (debt), chit, tat, to.
 
 Payoff this buys: a child who died with one beat can earn the others in sanctuary. That is a celebration the simulation can actually cause.
 
-## 3. The tribe (DRAFT, names open)
+## 3. The people of Hollowbeech (DRAFT detail on AD-08/09/12/13 canon)
 
-- Community name: **open** (CANON). Working label in these files: "the tribe". Candidates will be offered in a later interview.
-- NP-04 **The Circuit Song**: the seasonal route is held as a walking song, one verse per stage (landmark, water, hazard). Goblin trackers "following seasonal routes" (CANON) means the song's secrecy protected nothing.
-- NP-05 **The one fire**: the camp fire is never relit; a live coal is carried camp to camp in a clay pot. It went out in the raid. I do *not* tie this to the recurring street fire; that question is open in CANON.
-- NP-06 **Log-seeding**: nomadic farming. Fallen logs along the route are plugged with mushroom spawn for next year's passage. Bridges forest culture to the implemented Mushroom Farm without settling settled-vs-mobile.
-- NP-07 **The raid happened at the autumn gathering**, when family groups converge (CANON: trackers "locate family gathering places"). Tribe size at that gathering: open; I write around it.
+- No collective name (AD-12). They are the folk of their last village: Hollowbeech (NP-11).
+- NP-04 (revised) **The Road Song**: one verse per village built and lost, and the road between. Sung backwards it is the way home to the lost kingdom. See NP-10.
+- NP-05 **The one fire**: the common-oven fire is never relit; when a village is lost a live coal is carried to the next in a clay pot. It went out in the raid. I do *not* tie this to the recurring street fire; that question is open in CANON.
+- NP-06 (revised) **Log-seeding**: hidden farming for a people who expect raids; logs are also seeded along the road behind each move, for whoever is driven down it next. Matches the implemented Mushroom Farm.
+- NP-07 (revised) The raid came at night with everyone in from the fields. Population 150–200 (AD-13): nineteen taken, the rest killed or died resisting. Authored backlog target for Hollowbeech's raid dead alone: ~150.
 
 ## 4. Chronology (relative; no durations invented)
 
 | Order | Event | Status |
 |---|---|---|
 | T-1 | Ratkin dead of every world burn. No sanctuary exists. | **AD-01** |
-| T0 | Generations of seasonal circuits. The tribe's dead join the fire as they die. | CANON + AD-01 + DRAFT detail |
+| T-2 | The Ratkin kingdom is destroyed. Its name is eventually lost. | AD-08, AD-14 |
+| T0 | Centuries of villages built and lost. Their dead join the fire as they die. | CANON + AD-01 + DRAFT detail |
 | T1 | Blackroot trackers learn the routes. Orr-Ve-Kan fears he was followed from the edge-markets; never confirmed. | DRAFT, flagged (touches open Blackroot/trading-post link) |
-| T2 | Autumn gathering. Blackroot surrounds it. The tribe resists. Village destroyed; the one fire goes out; nineteen taken. | CANON core + DRAFT detail |
+| T1a | Hollowbeech founded; stands nine years. | NP-11 |
+| T2 | Blackroot surrounds Hollowbeech. The tribe resists. Village destroyed; the one fire goes out; nineteen taken. | CANON core + DRAFT detail |
 | T3 | Captivity and transport. Duration unstated. | open |
 | T3a | Raid dead (incl. cit-020, cit-021) enter the fire. | AD-01 |
 | T4 | Dark cell. A door stands open. Tav-Ri sees it and screams to run. Duy and Cuong arrive in the path and fire. Nineteen die. | CANON core; the scream and who opened the door are DRAFT/open |
 | T5 | System records the debt (19 Cuong / 5 Duy per current Ledger text). | CANON conflict preserved |
 | T6 | Gate. Duy dies; Khet-Tak-Tor dies briefly; covenant of the Ratkin god, Adonai and Odin. | CANON |
+| T6a | The covenant turns the old fire into the final test. Khet-Tak-Tor begins carrying his people out alone; too weak to do it fast. | AD-07, AD-10 |
 | T7 | Sanctuary created and announced to Ratkin everywhere. | CANON |
 | T8 | Duy wakes in the burning streets. | CANON |
 | T9+ | Rescues, refuge, homes, first judgment, favor, verdict. | CANON / implemented |
@@ -76,4 +112,5 @@ Payoff this buys: a child who died with one beat can earn the others in sanctuar
 | `cell` (18) | He and Cuong shot nineteen unarmed people running for a door. Someone screamed first. | Any name. Who opened the door. |
 | First named chronicle | One of the people he carries has a name and a trade. | That this person was in the cell (chronicle intro never says it; background does, behind a later unlock — see handoff §3). |
 | Post first judgment | Blackroot by name, through citizen chronicles. | Blackroot's link to pit network / keeping place (open). |
-| `home` and after | The society is judging what he builds. | Verdict. |
+| `keith` (34) | Clue: the Arbiter flinches; his forearms are scarred like Duy's. | Why. |
+| `home` (final chapter) | **AD-07 payoff:** the Arbiter carries the burning too, one at a time, and is getting stronger the slow way. The fire is the road out. | Verdict; the kingdom's name; who opened the door. |

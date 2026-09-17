@@ -4,6 +4,69 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 03 — 2026-09-17 · branch `claude/narrative-batch-03` (stacked on 02) · base `main` 8f23fdc
+
+### 1. Approved decisions and exactly what they supersede
+Full text of AD-02…AD-14 is in docs/narrative/BIBLE.md §1b. Summary for reconciliation:
+
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-02 | Duy barred from sanctuary, admitted step by step as blocs grant favor | Nothing written; **conflicts with runtime**: town hub "VISIT SANCTUARY" is open from the start (city.js:222). Narrative intent only; Codex to propose how the screen reads before admission (e.g. viewed from the gate). |
+| AD-03 | Warden (huge monster) and Khet-Tak-Tor (Ratkin jailer) are two beings under the gate | story.js `fire` p1 "to stop the jailer following them" → "the Warden" (**Tony-approved text; needs his OK**). CANON "Khet-Tak-Tor was Duy's Ratkin jailer before the gate fell" stands. |
+| AD-04 | Two of the nineteen were children (cit-002 Nim, cit-012 Kip) | batch-01 NP-03 / X-06 |
+| AD-05 | Three-beat naming | batch-01 NP-02. Trail-name definition adjusted by AD-09 (NP-12, unapproved wording) |
+| AD-06 | Killed-by vs only-rescued-by split drives bloc disagreement | batch-02 NP-08 |
+| AD-07 | Fire = final test; Khet-Tak-Tor keeps it lit as the only way through and carries his people himself; CON/HP too low, rising as he burns; Duy shares the load | CANON open item "Why Khet-Tak-Tor maintains or uses the recurring fire"; batch-02 X-09. CANON "Khet-Tak-Tor can punish, test and obstruct Duy" stands but should be read with this motive. |
+| AD-08 | Villagers, not forest nomads; kingdom destroyed centuries ago | **Every "nomadic forest tribe / forest society / forest culture" in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md (PRs #73–#75).** Cursor: "woodland community props" and "forest culture visual identity" → village culture of a displaced people. |
+| AD-09 | Displaced village to village; Blackroot tracked their moves; settled | CANON Blackroot para "follow the Ratkin's seasonal migration routes and locate family gathering places"; all "permanent-settlement versus mobile-camp still open" notes; batch-01 NP-04/06/07 (revised in place) |
+| AD-10 | Dead burned for centuries; covenant made the old fire the test | Reconciles AD-01 with AD-07; CANON "centuries of injustice" → both persecution in life and burning after |
+| AD-11 | Who opened the cell door: unknown, reserved for Ledger | batch-01 open question; no text may answer it |
+| AD-12 | No collective name; named for last village built | CANON/SANCTUARY "Its name… remain open" |
+| AD-13 | Last village ~150–200 people | batch-01 NP-07 "size open" |
+| AD-14 | Kingdom's name is lost; recovering it is a payoff | — |
+
+Request: Codex mirror AD-01…AD-14 into CANON.md and the Fwoosh/Ledger shared handoff. I have not edited those files.
+
+### 2. Finished content (DRAFT unless marked)
+| ID | Content | Path |
+|---|---|---|
+| cit-001…006, 008, 020…022 | Ten profiles **re-seated** in displaced-village canon. IDs, names, relationships, temperaments unchanged. Role labels changed: cit-001 route-keeper → road-keeper; cit-003 camp cook → village cook. | docs/narrative/CAST_REGISTRY.md |
+| cit-002, cit-012 | Children among the nineteen: **approved fact (AD-04)**; profile prose still draft | same |
+| dia-home-r1 | Rewrite of diary `home`, 5 pages, new teaser | docs/narrative/DIARY_REVISION.md |
+| dia-keith-c1 | One-sentence clue for diary `keith` | same |
+| NP-10…NP-13 | Road Song restoration; Hollowbeech; trail-name under AD-09; stat text in prose | docs/narrative/BIBLE.md §1b |
+
+### 3. Reveal order and spoiler boundaries (replaces nothing; adds)
+1. **AD-07 is the diary's biggest reversal.** Clue: `keith` (forearms; existing strained portrait). Payoff: `home`, the final chapter. No present-tense line, chronicle or HUD text may state that the Arbiter carries the burning, or that the fire is a test, before `home` is *read*. After that, chronicles may refer to it.
+2. AD-01/AD-10 (the dead burned for centuries) is discovered through the first ancestor arrival (cit-022), per batch 02.
+3. AD-08/09 (lost kingdom, serial expulsion) surfaces through cit-001's background and the Road Song; never in present dialogue.
+4. AD-14: the kingdom's name must not appear anywhere until NP-10 is approved and scheduled. It does not exist in any file yet.
+5. AD-11: nothing answers the door.
+
+### 4. Triggers
+**Narrative intent:** `milestone:circuit-walked` is renamed `milestone:trail-name` (still no system; reserved). New intent: `diary-read:home` as a prerequisite for any text that mentions the Arbiter's burden.
+**Proposed mechanics (Codex decides):** (a) sanctuary screen gated or reframed per AD-02; (b) ancestor arrivals ordered roughly newest-death to oldest, which is all NP-10 needs; (c) optional post-`home` present exchange where Khet-Tak-Tor states AD-07 aloud.
+
+### 5. Makko art requests
+| ID | Request | Blocked on |
+|---|---|---|
+| cit-001 | **Changed:** sash with two large knots (verses she added), not eleven | profile approval |
+| cit-006 | adds: stone door-prop as a household prop | profile approval |
+| arb-scar | Khet-Tak-Tor: burn-scarred, furless forearms visible under the robe sleeves in portraits and full body. Check existing approved reference first; if it conflicts, flag rather than regenerate. | Tony (touches an approved character design) |
+| dia-home-r1-a | Diary illustration: Khet-Tak-Tor kneeling in the street, holding a burning Ratkin by the shoulders, seen from behind | `dia-home-r1` approval; spoiler: never shown before `home` |
+| — | Cursor kickoff wording "forest culture / woodland props" is superseded by AD-08/09: village culture of a people who rebuild (common oven, carried coal-pot, wells, mended everything) | Codex to update the brief |
+
+### 6. Open questions and unapproved drafts
+- Needs Tony: one-word `fire` edit (AD-03); NP-10, NP-11 (Hollowbeech), NP-12, NP-13; whether residents may come to the gate while Duy is barred; whether Khet-Tak-Tor ever says AD-07 aloud.
+- Not yet asked: what each step of admission looks like per bloc (AD-02 detail); limits of the Arbiter's mandate; Ratkin recruit identity.
+- All profile prose and both diary rewrites remain DRAFT.
+- vovinam-ledger still unread; AD-03, AD-07, AD-08 and AD-11 all touch Ledger and are unverified against it.
+
+### 7. Files and commit
+Same four paths. Commit: `git log claude/narrative-batch-03 -1`. Not pushed (no credentials). Delivered as `narrative-batches-01-03.patch` (three commits, `git am`). No runtime files touched.
+
+---
+
 ## Batch 02 — 2026-09-17 · branch `claude/narrative-batch-02` (stacked on batch 01) · base `main` 8f23fdc
 
 ### 1. Approved decisions and what they supersede
