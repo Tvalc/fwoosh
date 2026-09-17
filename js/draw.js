@@ -1575,7 +1575,7 @@ function render(){
     ag.addColorStop(0,'rgba(255,225,140,0)'); ag.addColorStop(0.6,'rgba(255,225,140,'+(aa*0.6).toFixed(3)+')'); ag.addColorStop(1,'rgba(255,210,110,0)');
     ctx.fillStyle=ag; ctx.beginPath(); ctx.arc(X,p.y,ar,0,7); ctx.fill(); }); }
   wrapDraw(p.x, X=> drawWorldActor(ctx,X,p.y,p.r*1.55,()=>SK.player(ctx, X, p)));
-  // Touch and mouse slingshot preview: pull opposite the travel direction; release commits.
+  // Touch swipe / mouse slingshot preview; release commits the displayed direction.
   drawPointerBurstAim(ctx);
 
   // ---- DUEL FX: allies, wake (absorbable trail), ember-spit shots, siphon pulses
