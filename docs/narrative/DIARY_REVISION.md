@@ -64,7 +64,7 @@ AD-04 makes "one hand closed around another" Sek-Ra-Tun and Nim. No text change.
 ## `keith` — clue to plant (one sentence, DRAFT, scene ID `dia-keith-c1`)
 Add to page 1, after "checking his notes": *"When he turned the page I saw his forearms. The fur was gone from wrist to elbow, and the skin under it looked like mine."* Pairs with the existing `dialogue_arbiter_strained` flinch portrait. Paid off in `home`.
 
-## DRAFT rewrite — `home` ("The Door") · scene ID `dia-home-r1`
+## DRAFT rewrite — `home` ("The Door") · scene ID `dia-home-r2` (supersedes r1)
 
 **Purpose:** final chapter. Pays AD-07 (why the fire is kept), shows AD-02 (Duy barred, wanting to be asked in), and gives Duy a reason to stay that is not his own release. **Prerequisite knowledge:** `keith` clue; the player has seen the quarter gate. **New information:** the Arbiter carries the burning himself; the fire is the only road out; stats are rising the slow way. **Clue/payoff:** forearms and flinch (from `keith`) paid; the propped door (cit-006) and the child's question (cit-002) planted for chronicle readers, unnamed here on purpose. **Art note:** request `dia-home-r1-a`: Khet-Tak-Tor kneeling in the street holding a burning Ratkin by the shoulders, seen from behind. Must not unlock before this chapter.
 
@@ -102,9 +102,24 @@ I have carried six in a run and kept my feet. He had managed one.
 **Page 4**
 He saw me. He got up, straightened his collar, and told me I was late.
 
-I've gone over it since. Every time he flinched, I took it for temper. He told me once that he keeps these fires going, and I hated him for it. But this fire is the only road out these people have been given. If it goes dark before they are all through, the ones left inside don't get another. He has been bringing them out alone, one at a time, for as long as the job has been his. He isn't strong enough for it. He is getting stronger the same way I am. It's slow.
+"You take it too," I said. "The fire."
+
+"One at a time." He held out his arms. The fur was gone from wrist to elbow. "Then I sit down. You've seen."
+
+"You told me you keep these fires going."
+
+"I do. Listen, because I will say this once. My people were hunted while they lived and burned when they died, for longer than anyone has counted. The gods have offered to end it: a place without death, theirs to build. This fire is the last thing asked of them. Whoever is carried through it is lifted up. If it goes dark with anyone still inside, they are not lifted. They are gone. So I keep it lit, and I carry them out."
 
 **Page 5**
+"Alone?"
+
+"It was given to me. I haven't the body for it. The System is plain about that." He almost smiled. "Each one I carry, it gives me a little more. At my pace, most of them burn another age before I reach them. Some won't last that long."
+
+"And me?"
+
+"You owe them nineteen lives, and you can carry six at a run. They hurt less in your hands than in the fire. Less time in the fire means more of them come through whole. If the gods hadn't sent you here as a punishment, I would have asked for you." He turned toward the street. "It is also a punishment. Move."
+
+**Page 6**
 I still want to see Cuong and Diep. I want to find out whether she ever brought the corn. None of that has changed.
 
 But I've stopped thinking of the gate up there as the thing standing between me and them. There is a door on the far side of it that somebody props open with a stone, and I would like, one day, to be asked through it.
@@ -112,7 +127,7 @@ But I've stopped thinking of the gate up there as the thing standing between me 
 Until then there is usually someone calling. Now I know there are two of us who come.
 
 **Dependencies and flags**
-- Page 4 has Duy *infer* AD-07 from what he saw plus the existing live line "yes, i keep the fires going". If you would rather Khet-Tak-Tor say it outright, that is a present-dialogue line for Codex (proposed trigger: after this chapter is read). Proposal only.
+- **AD-18:** Khet-Tak-Tor explains AD-07 himself (pages 4–5, revision r2). Scars remain a supporting clue only. Scene ID is now `dia-home-r2`; r1's inference version is withdrawn.
 - Assumes residents may come to the gate while Duy is barred (compatible with AD-02; not explicitly approved).
 - Replaces the current `home` summary of favor rules, which the Shrine already explains.
-- 5 pages vs current 2. Codex to confirm layout.
+- 6 pages vs current 2. Codex to confirm layout.

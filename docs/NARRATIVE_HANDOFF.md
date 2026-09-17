@@ -4,6 +4,40 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 04 — 2026-09-17 · branch `claude/narrative-batch-04` (stacked on 03) · base `main` 8f23fdc
+
+### 1. Approved decisions and what they supersede
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-15 | js/story.js, DIARY id `fire`, page 1: **"to stop the jailer following them" → "to stop the Warden following them"**. No other change to that chapter. | prose-2 approved text, that phrase only. **Codex: this is a runtime string; I have not edited story.js.** |
+| AD-16 | Road Song restoration (older ancestors correct older verses; name recovered by someone who lived there) | batch-03 NP-10 → approved |
+| AD-17 | Last village is **Hollowbeech** | batch-03 NP-11 → approved; fulfils AD-12 for this community |
+| AD-18 | Khet-Tak-Tor explains AD-07 in his own words; inference from scars is not enough | batch-03 `dia-home-r1` (withdrawn) and batch-03 §4 proposed mechanic (c), now unnecessary |
+
+### 2. Finished content (DRAFT)
+| ID | Content | Path |
+|---|---|---|
+| dia-home-r2 | `home` rewrite, 6 pages; pages 4–5 are Khet-Tak-Tor's explanation | docs/narrative/DIARY_REVISION.md |
+
+### 3. Reveal order
+Unchanged from batch 03. `dia-home-r2` is the single place AD-07 is stated. The kingdom's name still appears nowhere.
+
+### 4. Triggers
+None new. For AD-16, narrative intent only: ancestors arrive roughly newest-death first, so the song is repaired backwards. The arrival who restores the first verse must be authored and scheduled deliberately; not yet written.
+
+### 5. Makko art
+`arb-scar` (scarred forearms) is still **unapproved**: Tony kept scars as a clue but has not explicitly OK'd changing the Arbiter's approved design. `dia-home-r1-a` renamed `dia-home-r2-a`, same brief.
+
+### 6. Open
+- Asked: what each bloc's favor opens to Duy (AD-02 detail).
+- Still open: NP-12 trail-name wording, NP-13 stat text in prose, residents at the gate, `arb-scar`, limits of the Arbiter's mandate, recruit identity.
+- All profile and diary prose remains DRAFT. vovinam-ledger unread.
+
+### 7. Files and commit
+Same four paths. `git log claude/narrative-batch-04 -1`. Not pushed. Delivered as `narrative-batches-01-04.patch` (four commits).
+
+---
+
 ## Batch 03 — 2026-09-17 · branch `claude/narrative-batch-03` (stacked on 02) · base `main` 8f23fdc
 
 ### 1. Approved decisions and exactly what they supersede
