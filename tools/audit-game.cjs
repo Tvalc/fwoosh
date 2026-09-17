@@ -1369,6 +1369,15 @@ test('Resident welcome celebrations persist and open as a sanctuary vignette',()
  assert.equal(reload.run('cityView'),'celebration');assert.ok(reload.drawnText.includes('WELCOME GATHERING'));
 });
 
+test('Authored profile registry assigns stable identity and conditional chronicle text',()=>{
+ const g=game();g.run(`SOCIETY_PROFILES.ashka={name:'Ashka',formerRole:'Forest pathfinder',chronicleIntro:'She remembers every road song.',milestones:{first_home:'Ashka marks the doorway with a song from the old road.'}};SOCIETY_PROFILE_ORDER.push('ashka');societyArrive({id:5});societySelected=1`);
+ assert.equal(g.run('META.society.residents[0].profileId'),'ashka');assert.equal(g.run('societyLabel(META.society.residents[0])'),'Ashka');
+ assert.equal(g.run('societyRecordMilestone(1,\"first_home\")'),true);assert.equal(g.run('societyRecordMilestone(1,\"first_home\")'),false);
+ g.run('drawHousehold(ctx)');assert.ok(g.drawnText.some(t=>t.includes('Forest pathfinder')));assert.ok(g.drawnText.some(t=>t.includes('Ashka marks the doorway')));
+ g.run('saveMeta()');const reload=game(Object.fromEntries(g.storage));reload.run(`SOCIETY_PROFILES.ashka={name:'Ashka',formerRole:'Forest pathfinder',chronicleIntro:'She remembers every road song.',milestones:{first_home:'Ashka marks the doorway with a song from the old road.'}};SOCIETY_PROFILE_ORDER.push('ashka');META.society=societyNormalize(META.society)`);
+ assert.equal(reload.run('META.society.residents[0].profileId'),'ashka');assert.equal(reload.run('META.society.residents[0].events.filter(e=>e.kind===\"milestone\").length'),1);
+});
+
 test('Sanctuary portraits always crop a whole animation frame',()=>{
  const g=game();g.run("societyArrive({id:5});Object.assign(MAKKO_ANIM_IMG.farmer_idle,{complete:true,naturalWidth:2160});frame=43;societyDrawResident(ctx,META.society.residents[0],360,300,216)");
  const draw=g.drawnImages.at(-1);assert.equal(draw.src,'./media/anim/farmer_idle.png');assert.equal(draw.args[0]%180,0);

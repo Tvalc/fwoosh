@@ -1,5 +1,5 @@
 // Sanctuary households. Presentation reuses verified Makko civilian performances;
-// relationships, births and authored celebration vignettes are separate future work.
+// Relationships, births and bespoke celebration performances remain future work.
 function societyFresh(){return {v:1,nextId:1,residents:[],celebrations:[]};}
 function societyCount(value){const n=Number(value);return Number.isFinite(n)?Math.max(0,Math.min(Number.MAX_SAFE_INTEGER,Math.trunc(n))):0;}
 function societyNormalize(raw){
@@ -10,7 +10,7 @@ function societyNormalize(raw){
       seen.add(r.id);out.nextId=Math.max(out.nextId,r.id+1);
       out.residents.push({id:r.id,profileId:typeof r.profileId==='string'?r.profileId:'',kind:RATKIN_VILLAGERS.includes(r.kind)?r.kind:'ratkin',
         preference:['burrow','apartment'].includes(r.preference)?r.preference:'either',home:societyCount(r.home),
-        arrived:societyCount(r.arrived),events:(Array.isArray(r.events)?r.events:[]).filter(e=>e&&['arrival','home','refuge'].includes(e.kind)).map(e=>({kind:e.kind,at:societyCount(e.at),home:societyCount(e.home),type:['burrow','apartment'].includes(e.type)?e.type:''}))});
+        arrived:societyCount(r.arrived),events:(Array.isArray(r.events)?r.events:[]).filter(e=>e&&['arrival','home','refuge','milestone'].includes(e.kind)).map(e=>({kind:e.kind,at:societyCount(e.at),home:societyCount(e.home),type:['burrow','apartment'].includes(e.type)?e.type:'',milestone:typeof e.milestone==='string'?e.milestone:''}))});
     }
     out.nextId=Math.max(out.nextId,Math.min(Number.MAX_SAFE_INTEGER-1,societyCount(raw.nextId)));
     const seenCelebrations=new Set();
@@ -20,6 +20,7 @@ function societyNormalize(raw){
       if(!residentIds.length)continue;
       out.celebrations.push({id,kind:['welcome','homecoming'].includes(c.kind)?c.kind:'welcome',at:societyCount(c.at),residentIds});
     }
+    societyBackfillProfiles(out);
   }
   return out;
 }
@@ -34,7 +35,7 @@ function societyArrive(actor){
   if(actor.sanctuaryId)return actor.sanctuaryId;
   const at=Date.now();cityAdvance(at,false); // Settle elapsed work before adding this new worker.
   const s=META.society,id=s.nextId++,kind=villagerType(actor);
-  s.residents.push({id,profileId:'',kind,preference:kind==='child'?'either':id%2?'burrow':'apartment',home:0,arrived:at,events:[{kind:'arrival',at,home:0,type:''}]});
+  s.residents.push({id,profileId:societyNextProfileId(s),kind,preference:kind==='child'?'either':id%2?'burrow':'apartment',home:0,arrived:at,events:[{kind:'arrival',at,home:0,type:'',milestone:''}]});
   societyRecordCelebration('welcome',[id],at);
   actor.sanctuaryId=id;societyCacheKey='';return id;
 }
@@ -74,9 +75,20 @@ function societyWorkers(){societySync();return societyWorkerCache;}
 function societyStationResident(b){const i=cityAssignedStations().findIndex(x=>x.id===b.id);return i<0?null:societyWorkers()[i]||null;}
 function societyHappiness(r){return !r.home?80:cityBuilding(r.home)?.type===r.preference?95:85;}
 function societyProductionBonus(r){return !r||!r.home?0:societyHappiness(r)===95?.20:.10;}
-function societyLabel(r){return r.kind.toUpperCase()+' '+r.id;}
+function societyLabel(r){return societyProfileName(r)||r.kind.toUpperCase()+' '+r.id;}
 function societyHomeLabel(r){const b=cityBuilding(r.home);return b?CITY_DEF[b.type].short+' '+b.id:'COMMUNAL REFUGE';}
 function societyJob(r){const b=cityAssignedStations().find(b=>societyStationResident(b)?.id===r.id);return b?'Working at the '+CITY_DEF[b.type].name.toLowerCase():r.kind==='child'?'Community care':r.home?'Time at home':'Helping the refuge';}
+function societyRecordMilestone(residentId,key,at=Date.now()){
+  const r=META.society.residents.find(v=>v.id===Number(residentId));if(!r||!societyMilestoneText(r,key))return false;
+  if(r.events.some(e=>e.kind==='milestone'&&e.milestone===key))return false;
+  r.events.push({kind:'milestone',at,home:r.home,type:'',milestone:String(key)});societyCacheKey='';return true;
+}
+function societyEventText(r,e){
+  if(e.kind==='arrival')return 'Ascended from the fire. Welcomed into the refuge.';
+  if(e.kind==='refuge')return 'Returned to the refuge while housing is arranged.';
+  if(e.kind==='milestone')return societyMilestoneText(r,e.milestone)||'A milestone was recorded.';
+  return 'Moved into '+(e.type==='apartment'?'an apartment':'a personal home')+' ('+e.home+').';
+}
 let societyPage=0,societySelected=0,chroniclePage=0,societyCelebrationId=0;
 function societyAction(action){
   if(action==='society'){cityAdvance(Date.now(),true);societySync();societyPage=0;cityView='society';return true;}
@@ -132,19 +144,21 @@ function drawSocietyCelebration(ctx){
 }
 function drawHousehold(ctx){
   societySync();const r=META.society.residents.find(r=>r.id===societySelected);if(!r){cityView='society';drawSociety(ctx);return;}
+  const profile=societyProfileForResident(r);
   drawCityHeader(ctx,'HOUSEHOLD CHRONICLE');ctx.textAlign='center';ctx.fillStyle='#f9e1ae';ctx.font='700 28px "Chakra Petch",system-ui,sans-serif';ctx.fillText(societyLabel(r),360,155);
   societyDrawResident(ctx,r,360,300,216);
   ctx.fillStyle='#d7e5d6';ctx.font='600 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText(societyHomeLabel(r),360,445);ctx.fillText('HAPPINESS '+societyHappiness(r)+' · WORK RATE +'+Math.round(societyProductionBonus(r)*100)+'%',360,487);
   ctx.textAlign='left';ctx.font='500 23px "Chakra Petch",system-ui,sans-serif';ctx.fillStyle='#c1cfcd';
   const preference=r.kind==='child'?'Growing up with the community.':r.preference==='either'?'Housing preference not recorded.':r.preference==='burrow'?'Prefers the quiet of a personal home.':'Prefers neighbors close by in an apartment.';
-  wrapText(ctx,preference+' '+societyJob(r)+'.',54,545,612,32);
+  const authoredIntro=profile?[profile.formerRole,profile.chronicleIntro].filter(v=>typeof v==='string'&&v.trim()).join(' · '):'';
+  wrapText(ctx,(authoredIntro?authoredIntro+' · ':'')+preference+' '+societyJob(r)+'.',54,545,612,32);
   ctx.fillStyle='#ffdfa0';ctx.font='700 26px "Chakra Petch",system-ui,sans-serif';ctx.fillText('A LIFE RECORDED',54,666);
   ctx.fillStyle='#d5ded3';ctx.font='500 23px "Chakra Petch",system-ui,sans-serif';
   let y=712;
   const pages=Math.max(1,Math.ceil(r.events.length/3));chroniclePage=Math.min(chroniclePage,pages-1);
   for(const e of r.events.slice(chroniclePage*3,chroniclePage*3+3)){
     const date=e.at?new Date(e.at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
-    const text=e.kind==='arrival'?'Ascended from the fire. Welcomed into the refuge.':e.kind==='refuge'?'Returned to the refuge while housing is arranged.':'Moved into '+(e.type==='apartment'?'an apartment':'a personal home')+' ('+e.home+').';
+    const text=societyEventText(r,e);
     y=wrapText(ctx,(date?date+' · ':'')+text,54,y,612,31)+44;
   }
   if(pages>1){societyButton(ctx,42,1098,240,'EARLIER','chroniclepage:'+Math.max(0,chroniclePage-1));societyButton(ctx,438,1098,240,'LATER','chroniclepage:'+Math.min(pages-1,chroniclePage+1));}
