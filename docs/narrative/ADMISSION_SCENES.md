@@ -20,14 +20,14 @@ The argument in every bloc is the same one: **does being carried out of the fire
 | Hearth | cit-022 Hal-Ne-Dur (ancestor: "he never harmed me"), cit-008 Pel-Ta-Shu | cit-010 Ili-Sa-Ven, who will not have him near Kip | another sealed home: proof he builds for them, not for his exit |
 | Bowl | cit-003 Dof-Ma-Rek (feeds anyone), cit-017 Shi-Pa-Nol | cit-006 Yan-Su-Bel: "ask me next season" | eight new food: it lasted |
 | Hand | cit-005 Orr-Ve-Kan (a working debtor is worth more), cit-021 Dak-Ro-Fen | cit-009 Bru-Ka-Dol, who set the hearthstone Blackroot cracked and trusts no outsider's building | six new materials |
-| Claw | cit-015 Ras-Ti-Vok, grudgingly, on the numbers | cit-020 Ase-Ro-Wen, cit-004 Tav-Ri | twelve more carried out and the Arbiter bested again: he keeps going when it costs |
+| Claw | cit-015 Ras-Ti-Vok, grudgingly, on the numbers | cit-004 Tav-Ri; and **cit-020 Ase-Ro-Wen, on whom the whole bloc waits (AD-20)** | twelve more carried out and the Arbiter bested again: he keeps going when it costs |
 | Memory | cit-016 Ume-Da-Ril | cit-001 Sek-Ra-Tun, until he has faced all of it | all fifteen chapters read |
 
 ## Scenes
 
 ### `adm-hearth` — a threshold
 Escort: cit-022. Place: the propped-open burrow door from `home`.
-1. HAL-NE-DUR (dry): "Wipe your feet. You're the first outsider through a door of ours in three hundred years."
+1. HAL-NE-DUR (dry): "Wipe your feet. You're the first outsider through a door of ours in longer than anyone has counted."
 2. DUY (questioning): "Whose house is it?"
 3. HAL-NE-DUR (dry): "Hers. She's out. She said if you came, the stone stays where it is."
 4. DUY (concerned): "I won't touch anything."
@@ -63,15 +63,15 @@ Chronicle echoes:
 
 ### `adm-claw` — unescorted
 No escort; that is the point. Place: the gate.
-1. ASE-RO-WEN (stern): "No one's walking you today. We voted. I voted against."
-2. DUY (concerned): "Then why tell me yourself?"
-3. ASE-RO-WEN (stern): "So you know it wasn't forgiveness. You went back into that fire twelve more times when you could have stopped. That's all it was."
+1. ASE-RO-WEN (stern): "The Claw waited on me. They said it was mine to give or keep."
+2. DUY (concerned): "You don't have to—"
+3. ASE-RO-WEN (stern): "Don't tell me what I have to. You went back into that fire twelve more times. One of the twelve was me."
 4. DUY (pain): "Your daughter—"
-5. ASE-RO-WEN (angry): "Is up a tree, where I can see her and you can't reach. Walk where you like."
+5. ASE-RO-WEN (angry): "Is up a tree, where I can see her and you can't reach. This isn't forgiveness. It's a count, and you met it. Walk where you like."
 
 Chronicle echoes:
 - cit-004: "Stopped telling people the count." (already in registry; same trigger)
-- cit-020: "Voted. Did not explain her vote, and nobody asked twice." (already in registry). **Note:** the scene makes her the dissent inside a bloc that carried. If the Claw's vote should require her, tell me and I will rewrite.
+- cit-020: "Voted. Did not explain her vote, and nobody asked twice." (already in registry). **AD-20:** the Claw does not move until she does; scene revised (`adm-claw` r2).
 
 ### `adm-memory` — the Road Song
 Escort: cit-001. Place: the refuge at evening. Prerequisite already enforced by the live goal: all fifteen chapters read.
@@ -87,5 +87,5 @@ Chronicle echoes:
 
 ## Spoiler boundaries
 - `adm-memory` names Hollowbeech and the Road Song in live dialogue; this is the earliest either may appear outside chronicles.
-- `adm-hearth` line 1 ("three hundred years") is the only live hint of AD-08/09. The figure is a DRAFT placeholder; say if you want a different span or none.
+- `adm-hearth` line 1 is the only live hint of AD-08/09. Per AD-21 no span is ever given: "longer than anyone has counted".
 - None of the five mentions the Arbiter's burden (that belongs to diary `home`).

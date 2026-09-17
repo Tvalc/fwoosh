@@ -52,6 +52,8 @@ Living document. Base: `main` @ 8f23fdc (PR #75). Status labels used everywhere 
 **AD-17:** The last village is **Hollowbeech** (was NP-11). The nineteen and their neighbours are Hollowbeech folk.
 **AD-18:** Khet-Tak-Tor must *describe* AD-07 himself; Duy cannot infer it from scars. Scars stay as a supporting clue (the art change to an approved design still needs Tony's explicit OK).
 **AD-19:** Each bloc's favor opens its own door to Duy: Hearth a home's threshold, Bowl a seat at the table, Hand the work-yards, Claw walking unescorted, Memory hearing the Road Song. Details AD-02.
+**AD-20:** The Claw's favor requires Ase-Ro-Wen (cit-020); the bloc does not move until she does. Her yes is a count met, not forgiveness.
+**AD-21:** The kingdom's fall is never dated: "longer than anyone has counted". No text gives a number of years.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.

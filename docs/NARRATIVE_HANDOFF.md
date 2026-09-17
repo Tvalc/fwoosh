@@ -4,6 +4,35 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 06 — 2026-09-17 · branch `claude/narrative-batch-06` (stacked on 05) · base `main` 8f23fdc
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-20 | The Claw's favor **requires Ase-Ro-Wen (cit-020)** | batch-05 `adm-claw` r1 (she dissented and the bloc carried) → withdrawn; bloc-split table row updated |
+| AD-21 | The kingdom's fall is never dated: "longer than anyone has counted" | batch-05 `adm-hearth` line 1 "three hundred years" → replaced. Applies to all future text. |
+
+### 2. Finished content (DRAFT)
+`adm-claw` r2 and `adm-hearth` line 1, in docs/narrative/ADMISSION_SCENES.md.
+
+### 3. Reveal order
+Unchanged.
+
+### 4. Triggers
+**Narrative intent:** the Claw scene has Ase-Ro-Wen say she was one of the twelve further ascensions the Claw asks for. So cit-020 must be resident before the Claw vote can be earned, and ideally arrives *during* those twelve.
+**Proposed mechanics (Codex decides):** when identity assignment exists, reserve cit-020 for one of the post-hearing ascensions counted toward the Claw goal. If that is impractical, tell me and I will drop the "one of the twelve was me" clause; the rest of the scene survives.
+
+### 5. Art
+No change.
+
+### 6. Open
+Asked this turn: NP-12 (trail-name wording), residents at the gate while Duy is barred, `arb-scar`. Carried: NP-13, Arbiter's mandate limits, recruit identity, all prose DRAFT, vovinam-ledger unread.
+
+### 7. Files and commit
+`git log claude/narrative-batch-06 -1`. Not pushed. Delivered as `narrative-batches-01-06.patch` (six commits).
+
+---
+
 ## Batch 05 — 2026-09-17 · branch `claude/narrative-batch-05` (stacked on 04) · base `main` 8f23fdc
 
 ### 1. Approved decisions
