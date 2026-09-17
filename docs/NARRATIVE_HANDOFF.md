@@ -4,6 +4,43 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 05 — 2026-09-17 · branch `claude/narrative-batch-05` (stacked on 04) · base `main` 8f23fdc
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-19 | Each bloc's favor opens its own door: Hearth threshold, Bowl seat at the table, Hand work-yards, Claw unescorted, Memory the Road Song | Gives AD-02 its steps. Nothing in runtime or CANON describes admission, so nothing is overwritten; the always-open "VISIT SANCTUARY" conflict from batch 03 stands. |
+
+### 2. Finished content (DRAFT)
+| ID | Content | Path |
+|---|---|---|
+| adm-hearth, adm-bowl, adm-hand, adm-claw, adm-memory | Five 5-line admission exchanges in live present-dialogue shape, order-independent | docs/narrative/ADMISSION_SCENES.md |
+| echo-* | 9 chronicle echoes keyed to those scenes (cit-001, 002, 003, 004, 005, 006, 009, 010, 020) | same |
+| bloc-split-01 | Table of who pulls for and against favor in each bloc under AD-06 | same |
+
+### 3. Reveal order
+Each scene may play only after its bloc's vote is earned. Any order. `adm-memory` is the earliest live use of "Hollowbeech" and "Road Song". None mentions the Arbiter's burden.
+
+### 4. Triggers
+**Narrative intent:** one scene per earned vote, once; echoes display after their scene.
+**Proposed mechanics (Codex decides):** the existing stable earned-vote IDs under `judgment` are sufficient triggers. Scenes could play from the Shrine/Judgment panel or on next town visit; they must not interrupt a run. Speakers other than DUY need portraits or a fallback (below).
+
+### 5. Makko art requests
+| ID | Request | Blocked on |
+|---|---|---|
+| por-cit-022, por-cit-003, por-cit-021, por-cit-020, por-cit-001 | Dialogue portraits to the existing 256×256 contract; emotions used: dry, stern, relieved, angry | profile approval; until then scenes can run with the matching civilian-type crop as a labelled placeholder only if Tony allows |
+| adm-* | No new illustrations requested | — |
+
+### 6. Open
+- Should the Claw's vote require Ase-Ro-Wen, or may it carry over her dissent (as drafted)?
+- "three hundred years" in `adm-hearth` is a placeholder span.
+- Carried forward: NP-12, NP-13, residents at the gate, `arb-scar`, Arbiter's mandate limits, recruit identity, all prose DRAFT, vovinam-ledger unread.
+
+### 7. Files and commit
+Adds docs/narrative/ADMISSION_SCENES.md. `git log claude/narrative-batch-05 -1`. Not pushed. Delivered as `narrative-batches-01-05.patch` (five commits).
+
+---
+
 ## Batch 04 — 2026-09-17 · branch `claude/narrative-batch-04` (stacked on 03) · base `main` 8f23fdc
 
 ### 1. Approved decisions and what they supersede
