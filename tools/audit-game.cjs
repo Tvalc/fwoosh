@@ -16,7 +16,7 @@ const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].fl
   const filename = src ? src[1].split('?')[0] : 'index.html:inline';
   return [{filename, code: src ? fs.readFileSync(path.join(root, filename), 'utf8') : m[2]}];
 });
-function game(saved = {}) {
+function game(saved = {}, options = {}) {
   const storage = new Map(Object.entries(saved));
   const noop = () => {};
   const drawnText = [];
@@ -35,7 +35,7 @@ function game(saved = {}) {
   const canvas = {style: {}, getContext: () => context2d, addEventListener: listen,
     getBoundingClientRect: () => ({left: 0, top: 0})};
   const box = {console, URLSearchParams, location: {search: ''}, navigator: {maxTouchPoints: 0},
-    localStorage: {getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, String(v)), removeItem: k => storage.delete(k)},
+    localStorage: {getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, String(v)), removeItem: k => {if(options.blockRetiredRemoval && ["fwoosh.meta","fwoosh.opp"].includes(k))throw Error("storage blocked");storage.delete(k);}},
     document: {hidden: false, getElementById: () => canvas, createElement: () => canvas},
     Image: class {constructor(){this.complete=false; this.naturalWidth=0; this.width=0; this.height=0;}},
     requestAnimationFrame: noop, setTimeout: noop, clearTimeout: noop,
@@ -133,35 +133,23 @@ test('Purchases and construction never reduce lifetime earned credit',()=>{
  assert.equal(reloaded.run('META.emberLedger.earned'),1000);
 });
 
-test('Old saves recover overlapping evidence conservatively and preserve incomplete history',()=>{
- const legacy={v:1,embers:100,flags:{starterBonus:20},recentRuns:[{earned:60},{earned:70}],saved:10};
- const g=game({'fwoosh.meta':JSON.stringify(legacy)});
- assert.equal(g.run('META.emberLedger.earned'),130); // max(80 wallet,130 recent), not 210
- assert.equal(g.run('META.emberLedger.historyComplete'),false);
- g.run('runEmbers=30;pop("audit");saveMeta()');
- const reloaded=game(Object.fromEntries(g.storage));
- assert.equal(reloaded.run('META.emberLedger.earned'),160);
- assert.equal(reloaded.run('META.emberLedger.historyComplete'),false);
- const wallet=game({'fwoosh.meta':JSON.stringify({...legacy,embers:500})});
- assert.equal(wallet.run('META.emberLedger.earned'),480);
-});
 
 test('Lifetime credit survives rolling run history and rejects malformed ledger totals',()=>{
  const g=game();g.run('for(let i=0;i<25;i++){reset();runEmbers=10;pop("audit");}');
  assert.equal(g.run('META.recentRuns.length'),20);
  assert.equal(g.run('META.emberLedger.earned'),250);
- const bad=game({'fwoosh.meta':JSON.stringify({v:1,embers:45,emberLedger:{v:1,earned:-5,historyComplete:true},recentRuns:[null,{earned:-20},{earned:"bad"}]})});
- assert.equal(bad.run('META.emberLedger.earned'),45);
+ const bad=game({'fwoosh.save2.meta':JSON.stringify({v:1,embers:45,emberLedger:{v:1,earned:-5,historyComplete:true},recentRuns:[null,{earned:-20},{earned:"bad"}]})});
+ assert.equal(bad.run('META.emberLedger.earned'),0);
  assert.equal(bad.run('META.emberLedger.historyComplete'),false);
 });
 
-test('Invoice earning record appears only after the restoration hearing and labels old history',()=>{
+test('Invoice earning record appears only after the restoration hearing and flags damaged data',()=>{
  const g=game();g.run('drawShrineSheet(ctx)');
  assert.ok(!g.drawnText.some(t=>t.startsWith('INVOICE RECORD')));
  g.run('META.judgment.heard=true;META.emberLedger={v:1,earned:600,historyComplete:false};drawShrineSheet(ctx)');
  assert.ok(g.drawnText.includes('INVOICE RECORD · AT LEAST 600 EMBERS EARNED'));
  assert.ok(g.drawnText.includes('Spending on the Ratkin does not reduce this total.'));
- assert.ok(g.drawnText.includes('Earlier earnings may be missing from this old save.'));
+ assert.ok(g.drawnText.includes('The earnings record is damaged; this total may be incomplete.'));
 });
 
 test('Repeated game-over dispatch does not bank the same loss twice', () => {
@@ -212,33 +200,33 @@ test('Diary reading neither pays currency nor changes rescue count', () => {
   const reload=game(Object.fromEntries(g.storage)); assert.equal(reload.run('diaryIsRead("morning")'),true);
 });
 test('Missing or invalid JSON saves start safely', () => {
-  const g=game({'fwoosh.meta':'{bad','fwoosh.opp':'not-json'});
+  const g=game({'fwoosh.save2.meta':'{bad','fwoosh.save2.opp':'not-json'});
   assert.equal(g.run('META.district'),1); assert.equal(g.run('maxHearts'),5);
 });
 test('A partial v1 meta save retains progress and receives building defaults', () => {
-  const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:123,saved:8})});
+  const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,embers:123,saved:8})});
   assert.equal(g.run('META.embers'),123); assert.equal(g.run('META.saved'),8);
   assert.equal(g.run('META.buildings.forge.charges'),0);
 });
-test('Legacy district saves migrate only the completion they prove', () => {
+test('Current partial saves never infer district clears from unlocks', () => {
   for(let district=1;district<=5;district++){
     const old={v:1,embers:317,saved:55,bestBlaze:3,district,
       buildings:{well:{built:true,hearts:2,regen:1},forge:{built:true,charges:1,recharge:1}},
       diary:{read:['morning','gate']},hero:'stranger',flags:{reachedDuel:true}};
-    const g=game({'fwoosh.meta':JSON.stringify(old)});
-    assert.equal(g.run('META.clearedDistricts'),district-1);
+    const g=game({'fwoosh.save2.meta':JSON.stringify(old)});
+    assert.equal(g.run('META.clearedDistricts'),0);
     assert.equal(g.run('META.district'),district);assert.equal(g.run('META.embers'),317);
     assert.equal(g.run('META.saved'),55);assert.equal(g.run('maxHearts'),7);
     assert.equal(g.run('RUN_MAX_CHARGES'),4);assert.equal(g.run('META.diary.read.join(",")'),'morning,gate');
     assert.equal(g.run('META.flags.reachedDuel'),true);
     g.run('saveMeta()');const reloaded=game(Object.fromEntries(g.storage));
-    assert.equal(reloaded.run('META.clearedDistricts'),district-1);
+    assert.equal(reloaded.run('META.clearedDistricts'),0);
   }
 });
-test('Many old wins do not falsely complete the unlocked fifth district', () => {
-  const g=game({'fwoosh.meta':JSON.stringify({v:1,district:5}),
-    'fwoosh.opp':JSON.stringify({terr:Array(48).fill(0),lat:[],runs:30,duelWins:25})});
-  assert.equal(g.run('META.clearedDistricts'),4);
+test('Opponent win history does not replace explicit district completion', () => {
+  const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,district:5}),
+    'fwoosh.save2.opp':JSON.stringify({terr:Array(48).fill(0),lat:[],runs:30,duelWins:25})});
+  assert.equal(g.run('META.clearedDistricts'),0);
   assert.equal(g.run('opp.duelWins'),25);
 });
 test('Replaying after final completion never reduces the saved count', () => {
@@ -443,9 +431,9 @@ test('Title boot does not consume the live intro; first start gives control duri
 
 test('Updated intro replays once for an older save while preserving progression and diary reads', () => {
   const g=game();g.run('META.embers=432;META.district=4;META.clearedDistricts=3;diaryMarkRead("morning");saveMeta();opp.introVer=2;saveOpp()');
-  const before=g.storage.get('fwoosh.meta');
+  const before=g.storage.get('fwoosh.save2.meta');
   const reload=game(Object.fromEntries(g.storage));
-  assert.equal(reload.storage.get('fwoosh.meta'),before);
+  assert.equal(reload.storage.get('fwoosh.save2.meta'),before);
   reload.run('onDown(360,1100)');
   assert.equal(reload.run('intro.phase'),'talk');
   assert.equal(reload.run('META.embers'),432);
@@ -609,7 +597,7 @@ test('Starter purchase rejects insufficient funds, unavailable offer and wrong m
   g.run('META.embers=20;reset();buyStarter("hearts")');assert.equal(g.run('maxHearts'),5);
 });
 test('Older saves without upgrades get one catch-up offer on the next settlement', () => {
-  const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:9,saved:4,flags:null})});
+  const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,embers:9,saved:4,flags:null})});
   assert.equal(g.run('META.embers'),9);assert.equal(g.run('starterAvailable()'),false);
   g.run('opp.runs=8;runEmbers=3;pop("returning player");enterHub()');
   assert.equal(g.run('META.embers'),20);assert.equal(g.run('runStarterBonus'),8);assert.equal(g.run('starterAvailable()'),true);
@@ -649,7 +637,7 @@ test('Every ordinary reward source pays its full amount across and beyond the fo
   }
 });
 test('Uncapped loss earnings bank once, render honestly, persist and leave old upgrades intact', () => {
-  const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:37,saved:16,district:3,buildings:{well:{built:true,hearts:1}}})});
+  const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,embers:37,saved:16,district:3,buildings:{well:{built:true,hearts:1}}})});
   g.run('onTitle=false;intro=null;player.heat=6;for(let i=0;i<20;i++){spawnCrowd(true);saveCell(cells[cells.length-1],true)}');
   assert.equal(g.run('runEmbers'),240);g.run('pop("long run");pop("duplicate");foldOpp();render()');
   assert.equal(g.run('META.embers'),277);assert.equal(g.run('runStarterBonus'),0);
@@ -735,7 +723,7 @@ test('Town action opens the affordable shop and held Enter cannot close it', () 
 });
 
 test('Run history records once, keeps the newest twenty, and survives older saves and reload', () => {
-  const g=game({'fwoosh.meta':JSON.stringify({v:1,recentRuns:null})});
+  const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,recentRuns:null})});
   for(let i=0;i<23;i++)g.run(`reset();elapsed=${i}+.25;runEmbers=${i};saved=2;pop("history");foldOpp()`);
   assert.equal(g.run('META.recentRuns.length'),20);assert.equal(g.run('META.recentRuns[0].earned'),3);
   const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.recentRuns.length'),20);
@@ -811,7 +799,7 @@ test('Return after death is not delivered after a win and never freezes the stre
  g.run('META.recentRuns=[{won:false}];tickPresentDialogue(DT)');assert.equal(g.run('presentDialogue.id'),'return');
 });
 test('Conversation archive excludes unrevealed text and tolerates old malformed saves',()=>{
- const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:17,dialogue:{seen:null,history:[null,3,{who:'UNKNOWN',text:'bad'}]}})});
+ const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,embers:17,dialogue:{seen:null,history:[null,3,{who:'UNKNOWN',text:'bad'}]}})});
  g.run("enterHub();hubAct('conversations');drawConversationSheet(ctx)");
  assert.equal(g.run('dialogueSave().history.length'),0);assert.equal(g.run('META.embers'),17);
  assert.ok(!g.drawnText.includes(g.run('PRESENT.release[1].text')));
@@ -819,7 +807,7 @@ test('Conversation archive excludes unrevealed text and tolerates old malformed 
 });
 test('Legacy Keith dialogue records display under Khet-Tak-Tor without losing text',()=>{
  const old={v:1,dialogue:{seen:['rescue'],history:[{who:'KEITH',emotion:'stern',text:'Keep moving.'}]}};
- const g=game({'fwoosh.meta':JSON.stringify(old)});g.run('dialogueSave();saveMeta()');
+ const g=game({'fwoosh.save2.meta':JSON.stringify(old)});g.run('dialogueSave();saveMeta()');
  assert.equal(g.run('META.dialogue.history[0].who'),'KHET-TAK-TOR');
  assert.equal(g.run('META.dialogue.history[0].text'),'Keep moving.');
  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('dialogueSave().history[0].who'),'KHET-TAK-TOR');
@@ -961,7 +949,7 @@ test('Confirmed debug reset starts first dialogue with clean persistent progress
 });
 test('Storage failure rolls reset back and keeps a visible paused error',()=>{
  const g=game();g.run('META.embers=123;saveMeta();saveOpp()');const before=JSON.stringify([...g.storage]);
- g.run('const originalRemove=localStorage.removeItem;localStorage.removeItem=k=>{if(k==="fwoosh.opp")throw Error("blocked");originalRemove(k)};toggleDebugMenu();debugAction("reset");debugAction("reset");render()');
+ g.run('const originalRemove=localStorage.removeItem;localStorage.removeItem=k=>{if(k==="fwoosh.save2.opp")throw Error("blocked");originalRemove(k)};toggleDebugMenu();debugAction("reset");debugAction("reset");render()');
  assert.equal(g.run('debugMenu.open&&debugMenu.confirm'),true);assert.equal(g.run('META.embers'),123);assert.equal(JSON.stringify([...g.storage].sort()),JSON.stringify(JSON.parse(before).sort()));assert.ok(g.drawnText.some(t=>t.includes('Reset failed.')));
 });
 test('Direct rescues teach the adaptive beacon using current heat and position',()=>{
@@ -1052,9 +1040,9 @@ test('Ratkin Judgment shows named blocs, release threshold and unanimous reward'
   for(const label of ['THE HEARTH','THE BOWL','THE HAND','THE CLAW','THE MEMORY','4 release · 5 unanimous'])assert.ok(g.drawnText.some(t=>t.includes(label)),'Missing favor guidance: '+label);
 });
 
-test('Old v1 saves gain a clean city without losing existing progress',()=>{
+test('Current partial saves receive missing city defaults without losing other fields',()=>{
  const old={v:1,embers:321,saved:17,district:4,clearedDistricts:3,buildings:{well:{built:true,hearts:2,regen:1},forge:{built:true,charges:1,recharge:1}},diary:{read:['morning']},flags:{reachedDuel:true}};
- const g=game({'fwoosh.meta':JSON.stringify(old)});
+ const g=game({'fwoosh.save2.meta':JSON.stringify(old)});
  assert.equal(g.run('META.embers'),321);assert.equal(g.run('META.saved'),17);assert.equal(g.run('META.district'),4);assert.equal(g.run('META.buildings.well.hearts'),2);assert.equal(g.run('META.diary.read[0]'),'morning');
  assert.equal(g.run('META.city.v'),1);assert.equal(g.run('META.city.roads.join()'),'2,4');assert.equal(g.run('META.city.buildings.length'),0);assert.equal(g.run('META.city.materials'),0);
  assert.equal(g.run('META.city.producedFood'),0);assert.equal(g.run('META.city.producedMaterials'),0);assert.equal(g.run('META.judgment.eligible'),false);assert.equal(g.run('META.judgment.heard'),false);
@@ -1062,7 +1050,7 @@ test('Old v1 saves gain a clean city without losing existing progress',()=>{
 test('Malformed city data normalizes to valid unique cells and safe values',()=>{
  const city={v:1,lastAt:'bad',roads:['2,4','2,4','9,9','x,1'],materials:-8,nextId:-2,buildings:[
   {id:4,type:'burrow',x:1,y:4,state:'sealed',work:-3},{id:5,type:'yard',x:1,y:4,state:'sealed'},{id:6,type:'fake',x:0,y:0},{id:7,type:'yard',x:2,y:4,state:'sealed'}]};
- const g=game({'fwoosh.meta':JSON.stringify({v:1,city})});
+ const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,city})});
  assert.equal(g.run('META.city.roads.join()'),'2,4');assert.equal(g.run('META.city.materials'),0);assert.equal(g.run('META.city.buildings.length'),1);assert.equal(g.run('META.city.buildings[0].work'),0);assert.ok(g.run('META.city.nextId>=5'));
 });
 test('Roads extend only from the connected gate network',()=>{
@@ -1077,7 +1065,7 @@ test('Foundations reject occupied or disconnected sites without spending',()=>{
  g.run('cityPlaceBuilding("yard",1,4)');assert.equal(g.run('META.embers'),160);assert.equal(g.run('META.city.buildings.length'),1);
 });
 test('Construction advances offline, caps at eight hours and requires sealing',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run('META.embers=200;cityPlaceBuilding("burrow",1,4);const t=META.city.lastAt;cityAdvance(t+45*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'building');assert.equal(g.run('META.city.buildings[0].remaining'),45);
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run('META.embers=200;cityPlaceBuilding("burrow",1,4);const t=META.city.lastAt;cityAdvance(t+45*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'building');assert.equal(g.run('META.city.buildings[0].remaining'),45);
  g.run('cityAdvance(META.city.lastAt+9*60*60*1000,true)');assert.equal(g.run('META.city.buildings[0].state'),'ready');assert.equal(g.run('cityWorkerCapacity()'),0);
  g.run('citySeal(1)');assert.equal(g.run('META.embers'),140);assert.equal(g.run('META.city.buildings[0].state'),'sealed');assert.equal(g.run('cityWorkerCapacity()'),1);
  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings[0].state'),'sealed');
@@ -1087,20 +1075,20 @@ test('Rush spends exact embers, removes thirty seconds and cannot overspend',()=
  const before=g.run('META.city.buildings[0].remaining');g.run('cityRush(1)');assert.equal(g.run('META.embers'),0);assert.ok(g.run('META.city.buildings[0].remaining')<=before);
 });
 test('A sealed connected Burrow automatically staffs one sealed Yard',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityWorkerCapacity()'),1);assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');assert.equal(g.run('cityYardActive(META.city.buildings[1])'),true);
  g.run('cityAdvance(1000+cityCycleSeconds(META.city.buildings[1])*1000,true)');assert.equal(g.run('META.city.materials'),1);assert.ok(g.run('META.city.buildings[1].work<1e-6'));
 });
 test('Road distance slows output and disconnected Yards stop without banking work',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,food:4,nextId:3,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2','1,2'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:1,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:0,y:2,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityRoadDistanceTo(META.city.buildings[1])'),4);assert.equal(g.run('cityCycleSeconds(META.city.buildings[1])'),50);
  g.run('cityAdvance(56000,true)');assert.equal(g.run('META.city.materials'),1);
  g.run("META.city.roads=['2,4'];META.city.buildings[1].work=40;cityAdvance(META.city.lastAt+100000,true)");assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings[1].work'),0);
 });
 test('Automatic staffing is stable and extra Yards wait for more Burrows',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,food:4,nextId:4,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','1,4'],materials:0,food:4,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0},{id:2,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0},{id:3,type:'yard',x:0,y:4,state:'sealed',remaining:0,work:0}]}`);
  assert.equal(g.run('cityAssignedYards().map(b=>b.id).join()'),'2');g.run('cityAdvance(1000+50000,true)');assert.equal(g.run('META.city.materials'),1);assert.equal(g.run('META.city.buildings.find(b=>b.id===3).work'),0);
 });
@@ -1114,13 +1102,13 @@ test('Town exposes the Ratkin Quarter and its station explains inputs, output an
  g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4'],materials:0,food:4,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1}]};citySelectedId=1;drawCityStation(ctx)`);
  for(const label of ['INPUT','OUTPUT','ROUTE','1 food ration from shared stores'])assert.ok(g.drawnText.includes(label),'Missing station label: '+label);
 });
-test('Fresh and older city saves receive bootstrap food and normal priorities',()=>{
+test('Fresh and partial city saves receive bootstrap food and normal priorities',()=>{
  const fresh=game();assert.equal(fresh.run('META.city.food'),4);
- const old=game({'fwoosh.meta':JSON.stringify({v:1,city:{v:1,lastAt:1000,roads:['2,4'],materials:2,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',work:3}]}})});
+ const old=game({'fwoosh.save2.meta':JSON.stringify({v:1,city:{v:1,lastAt:1000,roads:['2,4'],materials:2,nextId:2,buildings:[{id:1,type:'yard',x:1,y:4,state:'sealed',work:3}]}})});
  assert.equal(old.run('META.city.food'),4);assert.equal(old.run('META.city.buildings[0].priority'),1);assert.equal(old.run('META.city.materials'),2);
 });
 test('Mushroom Farms bootstrap food and Yards consume one ration per material',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:0,nextId:4,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3'],materials:0,food:0,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'farm',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'yard',x:1,y:3,state:'sealed',remaining:0,work:0,priority:2}]}`);
@@ -1135,7 +1123,7 @@ test('Connected sealed Storehouses expand both resource caps',()=>{
  assert.equal(g.run('cityStorageCapacity()'),25);g.run("META.city.roads=['2,4','0,1'];");assert.equal(g.run('cityStorageCapacity()'),25,'A disconnected road island must not add storage.');
 });
 test('Shared-road carrier traffic slows station cycles',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2'],materials:0,food:4,nextId:5,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:1000,roads:['2,4','2,3','2,2'],materials:0,food:4,nextId:5,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'burrow',x:3,y:3,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'yard',x:1,y:2,state:'sealed',remaining:0,work:0,priority:1},
@@ -1143,7 +1131,7 @@ test('Shared-road carrier traffic slows station cycles',()=>{
  assert.equal(g.run('cityAssignedStations().length'),2);assert.equal(g.run('cityCongestionFor(META.city.buildings[2])'),1);assert.equal(g.run('cityCycleSeconds(META.city.buildings[2])'),49.1);
 });
 test('Player priorities reorder automatic worker assignment and persist',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:4,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:4,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'yard',x:1,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:3,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:0,priority:1}]};citySetPriority(3,2)`);
@@ -1151,7 +1139,7 @@ test('Player priorities reorder automatic worker assignment and persist',()=>{
  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.city.buildings.find(b=>b.id===3).priority'),2);
 });
 test('Map and station render visible logistics and congestion information',()=>{
- const g=game();g.run("META.society.legacy=20;META.saved=20");g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
+ const g=game();g.run("for(let i=0;i<20;i++){societyArrive({id:0});META.saved++;}META.society.residents.forEach(r=>r.preference='either')");g.run(`META.city={v:1,lastAt:Date.now(),roads:['2,4','2,3'],materials:0,food:4,nextId:3,buildings:[
   {id:1,type:'burrow',x:3,y:4,state:'sealed',remaining:0,work:0,priority:1},
   {id:2,type:'farm',x:1,y:3,state:'sealed',remaining:0,work:10,priority:1}]};citySelectedId=2;loadCityArt();for(const k of ['ratkin_walk','ratkin_idle'])Object.assign(MAKKO_ANIM_IMG[k],{complete:true,naturalWidth:2000});drawCityMap(ctx);drawCityStation(ctx)`);
  for(const label of ['FARM','MUSHROOM STATION','SPORE BED','GROW ROOM'])assert.ok(g.drawnText.includes(label),'Missing logistics rendering: '+label);
@@ -1275,7 +1263,7 @@ test('Rescue registers exact civilian appearance once and survives save reload',
  const g=game();g.run('reset(80);const person={id:99,villagerId:7,x:300,y:600,hunter:true,grace:0};saveCell(person,false);saveCell(person,false);saveMeta()');
  assert.equal(g.run('META.saved'),1);assert.equal(g.run('META.society.residents.length'),1);
  assert.equal(g.run('META.society.residents[0].kind'),'weaver');assert.equal(g.run('META.society.residents[0].home'),0);
- const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.society.residents[0].kind'),'weaver');assert.equal(reload.run('META.society.legacy'),0);
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.society.residents[0].kind'),'weaver');
  assert.equal(reload.run('META.society.residents[0].events[0].kind'),'arrival');
 });
 test('Husk rekindle adds its actual rescue actor once to sanctuary',()=>{
@@ -1286,17 +1274,10 @@ test('Husk rekindle adds its actual rescue actor once to sanctuary',()=>{
 test('Registering a resident does not advance combat randomness',()=>{
  const a=game(),b=game();a.run('reset(45);societyArrive({id:5})');b.run('reset(45)');assert.equal(a.run('rnd()'),b.run('rnd()'));
 });
-test('Legacy migration preserves large counts compactly without invented history',()=>{
- const g=game({'fwoosh.meta':JSON.stringify({v:1,saved:1000000,embers:700})});
- assert.equal(g.run('META.society.legacy'),1000000);assert.equal(g.run('META.society.residents.length'),0);
- g.run(completeJudgmentCity+';societySync();saveMeta()');
- assert.equal(g.run('META.society.residents.length'),2);assert.equal(g.run('META.society.legacy'),999998);
- assert.equal(g.run('META.society.residents.every(r=>!r.known&&r.arrived===0)'),true);
- const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.society.legacy+META.society.residents.length'),1000000);assert.equal(reload.run('META.embers'),700);
-});
+
 test('Malformed household records normalize without duplicate IDs or unsafe preferences',()=>{
- const g=game({'fwoosh.meta':JSON.stringify({v:1,saved:4,society:{v:1,legacy:-1,nextId:1,residents:[null,{id:1,kind:'keith',preference:'palace',home:-3,events:[null,{kind:'death'},{kind:'arrival',at:-3}]},{id:1,kind:'baker'}, {id:2,kind:'child',known:true}]}})});
- assert.equal(g.run('META.society.residents.length'),2);assert.equal(g.run('META.society.legacy'),2);assert.equal(g.run('META.society.nextId'),3);
+ const g=game({'fwoosh.save2.meta':JSON.stringify({v:1,saved:4,society:{v:1,nextId:1,residents:[null,{id:1,kind:'keith',preference:'palace',home:-3,events:[null,{kind:'death'},{kind:'arrival',at:-3}]},{id:1,kind:'baker'}, {id:2,kind:'child'}]}})});
+ assert.equal(g.run('META.society.residents.length'),2);assert.equal(g.run('META.society.nextId'),3);
  assert.equal(g.run('META.society.residents[0].kind'),'ratkin');assert.equal(g.run('META.society.residents[0].preference'),'either');
  assert.equal(g.run('META.society.residents[0].events.length'),1);
 });
@@ -1335,7 +1316,7 @@ test('Moving a house preserves tenancy and does not duplicate move-in milestones
  assert.equal(g.run('META.society.residents[0].home'),1);assert.equal(g.run('META.society.residents[0].events.length'),2);assert.equal(g.run('cityBuilding(1).x'),3);
 });
 test('Apartment construction, sealing and household tenancy survive reload',()=>{
- const g=game();g.run('META.saved=5;META.society.legacy=5;META.embers=200;cityTool="apartment";cityCellAct(1,4)');
+ const g=game();g.run('for(let i=0;i<5;i++){societyArrive({id:0});META.saved++;}META.embers=200;cityTool="apartment";cityCellAct(1,4)');
  assert.equal(g.run('META.embers'),100);g.run('cityAdvance(META.city.lastAt+180000,true);citySeal(1)');
  assert.equal(g.run('META.embers'),50);assert.equal(g.run('cityWorkerCapacity()'),3);g.run('saveMeta()');
  const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('cityBuilding(1).type'),'apartment');assert.equal(reload.run('cityWorkerCapacity()'),3);
@@ -1366,6 +1347,34 @@ test('A newly rescued resident cannot produce resources for time before their ar
  const g=game();g.run(householdCity+';META.city.lastAt=Date.now()-8*60*60*1000;societyArrive({id:5});cityAdvance(Date.now(),true)');
  assert.equal(g.run('META.city.producedFood||0'),0);assert.equal(g.run('META.city.food'),4);
  g.run('cityAdvance(META.city.lastAt+50000,true)');assert.equal(g.run('META.city.producedFood'),1);
+});
+
+test('The approved save cutover deletes both old progress keys and starts fresh',()=>{
+ const old={v:1,embers:9999,saved:500,district:5,clearedDistricts:5,emberLedger:{v:1,earned:88888,historyComplete:true},judgment:{released:true}};
+ const g=game({'fwoosh.meta':JSON.stringify(old),'fwoosh.opp':JSON.stringify({terr:Array(48).fill(7),lat:[1],runs:50,duelWins:12,introVer:5}),'fwoosh.skin':'makko','another-game':'keep me'});
+ assert.equal(g.storage.has('fwoosh.meta'),false);assert.equal(g.storage.has('fwoosh.opp'),false);
+ assert.equal(g.run('META.embers'),0);assert.equal(g.run('META.saved'),0);assert.equal(g.run('META.district'),1);assert.equal(g.run('META.clearedDistricts'),0);
+ assert.equal(g.run('META.emberLedger.earned'),0);assert.equal(g.run('META.society.residents.length'),0);assert.equal(g.run('META.judgment.released'),false);
+ assert.equal(g.run('opp.runs'),0);assert.equal(g.run('opp.duelWins'),0);assert.equal(g.run('opp.introVer||0'),0);
+ assert.equal(g.storage.get('fwoosh.skin'),'makko');assert.equal(g.storage.get('another-game'),'keep me');
+});
+test('Post-cutover currency, city, residents and dialogue persist across repeated reloads',()=>{
+ const g=game();g.run('societyArrive({id:7});META.saved=1;META.embers=345;META.emberLedger.earned=345;META.dialogue={seen:{arrival:true},history:[]};META.city.materials=3;opp.runs=4;opp.introVer=5;saveMeta();saveOpp()');
+ let saved=Object.fromEntries(g.storage);
+ for(let i=0;i<3;i++){
+  const reload=game(saved);assert.equal(reload.run('META.embers'),345);assert.equal(reload.run('META.emberLedger.earned'),345);assert.equal(reload.run('META.society.residents[0].kind'),'weaver');assert.equal(reload.run('META.city.materials'),3);assert.equal(reload.run('META.dialogue.seen.arrival'),true);assert.equal(reload.run('opp.runs'),4);assert.equal(reload.run('opp.introVer'),5);
+  reload.run('saveMeta();saveOpp()');saved=Object.fromEntries(reload.storage);
+ }
+});
+test('A stale old tab cannot resurrect progress or wipe the new generation',()=>{
+ const g=game();g.run('META.embers=31;opp.runs=2;saveMeta();saveOpp()');
+ g.storage.set('fwoosh.meta',JSON.stringify({v:1,embers:9999,saved:400}));g.storage.set('fwoosh.opp',JSON.stringify({terr:Array(48).fill(1),runs:500}));
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('META.embers'),31);assert.equal(reload.run('opp.runs'),2);assert.equal(reload.run('META.saved'),0);assert.equal(reload.storage.has('fwoosh.meta'),false);
+});
+test('Blocked retired-key deletion never imports or reconstructs old progress',()=>{
+ const g=game({'fwoosh.meta':JSON.stringify({v:1,embers:999,saved:100}),'fwoosh.opp':JSON.stringify({terr:Array(48).fill(9),runs:50})},{blockRetiredRemoval:true});
+ assert.equal(g.run('META.embers'),0);assert.equal(g.run('META.society.residents.length'),0);assert.equal(g.run('opp.runs'),0);
+ g.run('META.embers=8;saveMeta()');const reload=game(Object.fromEntries(g.storage),{blockRetiredRemoval:true});assert.equal(reload.run('META.embers'),8);
 });
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),

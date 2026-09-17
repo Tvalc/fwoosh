@@ -1221,7 +1221,7 @@ function drawShrineSheet(ctx){
     ctx.fillText('INVOICE RECORD · '+(ledger.historyComplete?'':'AT LEAST ')+ledger.earned+' EMBERS EARNED',VW/2,y+551);
     ctx.fillStyle='#d7cde5';ctx.font='500 15px "Chakra Petch",system-ui,sans-serif';
     ctx.fillText('Spending on the Ratkin does not reduce this total.',VW/2,y+575);
-    if(!ledger.historyComplete){ctx.font='500 13px "Chakra Petch",system-ui,sans-serif';ctx.fillText('Earlier earnings may be missing from this old save.',VW/2,y+595);}
+    if(!ledger.historyComplete){ctx.font='500 13px "Chakra Petch",system-ui,sans-serif';ctx.fillText('The earnings record is damaged; this total may be incomplete.',VW/2,y+595);}
   }
   const bY=y+h-112,bX=60,bW=VW-120,bH=76;
   panel(ctx,bX,bY,bW,bH,14,'rgba(40,30,58,0.94)',META.judgment.eligible?'#8affc1':'#c9a0ff');

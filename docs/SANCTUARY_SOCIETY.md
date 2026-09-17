@@ -27,7 +27,7 @@ The existing road-distance, shared-route congestion, food, storage and priority 
 
 The Sanctuary screen gathers existing verified Makko idle performances, lists residents and opens each household chronicle. It is not yet the authored celebration vignette system. No idle clip is represented as a newly produced celebration animation. Construction still uses the existing timers and UI panels pending dedicated Makko art.
 
-Older saves preserve their complete rescue count compactly as earlier arrivals. Earlier residents receive household records when housing becomes available; their original appearance, preference and arrival date are explicitly unrecorded. New rescues have complete records from arrival forward. The original appearances cannot be recovered from a count.
+Tony subsequently authorized wiping all old progress once in `2026-09-17-reset-1`. Current saves start with a complete resident record from the first rescue. The historical rescue-count reserve and unidentified-resident migration have been removed; do not restore them.
 
 ## Next slices
 

@@ -1,5 +1,11 @@
 # Fwoosh status — September 17, 2026
 
+## Authorized fresh save generation - 2026-09-17-reset-1
+
+Tony requested one full wipe of old progress so development no longer carries old save/accounting paths. Startup removes retired `fwoosh.meta` and `fwoosh.opp` and uses stable `fwoosh.save2.meta` / `fwoosh.save2.opp` keys. The reset takes effect when each device/origin loads the new build. New progress survives subsequent reloads/releases, and older tabs cannot resurrect it. Skin preferences and unrelated origin storage remain untouched.
+
+Removed historical ember recovery, unidentified-resident/count migration and inferred district completion. The debug reset and console helpers target the new keys. Ordinary defensive validation for current saves remains. 189 gameplay/save/render checks and 77 asset checks pass, including full old-progress retirement, repeated current-save reloads, stale-tab writes and blocked cleanup. Deployment evidence is recorded on the board and #33 after publication.
+
 ## Sanctuary households - 2026-09-17-sanctuary-1
 
 Rescued Ratkin now retain persistent identities and exact Makko civilian appearances, including rekindled husks. Ratkin Quarter → Visit Sanctuary opens the refuge roster and individual household chronicles. Arrival and move-in milestones persist, with paging for longer histories. Earlier saves retain every recorded rescue compactly and explicitly disclose missing historical appearances and dates.

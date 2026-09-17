@@ -1,7 +1,7 @@
 // ---- THE OPP: a rival built from how you played last session (persistent)
 function loadOpp(){
   const N = 6*8;
-  try{ const s = JSON.parse(localStorage.getItem('fwoosh.opp'));
+  try{ const s = JSON.parse(localStorage.getItem(SAVE_KEYS.opp));
     if(s && Array.isArray(s.terr) && s.terr.length === N){
       s.readsBroken = s.readsBroken||0; s.timesSniped = s.timesSniped||0; s.seenIntro = !!s.seenIntro;
       s.duelWins = s.duelWins||0; s.loreIdx = s.loreIdx||0;
@@ -27,7 +27,7 @@ function lineFor(kind){                          // fired/sniped/broken/study, k
   const arr = pool[st] || pool.smug || pool.debut;
   return arr[(opp.runs||0) % arr.length];
 }
-function saveOpp(){ try{ localStorage.setItem('fwoosh.opp', JSON.stringify(opp)); }catch(e){} }
+function saveOpp(){ try{ localStorage.setItem(SAVE_KEYS.opp, JSON.stringify(opp)); }catch(e){} }
 function median(arr){ const a = arr.slice().sort((x,y)=>x-y), n = a.length;
   return n ? (n%2 ? a[(n-1)/2] : (a[n/2-1]+a[n/2])/2) : 0; }
 function cellCenter(i){ const col = i%K.OPP_COLS, row = Math.floor(i/K.OPP_COLS);

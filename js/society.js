@@ -1,30 +1,26 @@
 // Sanctuary households. Presentation reuses verified Makko civilian performances;
 // relationships, births and authored celebration vignettes are separate future work.
-function societyFresh(){return {v:1,nextId:1,legacy:0,residents:[]};}
+function societyFresh(){return {v:1,nextId:1,residents:[]};}
 function societyCount(value){const n=Number(value);return Number.isFinite(n)?Math.max(0,Math.min(Number.MAX_SAFE_INTEGER,Math.trunc(n))):0;}
-function societyNormalize(raw,saved){
+function societyNormalize(raw){
   const out=societyFresh(),seen=new Set();
   if(raw&&raw.v===1){
-    out.legacy=societyCount(raw.legacy);
     for(const r of Array.isArray(raw.residents)?raw.residents:[]){
       if(!r||!Number.isSafeInteger(r.id)||r.id<1||r.id>=Number.MAX_SAFE_INTEGER||seen.has(r.id))continue;
       seen.add(r.id);out.nextId=Math.max(out.nextId,r.id+1);
-      out.residents.push({id:r.id,kind:RATKIN_VILLAGERS.includes(r.kind)?r.kind:'ratkin',known:r.known===true,
+      out.residents.push({id:r.id,kind:RATKIN_VILLAGERS.includes(r.kind)?r.kind:'ratkin',
         preference:['burrow','apartment'].includes(r.preference)?r.preference:'either',home:societyCount(r.home),
         arrived:societyCount(r.arrived),events:(Array.isArray(r.events)?r.events:[]).filter(e=>e&&['arrival','home','refuge'].includes(e.kind)).map(e=>({kind:e.kind,at:societyCount(e.at),home:societyCount(e.home),type:['burrow','apartment'].includes(e.type)?e.type:''}))});
     }
     out.nextId=Math.max(out.nextId,Math.min(Number.MAX_SAFE_INTEGER-1,societyCount(raw.nextId)));
   }
-  // Earlier saves recorded a count, not individuals. Preserve that count compactly;
-  // never pretend their original appearances or arrival dates were recorded.
-  out.legacy=Math.max(out.legacy,societyCount(saved)-out.residents.length);
   return out;
 }
 function societyArrive(actor){
   if(actor.sanctuaryId)return actor.sanctuaryId;
   const at=Date.now();cityAdvance(at,false); // Settle elapsed work before adding this new worker.
   const s=META.society,id=s.nextId++,kind=villagerType(actor);
-  s.residents.push({id,kind,known:true,preference:kind==='child'?'either':id%2?'burrow':'apartment',home:0,arrived:at,events:[{kind:'arrival',at,home:0,type:''}]});
+  s.residents.push({id,kind,preference:kind==='child'?'either':id%2?'burrow':'apartment',home:0,arrived:at,events:[{kind:'arrival',at,home:0,type:''}]});
   actor.sanctuaryId=id;societyCacheKey='';return id;
 }
 function societyIsHome(b){return b&&['burrow','apartment'].includes(b.type);}
@@ -33,7 +29,7 @@ function societyHomeCount(){return cityData().buildings.filter(b=>societyIsHome(
 let societyCacheData=null,societyCacheKey='',societyWorkerCache=[];
 function societySync(){
   const s=META.society,c=cityData();
-  const key=c.roads.join('|')+';'+c.buildings.map(b=>[b.id,b.type,b.state,b.x,b.y].join(',')).join('|')+';'+s.residents.length+';'+s.legacy;
+  const key=c.roads.join('|')+';'+c.buildings.map(b=>[b.id,b.type,b.state,b.x,b.y].join(',')).join('|')+';'+s.residents.length;
   if(s===societyCacheData&&key===societyCacheKey)return;
   societyCacheData=s;
   const homes=c.buildings.filter(b=>societyIsHome(b)&&b.state==='sealed'&&cityConnected(b)).sort((a,b)=>a.id-b.id),byId=new Map(homes.map(b=>[b.id,b])),used=new Map();
@@ -56,20 +52,14 @@ function societySync(){
     if(preferred&&(!current||current.type!==r.preference))move(r,preferred);
     else if(!current){const b=homes.find(vacancy);if(b)move(r,b);}
   }
-  // Materialize only earlier residents who need housing; large old rescue counts
-  // stay compact. Their archive clearly discloses missing identity/history.
-  for(const b of homes)while(s.legacy>0&&vacancy(b)){
-    const r={id:s.nextId++,kind:'ratkin',known:false,preference:'either',home:0,arrived:0,events:[]};
-    s.legacy--;s.residents.push(r);move(r,b);
-  }
   societyWorkerCache=s.residents.filter(r=>r.home&&r.kind!=='child').sort((a,b)=>a.id-b.id);
-  societyCacheKey=c.roads.join('|')+';'+c.buildings.map(b=>[b.id,b.type,b.state,b.x,b.y].join(',')).join('|')+';'+s.residents.length+';'+s.legacy;
+  societyCacheKey=c.roads.join('|')+';'+c.buildings.map(b=>[b.id,b.type,b.state,b.x,b.y].join(',')).join('|')+';'+s.residents.length;
 }
 function societyWorkers(){societySync();return societyWorkerCache;}
 function societyStationResident(b){const i=cityAssignedStations().findIndex(x=>x.id===b.id);return i<0?null:societyWorkers()[i]||null;}
 function societyHappiness(r){return !r.home?80:cityBuilding(r.home)?.type===r.preference?95:85;}
 function societyProductionBonus(r){return !r||!r.home?0:societyHappiness(r)===95?.20:.10;}
-function societyLabel(r){return (r.known?r.kind.toUpperCase():'EARLIER RESIDENT')+' '+r.id;}
+function societyLabel(r){return r.kind.toUpperCase()+' '+r.id;}
 function societyHomeLabel(r){const b=cityBuilding(r.home);return b?CITY_DEF[b.type].short+' '+b.id:'COMMUNAL REFUGE';}
 function societyJob(r){const b=cityAssignedStations().find(b=>societyStationResident(b)?.id===r.id);return b?'Working at the '+CITY_DEF[b.type].name.toLowerCase():r.kind==='child'?'Community care':r.home?'Time at home':'Helping the refuge';}
 let societyPage=0,societySelected=0,chroniclePage=0;
@@ -87,7 +77,7 @@ function societyDrawResident(ctx,r,x,y,h,walking=false){
   if(!drawAnim(ctx,r.kind+(walking?'_walk':'_idle'),x,y,h,{fps:walking?9:5,t:r.id%12}))drawSpr(ctx,r.kind==='ratkin'?'townsfolk':r.kind,x,y,h,{});
 }
 function drawSociety(ctx){
-  societySync();drawCityHeader(ctx,'SANCTUARY');const s=META.society,total=s.residents.length+s.legacy,refuge=s.residents.filter(r=>!r.home).length+s.legacy;
+  societySync();drawCityHeader(ctx,'SANCTUARY');const s=META.society,total=s.residents.length,refuge=s.residents.filter(r=>!r.home).length;
   ctx.textAlign='left';ctx.fillStyle='#e9d7af';ctx.font='600 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText(total+' ARRIVALS · '+refuge+' IN THE REFUGE',42,145);
   ctx.fillStyle='#becfc6';ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';wrapText(ctx,'No fire follows them here. There is a place at the table while their homes take shape.',42,190,636,30);
   panel(ctx,42,268,636,220,16,'rgba(33,39,33,.88)','#8c7752');
@@ -102,8 +92,7 @@ function drawSociety(ctx){
     ctx.fillText('Open household chronicle',154,y+92);hubB(42,y,636,106,'household:'+r.id);
   });
   ctx.textAlign='left';ctx.fillStyle='#aebdb8';ctx.font='500 19px "Chakra Petch",system-ui,sans-serif';
-  if(s.legacy)wrapText(ctx,s.legacy+' earlier arrivals are also safe here. Older saves did not record their appearances or personal histories.',42,1020,636,26);
-  else ctx.fillText('Homes are chosen automatically. Children stay in community care.',42,1020);
+  ctx.fillText('Homes are chosen automatically. Children stay in community care.',42,1020);
   societyButton(ctx,42,1098,180,'PREVIOUS','societypage:'+Math.max(0,societyPage-1));
   ctx.textAlign='center';ctx.fillStyle='#d9e1d9';ctx.font='700 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText((societyPage+1)+' / '+pages,360,1138);
   societyButton(ctx,498,1098,180,'NEXT','societypage:'+Math.min(pages-1,societyPage+1));societyButton(ctx,180,1180,360,'TOWN PLAN','cityback');
@@ -119,7 +108,6 @@ function drawHousehold(ctx){
   ctx.fillStyle='#ffdfa0';ctx.font='700 26px "Chakra Petch",system-ui,sans-serif';ctx.fillText('A LIFE RECORDED',54,666);
   ctx.fillStyle='#d5ded3';ctx.font='500 23px "Chakra Petch",system-ui,sans-serif';
   let y=712;
-  if(!r.known){y=wrapText(ctx,'An earlier arrival. Their original appearance and arrival date were not saved.',54,y,612,31)+44;}
   const pages=Math.max(1,Math.ceil(r.events.length/3));chroniclePage=Math.min(chroniclePage,pages-1);
   for(const e of r.events.slice(chroniclePage*3,chroniclePage*3+3)){
     const date=e.at?new Date(e.at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
