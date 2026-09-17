@@ -20,6 +20,16 @@ Living document. Base: `main` @ 8f23fdc (PR #75). Status labels used everywhere 
 | X-07 | Bloc portraits (Weaver/Hearth, Cook/Bowl, Mason/Hand, Lantern/Claw, Elder/Memory) are "visual representatives, not named canon characters". | CURSOR_ART_BRIEF | I give citizens bloc *leanings* only and do not name any citizen as a bloc's face. |
 | X-08 | Citizen brief refers to "the existing Fwoosh lore conversation" and "existing prose/research drafts". No such drafts exist on any remote branch, and I have no prior conversation content. | brief | Starting from repo canon only. If earlier drafts exist elsewhere, send them and I will merge rather than replace. |
 
+## 1a. Approved decisions
+
+**AD-01 (Tony, 2026-09-17): Before sanctuary existed, all Ratkin dead everywhere burned. The fire is the old Ratkin afterlife. Duy empties it, this tribe first.**
+- Resolves X-02. Every rescue is a real dead Ratkin with a real life. Residents beyond the nineteen are the tribe's other dead: raid victims and earlier generations. Other worlds' dead follow later.
+- Confirms SANCTUARY_SOCIETY's "centuries of burning" over CANON's vaguer "centuries of injustice".
+- Narrows X-03 but does not close it: the burning streets are the old afterlife, but *why it has the shape of a town* is unstated.
+- **New tension X-09:** the Arbiter's live greet line "yes, i keep the fires going" (story.js `greet.obsessed`) now reads as Khet-Tak-Tor maintaining a fire that predates him and torments his own people. CANON lists "why Khet-Tak-Tor maintains or uses the recurring fire" as open. Not settled here. My drafts never state who lit the fire or why it is kept.
+- **Consequence for writing (NP-08, proposal):** the dead split into two groups with different standing toward Duy. The nineteen burned briefly and were killed by him. Ancestors and raid victims burned far longer and he never harmed them; to them he is only the stranger who carried them out. This gives the five blocs a real disagreement instead of nineteen versions of one grievance.
+- **Consequence (NP-09, proposal):** the dead burned without knowing how long. Nobody in my drafts reports a duration from inside the fire. They learn it on arrival, from who is already there and who is not.
+
 ## 2. Naming (PROPOSAL NP-02)
 
 Anchors from canon: **Khet-Tak-Tor** = "the voice that closes the debt"; **Chit-tat-to**. Ratkin names are therefore short phrases of three hard-edged beats.
@@ -45,10 +55,12 @@ Payoff this buys: a child who died with one beat can earn the others in sanctuar
 
 | Order | Event | Status |
 |---|---|---|
-| T0 | Generations of seasonal circuits. | CANON (nomadic) + DRAFT detail |
+| T-1 | Ratkin dead of every world burn. No sanctuary exists. | **AD-01** |
+| T0 | Generations of seasonal circuits. The tribe's dead join the fire as they die. | CANON + AD-01 + DRAFT detail |
 | T1 | Blackroot trackers learn the routes. Orr-Ve-Kan fears he was followed from the edge-markets; never confirmed. | DRAFT, flagged (touches open Blackroot/trading-post link) |
 | T2 | Autumn gathering. Blackroot surrounds it. The tribe resists. Village destroyed; the one fire goes out; nineteen taken. | CANON core + DRAFT detail |
 | T3 | Captivity and transport. Duration unstated. | open |
+| T3a | Raid dead (incl. cit-020, cit-021) enter the fire. | AD-01 |
 | T4 | Dark cell. A door stands open. Tav-Ri sees it and screams to run. Duy and Cuong arrive in the path and fire. Nineteen die. | CANON core; the scream and who opened the door are DRAFT/open |
 | T5 | System records the debt (19 Cuong / 5 Duy per current Ledger text). | CANON conflict preserved |
 | T6 | Gate. Duy dies; Khet-Tak-Tor dies briefly; covenant of the Ratkin god, Adonai and Odin. | CANON |

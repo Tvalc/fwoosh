@@ -4,6 +4,53 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 02 — 2026-09-17 · branch `claude/narrative-batch-02` (stacked on batch 01) · base `main` 8f23fdc
+
+### 1. Approved decisions and what they supersede
+| ID | Decision (Tony, in narrative conversation) | Supersedes / affects |
+|---|---|---|
+| **AD-01** | Before sanctuary existed, **all Ratkin dead everywhere burned**. The burning streets are the old Ratkin afterlife. Duy empties it, **this tribe first**; other worlds later. | Resolves batch-01 X-02. Confirms SANCTUARY_SOCIETY "centuries of burning"; CANON.md "After centuries of injustice" should be sharpened to match. CANON/brief line "do not invent additional living survivors" still holds: residents 20+ are the tribe's *dead* (raid victims, earlier generations), not survivors. Does **not** settle why the fire recurs or who keeps it (CANON open item stands). Request: Codex mirror AD-01 into CANON.md and the Ledger shared handoff. |
+
+Nothing else is approved. All prose remains DRAFT.
+
+### 2. Finished content (DRAFT)
+| ID | Content | Path |
+|---|---|---|
+| cit-008 | Pel-Ta-Shu, full profile (was stub) | docs/narrative/CAST_REGISTRY.md |
+| cit-020, cit-021 | Ase-Ro-Wen, Dak-Ro-Fen: Nim's parents, raid dead. Unblocked by AD-01. | same |
+| cit-022 | Hal-Ne-Dur: **first ancestor citizen** (died of age before the raid) | same |
+| rel-batch02 | 8 new or completed edges; all cit-001…006 edges to written profiles now agree both ways | same |
+| NP-08, NP-09, X-09 | Two-standings proposal; no felt durations; "i keep the fires going" tension | docs/narrative/BIBLE.md §1a |
+
+Counts: 10 full profiles, 12 stubs, 40 conditional entries.
+
+### 3. Reveal order and spoiler boundaries (adds to batch 01)
+- That *all* Ratkin dead burned (AD-01) is a major reveal. Intent: the player infers it, not from exposition, but from the first **ancestor arrival**: someone who died peacefully in bed years ago walks into the refuge. cit-022's first-meeting line is written to carry exactly that and nothing more.
+- Therefore no ancestor (cohort `tribe`, pre-raid death) should arrive before the nineteen are all home **and** diary `cell` is unlocked. Raid dead (cit-020, cit-021) may arrive after the nineteen and before ancestors.
+- Present-tense dialogue must not state AD-01 outright before that arrival.
+
+### 4. Triggers
+No new trigger types. New uses: `reunion:cit-002`, `reunion:cit-001`, `reunion:cit-003`, `celebration:music`, `arrival+cit-001 present`.
+**Proposed mechanics (Codex decides):** arrival order by cohort: captive → raid dead → ancestors → (later) other worlds. Within a cohort any order is acceptable to the narrative.
+
+### 5. Makko art requests (blocked on profile approval)
+| ID | Base | Distinguishing proposal |
+|---|---|---|
+| cit-008 | wellkeeper | mouth usually open mid-song; tuning-reed behind one ear; buckets are water (per existing brief) |
+| cit-020 | ratkin | coiled climbing line across the chest, bark-scuffed knees, tail wrapped with grip-cord |
+| cit-021 | mason | bulging mender's bag, every item of clothing visibly patched in a different cord |
+| cit-022 | elder | oldest silhouette in the cast; ash-grey hands like cit-003's; rides/sits whenever staging allows |
+
+### 6. Open questions and unapproved drafts
+- **Q2 (asked):** can Duy enter sanctuary and speak with residents? Several batch-01/02 lines (Nim questioning him, Ase-Ro-Wen "to his face", Pel-Ta-Shu seeing his arms) assume some contact. Blocks the `home` rewrite.
+- Queued: X-04 jailer vs Warden (needs Ledger); NP-03 children among the nineteen; NP-02 naming; NP-08 two standings; X-09; community name; who opened the cell door; tribe size.
+- vovinam-ledger still unread.
+
+### 7. Files and commit
+Same four paths as batch 01. Commit: `git log claude/narrative-batch-02 -1`. Not pushed (no credentials). Delivered as `narrative-batches-01-02.patch` (two commits, `git am`).
+
+---
+
 ## Batch 01 — 2026-09-17 · branch `claude/narrative-batch-01` · base `main` 8f23fdc
 
 ### 1. Approved decisions and what they supersede

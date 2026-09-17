@@ -1,10 +1,10 @@
-# Cast registry — batch 01 (ALL DRAFT, none approved)
+# Cast registry — through batch 02 (ALL DRAFT, none approved)
 
 IDs are permanent. A citizen may be renamed or rewritten; the ID never moves to another person. Cohorts: `captive` (the nineteen, cit-001…019), `tribe` (wider tribe, cit-020+), later `born` and `otherworld`.
 
 Every entry separates **immutable past** from **conditional entries**. Conditional text may display only after the simulation causes the named event. `visual` is a reference to one of the twelve existing Makko civilian types, not an identity claim.
 
-Nothing below states where anyone was between death and rescue (blocked on X-02).
+Per **AD-01**, every dead Ratkin burned until carried out. Profiles state that plainly and never give a duration as felt from inside (NP-09).
 
 ---
 
@@ -17,7 +17,7 @@ cohort captive · elder woman · route-keeper · visual `elder` · leans Memory
 
 **Attitude to Duy:** wants his account before his suffering. Watches whether he learns names. **Wants in sanctuary:** to teach every verse to anyone who asks, and a route worth walking when nobody is fleeing.
 
-**Relationships:** grandmother of cit-002 Nim; taught cit-004 Tav-Ri six verses and thinks him careless; forty years of argument with cit-016 Ume-Da-Ril; disputes a needle debt on cit-005 Orr-Ve-Kan's cord; mother-in-law of cit-020 Ase-Ro-Wen.
+**Relationships:** grandmother of cit-002 Nim; taught cit-004 Tav-Ri six verses and thinks him careless; forty years of argument with cit-016 Ume-Da-Ril; disputes a needle debt on cit-005 Orr-Ve-Kan's cord; mother of cit-021 Dak-Ro-Fen and mother-in-law of cit-020 Ase-Ro-Wen; called cit-022 Hal-Ne-Dur 'uncle' in her youth.
 
 **First-meeting line:** "Sek-Ra-Tun. Route-keeper. Ask her the way to anywhere; she'll want to know why you're going."
 
@@ -59,7 +59,7 @@ cohort captive · adult man · camp cook and coal-carrier · visual `cook` · le
 
 **Attitude to Duy:** will feed anyone who is hungry and resents that Duy qualifies. **Wants in sanctuary:** to light a fire he admits is a new one, and to hand the pot to someone while he is still well enough to watch them carry it.
 
-**Relationships:** nephew and successor of the fortieth carrier (unauthored); Nim's basket; steady quarrel with cit-013 Mor-Ne-Dath over flour; owes cit-005 Orr-Ve-Kan for salt and has been told to forget it; cit-006 Yan-Su-Bel supplies his mushrooms and is the one person allowed in his cook-ground.
+**Relationships:** nephew and successor of cit-022 Hal-Ne-Dur, the fortieth carrier; pot-sling mended many times by cit-021 Dak-Ro-Fen; Nim's basket; steady quarrel with cit-013 Mor-Ne-Dath over flour; owes cit-005 Orr-Ve-Kan for salt and has been told to forget it; cit-006 Yan-Su-Bel supplies his mushrooms and is the one person allowed in his cook-ground.
 
 **First-meeting line:** "Dof-Ma-Rek, cook. He has already decided you're too thin."
 
@@ -136,12 +136,95 @@ cohort captive · adult woman · log-seeder · visual `farmer` · leans Bowl, un
 
 ---
 
+## cit-008 · Pel-Ta-Shu (PELL-tah-SHOO) — "the one who sings the water up"
+cohort captive · adult woman · spring-finder · visual `wellkeeper` · leans Hearth
+
+**Voice:** loud, musical, narrates her own day. **Temperament:** open-handed, quick to cry and quick to finish crying. **Skills:** finds water by the sound her voice makes against a slope; digs a seep in an hour; knows every lullaby the tribe has. **Pleasures:** harmony, other people's babies, the first cup from a new spring. **Shortcoming:** fills every silence, including the ones people need.
+
+**Background (immutable).** A camp is wherever the spring-finder says it is. Pel-Ta-Shu walked ahead of the tribe on the last hour of each stage, singing at hillsides and listening to what came back, and when she stopped and pointed, people put their packs down. She was almost never wrong and she enjoyed it enormously. Her sister Eth-Wa-Min delivered the tribe's children; Pel-Ta-Shu sang to them afterwards, so that most of the tribe under thirty had heard her voice before they had opened their eyes. For nine years she shared a tent with Yan-Su-Bel, who barely speaks. People assumed Pel-Ta-Shu did the talking for both. In fact she talks less in that tent than anywhere, and it is the only place she does. In the raid she stood in the open and sang the scatter-call, the one that means every family for itself into the trees, until she was knocked down. Some got away because of it. None of them stayed free. She knows both of those things.
+
+**Attitude to Duy:** cried for him the first time she saw what the fire did to his arms, was angry at herself for it, and has not settled which reaction was right. **Wants in sanctuary:** a spring that stays found, and a house loud with other people.
+
+**Relationships:** tent-mate of cit-006 Yan-Su-Bel; sister of cit-019 Eth-Wa-Min; sang at the births of cit-002 Nim, cit-004 Tav-Ri and cit-012 Kip.
+
+**First-meeting line:** "Pel-Ta-Shu finds water by singing at it. You will hear her before you see her."
+
+**Conditional entries**
+- `arrival` — "Sang the whole way up. The refuge heard her coming and had a cup waiting."
+- `cohabit-or-neighbor:cit-006` — "Moved in singing. Went quiet around the second evening. Yan-Su-Bel says that is how she knows Pel-Ta-Shu is home."
+- `celebration:music` — "Started a round. By the third time through, forty people had a part."
+- `reunion:cit-019` — "The sisters talked across each other for an hour and both claim to have heard everything."
+
+---
+
+## cit-020 · Ase-Ro-Wen (AH-seh-roh-WEN) — "the one who goes up"
+cohort tribe (died in the raid) · adult woman · canopy climber · visual `ratkin` · leans Claw
+
+**Voice:** brief, amused, talks with her hands full. **Temperament:** fearless about heights, cautious about people. **Skills:** free-climbing; rope-setting; dropping a nut into a basket from forty feet. **Pleasures:** wind at the top of a tree; her daughter's questions; beating Dak-Ro-Fen down a trunk. **Shortcoming:** assumes anything can be solved by going and doing it herself.
+
+**Background (immutable).** Ase-Ro-Wen harvested the high canopy, where the best nuts are and where a fall kills. She married into Sek-Ra-Tun's family and the two of them respected each other the way two people do who each think the other is too stubborn. Her daughter Nim was born on the spring stage, and Ase-Ro-Wen carried her up a beech at six weeks old to show her the top of the forest, which Sek-Ra-Tun has never forgiven and Nim cannot remember. At the autumn gathering, when Blackroot closed the ring, she and Dak-Ro-Fen went with the others to the creek crossing, the one gap the soldiers had not yet shut, and held it while the children's group went through into the trees. She put Nim into Sek-Ra-Tun's arms herself. She died at the crossing believing the children had got clear. They had not. She burned until she was carried out, and she learned what happened to Nim only on arriving.
+
+**Attitude to Duy:** he took the fire off her, and he shot her child. She holds both without trying to make them balance. She is the hardest vote in the Claw and the one most likely to say so to his face. **Wants in sanctuary:** to take Nim up a tree again, this time with permission.
+
+**Relationships:** mother of cit-002 Nim; partner of cit-021 Dak-Ro-Fen; daughter-in-law of cit-001 Sek-Ra-Tun; taught cit-014 Fen-Ya-Sool to climb.
+
+**First-meeting line:** "Ase-Ro-Wen climbs. She is looking for someone and will not be much use until she finds her."
+
+**Conditional entries**
+- `reunion:cit-002` — "Found Nim. Checked her over, ears to tail, the way she did when Nim was new. Then let her go and watched her run off, on purpose."
+- `reunion:cit-001` — "Thanked Sek-Ra-Tun for holding on. Sek-Ra-Tun said she had not held on well enough. They left it there, for now."
+- `home:any` — "Picked the highest room available and complained it was not high enough."
+- `favor:claw-earned` — "Voted. Did not explain her vote, and nobody asked twice."
+
+---
+
+## cit-021 · Dak-Ro-Fen (DAHK-roh-FEN) — "the one who makes it do"
+cohort tribe (died in the raid) · adult man · mender · visual `mason` · leans Hand
+
+**Voice:** cheerful, apologetic, always mid-repair. **Temperament:** easy, optimistic past the evidence. **Skills:** mends anything well enough to last the stage; splices rope; whistles. **Pleasures:** a fix that holds; making Nim laugh; losing races to Ase-Ro-Wen. **Shortcoming:** never makes anything new or properly, because there was always another stage tomorrow.
+
+**Background (immutable).** Everything a moving people owns breaks on the move. Dak-Ro-Fen walked at the back of the column with a bag of cord, pitch and odd bits of wood, and fixed what failed: pack-frames, sandals, tent-poles, once a cracked drum with a snail shell and resin. Nothing he mended was pretty and nearly all of it held. He and Ase-Ro-Wen shared the second beat of their names by coincidence, both having been trail-named in the same wet year, and he considered this the luckiest thing that ever happened to him. He was the parent who answered "and then what?" every time, for as long as Nim could keep asking. At the creek crossing he had no weapon and used a tent-pole. He died there a little before Ase-Ro-Wen did. He burned until he was carried out.
+
+**Attitude to Duy:** inclined to forgive early, and knows it, and is trying to wait until he has seen more. Watches how Duy builds: whether it is made to last or made to do. **Wants in sanctuary:** to build one thing properly, from new wood, and live in it long enough to see it not break.
+
+**Relationships:** father of cit-002 Nim; partner of cit-020 Ase-Ro-Wen; son of cit-001 Sek-Ra-Tun; mended cit-003 Dof-Ma-Rek's pot-sling more times than either admits.
+
+**First-meeting line:** "Dak-Ro-Fen fixes things. He has noticed three things wrong with the refuge and is very happy about it."
+
+**Conditional entries**
+- `reunion:cit-002` — "Nim asked what happened next. He said he didn't know yet, and that it was the best answer he'd ever had."
+- `job:yard-or-storehouse` — "Handed new timber for the first time in his life. Held it a while before cutting."
+- `home:burrow` — "Built a shelf. Level. He has shown it to everyone."
+- `reunion:cit-003` — "Looked at the empty pot-sling and offered to mend it. Dof-Ma-Rek said it wasn't broken. Dak-Ro-Fen mended it anyway."
+
+---
+
+## cit-022 · Hal-Ne-Dur (HAHL-neh-DOOR) — "the one who carried it before"
+cohort tribe (ancestor; died of age on the circuit, before the raid) · elder man · fortieth coal-carrier · visual `elder` · leans Hearth
+
+**Voice:** slow, amused, gives advice as weather reports. **Temperament:** settled; difficult to alarm. **Skills:** fire in any rain; knowing when to stop talking. **Pleasures:** a nap beside something cooking; being proved right gently. **Shortcoming:** let his nephew take everything on alone, because it was easier than arguing.
+
+**Background (immutable).** Hal-Ne-Dur carried the tribe's fire for thirty-one years and handed the pot to his nephew Dof-Ma-Rek when his knees gave out. He spent his last years riding the supply sled and criticising the cooking, and died in his sleep on the winter stage, warm, with the pot in sight. He had a good death by any measure the tribe had. Then he burned. He had never heard of Blackroot, never saw a hobgoblin, and knew nothing of the raid or the cell until the refuge told him. He arrived to find the fire he had kept alive his whole life had gone out in his nephew's hands, and his nephew unable to look at him.
+
+**Attitude to Duy:** Duy never harmed him. Duy carried him out of a fire he had been in longer than he can reckon. He says so, plainly, in front of people who find it hard to hear. **Wants in sanctuary:** to see Dof-Ma-Rek light a new fire and stop apologising for the old one.
+
+**Relationships:** uncle and predecessor of cit-003 Dof-Ma-Rek; old friend of cit-001 Sek-Ra-Tun, who was young when he was middle-aged; never met cit-002 Nim.
+
+**First-meeting line:** "Hal-Ne-Dur kept the fire before Dof-Ma-Rek did. He died in his bed years ago. He would like to know what he missed."
+
+**Conditional entries**
+- `reunion:cit-003` — "Told his nephew that forty-one carriers is a long run for one coal, and that the forty-second could start counting from one."
+- `celebration:shared-meal` — "Criticised the cooking. Had thirds."
+- `arrival+cit-001 present` — "Sek-Ra-Tun called him 'uncle', as she had at twenty. He looked at her grey muzzle and laughed until he had to sit down."
+- `milestone:new-fire` (no system; reserved) — reserved.
+
+---
+
 ## Reserved identities (stubs — names and IDs held, profiles in batch 02)
 
 | ID | Name (pron.) | Stage | Former role | visual | One line |
 |---|---|---|---|---|---|
 | cit-007 | Ghe-Lo-Mar (GEH-loh-MAR) | adult | herbalist, seed-hoarder | herbalist | Dry, exact; trusts plants more than people and is usually right. |
-| cit-008 | Pel-Ta-Shu (PELL-tah-SHOO) | adult woman | spring-finder | wellkeeper | Sings to find water; loud, tender; Yan-Su-Bel's tent-mate. |
 | cit-009 | Bru-Ka-Dol (BROO-kah-DOLL) | adult man | hearthstone-setter | mason | Carried the hearthstone camp to camp; slow jokes, fast hands. |
 | cit-010 | Ili-Sa-Ven (ILL-ee-sah-VEN) | adult woman | net and hammock weaver | weaver | Cut Blackroot's nets from inside during transport; cares for Kip. |
 | cit-011 | Hes-Vo-Lim (HESS-voh-LIM) | older adult | master lantern-bearer | lantern | Speaks perhaps ten words a day; Tav-Ri's teacher. |
@@ -153,8 +236,6 @@ cohort captive · adult woman · log-seeder · visual `farmer` · leans Bowl, un
 | cit-017 | Shi-Pa-Nol (SHEE-pah-NOLL) | adult | snail-keeper | farmer | Moves a herd of edible snails at snail speed; never late. |
 | cit-018 | Lud-Ro-Ken (LUDD-roh-KEN) | young adult man | apprentice trader | merchant | Orr-Ve-Kan's nephew; knows about the knife. |
 | cit-019 | Eth-Wa-Min (ETH-wah-MIN) | adult woman | birth-watcher (midwife) | herbalist | Pel-Ta-Shu's sister; has delivered half the tribe. |
-| cit-020 | Ase-Ro-Wen (AH-seh-roh-WEN) | adult woman · cohort `tribe` | canopy climber | ratkin | Nim's mother. Died holding the creek crossing. **Blocked on X-02.** |
-| cit-021 | Dak-Ro-Fen (DAHK-roh-FEN) | adult man · cohort `tribe` | mender | mason | Nim's father. Died at the creek crossing. **Blocked on X-02.** |
 
 ## Relationship map (batch 01; every edge is stated in both profiles or reserved for the stub)
 
@@ -163,11 +244,10 @@ cohort captive · adult woman · log-seeder · visual `farmer` · leans Bowl, un
 | cit-001 | cit-002 | grandmother / granddaughter | both written |
 | cit-001 | cit-004 | teacher (six verses) / "careless" | both written |
 | cit-001 | cit-016 | forty-year argument | stub side pending |
-| cit-001 | cit-020 | mother-in-law | stub side pending |
-| cit-002 | cit-003 | rides his basket | both written |
+| cit-001 | cit-002 | cit-003 | rides his basket | both written |
 | cit-002 | cit-004 | hero-worship | both written |
 | cit-002 | cit-012 | beetle partners | stub side pending |
-| cit-002 | cit-020, cit-021 | daughter | stub side pending |
+| cit-002 | cit-020, cit-021 | daughter | both written |
 | cit-003 | cit-006 | supplier; only one allowed in cook-ground | both written |
 | cit-003 | cit-013 | flour quarrel | stub side pending |
 | cit-003 | cit-005 | owes salt on the cord | both written |
@@ -176,7 +256,7 @@ cohort captive · adult woman · log-seeder · visual `farmer` · leans Bowl, un
 | cit-005 | cit-018 | uncle and master / nephew | stub side pending |
 | cit-005 | cit-015 | accused aloud; avoidance | stub side pending |
 | cit-005 | cit-001 | disputed needle debt | both written |
-| cit-006 | cit-008 | tent-mates nine years (unlabelled by design) | stub side pending |
+| cit-006 | cit-008 | tent-mates nine years (unlabelled by design) | both written |
 | cit-006 | cit-007 | spawn-for-seed trade | stub side pending |
 | cit-008 | cit-019 | sisters | stubs |
 | cit-010 | cit-012 | carer / child | stubs |
