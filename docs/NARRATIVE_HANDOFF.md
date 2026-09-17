@@ -4,6 +4,45 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 08 — 2026-09-17 · branch `claude/narrative-batch-08` (stacked on 07) · base `main` 8f23fdc
+
+### 1. Approved decisions
+None new. Tony ruled the **Ratkin recruit's identity stays open** ("too early"); no citizen is written toward that role. CANON's open item stands.
+
+### 2. Finished content (DRAFT)
+| ID | Content |
+|---|---|
+| cit-013…cit-019 | Seven full profiles. **All nineteen captives are now fully written** (cit-001…019). |
+| mirrors | Every relationship between written profiles now appears in both; table statuses updated |
+
+Counts: 22 full profiles (19 captives, 2 raid dead, 1 ancestor), 2 reserved (cit-023, 024), 81 conditional entries.
+
+### 3. Reveal order
+- cit-018 holds the only evidence on whether Blackroot followed the traders home. His profile says he is "sure they were not followed"; this is his belief, not a ruling. The Blackroot / trading-post link remains open in CANON and nothing here settles it.
+- cit-019's background mentions a birth and deaths in the cages. Keep behind the same gate as other backgrounds (not before diary `cell`).
+
+### 4. Triggers
+New reserved labels with no system: `milestone:apology-orr`, `milestone:told-ras-ti-vok`, `milestone:first-birth` (later scope: voluntary children). None may display.
+
+### 5. Makko art (blocked on profile approval)
+| ID | Base | Distinguishing proposal |
+|---|---|---|
+| cit-013 | baker | flour to the elbows, grinding-stone calluses, measuring scoop on a cord |
+| cit-014 | ratkin | lean, bark-scuffed, always posed on or against something vertical |
+| cit-015 | ratkin | heavier build, arms folded, a knotted tally-cord of heads counted |
+| cit-016 | elder | rounder than cit-001, apron over elder's robe, wooden spoon as a staff of office |
+| cit-017 | farmer | damp-dark sleeves, lidded basket, a snail visible somewhere on her |
+| cit-018 | merchant | younger, oversized pack, the soft knife still on his belt |
+| cit-019 | herbalist | sleeves tied back, clean hands, plain; stands behind others in group shots |
+
+### 6. Open
+Asked this turn: how much latitude I have on diary chapters 1–8, which retell Blood Debt events I cannot verify. Carried: recruit identity (open by Tony's choice), NP-13, Arbiter's mandate limits, cit-023/024, all prose DRAFT, vovinam-ledger unread.
+
+### 7. Files and commit
+`git log claude/narrative-batch-08 -1`. Not pushed. Delivered as `narrative-batches-01-08.patch` (eight commits).
+
+---
+
 ## Batch 07 — 2026-09-17 · branch `claude/narrative-batch-07` (stacked on 06) · base `main` 8f23fdc
 
 ### 1. Approved decisions

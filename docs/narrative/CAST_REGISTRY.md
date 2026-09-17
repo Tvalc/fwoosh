@@ -1,4 +1,4 @@
-# Cast registry — through batch 07 (profiles are DRAFT; AD-04 approves Nim and Kip as children among the nineteen; AD-05 approves the naming system)
+# Cast registry — through batch 08 (profiles are DRAFT; AD-04 approves Nim and Kip as children among the nineteen; AD-05 approves the naming system)
 
 > Batch 03 revision: AD-08/AD-09 replaced "nomadic forest tribe" with **displaced villagers**. Every ID, name, relationship and personality is preserved; trades and memories were re-seated in village life. The last village is called **Hollowbeech** in these drafts (NP-11, proposal).
 
@@ -19,7 +19,7 @@ cohort captive · elder woman · road-keeper · visual `elder` · leans Memory
 
 **Attitude to Duy:** wants his account before his suffering. Watches whether he learns names. **Wants in sanctuary:** to teach every verse to anyone who asks, and to add a verse, for once, about a place nobody made them leave.
 
-**Relationships:** grandmother of cit-002 Nim; taught cit-004 Tav-Ri six verses and thinks him careless; forty years of argument with cit-016 Ume-Da-Ril; disputes a needle debt on cit-005 Orr-Ve-Kan's cord; mother of cit-021 Dak-Ro-Fen and mother-in-law of cit-020 Ase-Ro-Wen; called cit-022 Hal-Ne-Dur 'uncle' in her youth.
+**Relationships:** grandmother of cit-002 Nim; taught cit-004 Tav-Ri six verses and thinks him careless; forty years of argument with cit-016 Ume-Da-Ril; disputes a needle debt on cit-005 Orr-Ve-Kan's cord; mother of cit-021 Dak-Ro-Fen and mother-in-law of cit-020 Ase-Ro-Wen; called cit-022 Hal-Ne-Dur 'uncle' in her youth; was warned about the ridge by cit-011 Hes-Vo-Lim.
 
 **First-meeting line:** "Sek-Ra-Tun. Road-keeper. Ask her the way to anywhere; she'll want to know why you're going."
 
@@ -40,7 +40,7 @@ cohort captive · child, about eight · visual `child` · no bloc (children do n
 
 **Attitude to Duy:** has not connected the burned man in the street with the dark. Sudden bangs send her under the nearest table. She asks him questions nobody else will. **Wants in sanctuary:** her trail-name. She was promised a salt walk. She intends to collect.
 
-**Relationships:** granddaughter of cit-001; daughter of cit-020 and cit-021; rides on cit-003's basket; promised a salt walk by cit-005 Orr-Ve-Kan; shares beetles with cit-012 Kip; thinks cit-004 Tav-Ri is the fastest person alive.
+**Relationships:** granddaughter of cit-001; daughter of cit-020 and cit-021; rides on cit-003's basket; promised a salt walk by cit-005 Orr-Ve-Kan; shares beetles with cit-012 Kip; thinks cit-004 Tav-Ri is the fastest person alive; slept in a cradle cit-010 Ili-Sa-Ven made; delivered by cit-019 Eth-Wa-Min.
 
 **First-meeting line:** "Nim. One name so far. She is working on the second."
 
@@ -61,7 +61,7 @@ cohort captive · adult man · village cook and coal-carrier · visual `cook` ·
 
 **Attitude to Duy:** will feed anyone who is hungry and resents that Duy qualifies. **Wants in sanctuary:** to light a fire he admits is a new one, and to hand the pot to someone while he is still well enough to watch them carry it.
 
-**Relationships:** nephew and successor of cit-022 Hal-Ne-Dur, the fortieth carrier; pot-sling mended many times by cit-021 Dak-Ro-Fen; Nim's basket; steady quarrel with cit-013 Mor-Ne-Dath over flour; owes cit-005 Orr-Ve-Kan for salt and has been told to forget it; cit-006 Yan-Su-Bel supplies his mushrooms and is the one person allowed in his oven-yard.
+**Relationships:** lights the stone cit-009 Bru-Ka-Dol sets; cooked cit-017 Shi-Pa-Nol's herd in the famine year; nephew and successor of cit-022 Hal-Ne-Dur, the fortieth carrier; pot-sling mended many times by cit-021 Dak-Ro-Fen; Nim's basket; steady quarrel with cit-013 Mor-Ne-Dath over flour; owes cit-005 Orr-Ve-Kan for salt and has been told to forget it; cit-006 Yan-Su-Bel supplies his mushrooms and is the one person allowed in his oven-yard.
 
 **First-meeting line:** "Dof-Ma-Rek, cook. He has already decided you're too thin."
 
@@ -126,7 +126,7 @@ cohort captive · adult woman · log-seeder · visual `farmer` · leans Bowl, un
 
 **Attitude to Duy:** reserves judgment for a season. She will look at whether what he builds is still standing, and still feeding people, next year. **Wants in sanctuary:** to eat something in the same year she planted it. Whether that means staying put, she has not said.
 
-**Relationships:** housemate of cit-008 Pel-Ta-Shu; supplies cit-003 and is the only one allowed in his oven-yard; trades spawn for seed with cit-007 Ghe-Lo-Mar.
+**Relationships:** housemate of cit-008 Pel-Ta-Shu; supplies cit-003 and is the only one allowed in his oven-yard; trades spawn for seed with cit-007 Ghe-Lo-Mar; creek-side neighbour of cit-017 Shi-Pa-Nol.
 
 **First-meeting line:** "Yan-Su-Bel. She plants things and walks away from them. It works out."
 
@@ -168,7 +168,7 @@ cohort village (died in the raid) · adult woman · canopy climber · visual `ra
 
 **Attitude to Duy:** he took the fire off her, and he shot her child. She holds both without trying to make them balance. She is the hardest vote in the Claw and the one most likely to say so to his face. **Wants in sanctuary:** to take Nim up a tree again, this time with permission.
 
-**Relationships:** mother of cit-002 Nim; partner of cit-021 Dak-Ro-Fen; daughter-in-law of cit-001 Sek-Ra-Tun; taught cit-014 Fen-Ya-Sool to climb.
+**Relationships:** mother of cit-002 Nim; partner of cit-021 Dak-Ro-Fen; daughter-in-law of cit-001 Sek-Ra-Tun; taught cit-014 Fen-Ya-Sool to climb; climbs on lines cit-010 Ili-Sa-Ven made.
 
 **First-meeting line:** "Ase-Ro-Wen climbs. She is looking for someone and will not be much use until she finds her."
 
@@ -189,7 +189,7 @@ cohort village (died in the raid) · adult man · mender · visual `mason` · le
 
 **Attitude to Duy:** inclined to forgive early, and knows it, and is trying to wait until he has seen more. Watches how Duy builds: whether it is made to last or made to do. **Wants in sanctuary:** to build one thing properly, from new wood, and live in it long enough to see it not break.
 
-**Relationships:** father of cit-002 Nim; partner of cit-020 Ase-Ro-Wen; son of cit-001 Sek-Ra-Tun; mended cit-003 Dof-Ma-Rek's pot-sling more times than either admits.
+**Relationships:** father of cit-002 Nim; partner of cit-020 Ase-Ro-Wen; son of cit-001 Sek-Ra-Tun; mended cit-003 Dof-Ma-Rek's pot-sling more times than either admits; his mends offend cit-009 Bru-Ka-Dol, who likes him anyway.
 
 **First-meeting line:** "Dak-Ro-Fen fixes things. He has noticed three things wrong with the refuge and is very happy about it."
 
@@ -327,19 +327,152 @@ cohort captive · child, about five · visual `child` · no bloc
 
 ---
 
+## cit-013 · Mor-Ne-Dath (MOR-neh-DATH) — "the one who makes it fine"
+cohort captive · adult woman · acorn-miller and baker · visual `baker` · leans Bowl
+
+**Voice:** brisk, floury, argues for pleasure. **Temperament:** exacting, generous with bread and stingy with praise. **Skills:** leaching and milling acorns; judging an oven by the back of her hand. **Pleasures:** a clean grind; the flue argument; giving Bru-Ka-Dol the heel of the loaf and pretending it's an accident. **Shortcoming:** can't leave a thing be once she's seen how it could be better, including people.
+
+**Background (immutable).** Acorns are what a hidden people eat, because nobody taxes oaks. They are also bitter until someone does three days of tedious work on them, and in Hollowbeech that someone was Mor-Ne-Dath. She built the common oven with Bru-Ka-Dol and told him for nine years that the flue was a hand too narrow. She fought Dof-Ma-Rek weekly over who got the fine flour, the baker or the cook, and each privately kept back a measure for the other in lean months. She saw the oven pulled down. She has never once mentioned the flue to Bru-Ka-Dol since, and he has noticed.
+
+**Attitude to Duy:** wants to see the ovens he builds before she has an opinion. Suspects they will be wrong. Looks forward to saying how. **Wants in sanctuary:** an oven with a proper flue, and someone worth arguing with about it.
+
+**Relationships:** built the oven with cit-009 Bru-Ka-Dol; flour feud with cit-003 Dof-Ma-Rek; buys snails' worth of favours from cit-017 Shi-Pa-Nol in bread.
+
+**First-meeting line:** "Mor-Ne-Dath mills and bakes. She has opinions about your oven. You haven't built it yet."
+
+**Conditional entries**
+- `job:farm-or-food` — "Ground the first flour. Pronounced it coarse. Ground it again."
+- `reunion:cit-009` — "Opened with the flue. They were still at it when the lamps went out. Both looked ten years younger." (mirror)
+- `celebration:shared-meal` — "Dof-Ma-Rek got the fine flour. She said it was a mistake in the measuring."
+
+---
+
+## cit-014 · Fen-Ya-Sool (FEN-yah-SOOL) — "the one who sees it first"
+cohort captive · young adult woman · canopy scout · visual `ratkin` · leans Claw
+
+**Voice:** laughing, teasing, goes quiet when it matters. **Temperament:** bold, warm, competitive without malice. **Skills:** climbing, signalling by bird-call, judging distance. **Pleasures:** beating Tav-Ri at anything; heights; her brother's rare laugh. **Shortcoming:** treats danger as a game a beat too long.
+
+**Background (immutable).** Ase-Ro-Wen taught her to climb and then complained she had taught her too well. Fen-Ya-Sool kept the day watch from the tall beech on the green, as Hes-Vo-Lim kept the night from the lanes. She and Tav-Ri had raced each other up every tree in the parish since they were small, score disputed. Her brother Ras-Ti-Vok, eleven years older, raised her after their parents died on the road to Hollowbeech, and she is the only person who teases him. On the night of the raid the watch was doubled and she was in the beech. She saw the ring of torches close from all four sides at once and gave the call. It was the right call and far too late. In the cell she was just behind Tav-Ri. She ran when he screamed because she has always run when he runs.
+
+**Attitude to Duy:** angry, but watches Tav-Ri's anger with more worry than her own. **Wants in sanctuary:** a tree tall enough to see the whole of what they build, and Tav-Ri to race her again like it's a game.
+
+**Relationships:** rival and closest friend of cit-004 Tav-Ri; sister of cit-015 Ras-Ti-Vok; taught to climb by cit-020 Ase-Ro-Wen.
+
+**First-meeting line:** "Fen-Ya-Sool, scout. If there's something tall nearby, look up."
+
+**Conditional entries**
+- `arrival` — "Climbed the refuge roof to see where she was. Stayed up there until someone brought her supper."
+- `reunion:cit-004` — "Punched him in the arm. Then didn't let go of the arm."
+- `reunion:cit-020` — "Ase-Ro-Wen checked her grip calluses and said they'd gone soft. Fen-Ya-Sool has been climbing every day since."
+
+---
+
+## cit-015 · Ras-Ti-Vok (RAHS-tee-VOK) — "the one who says go"
+cohort captive · adult man · led the last move · visual `ratkin` · leans Claw, toward favor
+
+**Voice:** blunt, short, no cushioning. **Temperament:** responsible to a fault; angry mostly at himself. **Skills:** organising frightened people; reading a bad situation early; hard decisions. **Pleasures:** few he admits to; his sister's teasing; a plan that holds. **Shortcoming:** says the hard thing aloud whether or not it helps, and calls that honesty.
+
+**Background (immutable).** When the village before Hollowbeech was lost, Ras-Ti-Vok was twenty-two and the one who stood up and said which way. He got them down the road with the old, the small, the fire and the stone, and lost his parents to a fever on the way, and arrived as the person everyone looked to and nobody quite warmed to. He raised his sister Fen-Ya-Sool. In Blackroot's cages he found the pin that held the door-bar and worked it loose over six nights while Ili-Sa-Ven opened a seam in the net. On the seventh he pulled it. Eleven people got out of the cage. None got past the picket. He has said in front of everyone that Orr-Ve-Kan's market trips led the trackers home. He has no proof. He needed it to be somebody's fault that was not his.
+
+**Attitude to Duy:** counts. Nineteen killed; so many carried out; so many more each day. He does not like where the sum is heading and will not pretend it is heading elsewhere. **Wants in sanctuary:** to not be in charge. He doesn't know how to stop.
+
+**Relationships:** brother and guardian of cit-014 Fen-Ya-Sool; worked the cage break with cit-010 Ili-Sa-Ven; accused cit-005 Orr-Ve-Kan aloud; defers, alone among the adults, to cit-016 Ume-Da-Ril.
+
+**First-meeting line:** "Ras-Ti-Vok got these people down the road once. He is still counting heads."
+
+**Conditional entries**
+- `arrival` — "Asked how many had come through so far, and how many hadn't. Was given the first number."
+- `reunion:cit-014` — "Did not say anything. Fen-Ya-Sool said it for him, in his voice, badly. He laughed."
+- `milestone:apology-orr` (no system; reserved) — reserved.
+
+---
+
+## cit-016 · Ume-Da-Ril (OO-meh-dah-RILL) — "the one who makes them sit down"
+cohort captive · elder man · quarrel-mender · visual `elder` · leans Memory, toward favor
+
+**Voice:** mild, roundabout, ends up exactly where he meant to. **Temperament:** patient, sly, fond of people at their worst. **Skills:** settling disputes; remembering who owes whom an apology from thirty years back. **Pleasures:** other people's reconciliations; long lunches; losing an argument to Sek-Ra-Tun on purpose once a decade to keep her guessing. **Shortcoming:** mends every quarrel but his own.
+
+**Background (immutable).** A small place under threat can't afford feuds, so Hollowbeech had Ume-Da-Ril. His method never varied: both parties cooked a meal together in his kitchen, start to finish, and ate it, and were not allowed to discuss the quarrel until the dishes were done. It worked on everything from boundary stones to a broken betrothal. It never worked on Sek-Ra-Tun, with whom he had disagreed for forty years about whether the Road Song should be written down. He thought yes. When the trackers came by the road anyway, he did not say so. He was the village's day as Hes-Vo-Lim was its night: one watched the dark, the other watched the neighbours.
+
+**Attitude to Duy:** believes a quarrel this size is still a quarrel, and that those only end one way. Would like to get Duy and the nineteen into a kitchen. **Wants in sanctuary:** the Road Song written down. He intends to win this time.
+
+**Relationships:** forty-year argument with cit-001 Sek-Ra-Tun; day to cit-011 Hes-Vo-Lim's night; the one person cit-015 Ras-Ti-Vok defers to; has been trying to get cit-005 and cit-015 into his kitchen since the cages.
+
+**First-meeting line:** "Ume-Da-Ril mends quarrels. If he invites you to cook, you are in one."
+
+**Conditional entries**
+- `home:any` — "Asked first whether the kitchen was big enough for two people who aren't speaking."
+- `reunion:cit-001` — "Said, 'You were right to keep it secret.' Sek-Ra-Tun said, 'You were right that it should be written.' Both were appalled."
+- `favor:memory-earned` — "Wrote down the first verse. Sek-Ra-Tun watched him do it and corrected his spelling."
+
+---
+
+## cit-017 · Shi-Pa-Nol (SHEE-pah-NOLL) — "the one who is never late"
+cohort captive · adult woman · snail-keeper · visual `farmer` · leans Bowl, toward favor
+
+**Voice:** placid, slightly sing-song, long pauses she doesn't notice. **Temperament:** unhurried, content, impossible to rush or offend. **Skills:** snail husbandry; damp; patience as a professional tool. **Pleasures:** rain; a full pen; being underestimated. **Shortcoming:** her calm can look like not caring, and sometimes she lets it.
+
+**Background (immutable).** Snails are meat that makes no noise, needs no pasture and can be hidden under a board, which is why a hunted people keep them. Shi-Pa-Nol kept Hollowbeech's herd in shaded pens along the creek. When the last village fell she moved the breeding stock down the road in damp baskets, at the speed the snails could bear, and arrived four days after everyone else to find they had been worried. She had not been. In the hazelnut famine it was her herd that Dof-Ma-Rek cooked, and she gave it without being asked and rebuilt it without complaint. During the raid she opened every pen so the snails at least would get away. She likes to think some did.
+
+**Attitude to Duy:** he is doing a slow job steadily. She approves of that before she approves of him. **Wants in sanctuary:** a wet corner, a herd, and no reason ever to move them.
+
+**Relationships:** her herd fed the village through cit-003 Dof-Ma-Rek's pots; trades with cit-013 Mor-Ne-Dath in bread; neighbour along the creek to cit-006 Yan-Su-Bel's log-yard.
+
+**First-meeting line:** "Shi-Pa-Nol keeps snails. She will get there. She always does."
+
+**Conditional entries**
+- `arrival` — "Last up the road of her group, by some distance. Unbothered."
+- `job:farm` — "Found the dampest corner of the farm and claimed it. Something is already living there."
+- `production:first-food` — "Contributed to the pot. Dof-Ma-Rek did not say what it was until people had had seconds."
+
+---
+
+## cit-018 · Lud-Ro-Ken (LUDD-roh-KEN) — "the one who'll learn"
+cohort captive · young adult man · apprentice trader · visual `merchant` · leans Hand
+
+**Voice:** eager, over-explains, laughs at his own mistakes first. **Temperament:** earnest, loyal, easily fooled once and never the same way twice. **Skills:** sums; remembering faces; carrying. **Pleasures:** his uncle's approval; the noise of a market; a bargain, real or imagined. **Shortcoming:** believes people. It is a poor trait in a trader and he knows it.
+
+**Background (immutable).** Lud-Ro-Ken's first trade was a knife. He paid double for it and the blade was soft, and his uncle Orr-Ve-Kan let him believe for a whole year that he had done well. Lud-Ro-Ken worked it out inside a month. He kept quiet because his uncle was so plainly enjoying being kind. He carried the packs on four salt walks a year and was learning the trade tongues, slowly. He was at the last market with Orr-Ve-Kan. He remembers the friendly stranger who asked where they wintered. He remembers that his uncle lied, smoothly, as always. He has gone over it as often as Orr-Ve-Kan has, and he is sure, as sure as he is of anything, that they were not followed. Nobody has asked him.
+
+**Attitude to Duy:** thinks a debt honestly worked is the most respectable thing there is. Embarrassed by how quickly he came to that. **Wants in sanctuary:** to make one truly good trade, and to tell Ras-Ti-Vok what he saw at the market.
+
+**Relationships:** nephew and apprentice of cit-005 Orr-Ve-Kan; holds what may be the only evidence in the quarrel between cit-005 and cit-015; carried cit-002 Nim's promised place on the next salt walk in his head as his own responsibility.
+
+**First-meeting line:** "Lud-Ro-Ken, apprentice trader. He will give you a fair price. His uncle is working on that."
+
+**Conditional entries**
+- `reunion:cit-005` — "Orr-Ve-Kan told him the truth about the knife. Lud-Ro-Ken had known for years." (mirror)
+- `job:yard-or-storehouse` — "Found a counting error in his uncle's tally. Checked it four times before daring to say so."
+- `milestone:told-ras-ti-vok` (no system; reserved) — reserved.
+
+---
+
+## cit-019 · Eth-Wa-Min (ETH-wah-MIN) — "the one who is there first"
+cohort captive · adult woman · birth-watcher (midwife) · visual `herbalist` · leans Hearth
+
+**Voice:** calm, low, gives instructions nobody thinks to question. **Temperament:** capable, contained; carries her losses where no one sees. **Skills:** midwifery; fever-work learned from Ghe-Lo-Mar; staying awake. **Pleasures:** the first cry; her sister's singing, though she says it's too loud; sleep, when available. **Shortcoming:** keeps count of the ones she lost and not of the ones she saved.
+
+**Background (immutable).** Eth-Wa-Min's were the first hands most of Hollowbeech ever felt. She delivered Nim in the village's first spring. She delivered Kip in its fourth winter and could not save his mother, and she can still tell you the hour. Her sister Pel-Ta-Shu sang to every baby afterwards, and Eth-Wa-Min, who is as quiet as Pel-Ta-Shu is loud, would stand in the doorway and listen and then tell her to keep it down. In the cages she delivered a child who did not live and attended a mother who did not either. In the cell she was at the back with Sek-Ra-Tun and the children, because that is where she has always stood: behind, ready to catch.
+
+**Attitude to Duy:** she has seen what frightened people do with their hands. She has not excused it. She understands it, which is a different burden. **Wants in sanctuary:** to deliver a child into a place where nothing will ever come for it. She has been told this is now possible and does not yet believe it.
+
+**Relationships:** sister of cit-008 Pel-Ta-Shu; trained in fever-work by cit-007 Ghe-Lo-Mar; delivered cit-002 Nim and cit-012 Kip; could not save cit-023, Kip's mother.
+
+**First-meeting line:** "Eth-Wa-Min was the first person half this village ever met."
+
+**Conditional entries**
+- `reunion:cit-008` — "The sisters talked across each other for an hour and both claim to have heard everything." (mirror)
+- `reunion:cit-023` — reserved; to be written with cit-023's profile.
+- `milestone:first-birth` (later scope: voluntary children) — "Delivered the first child born in sanctuary. Stood in the doorway afterwards while Pel-Ta-Shu sang. Did not tell her to keep it down."
+
+---
+
 ## Reserved identities (stubs — names and IDs held, profiles in batch 02)
 
 | ID | Name (pron.) | Stage | Former role | visual | One line |
 |---|---|---|---|---|---|
 | cit-023 | (unnamed) | adult woman · cohort `village`, died before the raid | — | ratkin | Kip's mother; died at his birth. Reserved. |
 | cit-024 | (unnamed) | adult man · cohort `village`, died before the raid | — | ratkin | Kip's father; went through the river ice. Reserved. |
-| cit-013 | Mor-Ne-Dath (MOR-neh-DATH) | adult | acorn-miller | baker | Feuds with Dof-Ma-Rek over flour; both would be lost without it. |
-| cit-014 | Fen-Ya-Sool (FEN-yah-SOOL) | young adult woman | canopy scout | ratkin | Tav-Ri's rival and best friend; sister of Ras-Ti-Vok. |
-| cit-015 | Ras-Ti-Vok (RAHS-tee-VOK) | adult man | led the last move | ratkin | Pulled a cage pin during transport; says hard things aloud. |
-| cit-016 | Ume-Da-Ril (OO-meh-dah-RILL) | elder man | quarrel-mender | elder | Settled disputes by making both sides cook together. |
-| cit-017 | Shi-Pa-Nol (SHEE-pah-NOLL) | adult | snail-keeper | farmer | Keeps a herd of edible snails; moved them to Hollowbeech at snail speed and was not late. |
-| cit-018 | Lud-Ro-Ken (LUDD-roh-KEN) | young adult man | apprentice trader | merchant | Orr-Ve-Kan's nephew; knows about the knife. |
-| cit-019 | Eth-Wa-Min (ETH-wah-MIN) | adult woman | birth-watcher (midwife) | herbalist | Pel-Ta-Shu's sister; has delivered half the village. |
 
 ## Relationship map (batch 01; every edge is stated in both profiles or reserved for the stub)
 
@@ -347,17 +480,24 @@ cohort captive · child, about five · visual `child` · no bloc
 |---|---|---|---|
 | cit-001 | cit-002 | grandmother / granddaughter | both written |
 | cit-001 | cit-004 | teacher (six verses) / "careless" | both written |
-| cit-001 | cit-016 | forty-year argument | stub side pending |
+| cit-001 | cit-016 | forty-year argument | both written |
 | cit-001 | cit-002 | cit-003 | rides his basket | both written |
 | cit-002 | cit-004 | hero-worship | both written |
 | cit-002 | cit-002 | cit-020, cit-021 | daughter | both written |
 | cit-003 | cit-006 | supplier; only one allowed in cook-ground | both written |
-| cit-003 | cit-013 | flour quarrel | stub side pending |
+| cit-003 | cit-013 | flour quarrel | both written |
 | cit-003 | cit-005 | owes salt on the cord | both written |
-| cit-004 | cit-004 | cit-014 | rival and closest friend | stub side pending |
-| cit-005 | cit-018 | uncle and master / nephew | stub side pending |
-| cit-005 | cit-015 | accused aloud; avoidance | stub side pending |
+| cit-004 | cit-004 | cit-014 | rival and closest friend | both written |
+| cit-005 | cit-018 | uncle and master / nephew | both written |
+| cit-005 | cit-015 | accused aloud; avoidance | both written |
 | cit-005 | cit-001 | disputed needle debt | both written |
 | cit-006 | cit-008 | housemates nine years (unlabelled by design) | both written |
-| cit-006 | cit-008 | cit-019 | sisters | stubs |
-| cit-014 | cit-015 | sister / brother | stubs |
+| cit-006 | cit-008 | cit-019 | sisters | both written |
+| cit-014 | cit-015 | sister / brother; he raised her | both written |
+| cit-015 | cit-016 | defers to him | both written |
+| cit-013 | cit-017 | bread for snails | both written |
+| cit-003 | cit-017 | her herd, his pots | both written |
+| cit-006 | cit-017 | creek-side neighbours | both written |
+| cit-018 | cit-015 | holds evidence he hasn't shared | one-directional by design |
+| cit-019 | cit-002, cit-012 | delivered them | both written (cit-012 lists her) |
+| cit-019 | cit-023 | could not save her | reserved |
