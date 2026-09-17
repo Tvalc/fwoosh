@@ -15,6 +15,16 @@ Tony chose village life as the next development priority. The reward is watching
 - Sanctuary protects residents from death. Residents may voluntarily leave and become mortal while away; returning restores sanctuary's protection. This is why there are no immortal armies roaming outside.
 - Departures are lore/chronicle material in the first release, not an expedition or death simulation. Generational growth is also later work. Do not generalize this protection to every dead guest in Ledger.
 
+## Authored resident chronicles — approved September 17
+
+Every Ratkin receives an individually authored name, background and personal lore as part of their chronicle. Build a substantial, expandable backlog of authored people; do not substitute procedural or recombined biographies for later arrivals.
+
+The nineteen Ratkin killed by Duy and Cuong came from a nomadic forest society. That directly affected community is the first society rebuilt in sanctuary, with shared memories and relationships. The goal extends beyond restoring what was lost: help the society grow, expand and build a better future. Arrivals from other worlds follow later, revealing the breadth of the multiversal sanctuary over time. Sanctuary is not limited to the nineteen victims.
+
+How their nomadic forest culture shapes new housing, settlement and travel remains under interview. Do not assume they abandon that culture, that nomadism was forced, or that every member of the wider community died in the massacre. The community's name, individual biographies and specific traditions have not yet been authored or approved.
+
+These are approved content directions, not shipped resident biographies. Current records preserve appearance and arrival/housing milestones. Authored identity assignment, the initial cast, disclosure pacing and behavior when the authored backlog is exhausted still need design before implementation.
+
 ## First implemented slice
 
 New rescues retain one resident record and the exact Makko civilian appearance, including husk rekindles. Personal and apartment households are initially single-adult households; children remain under communal care. This does not claim that relationships, chosen families, births or aging are implemented.
