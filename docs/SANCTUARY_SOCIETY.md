@@ -39,7 +39,9 @@ Initial tuning: refuge happiness 80; settled housing 85; preferred housing 95. H
 
 The existing road-distance, shared-route congestion, food, storage and priority systems still apply. The same registered resident appears at their assigned station and on its carrier route. Jobs may change when priorities or resource availability change; full home-to-work commute routines are later work.
 
-The Sanctuary screen gathers existing verified Makko idle performances, lists residents and opens each household chronicle. It is not yet the authored celebration vignette system. No idle clip is represented as a newly produced celebration animation. Construction still uses the existing timers and UI panels pending dedicated Makko art.
+The Sanctuary screen gathers existing verified Makko performances, lists residents and opens each household chronicle. A first presentation slice now records every arrival as a durable welcome gathering and lets the player tap through to a zoomed sanctuary vignette. It deliberately uses the existing idle performance as a temporary presentation layer and says so in the vignette; it does not represent that clip as a bespoke celebration animation. Dedicated Makko celebration art, citizen names/lore assignment and richer milestone triggers remain pending. Construction still uses the existing timers and UI panels pending dedicated Makko art.
+
+Resident records now reserve a stable `profileId` for Claude's authored citizen registry. Existing and newly rescued residents keep an empty slot until an approved narrative handoff assigns a profile; the runtime must never synthesize a biography to fill it. Welcome records persist separately from household milestones so later celebration art and authored chronicle text can attach to the same event.
 
 Tony subsequently authorized wiping all old progress once in `2026-09-17-reset-1`. Current saves start with a complete resident record from the first rescue. The historical rescue-count reserve and unidentified-resident migration have been removed; do not restore them.
 

@@ -1357,6 +1357,18 @@ test('Sanctuary and household views route through hub actions with complete reco
 });
 
 
+test('Resident welcome celebrations persist and open as a sanctuary vignette',()=>{
+ const g=game();g.run('societyArrive({id:5});saveMeta()');
+ assert.equal(g.run('META.society.residents[0].profileId'),'');
+ assert.equal(g.run('META.society.celebrations.length'),1);
+ const reload=game(Object.fromEntries(g.storage));
+ assert.equal(reload.run('META.society.celebrations[0].residentIds[0]'),1);
+ reload.run('onTitle=false;mode=\"hub\";cityAction(\"society\");drawCitySheet(ctx)');
+ assert.ok(reload.run('hubBtns.some(b=>JSON.stringify(b).includes(\"celebration:1\"))'));
+ reload.run('cityAction(\"celebration:1\");drawCitySheet(ctx)');
+ assert.equal(reload.run('cityView'),'celebration');assert.ok(reload.drawnText.includes('WELCOME GATHERING'));
+});
+
 test('Sanctuary portraits always crop a whole animation frame',()=>{
  const g=game();g.run("societyArrive({id:5});Object.assign(MAKKO_ANIM_IMG.farmer_idle,{complete:true,naturalWidth:2160});frame=43;societyDrawResident(ctx,META.society.residents[0],360,300,216)");
  const draw=g.drawnImages.at(-1);assert.equal(draw.src,'./media/anim/farmer_idle.png');assert.equal(draw.args[0]%180,0);
