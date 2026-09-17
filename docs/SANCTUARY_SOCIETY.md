@@ -27,6 +27,8 @@ These are approved content directions, not shipped resident biographies. Current
 
 The attackers are now identified as the Blackroot Company: hobgoblin-led slavers with goblin trackers, who followed seasonal routes, attacked the resisting tribe and carried off its final nineteen survivors. See CANON.md for the locked details. Citizen histories should distinguish this attack from the later cell killings and include lives, relationships and hopes beyond either tragedy. Blackroot is a faction, not a declaration that goblins or hobgoblins are inherently cruel.
 
+The tribe is stateless after the fall of its kingdom and has been driven from settlement to settlement, rebuilding each time. Its carried fire and road songs belong in the society's authored culture. The fire itself has burned for centuries; the covenant repurposed that old fire as Duy's final test. The cell door's opener remains unknown and belongs to Ledger's future mystery.
+
 ## First implemented slice
 
 New rescues retain one resident record and the exact Makko civilian appearance, including husk rekindles. Personal and apartment households are initially single-adult households; children remain under communal care. This does not claim that relationships, chosen families, births or aging are implemented.

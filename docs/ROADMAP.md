@@ -16,6 +16,8 @@ Population clarification: monsters destroyed the tribe's village and captured it
 
 Attacker identity is approved: the Blackroot Company, hobgoblin-led slavers with goblin trackers, destroyed the resisting tribe's village and captured the nineteen. Integrate this history into authored citizen/diary content under the prose brief. Their links to the pit network, keeping place and Arbiter remain unresolved; no new arcade enemy replacement is implied.
 
+Canon additions from Claude: the tribe is stateless after its kingdom fell and has been driven from settlement to settlement, rebuilding each time; its carried fire and road songs are survival culture. The dead have burned for centuries, and the covenant repurposed that old fire as Duy's final test. Nobody knows who opened the cell door; Ledger owns that mystery. Do not resolve any of these in Fwoosh runtime or diary drafts without an approved handoff.
+
 ## Active now
 
 1. [#39 Replace Keith with Khet-Tak-Tor, the Ratkin Arbiter](https://github.com/Tvalc/fwoosh/issues/39) — **runtime identity and first Makko character integration complete; dedicated portraits pending**. Name, player-facing text, combat terminology and shared-near-death covenant are migrated. The collective verdict, full-body Ratkin actor and first stern talking portrait are integrated. Remaining emotion portraits and limits of his covenant mandate remain.
