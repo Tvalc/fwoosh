@@ -1,4 +1,4 @@
-# Cast registry — through batch 03 (profiles are DRAFT; AD-04 approves Nim and Kip as children among the nineteen; AD-05 approves the naming system)
+# Cast registry — through batch 07 (profiles are DRAFT; AD-04 approves Nim and Kip as children among the nineteen; AD-05 approves the naming system)
 
 > Batch 03 revision: AD-08/AD-09 replaced "nomadic forest tribe" with **displaced villagers**. Every ID, name, relationship and personality is preserved; trades and memories were re-seated in village life. The last village is called **Hollowbeech** in these drafts (NP-11, proposal).
 
@@ -36,11 +36,11 @@ cohort captive · child, about eight · visual `child` · no bloc (children do n
 
 **Voice:** "And then what?" **Temperament:** curious, stubborn, bites when cornered. **Skills:** finds beetles anywhere; remembers songs after one hearing. **Pleasures:** beetle wing-cases sorted by colour; riding on a cook-basket. **Shortcoming:** hides food in her bedding. She started in captivity and has not stopped.
 
-**Background (immutable).** Nim was born in Hollowbeech's first spring and never lived anywhere else, which among her people is a kind of luck and a kind of problem. A child earns a trail-name by walking the road between villages on their own feet, and Hollowbeech had stood nine years. Nim wanted her second name badly and had not yet worked out what would have to happen for her to get it. The adults had, and did not explain. Her mother Ase-Ro-Wen was a climber who brought down nuts from the high canopy; her father Dak-Ro-Fen mended everything badly and cheerfully. On the night Blackroot came they were among those who held the creek crossing so the children's group could get into the trees. Nim remembers being handed to her grandmother and told to hold on. She held on through the transport and in the dark cell, and she was holding on when the door opened and everyone ran. She does not understand that part. She remembers noise. Before all of it, her favourite place in the world was the top of Dof-Ma-Rek's basket, where the bread smell was, going round the lanes on oven days.
+**Background (immutable).** Nim was born in Hollowbeech's first spring and never lived anywhere else, which among her people is a kind of luck and a kind of problem. A child earns a trail-name by making a real journey on their own feet. Some were the road out of a lost village. Others were chosen: the salt walk to the market towns, the three-day climb to the old graves. Orr-Ve-Kan had promised to take Nim on the salt walk the year she turned ten, and she had been counting seasons on her fingers ever since. Her mother Ase-Ro-Wen was a climber who brought down nuts from the high canopy; her father Dak-Ro-Fen mended everything badly and cheerfully. On the night Blackroot came they were among those who held the creek crossing so the children's group could get into the trees. Nim remembers being handed to her grandmother and told to hold on. She held on through the transport and in the dark cell, and she was holding on when the door opened and everyone ran. She does not understand that part. She remembers noise. Before all of it, her favourite place in the world was the top of Dof-Ma-Rek's basket, where the bread smell was, going round the lanes on oven days.
 
-**Attitude to Duy:** has not connected the burned man in the street with the dark. Sudden bangs send her under the nearest table. She asks him questions nobody else will. **Wants in sanctuary:** her trail-name. Nobody is ever going to be driven out of sanctuary, so somebody will have to invent a new way to earn one.
+**Attitude to Duy:** has not connected the burned man in the street with the dark. Sudden bangs send her under the nearest table. She asks him questions nobody else will. **Wants in sanctuary:** her trail-name. She was promised a salt walk. She intends to collect.
 
-**Relationships:** granddaughter of cit-001; daughter of cit-020 and cit-021; rides on cit-003's basket; shares beetles with cit-012 Kip; thinks cit-004 Tav-Ri is the fastest person alive.
+**Relationships:** granddaughter of cit-001; daughter of cit-020 and cit-021; rides on cit-003's basket; promised a salt walk by cit-005 Orr-Ve-Kan; shares beetles with cit-012 Kip; thinks cit-004 Tav-Ri is the fastest person alive.
 
 **First-meeting line:** "Nim. One name so far. She is working on the second."
 
@@ -48,7 +48,7 @@ cohort captive · child, about eight · visual `child` · no bloc (children do n
 - `arrival+cit-001 present` — "Found her grandmother in the refuge before anyone could show her where to look."
 - `community-care:first-season` — "Stopped hiding bread in her blanket. Nobody mentioned it. Dof-Ma-Rek baked extra for a week anyway."
 - `reunion:cit-020|cit-021` — "Held on. Was told, this time, that she could let go whenever she liked."
-- `milestone:trail-name` (no system; see handoff §4) — "Walked a road she chose, all of it, on her own feet. The first trail-name ever given for a journey nobody was forced to make. It is recorded here when it happens, not before."
+- `milestone:trail-name` (no system; see handoff §4) — "Walked a road she chose, all of it, on her own feet, and came back with her second name. It is recorded here when it happens, not before."
 
 ---
 
@@ -103,7 +103,7 @@ cohort captive · middle-aged man · edge-trader · visual `merchant` · leans H
 
 **Attitude to Duy:** recognises a debtor and is the most practical voice about him: a man working is worth more to the dead than a man burning. **Wants in sanctuary:** a market, and one day Ratkin from elsewhere walking into it with goods he has never seen.
 
-**Relationships:** uncle and master of cit-018 Lud-Ro-Ken; holds a cord-debt against nearly everyone, including cit-003 (salt) and cit-001 (needles, disputed); avoided by cit-015 Ras-Ti-Vok, who has said aloud what Orr-Ve-Kan fears.
+**Relationships:** uncle and master of cit-018 Lud-Ro-Ken; promised cit-002 Nim a salt walk when she turned ten; holds a cord-debt against nearly everyone, including cit-003 (salt) and cit-001 (needles, disputed); avoided by cit-015 Ras-Ti-Vok, who has said aloud what Orr-Ve-Kan fears.
 
 **First-meeting line:** "Orr-Ve-Kan, trader. You owe him something already. He'll let you know what."
 
@@ -185,7 +185,7 @@ cohort village (died in the raid) · adult man · mender · visual `mason` · le
 
 **Voice:** cheerful, apologetic, always mid-repair. **Temperament:** easy, optimistic past the evidence. **Skills:** mends anything well enough to last the season; splices rope; whistles. **Pleasures:** a fix that holds; making Nim laugh; losing races to Ase-Ro-Wen. **Shortcoming:** never makes anything new or properly, because nothing his people built had ever been allowed to stand.
 
-**Background (immutable).** A people driven out four times in living memory do not own anything new. Dak-Ro-Fen went about with a bag of cord, pitch and odd bits of wood and fixed what failed: cart-frames, sandals, door-hinges, once a cracked drum with a snail shell and resin. Nothing he mended was pretty and nearly all of it held. He and Ase-Ro-Wen shared the second beat of their names by coincidence, both having walked the same road as children, in the wet year the village before Hollowbeech was lost, and he considered this the luckiest thing that ever happened to him. He was the parent who answered "and then what?" every time, for as long as Nim could keep asking. At the creek crossing he had no weapon and used a fence-post. He died there a little before Ase-Ro-Wen did. He burned until he was carried out.
+**Background (immutable).** A people driven out again and again do not own anything new. Dak-Ro-Fen went about with a bag of cord, pitch and odd bits of wood and fixed what failed: cart-frames, sandals, door-hinges, once a cracked drum with a snail shell and resin. Nothing he mended was pretty and nearly all of it held. He and Ase-Ro-Wen shared the second beat of their names by coincidence, both having walked the same road as children, in the wet year the village before Hollowbeech was lost, and he considered this the luckiest thing that ever happened to him. He was the parent who answered "and then what?" every time, for as long as Nim could keep asking. At the creek crossing he had no weapon and used a fence-post. He died there a little before Ase-Ro-Wen did. He burned until he was carried out.
 
 **Attitude to Duy:** inclined to forgive early, and knows it, and is trying to wait until he has seen more. Watches how Duy builds: whether it is made to last or made to do. **Wants in sanctuary:** to build one thing properly, from new wood, and live in it long enough to see it not break.
 
@@ -222,15 +222,117 @@ cohort village (ancestor; died of age at Hollowbeech, before the raid) · elder 
 
 ---
 
+## cit-007 · Ghe-Lo-Mar (GEH-loh-MAR) — "the one who keeps the seed"
+cohort captive · adult man · herbalist and seed-keeper · visual `herbalist` · leans Bowl
+
+**Voice:** dry, exact, corrects dosages mid-conversation. **Temperament:** cautious, literal, kinder than he sounds. **Skills:** fevers, wounds, poultices; keeps viable seed for every plant the village has ever grown. **Pleasures:** germination; labels; being proved right about rain. **Shortcoming:** hoards. He would rather hold seed back for a worse year than plant it in this one.
+
+**Background (immutable).** A people who lose their gardens every generation need someone who keeps the garden in a bag. Ghe-Lo-Mar's seed-roll held forty-odd twists of cloth, each labelled in his own marks, some from plants nobody had seen growing since two villages ago. He never planted the whole of anything. There was always a reserve, and a reserve of the reserve sewn into his coat hem. He treated the sick with the same arithmetic, which made him a careful healer and an exasperating one. He swapped mushroom spawn for seed with Yan-Su-Bel every spring and the two of them could pass a contented hour without four sentences between them. When Blackroot fired the houses he went back for the seed-roll and lost it anyway. The coat hem they never searched. He carried nine kinds of seed through the transport and into the cell, and they were on him when he died. His good memory is a plain one: the first Hollowbeech spring, when the bean rows came up straight and he allowed himself to think they might be staying.
+
+**Attitude to Duy:** treats the burns on Duy's arms as a clinical problem and is irritated that they interest him. **Wants in sanctuary:** to plant all of something, with nothing held back, and see what that feels like.
+
+**Relationships:** spawn-for-seed trade with cit-006 Yan-Su-Bel; trained cit-019 Eth-Wa-Min in fever-work; disapproves of cit-003 Dof-Ma-Rek's salt use, professionally.
+
+**First-meeting line:** "Ghe-Lo-Mar, herbalist. He will tell you what is wrong with you. He is usually right."
+
+**Conditional entries**
+- `arrival` — "Checked his coat hem first. Whatever he found there, he sat down quite suddenly."
+- `job:farm` — "Planted half the beans. Yan-Su-Bel looked at the other half, and at him. He planted the other half."
+- `production:first-food` — "Counted the harvest, set aside next year's seed, and for the first time in his life the pile for eating was the bigger one."
+- `gate:first-visit` (AD-23) — "Went down to the gate to look at the human's arms. Came back and said only, 'It shouldn't be survivable. Interesting.'"
+
+---
+
+## cit-009 · Bru-Ka-Dol (BROO-kah-DOLL) — "the one who sets the stone"
+cohort captive · adult man · hearthstone-setter and builder · visual `mason` · leans Hand, holds out
+
+**Voice:** slow; jokes arrive like carts, visible from a long way off. **Temperament:** steady, proud, slow to trust and slower to stop. **Skills:** dry-stone, ovens, chimneys that draw; can carry more than two others together. **Pleasures:** a true corner; lifting things people said couldn't be lifted; Mor-Ne-Dath's heel-of-the-loaf. **Shortcoming:** will not let anyone else build what matters, and judges people by their worst wall.
+
+**Background (immutable).** Every village began the same way: Bru-Ka-Dol set the hearthstone, the common oven went up around it, Dof-Ma-Rek woke the coal on it, and only then did anyone build a house. The stone itself was older than the Road Song's clear verses, a flat grey slab worn into a shallow dish by more fires than anyone could count. He brought it to Hollowbeech on his own back, because a cart might jolt it, and set it in a day. He and Mor-Ne-Dath the miller built the oven over it together and argued about the flue for nine years. On the night of the raid a hobgoblin sergeant had the oven pulled down to deny the villagers a strongpoint, and the stone split along an old flaw. Bru-Ka-Dol saw it go. He says he heard it over everything else. He went into the nets without much of a fight after that, which he is ashamed of.
+
+**Attitude to Duy:** will not look at him. It is not only the cell. An outsider is building his people's houses, and Bru-Ka-Dol has never seen outsiders' work stand. **Wants in sanctuary:** to find or cut a new hearthstone and set it himself, and to be wrong about the human's walls.
+
+**Relationships:** sets the stone cit-003 Dof-Ma-Rek lights; built the oven with cit-013 Mor-Ne-Dath; cit-021 Dak-Ro-Fen's mends offend him and he is fond of Dak-Ro-Fen regardless; looks out for cit-010 Ili-Sa-Ven and cit-012 Kip without being asked.
+
+**First-meeting line:** "Bru-Ka-Dol builds the part of a village that everything else is built around."
+
+**Conditional entries**
+- `job:yard-or-storehouse` — "Went through the salvage stone by hand, piece by piece. Rejected most of it. Kept going."
+- `home:any` — "Inspected the walls of his new home for an hour before he would sleep in it. Slept."
+- `reunion:cit-013` — "Mor-Ne-Dath opened with the flue. They were still at it when the lamps went out. Both looked ten years younger."
+- `favor:hand-earned` — "Looked at the human. Nodded, once. Went back to work."
+
+---
+
+## cit-010 · Ili-Sa-Ven (ILL-ee-sah-VEN) — "the one who ties it fast"
+cohort captive · adult woman · net and hammock weaver · visual `weaver` · leans Hearth, holds out
+
+**Voice:** quick, low, practical; endearments only for children. **Temperament:** watchful, fierce, tired. **Skills:** cordage, nets, slings, cradles; any knot, and therefore any knot's undoing. **Pleasures:** a full line of drying cord; Kip asleep; being left alone for one hour. **Shortcoming:** trusts almost no one with what she loves, and wears herself thin proving she doesn't need to.
+
+**Background (immutable).** Ili-Sa-Ven made the things a village hangs its life from: fishing nets, orchard slings, carrying-bands, the hammock-cradles every Hollowbeech baby slept in. She had no children and had not planned any. Then Kip's mother died at his birth and his father went through the river ice the following winter, and the village looked around for who would take him and found that Ili-Sa-Ven already had. She never called herself his mother. She tied him to her back and got on with the cord. In Blackroot's transport cages she worked at the net lashings every night with her teeth and a sliver of bone, and had a seam open wide enough for a child on the night Ras-Ti-Vok pulled the cage pin. It was not enough and not in time. In the cell she had Kip on her hip. She ran for the door with everyone else, turned her body to put herself between him and the noise, and it made no difference.
+
+**Attitude to Duy:** absolute refusal. She does not want him punished. She wants him nowhere near Kip, ever, and she will hold up the Hearth alone if she has to. **Wants in sanctuary:** for Kip to grow up and be safe enough to be bored. For herself, she hasn't thought.
+
+**Relationships:** carer of cit-012 Kip; worked the cage seam alongside cit-015 Ras-Ti-Vok; made cit-002 Nim's cradle and cit-020 Ase-Ro-Wen's climbing lines; watched over, to her mild annoyance, by cit-009 Bru-Ka-Dol.
+
+**First-meeting line:** "Ili-Sa-Ven makes rope and nets. The small one behind her is Kip. Give them room."
+
+**Conditional entries**
+- `arrival+cit-012 present` — "Counted his fingers, as if the fire might have kept one. All there."
+- `home:burrow` — "Hung a hammock-cradle, though Kip is too big for it. He sleeps in it anyway, folded up like a letter."
+- `community-care:first-season` — "Let Kip go to the children's house for a whole morning. Spent the morning outside it, making rope."
+- `favor:hearth-earned` — "The Hearth decided. She was heard, and outvoted, and told so gently. She has not come round. She has stopped standing in the lane."
+
+---
+
+## cit-011 · Hes-Vo-Lim (HESS-voh-LIM) — "the one who goes ahead in the dark"
+cohort captive · older adult man · master lantern-bearer · visual `lantern` · leans Claw
+
+**Voice:** perhaps ten words a day; each one load-bearing. **Temperament:** still, observant, unhurried in a way that calms others. **Skills:** night-walking, reading ground by foot, judging when a village's time is up. **Pleasures:** the watch before dawn; oiling the lantern shutter; Tav-Ri getting something right. **Shortcoming:** his silence leaves the young to guess what he thinks of them, and they guess low.
+
+**Background (immutable).** Hes-Vo-Lim walked the night watch round four villages in his life and led two of them out of the dark when they fell, shuttered lantern showing backwards, one hand on the ground-line. He could tell you which dog in the next valley was new. He told the elders, a month before the raid, that someone was walking the ridge at night and keeping off the skyline. They doubled the watch. It was not enough; Blackroot came from four sides. He took Tav-Ri as apprentice because the boy was fast and careless and would otherwise have got himself killed showing off, and came to love him, and never found the sentence to say so in. In the cell he was at the back with the old and the small. He heard Tav-Ri scream to run. He would have shouted the same.
+
+**Attitude to Duy:** has watched him from the gate for many nights, the way he would watch a ridge. Has reached a conclusion and has not shared it. **Wants in sanctuary:** to tell Tav-Ri that the shout was the right call. He is working up to it. It is more than ten words.
+
+**Relationships:** master of cit-004 Tav-Ri; walked the watch for decades alongside cit-016 Ume-Da-Ril's quarrel-mending, the two being the village's night and day; warned cit-001 Sek-Ra-Tun about the ridge.
+
+**First-meeting line:** "Hes-Vo-Lim, lantern-bearer. He won't say much. He has already noticed everything about you."
+
+**Conditional entries**
+- `arrival` — "Walked the bounds of the refuge once, at night, alone. Reported: 'Nothing out there.' It is believed to be the first time he has ever said so."
+- `reunion:cit-004` — "Looked the boy over and handed him a lantern. Neither said anything. It took a long time." (mirror of cit-004's entry)
+- `gate:first-visit` — "Stood at the gate through one whole return of the human's. Watched him go back down. Said, 'He doesn't hesitate.' Went home."
+- `milestone:told-tav-ri` (no system; reserved) — reserved.
+
+---
+
+## cit-012 · Kip (KIP) — milk-name only
+cohort captive · child, about five · visual `child` · no bloc
+
+**Voice:** whispers; narrates beetles. **Temperament:** shy, sunny once sure of you, clings. **Skills:** can be completely silent; finds the warm spot in any room. **Pleasures:** beetles (shared custody with Nim); being carried; Pel-Ta-Shu's songs. **Shortcoming:** will not let Ili-Sa-Ven out of his sight, which is wearing on both of them.
+
+**Background (immutable).** Kip was born in Hollowbeech's fourth winter. His mother died bringing him; Eth-Wa-Min could not save her and has not stopped counting it. His father went through the river ice the winter after. Kip remembers neither of them. He remembers Ili-Sa-Ven's back, the smell of new cord, and a hammock-cradle he refused to give up when he outgrew it. He was the village's child in the way orphans in small places are: fed at every door, scolded by everyone, short of nothing except the one thing. Nim, three years older, adopted him as a junior partner in beetles. He does not understand the raid, the cages or the cell. He remembers the dark, being held very tightly, and a noise. He was on Ili-Sa-Ven's hip when he died.
+
+**Attitude to Duy:** none of his own. He takes his cue from Ili-Sa-Ven, which means he hides. **Wants in sanctuary:** what any five-year-old wants. More of today.
+
+**Relationships:** in the care of cit-010 Ili-Sa-Ven; beetle partner of cit-002 Nim; cit-008 Pel-Ta-Shu sang at his birth and cit-019 Eth-Wa-Min delivered him; carried on cit-009 Bru-Ka-Dol's shoulders when Ili-Sa-Ven allows it. His parents are reserved as cit-023 (mother) and cit-024 (father), unauthored: both died before the raid and both burned.
+
+**First-meeting line:** "Kip. One name. He is behind Ili-Sa-Ven. Wave; he may wave back."
+
+**Conditional entries**
+- `arrival+cit-010 present` — "Found her by the smell of the cord, he says."
+- `community-care:first-season` — "Stayed at the children's house a whole morning. Reported that there were beetles there too."
+- `reunion:cit-023|cit-024` — reserved until those profiles are authored and approved. This one must be written with great care.
+- `milestone:trail-name` (no system; reserved) — reserved.
+
+---
+
 ## Reserved identities (stubs — names and IDs held, profiles in batch 02)
 
 | ID | Name (pron.) | Stage | Former role | visual | One line |
 |---|---|---|---|---|---|
-| cit-007 | Ghe-Lo-Mar (GEH-loh-MAR) | adult | herbalist, seed-hoarder | herbalist | Dry, exact; trusts plants more than people and is usually right. |
-| cit-009 | Bru-Ka-Dol (BROO-kah-DOLL) | adult man | hearthstone-setter | mason | Carried the oven's hearthstone village to village; slow jokes, fast hands. |
-| cit-010 | Ili-Sa-Ven (ILL-ee-sah-VEN) | adult woman | net and hammock weaver | weaver | Cut Blackroot's nets from inside during transport; cares for Kip. |
-| cit-011 | Hes-Vo-Lim (HESS-voh-LIM) | older adult | master lantern-bearer | lantern | Speaks perhaps ten words a day; Tav-Ri's teacher. |
-| cit-012 | Kip (KIP) | child, about five | — | child | Orphaned before the raid; in Ili-Sa-Ven's care; Nim's beetle partner. |
+| cit-023 | (unnamed) | adult woman · cohort `village`, died before the raid | — | ratkin | Kip's mother; died at his birth. Reserved. |
+| cit-024 | (unnamed) | adult man · cohort `village`, died before the raid | — | ratkin | Kip's father; went through the river ice. Reserved. |
 | cit-013 | Mor-Ne-Dath (MOR-neh-DATH) | adult | acorn-miller | baker | Feuds with Dof-Ma-Rek over flour; both would be lost without it. |
 | cit-014 | Fen-Ya-Sool (FEN-yah-SOOL) | young adult woman | canopy scout | ratkin | Tav-Ri's rival and best friend; sister of Ras-Ti-Vok. |
 | cit-015 | Ras-Ti-Vok (RAHS-tee-VOK) | adult man | led the last move | ratkin | Pulled a cage pin during transport; says hard things aloud. |
@@ -248,18 +350,14 @@ cohort village (ancestor; died of age at Hollowbeech, before the raid) · elder 
 | cit-001 | cit-016 | forty-year argument | stub side pending |
 | cit-001 | cit-002 | cit-003 | rides his basket | both written |
 | cit-002 | cit-004 | hero-worship | both written |
-| cit-002 | cit-012 | beetle partners | stub side pending |
-| cit-002 | cit-020, cit-021 | daughter | both written |
+| cit-002 | cit-002 | cit-020, cit-021 | daughter | both written |
 | cit-003 | cit-006 | supplier; only one allowed in cook-ground | both written |
 | cit-003 | cit-013 | flour quarrel | stub side pending |
 | cit-003 | cit-005 | owes salt on the cord | both written |
-| cit-004 | cit-011 | apprentice / master | stub side pending |
-| cit-004 | cit-014 | rival and closest friend | stub side pending |
+| cit-004 | cit-004 | cit-014 | rival and closest friend | stub side pending |
 | cit-005 | cit-018 | uncle and master / nephew | stub side pending |
 | cit-005 | cit-015 | accused aloud; avoidance | stub side pending |
 | cit-005 | cit-001 | disputed needle debt | both written |
 | cit-006 | cit-008 | housemates nine years (unlabelled by design) | both written |
-| cit-006 | cit-007 | spawn-for-seed trade | stub side pending |
-| cit-008 | cit-019 | sisters | stubs |
-| cit-010 | cit-012 | carer / child | stubs |
+| cit-006 | cit-008 | cit-019 | sisters | stubs |
 | cit-014 | cit-015 | sister / brother | stubs |

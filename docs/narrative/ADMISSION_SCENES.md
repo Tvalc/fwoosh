@@ -55,7 +55,7 @@ Escort: cit-021. Place: Salvage Yard.
 2. DUY (questioning): "What needs doing?"
 3. DAK-RO-FEN (relieved): "Everything. Isn't it wonderful? Hold this. No, level. Level."
 4. DUY (concerned): "The one by the stone stack hasn't looked at me once."
-5. DAK-RO-FEN (stern): "Bru-Ka-Dol. He carried our hearthstone four villages and watched it split. Build something that stays up. Then he'll look."
+5. DAK-RO-FEN (stern): "Bru-Ka-Dol. He carried our hearthstone here on his back and watched Blackroot split it. Build something that stays up. Then he'll look."
 
 Chronicle echoes:
 - cit-005: "Opened a cord for the human. First knot: one afternoon's labour, received."

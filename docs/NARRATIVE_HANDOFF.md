@@ -4,6 +4,49 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 07 — 2026-09-17 · branch `claude/narrative-batch-07` (stacked on 06) · base `main` 8f23fdc
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-22 | Trail-names come from a real journey on one's own feet: some expulsions, some chosen journeys | batch-03 NP-12 (approved with amendment). cit-002 background and "wants" revised: she was promised a salt walk. |
+| AD-23 | Residents of any age may come to the gate while Duy is barred | batch-03/04 open item; validates `dia-home-r2` page 2 |
+| AD-24 | Arbiter design gains burn-scarred, furless forearms | **Changes a Tony-approved Makko reference.** `arb-scar` is now an approved art request for Cursor. |
+
+### 2. Finished content (DRAFT)
+| ID | Content |
+|---|---|
+| cit-007, 009, 010, 011, 012 | Five full profiles promoted from stubs (docs/narrative/CAST_REGISTRY.md). Twelve of the nineteen are now fully written. |
+| cit-023, cit-024 | IDs reserved for Kip's parents (pre-raid dead); unauthored |
+| fixes | Removed a contradiction between "four expulsions in living memory" and Sek-Ra-Tun's two verses; `adm-hand` line 5 adjusted to match |
+
+Counts: 15 full profiles, 9 stubs/reserved, 60 conditional entries, 5 admission scenes, 2 diary rewrites + 1 clue.
+
+### 3. Reveal order
+New trigger label `gate:first-visit` entries may show any time after the citizen arrives (AD-23). cit-011's background confirms who screamed only by implication ("He heard Tav-Ri scream"); same gate as cit-004's background: not before diary `cell`.
+
+### 4. Triggers
+**Narrative intent:** `gate:first-visit` = this resident has come to look at Duy. Purely flavour; may be time-based after arrival.
+**Proposed mechanics:** none required.
+
+### 5. Makko art
+| ID | Request | Status |
+|---|---|---|
+| arb-scar | Arbiter: burn-scarred, furless forearms, visible in portraits and full body | **approved (AD-24)** |
+| cit-007 | herbalist base; coat with a visibly lumpy, hand-stitched hem; label-tags on everything | blocked on profile approval |
+| cit-009 | mason base; largest adult silhouette; carrying-yoke scars across the shoulders | 〃 |
+| cit-010 | weaver base; cord looped at both wrists, child-sling across the back; Kip usually half-hidden behind her | 〃 |
+| cit-011 | lantern base; older, grey at the muzzle; lantern shuttered, held low and backwards | 〃 |
+| cit-012 | child base, smaller than cit-002; scrap of hammock netting as a comfort-cloth | 〃 |
+
+### 6. Open
+Remaining stubs: cit-013…019. One-sided relationship lines to mirror next pass (listed in the registry table). Carried: NP-13, Arbiter's mandate limits, recruit identity, all prose DRAFT, vovinam-ledger unread.
+
+### 7. Files and commit
+`git log claude/narrative-batch-07 -1`. Not pushed. Delivered as `narrative-batches-01-07.patch` (seven commits).
+
+---
+
 ## Batch 06 — 2026-09-17 · branch `claude/narrative-batch-06` (stacked on 05) · base `main` 8f23fdc
 
 ### 1. Approved decisions
