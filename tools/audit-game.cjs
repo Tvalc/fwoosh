@@ -301,39 +301,62 @@ test('Touch release finishes exactly one unit without spending a dash', () => {
   assert.equal(g.run('demons.length'),1);assert.equal(g.run('player.charges'),3);
 });
 
-test('Pointer drag previews without spending and release uses one charge', () => {
-  const g=game();g.run('onTitle=false; intro=null; introT=0');
-  g.dispatch('pointerdown',{pointerType:'touch',clientX:200,clientY:600});
-  g.dispatch('pointermove',{pointerType:'touch',clientX:350,clientY:600});
-  assert.equal(g.run('player.charges'),3,'Aiming must not commit before release');
-  g.dispatch('pointerup');
-  assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.down'),false);
+test('Touch steering updates before release and never spends a dash on release',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+ g.dispatch('pointermove',{pointerType:'touch',pointerId:1,clientX:240,clientY:600});
+ assert.ok(g.run('heldVec()[0]')>.99);assert.equal(g.run('player.charges'),3);
+ g.dispatch('pointerup',{pointerId:1});assert.equal(g.run('heldVec()'),null);assert.equal(g.run('player.charges'),3);
 });
-test('Touch swipe direction stays anchored to the finger start while Duy moves',()=>{
-  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  g.run('var q=worldToScreen(180,640),z=worldToScreen(300,640);onDown(q.x,q.y);player.x=680;onMove(z.x,z.y);onUp()');
-  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')>.99,'Moving Duy skewed a rightward swipe');
+test('Joystick starts anywhere on the gameplay canvas except Vent, including HUD and gutters',()=>{
+ for(const [x,y] of [[10,10],[710,300],[360,1260],[160,1160],[360,700]]){
+  const g=game();g.run('onTitle=false;intro=null;introT=0');
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:x,clientY:y});
+  assert.equal(g.run('touchStick.id'),1);assert.equal(g.run('touchStick.cx'),x);assert.equal(g.run('touchStick.cy'),y);
+ }
 });
-test('Dragging can revise direct touch aim until release',()=>{
-  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  g.run('var a=worldToScreen(360,640),b=worldToScreen(520,640),c=worldToScreen(360,900);onDown(a.x,a.y);onMove(b.x,b.y);onMove(c.x,c.y)');
-  assert.equal(g.run('player.charges'),3);assert.ok(g.run('pointerBurstAim().uy')>.99);
-  g.run('onUp()');assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hy')>.99);
+test('Trailing joystick center makes reversal a short thumb movement after a long drag',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:100,clientY:600});
+ g.dispatch('pointermove',{pointerId:1,clientX:600,clientY:600});assert.ok(g.run('heldVec()[0]')>.99);
+ assert.equal(g.run('touchStick.cx'),564);
+ g.dispatch('pointermove',{pointerId:1,clientX:550,clientY:600});assert.ok(g.run('heldVec()[0]')<-.99);
 });
-test('Touch taps and returning to the swipe origin cancel without spending',()=>{
-  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  g.run('var q=worldToScreen(620,640);onDown(q.x,q.y);onUp();onDown(q.x,q.y);onMove(q.x-100,q.y);onMove(q.x+3,q.y+2);onUp()');
-  assert.equal(g.run('player.charges'),3);assert.equal(g.run('ptr.down'),false);
+test('Manual touch defeats auto-target steering until lift, then assistance resumes',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;god=true;cells=[];demons=[];obstacles=[];player.x=360;player.y=640;player.lunge=0;player.knockT=0;autoRunTarget=()=>({x:100,y:640})');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+ g.dispatch('pointermove',{pointerId:1,clientX:240,clientY:600});g.run('step()');
+ assert.ok(g.run('player.hx')>.99);assert.ok(g.run('player.x')>360);
+ g.dispatch('pointerup',{pointerId:1});g.run('step()');assert.ok(g.run('player.hx')<1);
 });
-test('A second finger cannot hijack an active touch swipe',()=>{
-  const g=game();g.run('onTitle=false;intro=null;introT=0;isTouch=true;player.x=360;player.y=640');
-  const q=g.run('(()=>{const p=worldToScreen(480,640),z=worldToScreen(620,640);return {x:p.x*scale,y:p.y*scale,ex:z.x*scale,ey:z.y*scale,vx:ventBtn().x*scale,vy:ventBtn().y*scale};})()');
-  g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:q.x,clientY:q.y});
-  g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:q.vx,clientY:q.vy});
-  g.dispatch('pointerup',{pointerType:'touch',pointerId:2,clientX:q.vx,clientY:q.vy});
-  assert.equal(g.run('player.charges'),3);assert.equal(g.run('player.venting'),false);assert.equal(g.run('ptr.down'),true);
-  g.dispatch('pointerup',{pointerType:'touch',pointerId:1,clientX:q.ex,clientY:q.ey});
-  assert.equal(g.run('player.charges'),2);assert.equal(g.run('ptr.id'),null);assert.ok(g.run('player.hx')>.99);
+test('Independent Vent touch neither steals steering nor ends when the steering finger lifts',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;player.heat=2');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+ g.dispatch('pointermove',{pointerId:1,clientX:240,clientY:600});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:634,clientY:1176});
+ assert.equal(g.run('player.venting'),true);assert.equal(g.run('touchStick.id'),1);assert.equal(g.run('touchVentId'),2);
+ g.dispatch('pointerup',{pointerId:1});assert.equal(g.run('player.ventHeld'),true);
+ g.dispatch('pointerup',{pointerId:2});assert.equal(g.run('player.ventHeld'),false);
+ g.run('ventHold(K.VENT_PURGE)');assert.equal(g.run('player.heat'),1);assert.equal(g.run('player.charges'),3);
+});
+test('Vent can start first and a second touch still acquires steering anywhere else',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;player.heat=2');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:634,clientY:1176});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:680,clientY:800});
+ assert.equal(g.run('touchStick.id'),2);assert.equal(g.run('touchVentId'),1);
+ g.dispatch('pointercancel',{pointerId:1});assert.equal(g.run('player.ventHeld'),false);assert.equal(g.run('touchStick.id'),2);
+});
+test('Canceled, resized, unfocused and ended runs release touch ownership without an accidental Burst',()=>{
+ for(const action of ['cancel','capture','blur','resize','reset','death','hub','debug']){
+  const g=game();g.run('onTitle=false;intro=null;introT=0;player.heat=2');
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+  if(action==='cancel')g.dispatch('pointercancel',{pointerId:1});
+  else if(action==='capture')g.dispatch('lostpointercapture',{pointerId:1});
+  else if(action==='blur'||action==='resize')g.dispatch(action);
+  else g.run(({reset:'reset()',death:"pop('test')",hub:'enterHub()',debug:'toggleDebugMenu()'})[action]);
+  assert.equal(g.run('touchStick.id'),null,action);assert.equal(g.run('player.charges'),3,action);
+  g.dispatch('pointerup',{pointerId:1});assert.equal(g.run('player.charges'),3,action);
+ }
 });
 
 test('Every upgrade track caps correctly and reload applies the completed build', () => {
@@ -1378,13 +1401,14 @@ test('Blocked retired-key deletion never imports or reconstructs old progress',(
  g.run('META.embers=8;saveMeta()');const reload=game(Object.fromEntries(g.storage),{blockRetiredRemoval:true});assert.equal(reload.run('META.embers'),8);
 });
 
-test('Touch swipe matches all eight directions from different map positions and phone sizes',()=>{
- for(const width of [320,390,430])for(const [sx,sy] of [[170,340],[540,900]])for(const [dx,dy] of [[120,0],[-120,0],[0,120],[0,-120],[90,90],[-90,90],[90,-90],[-90,-90]]){
-  const g=game();g.run(`innerWidth=${width};innerHeight=844;fit();onTitle=false;intro=null;introT=0;player.x=360;player.y=640;`);
-  const points=g.run(`(()=>{const a=worldToScreen(${sx},${sy}),b=worldToScreen(${sx+dx},${sy+dy});return {a:{clientX:a.x*scale,clientY:a.y*scale},b:{clientX:b.x*scale,clientY:b.y*scale}};})()`);
-  g.dispatch('pointerdown',{pointerType:'touch',pointerId:7,...points.a});g.dispatch('pointermove',{pointerType:'touch',pointerId:7,...points.b});
-  const aim=g.run('pointerBurstAim()'),m=Math.hypot(dx,dy);assert.ok(Math.abs(aim.ux-dx/m)<1e-9);assert.ok(Math.abs(aim.uy-dy/m)<1e-9);assert.equal(g.run('player.charges'),3);
-  g.dispatch('pointerup',{pointerType:'touch',pointerId:7,...points.b});assert.equal(g.run('player.charges'),2);assert.ok(Math.abs(g.run('player.hx')-aim.ux)<1e-9);assert.ok(Math.abs(g.run('player.hy')-aim.uy)<1e-9);
+test('Joystick vectors and physical radius stay consistent at three phone widths',()=>{
+ for(const width of [320,390,430])for(const [dx,dy] of [[40,0],[-40,0],[0,40],[0,-40],[30,30],[-30,30],[30,-30],[-30,-30]]){
+  const g=game();g.run(`innerWidth=${width};innerHeight=844;fit();onTitle=false;intro=null;introT=0;`);
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:7,clientX:160,clientY:250});
+  g.dispatch('pointermove',{pointerId:7,clientX:160+dx,clientY:250+dy});
+  const v=g.run('heldVec()'),m=Math.hypot(dx,dy);assert.ok(Math.abs(v[0]-dx/m)<1e-9);assert.ok(Math.abs(v[1]-dy/m)<1e-9);
+  assert.ok(Math.abs(g.run('Math.hypot(touchStick.x-touchStick.cx,touchStick.y-touchStick.cy)*scale')-36)<1e-9);
+  g.dispatch('pointerup',{pointerId:7});assert.equal(g.run('player.charges'),3);assert.equal(g.run('heldVec()'),null);
  }
 });
 test('Mouse keeps its own gesture mode after the same device has used touch',()=>{
@@ -1392,6 +1416,61 @@ test('Mouse keeps its own gesture mode after the same device has used touch',()=
  const q=g.run('(()=>{const p=worldToScreen(620,640);return {clientX:p.x*scale,clientY:p.y*scale}})()');
  g.dispatch('pointerdown',{pointerType:'mouse',pointerId:8,...q});g.dispatch('pointerup',{pointerType:'mouse',pointerId:8,...q});
  assert.equal(g.run('ptr.swipe'),false);assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.hx')<-.99);
+});
+test('Second-finger press bursts immediately along steering regardless of tap location',()=>{
+ for(const [x,y] of [[10,10],[690,300],[300,1260]]){
+  const g=game();g.run('onTitle=false;intro=null;introT=0');
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+  g.dispatch('pointermove',{pointerId:1,clientX:240,clientY:640});
+  const aim=g.run('pointerBurstAim()');
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:x,clientY:y});
+  assert.equal(g.run('player.charges'),2);assert.ok(g.run('player.lunge')>0);
+  assert.ok(Math.abs(g.run('player.hx')-aim.ux)<1e-9);assert.ok(Math.abs(g.run('player.hy')-aim.uy)<1e-9);
+  g.dispatch('pointermove',{pointerId:2,clientX:100,clientY:1100});
+  g.dispatch('pointerup',{pointerId:2});assert.equal(g.run('player.charges'),2);assert.equal(g.run('touchStick.id'),1);
+ }
+});
+test('Holding Burst, duplicate down events and a third finger cannot spend extra charges',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:100,clientY:300});
+ g.run('player.dashCd=0');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:100,clientY:300});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:3,clientX:300,clientY:300});
+ assert.equal(g.run('player.charges'),2);
+ g.dispatch('pointerup',{pointerId:2});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:4,clientX:100,clientY:300});
+ assert.equal(g.run('player.charges'),1);
+});
+test('Burst respects empty charges and cooldown without firing late on release',()=>{
+ for(const state of ['player.charges=0','player.dashCd=1']){
+  const g=game();g.run('onTitle=false;intro=null;introT=0;'+state);
+  const before=g.run('player.charges');
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+  g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:100,clientY:300});
+  assert.equal(g.run('player.charges'),before);
+  g.run('player.dashCd=0;player.charges=3');g.dispatch('pointerup',{pointerId:2});assert.equal(g.run('player.charges'),3);
+ }
+});
+test('Vent remains the exception and Burst waits for an already committed vent unit',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0;player.heat=2');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+ g.dispatch('pointermove',{pointerId:1,clientX:250,clientY:600});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:634,clientY:1176});
+ assert.equal(g.run('player.charges'),3);assert.equal(g.run('touchBurstId'),null);
+ g.dispatch('pointerup',{pointerId:2});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:3,clientX:100,clientY:300});
+ assert.equal(g.run('player.charges'),3);assert.ok(g.run('player.ventDash[0]')>.99);
+ g.run('ventHold(K.VENT_PURGE)');assert.equal(g.run('player.charges'),2);assert.equal(g.run('player.heat'),1);assert.ok(g.run('player.hx')>.99);
+});
+test('Lifting the joystick never promotes a held Burst finger into steering',()=>{
+ const g=game();g.run('onTitle=false;intro=null;introT=0');
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:1,clientX:200,clientY:600});
+ g.dispatch('pointerdown',{pointerType:'touch',pointerId:2,clientX:100,clientY:300});
+ g.dispatch('pointerup',{pointerId:1});assert.equal(g.run('heldVec()'),null);
+ g.dispatch('pointermove',{pointerId:2,clientX:600,clientY:300});assert.equal(g.run('heldVec()'),null);
+ g.dispatch('blur');assert.equal(g.run('touchBurstId'),null);
+ g.dispatch('pointerup',{pointerId:2});assert.equal(g.run('player.charges'),2);
 });
 const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Actual game scripts; VM; in-memory localStorage; targeted canvas-operation regressions; no visual-quality/audio/network/human-balance assessment.',
   source_sha256:Object.fromEntries(scripts.map(s=>[s.filename,crypto.createHash('sha256').update(s.code).digest('hex')])),

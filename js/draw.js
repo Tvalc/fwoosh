@@ -1701,7 +1701,7 @@ function render(){
         }
       }
     }
-    if(isTouch)drawVentButton(ctx);
+    if(isTouch){drawTouchStick(ctx);drawVentButton(ctx);}
     ctx.textAlign='left';ctx.fillStyle='#b4a7ba';ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
     if(intro||presentDialogue)ctx.fillText('AUTO · Diary → Conversations',248,1267);
   }

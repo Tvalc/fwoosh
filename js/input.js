@@ -5,6 +5,38 @@ let ptr = { down:false, id:null, sx:0, sy:0, x:0, y:0, px:0, py:0, onVent:false 
 function ventBtn(){ const r = 62; return { x: 634, y: 1176, r }; }
 
 // keyboard: WASD/arrows steer, SHIFT dashes, SPACE braces
+// Touch control distances are CSS pixels, independent of canvas/world scaling.
+const touchStick={id:null,x:0,y:0,cx:0,cy:0,ux:0,uy:-1};
+let touchVentId=null, touchBurstId=null;
+const TOUCH_STICK_RADIUS=36, TOUCH_STICK_DEADZONE=6;
+function touchControlsActive(){return mode==='play'&&!onTitle&&introT<=0&&!debugMenu.open;}
+function touchVentHit(x,y){const b=ventBtn();return Math.hypot(x-b.x,y-b.y)<=b.r+14;}
+function moveTouchStick(x,y){
+  touchStick.x=x;touchStick.y=y;
+  const dx=x-touchStick.cx,dy=y-touchStick.cy,m=Math.hypot(dx,dy),r=TOUCH_STICK_RADIUS/scale;
+  if(m>TOUCH_STICK_DEADZONE/scale){touchStick.ux=dx/m;touchStick.uy=dy/m;}
+  // A trailing center bounds the distance needed to reverse after a long drag.
+  if(m>r){touchStick.cx=x-dx/m*r;touchStick.cy=y-dy/m*r;}
+}
+function startTouchStick(id,x,y){
+  touchStick.id=id;touchStick.cx=x;touchStick.cy=y;touchStick.x=x;touchStick.y=y;
+  touchStick.ux=player.hx;touchStick.uy=player.hy;
+  player.autoTarget=null;player.autoSightT=0;hinted=true;
+}
+function endTouchControl(id){
+  if(id===touchBurstId)touchBurstId=null;
+  if(id===touchStick.id){touchStick.id=null;player.autoTarget=null;player.autoSightT=0;}
+  if(id===touchVentId){touchVentId=null;setVentHeld(false);}
+}
+function drawTouchStick(ctx){
+  if(touchStick.id===null||!touchControlsActive())return;
+  const r=TOUCH_STICK_RADIUS/scale,s=touchStick;
+  ctx.save();ctx.lineWidth=1.5/scale;ctx.strokeStyle='rgba(255,201,147,0.48)';
+  ctx.fillStyle='rgba(16,10,18,0.32)';ctx.beginPath();ctx.arc(s.cx,s.cy,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(s.cx,s.cy);ctx.lineTo(s.x,s.y);ctx.stroke();
+  // Reuse the existing Makko ember icon for the thumb handle.
+  drawSpr(ctx,'ui_charge',s.x,s.y,28/scale,{alpha:0.85});ctx.restore();
+}
 const keys = Object.create(null);
 const KEYVEC = { w:[0,-1], s:[0,1], a:[-1,0], d:[1,0],
                  arrowup:[0,-1], arrowdown:[0,1], arrowleft:[-1,0], arrowright:[1,0] };
@@ -12,7 +44,7 @@ function heldVec(){
   let x=0, y=0;
   for(const k in KEYVEC){ if(keys[k]){ x += KEYVEC[k][0]; y += KEYVEC[k][1]; } }
   const m = Math.hypot(x,y);
-  return m > 0.001 ? [x/m, y/m] : null;
+  return m > 0.001 ? [x/m, y/m] : (touchStick.id!==null&&touchControlsActive() ? [touchStick.ux,touchStick.uy] : null);
 }
 let hinted = false;
 let isTouch = (typeof window!=='undefined') && ('ontouchstart' in window || (navigator.maxTouchPoints||0) > 0);
@@ -77,9 +109,12 @@ function lungeDir(dx,dy){
   setVentHeld(false);                           // escape at a unit boundary; never bypass the commitment
 }
 
-// Touch follows the finger's swipe from its starting point, independent of Duy's
-// position. Mouse retains its existing slingshot aim. Preview and release share this vector.
+// Touch previews the held steering direction; a second finger commits it on press.
+// Mouse retains its existing slingshot aim and commits on release.
 function pointerBurstAim(){
+  if(touchStick.id!==null&&touchControlsActive()){
+    const {ux,uy}=touchStick;return {cancel:false,dx:ux,dy:uy,ux,uy};
+  }
   if(!ptr.down || mode!=='play')return null;
   const target=screenToWorld(ptr.x,ptr.y),start=screenToWorld(ptr.sx,ptr.sy);
   const dx=ptr.swipe?target.x-start.x:ptr.px-target.x;
@@ -119,7 +154,7 @@ function drawPointerBurstAim(ctx){
     const r=9;ctx.beginPath();ctx.moveTo(player.x-r,player.y-r);ctx.lineTo(player.x+r,player.y+r);
     ctx.moveTo(player.x+r,player.y-r);ctx.lineTo(player.x-r,player.y+r);ctx.stroke();ctx.restore();return;
   }
-  const end=pointerBurstEnd(aim), ready=player.charges>0&&player.dashCd<=0;
+  const end=pointerBurstEnd(aim), ready=player.charges>0&&player.dashCd<=0&&!player.ventUnit;
   const sx=player.x+aim.ux*(player.r+8),sy=player.y+aim.uy*(player.r+8),dx=end.x-sx,dy=end.y-sy;
   const len=Math.hypot(dx,dy),alpha=ready?(end.blocked?0.62:0.96):0.34;
 
@@ -191,8 +226,9 @@ function onUp(){
 }
 // An interrupted gesture is not a completed tap: cancel without spending a dash.
 function cancelPointer(){
-  if(ptr.onVent) setVentHeld(false);
-  player.ventDash=null;
+  if(ptr.onVent||touchVentId!==null) setVentHeld(false);
+  touchStick.id=null;touchVentId=null;touchBurstId=null;
+  if(player)player.ventDash=null;
   ptr.down = false; ptr.onVent = false; ptr.id=null;
 }
 
@@ -202,23 +238,45 @@ function local(e){
   const r = cv.getBoundingClientRect();
   return { x:(e.clientX-r.left)/scale, y:(e.clientY-r.top)/scale };
 }
+function captureControlPointer(e){try{cv.setPointerCapture?.(e.pointerId);}catch(err){/* Detached/synthetic pointer. */}}
 cv.addEventListener('pointerdown', e=>{
-  e.preventDefault();if(ptr.id!==null)return;if(e.pointerType==='touch')isTouch=true;
-  const q=local(e);onDown(q.x,q.y,e.pointerType==='touch');
-  ptr.id=(ptr.down||ptr.onVent)?(e.pointerId??0):null;
+  e.preventDefault();const id=e.pointerId??0,q=local(e),touch=e.pointerType==='touch';
+  if(touch)isTouch=true;
+  if(touch&&touchControlsActive()){
+    if(id===touchStick.id||id===touchVentId||id===touchBurstId)return;
+    if(touchVentHit(q.x,q.y)){
+      if(touchVentId===null){touchVentId=id;setVentHeld(true);captureControlPointer(e);}
+    }else if(touchStick.id===null){startTouchStick(id,q.x,q.y);captureControlPointer(e);}
+    else if(touchBurstId===null){
+      // Only the steering finger chooses direction. One additional press spends at most one charge.
+      touchBurstId=id;captureControlPointer(e);lungeDir(touchStick.ux,touchStick.uy);
+    }
+    return;
+  }
+  if(ptr.id!==null)return;
+  onDown(q.x,q.y,false);ptr.id=(ptr.down||ptr.onVent)?id:null;
+  if(ptr.id!==null)captureControlPointer(e);
 });
 cv.addEventListener('pointermove', e=>{
-  if(ptr.id===null||(e.pointerId??0)!==ptr.id)return;e.preventDefault();
-  const q=local(e);onMove(q.x,q.y);
+  const id=e.pointerId??0;
+  if(id===touchStick.id){e.preventDefault();const q=local(e);moveTouchStick(q.x,q.y);return;}
+  if(ptr.id===null||id!==ptr.id)return;e.preventDefault();const q=local(e);onMove(q.x,q.y);
 });
 window.addEventListener('pointerup', e=>{
-  if(ptr.id===null||(e.pointerId??0)!==ptr.id)return;
+  const id=e.pointerId??0;
+  if(id===touchStick.id||id===touchVentId||id===touchBurstId){endTouchControl(id);return;}
+  if(ptr.id===null||id!==ptr.id)return;
   if(ptr.down&&Number.isFinite(e.clientX)&&Number.isFinite(e.clientY)){
-    const q=local(e);onMove(q.x,q.y);             // use the actual release point even if no final move event fired
+    const q=local(e);onMove(q.x,q.y);
   }
   onUp();ptr.id=null;
 });
-window.addEventListener('pointercancel', e=>{if(ptr.id!==null&&(e.pointerId??0)===ptr.id)cancelPointer();});
+function cancelControlPointer(e){
+  const id=e.pointerId??0;endTouchControl(id);
+  if(ptr.id!==null&&id===ptr.id)cancelPointer();
+}
+window.addEventListener('pointercancel',cancelControlPointer);
+cv.addEventListener('lostpointercapture',cancelControlPointer);
 // desktop: WASD/arrows steer, SHIFT dashes, SPACE braces
 window.addEventListener('keydown', e=>{
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();

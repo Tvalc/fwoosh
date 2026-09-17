@@ -228,6 +228,7 @@ function verdictOpen(){
 
 // land in the town after a run; raise any building whose saves-milestone you just crossed
 function enterHub(){
+  cancelPointer();
   presentDialogue=null;
   mode='hub'; hubScroll=0; hubSheet=null; wellJustRose=false;
   cityAdvance(Date.now(),true);
