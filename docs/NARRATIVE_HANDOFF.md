@@ -4,6 +4,25 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 13 — 2026-09-17 · branch `claude/narrative-batch-13` (on batch 12)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-28 | Ratkin material takes the Brooks register; diary stays Griffin; System text stays the Auditor | batch-09 NP-14 → approved |
+| AD-29 | Residents know some escaped Hollowbeech, not who; arrivals from the living village are their only news | batch-11 NP-16 → approved. Consistent with Ledger: living villagers know of sanctuary via the System's announcement, but nothing flows back. |
+
+### 2. Finished content
+None new. **Known defect:** many first-meeting lines and chronicle entries from batches 01–08 use a wry, winking narrator that AD-28 rules out. Content and facts stand; wording will change in the register audit. Treat all 22 profiles and 5 admission scenes as pre-audit drafts.
+
+### 6. Open
+Register audit (mine, next). L-02 and L-04 need the Blood Debt story bible. Ten diary chapters blocked on the same. Profiles must not ship to `SOCIETY_PROFILES` yet.
+
+### 7. Files and commit
+`git log claude/narrative-batch-13 -1`. This branch contains everything from batches 01–13 plus Codex's reconcile commit.
+
+---
+
 ## Batch 12 — 2026-09-17 · branch `claude/narrative-batch-12` (on batch 11)
 
 ### 1. Approved decisions
