@@ -4,6 +4,29 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 11 — 2026-09-17 · branch `claude/narrative-batch-11` (on batch 10)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-25 | Hollowbeech was destroyed; some villagers escaped and built again. Ledger's "Village of Nineteen Absences" is the village after Hollowbeech. The nineteen are the last of those Blackroot **took**. | Fwoosh CANON.md (#75/#76) wording that the nineteen were the community's "last survivors" → "the last survivors among those Blackroot captured". BIBLE NP-07 "the rest killed" → three-way split (killed, taken, escaped). Ledger text is unchanged and now consistent. Resolves L-01. **Codex: mirror into CANON.md and Ledger's FWOOSH_SHARED_DECISIONS.md.** |
+
+### 2. Finished content (DRAFT)
+cit-008 background: one sentence changed (she no longer knows that nobody stayed free). NP-15, NP-16 added to BIBLE §1b.
+
+### 3. Reveal order
+Residents do not know who escaped. No text may name a living escapee until Ledger names its villagers.
+
+### 4–5. Unchanged.
+
+### 6. Open
+L-02 (Chit-tat-to in the cell), L-03 (naming vs Chit-tat-to and Kesh-ka; asked), L-04 (novel may already name the nineteen), NP-15, NP-16. Profiles still must not ship to `SOCIETY_PROFILES`.
+
+### 7. Files and commit
+BIBLE.md, CAST_REGISTRY.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-11 -1`.
+
+---
+
 ## Batch 10 — 2026-09-17 · branch `claude/narrative-batch-10` · based on `claude/narrative-batches-01-09` @ 2bb09ec (Codex's import + reconcile commit)
 
 ### 0. Sync note
