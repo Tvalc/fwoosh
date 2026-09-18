@@ -1,13 +1,14 @@
 // Khet-Tak-Tor is Duy's jailer and the Ratkin Arbiter. Immediate danger is clear;
 // the larger story is discovered in optional memories.
 const ARBITER_NAME = 'KHET-TAK-TOR';
+const THREAT_NAME = 'KEITH';
 const STORY = {
   // Legacy preview card only. Normal first play starts directly with live dialogue.
   premise: [
     'The street is burning. Someone is calling your name.',
     'Run into the burning ratkin. Take their fire.',
     'Too much to carry? Hold VENT or SPACE.',
-    'Khet-Tak-Tor says you have been here before.',
+    'Keith is feeding the fire. Khet-Tak-Tor says you can stop him.',
   ],
   greet: {
     debut: { big:'ON YOUR FEET.', sub:['there you are.', 'take the fire off them.'] },
@@ -33,7 +34,7 @@ const STORY = {
   duel: { rise:['MY TURN.','COME THROUGH ME.'],
           tag:['GIVE IT HERE.','FELT THAT.'],
           back:['TRY AGAIN.','STILL CARRYING IT?'],
-          yieldSub:['DISTRICT CLEARED', 'Rescue rewards banked.'] },
+          yieldSub:['KEITH DRIVEN BACK', 'Rescue rewards banked.'] },
   riser: { rise:'FIRE WALL RISING', shed:'FIRE SHED', dead:'FIRE WALL DESTROYED' },
   study: { debut:['Khet-Tak-Tor watches where you stop.'],
            smug:['Khet-Tak-Tor checks something in his notes.','Khet-Tak-Tor was waiting at that corner.'],
@@ -45,6 +46,14 @@ const STORY = {
   // First run: instructions and fragments, delivered during fully controllable action.
   intro: [
     { who:ARBITER_NAME, emotion:"stern", text:"On your feet, Duy. Take the fire off them." },
+    { who:THREAT_NAME, emotion:"angry", text:"Keep carrying it. Every rescue feeds my fire." },
+    { who:ARBITER_NAME, emotion:"stern", text:"That is Keith. He turns the afterlife against my people." },
+    { who:'DUY', emotion:"questioning", text:"What does the heat do to me?" },
+    { who:ARBITER_NAME, emotion:"stern", text:"Heat hurts you, and heat frees them. Touch a burning Ratkin to carry it." },
+    { who:ARBITER_NAME, emotion:"stern", text:"Hold VENT or SPACE to spend one heat and heal. Venting roots you and calls a demon." },
+    { who:THREAT_NAME, emotion:"angry", text:"Then I will send more." },
+    { who:ARBITER_NAME, emotion:"stern", text:"Dash through a demon to break it. Its heat can pay for another rescue." },
+    { who:ARBITER_NAME, emotion:"stern", text:"I keep the gate. Save them, overcome Keith, and let the ratkin judge what you owe." },
   ],
 };
 
@@ -155,7 +164,7 @@ function diaryMarkRead(id){ if(!META.diary) META.diary={read:[]}; if(!META.diary
 function diaryFreshCount(){ return DIARY.filter(e=>diaryUnlocked(e) && !diaryIsRead(e.id)).length; }
 
 const INTRO = { WALK: 205, CHAR: 0.028, HOLD: 1.5, START_Y: 0.90, IGNITE_Y: 0.5 };
-const INTRO_VERSION = 5;   // bump to replay the intro once for everyone after an intro change
+const INTRO_VERSION = 6;   // replay the expanded Keith/Khet tutorial once after the story change
 
 
 // Present-tense exchanges: witnessed events first, explanations on later returns.
@@ -173,6 +182,15 @@ const PRESENT = {
   vent:[
     {who:'DUY',emotion:'startled',text:'That thing came out of me?'},
     {who:ARBITER_NAME,emotion:'dry',text:'You let the heat loose. Now deal with it.'}],
+  demon:[
+    {who:'DUY',emotion:'startled',text:'The demon came when I vented.'},
+    {who:ARBITER_NAME,emotion:'stern',text:'Venting spends heat and heals you. The demon is the price.'},
+    {who:ARBITER_NAME,emotion:'stern',text:'Dash through it before it reaches a cinder or bites you. Breaking it gives you heat back.'}],
+  keith:[
+    {who:THREAT_NAME,emotion:'angry',text:'You keep pulling them out. I keep putting the fire back.'},
+    {who:ARBITER_NAME,emotion:'stern',text:'Keith is the hand making this suffering useful to him. Stop his fire and the ratkin can rise.'},
+    {who:'DUY',emotion:'questioning',text:'And you?'},
+    {who:ARBITER_NAME,emotion:'stern',text:'I keep the gate and record the debt. I do not choose the fire. The ratkin decide what comes after.'}],
   return:[
     {who:'DUY',emotion:'startled',text:'I died. How am I here?'},
     {who:ARBITER_NAME,emotion:'stern',text:"You'll come back every time. They're still burning."}],
@@ -198,7 +216,7 @@ function dialogueSave(){
   if(!d || typeof d!=='object' || Array.isArray(d)) META.dialogue={};
   const out=META.dialogue;
   out.seen=Array.isArray(out.seen)?out.seen.filter(x=>typeof x==='string').slice(-32):[];
-  out.history=Array.isArray(out.history)?out.history.filter(x=>x && typeof x.text==='string' && ['DUY','KEITH',ARBITER_NAME].includes(x.who)).map(x=>x.who==='KEITH'?{...x,who:ARBITER_NAME}:x).slice(-100):[];
+  out.history=Array.isArray(out.history)?out.history.filter(x=>x && typeof x.text==='string' && ['DUY',THREAT_NAME,ARBITER_NAME].includes(x.who)).slice(-100):[];
   return out;
 }
 function rememberDialogue(line){
@@ -221,6 +239,10 @@ function speakArbiter(text,emotion='dry'){
   // Combat never queues speech behind an exchange or restarts a line already being read.
   if(mode!=='play' || onTitle || intro || presentDialogue || presentGap>0 || presentTaunts>=1 || elapsed<12) return;
   presentDialogue={id:null,lines:[{who:ARBITER_NAME,emotion,text}],i:0,t:0,recorded:false};presentTaunts++;
+}
+function speakKeith(text,emotion='angry'){
+  if(mode!=='play' || onTitle || intro || presentDialogue || presentGap>0 || presentTaunts>=1 || elapsed<12) return;
+  presentDialogue={id:null,lines:[{who:THREAT_NAME,emotion,text}],i:0,t:0,recorded:false};presentTaunts++;
 }
 function tickPresentDialogue(dt){
   if(mode!=='play' || onTitle) return;
@@ -245,6 +267,8 @@ function tickPresentDialogue(dt){
   if(fresh('ascend') && !presentSeen('ascend')){startPresentDialogue('ascend');return;}
   if(player.heat>=3 && (presentSeen('rescue')||presentSeen('ascend')) && !presentSeen('heat')){startPresentDialogue('heat');return;}
   if(fresh('vent') && (presentSeen('rescue')||presentSeen('ascend')) && !presentSeen('vent')){startPresentDialogue('vent');return;}
+  if(fresh('demon') && presentSeen('vent') && !presentSeen('demon')){startPresentDialogue('demon');return;}
+  if(fresh('keith') && !presentSeen('keith')){startPresentDialogue('keith');return;}
   // Only one return-related exchange per run, near its beginning. Missed beats can recur later.
   if(elapsed<4 || elapsed>12 || presentEvents.returnUsed) return;
   const runs=opp.runs||0,last=META.recentRuns[META.recentRuns.length-1];

@@ -829,18 +829,27 @@ test('Conversation archive excludes unrevealed text and tolerates old malformed 
  assert.ok(!g.drawnText.includes(g.run('PRESENT.release[1].text')));
  g.run("rememberDialogue(PRESENT.rescue[0]);drawConversationSheet(ctx)");assert.ok(g.drawnText.includes(g.run('PRESENT.rescue[0].text')));
 });
-test('Legacy Keith dialogue records display under Khet-Tak-Tor without losing text',()=>{
+test('Saved Keith dialogue records stay Keith without losing text',()=>{
  const old={v:1,dialogue:{seen:['rescue'],history:[{who:'KEITH',emotion:'stern',text:'Keep moving.'}]}};
  const g=game({'fwoosh.save2.meta':JSON.stringify(old)});g.run('dialogueSave();saveMeta()');
- assert.equal(g.run('META.dialogue.history[0].who'),'KHET-TAK-TOR');
+ assert.equal(g.run('META.dialogue.history[0].who'),'KEITH');
  assert.equal(g.run('META.dialogue.history[0].text'),'Keep moving.');
- const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('dialogueSave().history[0].who'),'KHET-TAK-TOR');
+ const reload=game(Object.fromEntries(g.storage));assert.equal(reload.run('dialogueSave().history[0].who'),'KEITH');
 });
 test('Present dialogue contains no past-life reveals and all templates use named speakers',()=>{
  const g=game();const lines=g.run('Object.values(PRESENT).flat()');
- assert.ok(lines.every(l=>['DUY','KHET-TAK-TOR'].includes(l.who)&&l.emotion&&l.text.length<100));
- assert.ok(lines.every(l=>!(/Mei|Cuong|Diep|nineteen|brother|Adonai|Odin|gunman|gate/i.test(l.text))));
+ assert.ok(lines.every(l=>['DUY','KEITH','KHET-TAK-TOR'].includes(l.who)&&l.emotion&&l.text.length<100));
+ assert.ok(lines.every(l=>!(/Mei|Cuong|Diep|nineteen|brother|Adonai|Odin|gunman/i.test(l.text))));
  assert.equal(g.run('STORY.lore.length'),0);
+});
+
+test('Keith pressure adds hostile demons and a telegraphed direct strike',()=>{
+ const g=game();g.run("onTitle=false;intro=null;mode='play';duelActive=false;boss=null;demons=[];elapsed=K.KEITH_PRESSURE_FIRST;player.hp=1;player.hurtCd=0;triggerKeithPressure()");
+ assert.equal(g.run("demons.filter(d=>d.source==='keith').length"),g.run('K.KEITH_PRESSURE_DEMONS'));
+ assert.ok(g.run('keithStrike && keithStrike.tx===player.x && keithStrike.ty===player.y'));
+ const before=g.run('player.hp');g.run('keithStrike.t=K.KEITH_STRIKE_TELE;stepKeithPressure(DT)');
+ assert.ok(g.run('player.hp')<before,'Keith pressure did not damage Duy when he stayed on the telegraph.');
+ assert.equal(g.run('keithStrike.done'),true);
 });
 
 
@@ -1270,15 +1279,15 @@ test('Rekindling a husk restores the original villager appearance with a fresh e
 });
 
 test('Authored stern portrait speaks while typing and returns to its listening pose',()=>{
- const g=game();g.run(`Object.assign(MAKKO_ANIM_IMG.dialogue_arbiter_stern,{complete:true,naturalWidth:2048});drawDialoguePortrait(ctx,'keith','stern',0,0,76,true,.25)`);
+ const g=game();g.run(`Object.assign(MAKKO_ANIM_IMG.dialogue_arbiter_stern,{complete:true,naturalWidth:2048});drawDialoguePortrait(ctx,'arbiter','stern',0,0,76,true,.25)`);
  assert.equal(g.drawnImages.at(-1).src,'./media/anim/dialogue_arbiter_stern.png');
  assert.equal(g.drawnImages.at(-1).args[0],3*256);
- g.run(`drawDialoguePortrait(ctx,'keith','stern',0,0,76,false,.25)`);
+ g.run(`drawDialoguePortrait(ctx,'arbiter','stern',0,0,76,false,.25)`);
  assert.equal(g.drawnImages.at(-1).args[0],0);
 });
 
 test('Canonical Arbiter portrait keys resolve before legacy compatibility keys',()=>{
- const g=game();g.run(`MAKKO_ANIM.dialogue_arbiter_stern={frames:3,fw:128,fh:128};MAKKO_ANIM_IMG.dialogue_arbiter_stern={src:'portrait-test',complete:true,naturalWidth:384};drawDialoguePortrait(ctx,'keith','stern',0,0,76,true,.2)`);
+ const g=game();g.run(`MAKKO_ANIM.dialogue_arbiter_stern={frames:3,fw:128,fh:128};MAKKO_ANIM_IMG.dialogue_arbiter_stern={src:'portrait-test',complete:true,naturalWidth:384};drawDialoguePortrait(ctx,'arbiter','stern',0,0,76,true,.2)`);
  assert.equal(g.drawnImages.at(-1).src,'portrait-test');assert.equal(g.drawnImages.at(-1).args[0],256);
 });
 
