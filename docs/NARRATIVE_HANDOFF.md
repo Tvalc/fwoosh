@@ -4,6 +4,28 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 14 — 2026-09-17 · branch `claude/narrative-batch-14` (on batch 13) · main now 5e32257 (`novel/` added)
+
+### 1. Approved decisions
+None new. **Several approved decisions are now in question** because the manuscript Tony added as source of truth contradicts them: AD-05/AD-26 (naming), AD-08/AD-09 in part, AD-13, AD-17, AD-25. They remain recorded as approved until Tony rules; do not mirror AD-25…AD-27 into CANON.md or Ledger yet.
+
+### 2. Finished content
+Novel cross-check, docs/narrative/BIBLE.md §1d (N-01…N-11).
+
+### 3. Reveal order / 4. Triggers / 5. Art
+Unchanged. New art idea pending approval: one **wall-mark** icon per citizen (N-11).
+
+### 6. Open
+- **Asked:** which source governs where the manuscript and today's approvals collide.
+- All 22 profiles, 5 admission scenes and both diary rewrites are **suspended drafts** until that answer. `SOCIETY_PROFILES` must stay empty.
+- The manuscript contradicts itself on whether the Ratkin in the cell were armed (Ch04 vs Ch14). Tony's call; affects Fwoosh CANON's "unarmed".
+- Still to read line by line: `novel/BLOOD_DEBT_COMPLETE_HANDOFF.md` and the other chapters.
+
+### 7. Files and commit
+BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-14 -1`.
+
+---
+
 ## Batch 13 — 2026-09-17 · branch `claude/narrative-batch-13` (on batch 12)
 
 ### 1. Approved decisions
