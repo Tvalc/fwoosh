@@ -18,6 +18,75 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 - The skill holds style only. The story bible (facts) is a file Tony keeps and uploads; I do not have it. Diary chapters `morning` through `gods`, `debt` and `gate` retell bible events and **will not be revised until it is in context**.
 - Tension to resolve: the citizen brief asks for qualities Tony admires in Sanderson; the skill sets Griffin/Brooks/Auditor registers. I read these as compatible (Sanderson for structure: clues, costs, payoffs; the skill for sentence-level voice). Flagged, not assumed closed.
 
+## 0a. Tony direction: first arcade opening and tutorial contract (2026-09-18)
+
+This section is the current handoff for the arcade opening. It supersedes the earlier approach in which the first run withheld the reason Duy was suffering. The player must understand the crime and the punishment before the game teaches the controls. The opening premise should take less than ten seconds. The mechanics then unfold through witnessed events.
+
+### Premise the player must understand immediately
+
+- Duy is dead.
+- The burning Ratkin are the people Duy killed.
+- Duy is in the Ratkin afterlife to pay that debt.
+- Khet-Tak-Tor is the Ratkin Arbiter and explainer. He is not the hostile street boss.
+- Keith is a fluent, snarky demon and the hostile street antagonist. He keeps the Ratkin trapped in the fire and sends demons to put them back when Duy rescues them.
+- The Ratkin decide what happens to Duy after he helps them. Khet explains the rules and records the judgment.
+
+The deeper mysteries remain available for later chapters: the exact cell event, the open door, Keith's origin, and the full covenant. The immediate situation is never mysterious.
+
+### Voice contract
+
+- **Khet-Tak-Tor:** a Ratkin who has only recently received human messages as pictograms. Use short, literal, often monosyllabic sentences. Let the pictograms carry part of the meaning. He is intelligent, but his spoken language is blunt and limited.
+- **Keith:** a snarky demon. He speaks normally, understands the situation, enjoys Duy's discomfort and treats the rescue work as a game. He can taunt, but the lines stay short and readable. He is not a Ratkin and does not use Khet's broken syntax.
+- **Duy:** a normal human voice under pressure. He reacts to the horror, asks the obvious question and occasionally makes a defensive joke. He cannot be silent while the world changes around him.
+- No high-brow fantasy phrasing. No abstract explanations when a character can point at the thing happening on screen.
+
+### Locked Khet line
+
+> **KHET:** “Human get quest. See Rat people. Use gun. Bang.”
+
+This is the required comic explanation of Duy's crime. Do not replace it with a formal account of the nineteen killings.
+
+### Draft opening exchange
+
+The following is target copy for the first playable beat. The locked Khet line above must remain exact; the surrounding lines may be tuned for timing without changing the facts.
+
+1. **DUY:** “Why are they burning?”
+2. **KHET:** “You kill them.”
+3. **DUY:** “What?”
+4. **KHET:** “Human get quest. See Rat people. Use gun. Bang.”
+5. **KHET:** “You pay debt. Help now. They judge.”
+6. **KEITH:** “Go on, hero. Save the rats. I’ll put them back.”
+7. **KHET:** “Keith keep fire. He send demons.”
+
+The first demon then spawns from Keith and locks onto a marked Ratkin. The player gets control immediately after the premise lines. The exchange should not become a lore speech.
+
+### Mechanics taught through events
+
+1. Keith visibly summons a demon. The demon locks onto one Ratkin with a tether and target ring. Khet says, “Keith send it. Stop it.”
+2. Duy dashes through the demon. It breaks into embers and the heat bar rises. Duy says, “I kill demon. Why burn?” Khet says, “Take ember. Use it.”
+3. The player touches a burning Ratkin. The Ratkin ascends and the carried heat is spent or transferred according to the rescue state. Khet says, “Touch Rat. They rise.”
+4. The heat bar drains Duy's health. Khet says, “Heat drains life.”
+5. The VENT button pulses when Duy is carrying heat and has lost health. Khet says, “Hold VENT. Heal.” Duy roots in place and the healing progress is visible.
+6. Venting summons demons. Keith says, “Vent. I’ll send more.”
+7. A demon hitting Duy interrupts the heal. Duy says, “It stopped me.” Khet says, “Too close. Move first.”
+
+Each rule arrives after the player has seen the event that proves it. There is no opening paragraph that lists every mechanic.
+
+### Required visual and UI support
+
+- Keith needs a readable summon pose or cast effect. The player must see that the demon came from him.
+- The lock-on can be code-drawn at first: target ring on the Ratkin, tether from demon to target, stronger pulse as the demon closes.
+- Ignition needs a clear transition from panic to burning. Existing panic, flame and ascend assets may be reused.
+- Demon death needs an ember burst that visibly enters Duy and flashes the heat bar.
+- Rescue needs a visible transfer from Ratkin to Duy, followed by the ascend animation.
+- The VENT button needs a pulse, healing progress and an interruption flash. Add a nearby-danger warning while a demon is close enough to break the heal.
+- The HUD should retain a short objective, not a dialogue paragraph: `STOP KEITH'S DEMONS`, `SAVE MARKED RATKIN`, `HEAT DRAINS HEALTH`, `HOLD VENT TO HEAL`.
+- Audio is optional for the first pass. If added, prioritize summon, lock-on, ignition, demon break, rescue, vent start and vent interruption cues.
+
+### Supersession note
+
+Earlier batch text attributed the hostile street fire to Khet-Tak-Tor. For the arcade loop, Keith owns the hostile fire pressure and demon summons. Khet remains the Arbiter, gatekeeper and explanation voice. The final covenant lore can still explain the fire's larger purpose, but Khet must not read as the ordinary street boss.
+
 ## 1. Contradictions and gaps found on first read (batch 01)
 
 | # | Issue | Where | Effect on writing |
