@@ -10,13 +10,13 @@ Latest integrated build is `2026-09-17-rescue-1`; deployment evidence is recorde
 
 See [SANCTUARY_SOCIETY.md](SANCTUARY_SOCIETY.md). Persistent arrivals, the refuge roster, automatic housing, apartments, happiness/work-rate effects and household chronicles are implemented in the current #27/#28 slice. Dedicated Makko celebrations and tap-to-zoom vignettes follow, then actual daily routines, autonomous diverse households and voluntary generational growth. Sanctuary immortality and temporary mortality while away are locked canon; departures are lore only initially. This work is approved, not parked.
 
-The resident-chronicle interview adds an approved content requirement: individually authored names, backgrounds and lore for every Ratkin, supported by an expanding backlog. Start with the nomadic forest society from which the nineteen victims came; rebuilding must support its growth and expansion beyond restoring the past. Introduce other worlds later. Scope and implement persistent authored identities and their chronicle presentation after the remaining design questions are resolved; do not use procedural biographies as a fallback. See SANCTUARY_SOCIETY.md for the implementation boundary.
+The resident-chronicle interview adds an approved content requirement: individually authored names, backgrounds and lore for every Ratkin, supported by an expanding backlog. Start with the displaced villagers of Hollowbeech, the latest village built after the fall of their lost kingdom; rebuilding must support growth and expansion beyond restoring the past. Introduce other worlds later. Scope and implement persistent authored identities and their chronicle presentation after the remaining design questions are resolved; do not use procedural biographies as a fallback. See SANCTUARY_SOCIETY.md for the implementation boundary.
 
-Population clarification: monsters destroyed the tribe's village and captured its last nineteen survivors, who were subsequently killed by Duy and Cuong. Build the broader society and an authored citizen backlog beyond nineteen; this is not a nineteen-person settlement or content cap. The village destruction and later cell killings remain distinct in biographies and diary reveals.
+Population clarification: Blackroot destroyed Hollowbeech and captured its last nineteen survivors, who were subsequently killed by Duy and Cuong. Build the broader displaced society and an authored citizen backlog beyond nineteen; this is not a nineteen-person settlement or content cap. The village destruction and later cell killings remain distinct in biographies and diary reveals.
 
-Attacker identity is approved: the Blackroot Company, hobgoblin-led slavers with goblin trackers, destroyed the resisting tribe's village and captured the nineteen. Integrate this history into authored citizen/diary content under the prose brief. Their links to the pit network, keeping place and Arbiter remain unresolved; no new arcade enemy replacement is implied.
+Attacker identity is approved: the Blackroot Company, hobgoblin-led slavers with goblin trackers, destroyed the resisting villagers' latest village, Hollowbeech, and captured the nineteen. Integrate this history into authored citizen/diary content under the prose brief. Their links to the pit network and keeping place remain unresolved; no new arcade enemy replacement is implied.
 
-Canon additions from Claude: the tribe is stateless after its kingdom fell and has been driven from settlement to settlement, rebuilding each time; its carried fire and road songs are survival culture. The dead have burned for centuries, and the covenant repurposed that old fire as Duy's final test. Nobody knows who opened the cell door; Ledger owns that mystery. Do not resolve any of these in Fwoosh runtime or diary drafts without an approved handoff.
+Canon additions from Claude: the people are stateless after their kingdom fell, longer ago than anyone has counted, and have been driven from village to village, rebuilding each time. Hollowbeech was the latest village and held roughly 150 to 200 people; its carried fire and Road Song are survival culture. The dead have burned for centuries, and the covenant repurposed that old fire as Duy's final test. Khet-Tak-Tor carries the dead out, and Duy shares the load. Nobody knows who opened the cell door; Ledger owns that mystery. Do not resolve the opener in Fwoosh runtime or diary drafts.
 
 ## Active now
 
@@ -43,7 +43,7 @@ Canon additions from Claude: the tribe is stateless after its kingdom fell and h
 - Ratkin build while the player runs and while away. Roads, distance and congestion affect physical transport.
 - Management works automatically by default; players can optimize it if they want.
 - Sealing and upgrade milestones can unlock permanent cosmetic variants. Cosmetic rarity never gates favor or release and grants no randomized Fwoosh power.
-- The jailer is **Khet-Tak-Tor** (KET-tak-TOR), the Ratkin Arbiter—“the voice that closes the debt.” He remains Duy's jailer, administers punishment and judgment, and receives new Makko art. Beating him never grants release by itself.
+- The jailer is **Khet-Tak-Tor** (KET-tak-TOR), the Ratkin Arbiter, “the voice that closes the debt.” A separate huge Warden was pinned under the gate. Khet-Tak-Tor remains Duy's jailer, administers punishment and judgment, and receives new Makko art. Beating him never grants release by itself.
 - Duy earns release by rebuilding Ratkin society and winning Ratkin favor. Ratkin society supplies the authority; rescuing nineteen people or clearing five districts is insufficient by itself.
 - The rebuilt Ratkin community delivers the collective release verdict. Khet-Tak-Tor administers the covenant, presents evidence, announces their decision and executes the resulting sentence; he cannot personally forgive the debt.
 - Five Ratkin voting blocs judge Duy. Four votes release and resurrect him. Unanimous support is optional and grants the strongest Invoice reward tier plus eligibility for the missable Ratkin recruit.
@@ -66,7 +66,7 @@ Canon additions from Claude: the tribe is stateless after its kingdom fell and h
 
 - Which Wayfarer's Hearth interaction assets are reusable as temporary Makko references and which require Ratkin-specific replacements before the first public slice.
 - Initial population/supplies, production ratios, storage and priority controls.
-- The powers and limits of Khet-Tak-Tor's covenant mandate and why he maintains or uses the recurring fire.
+- The exact powers and limits of Khet-Tak-Tor's covenant mandate.
 - Invoice conversion, caps and reward thresholds. Lifetime earned embers is locked; spending in Fwoosh does not reduce that basis. The authorized save cutover removes the old-history recovery requirement.
 - Duy System Shop inventory; Ratkin recruit identity, abilities, acquisition window and miss condition after unanimous support establishes eligibility.
 - The Duy-survives route and the exact reconciliation of Cuong's nineteen-life balance plus Duy's transferred five.
