@@ -852,6 +852,28 @@ test('Keith pressure adds hostile demons and a telegraphed direct strike',()=>{
  assert.equal(g.run('keithStrike.done'),true);
 });
 
+test('Title screen exposes Start and a confirmed reset that clears Fwoosh saves',()=>{
+ const g=game();g.run('META.embers=99;saveMeta();opp.runs=4;saveOpp();onTitle=true;drawTitle(ctx)');
+ assert.ok(g.run("hubBtns.some(b=>b.act==='title-start')"));
+ assert.ok(g.run("hubBtns.some(b=>b.act==='title-reset')"));
+ g.run("hubAct('title-reset')");assert.equal(g.run('titleResetConfirm'),true);
+ g.run("hubAct('title-reset')");assert.equal(g.run('titleResetConfirm'),false);
+ assert.equal(g.run('onTitle'),true);assert.equal(g.run('META.embers'),0);assert.equal(g.run('opp.runs'),0);
+ g.run("hubAct('title-start')");assert.equal(g.run('onTitle'),false);assert.equal(g.run('intro.phase'),'talk');
+});
+
+test('Keith opens a demon well, well demons emerge, and vent restores a broken well',()=>{
+ const g=game();g.run("onTitle=false;intro=null;mode='play';duelActive=false;boss=null;demons=[];elapsed=K.KEITH_PRESSURE_FIRST;player.hp=1;player.hurtCd=0;triggerKeithPressure()");
+ assert.equal(g.run('demonWell.state'),'opening');
+ assert.equal(g.run("demons.filter(d=>d.source==='keith'&&d.wellSpawn).length"),g.run('K.KEITH_PRESSURE_DEMONS'));
+ g.run('for(let i=0;i<Math.ceil(K.DEMON_WELL_EMERGE_T/DT)+2;i++)stepDemons(DT)');
+ assert.ok(g.run('demons.every(d=>d.emergeT<=0)'));
+ g.run('player.x=demonWell.x;player.y=demonWell.y;player.lunge=.1;stepDemonWell(DT)');
+ assert.equal(g.run('demonWell.state'),'destroyed');assert.ok(g.run('demonWell.respawnT<=K.DEMON_WELL_RESPAWN_MAX'));
+ g.run('player.heat=1;player.ventHeld=true;beginVentUnit()');
+ assert.notEqual(g.run('demonWell.state'),'destroyed');
+});
+
 
 test('Original upper route is reachable by running and upward dash',()=>{
  const g=game();g.run("onTitle=false;reset();intro=null;god=true;ghost=true;cells=[];player.x=360;player.y=430;keys.w=true;for(let i=0;i<480;i++){if(i%120===0)lungeDir(0,-1);step();}");
@@ -1559,3 +1581,4 @@ const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Ac
 if(process.argv[3])fs.writeFileSync(path.resolve(process.argv[3]),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({pass:report.pass,fail:report.fail,results},null,2));
 process.exitCode=report.fail?1:0;
+

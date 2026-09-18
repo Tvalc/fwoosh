@@ -944,6 +944,46 @@ function drawConversationSheet(ctx){
   }
 }
 
+function drawDemonWell(ctx,w){
+  if(!w)return;
+  const dead=w.state==='destroyed';
+  const open=dead?0:Math.min(1,(w.t||0)/K.DEMON_WELL_OPEN_T);
+  const pulse=1+0.08*Math.sin(frame*0.25);
+  ctx.save();
+  ctx.globalAlpha=dead?0.22:0.9;
+  const glow=ctx.createRadialGradient(w.x,w.y,4,w.x,w.y,K.DEMON_WELL_R*2.4);
+  glow.addColorStop(0,'rgba(255,61,202,'+(dead?0.08:0.32+0.18*open)+')');
+  glow.addColorStop(1,'rgba(255,61,202,0)');
+  ctx.fillStyle=glow;ctx.beginPath();ctx.arc(w.x,w.y,K.DEMON_WELL_R*2.4,0,7);ctx.fill();
+  ctx.fillStyle='#170a1b';ctx.beginPath();ctx.ellipse(w.x,w.y+4,K.DEMON_WELL_R*1.12,K.DEMON_WELL_R*.62,0,0,7);ctx.fill();
+  ctx.strokeStyle='#ff4fca';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(w.x,w.y+2,K.DEMON_WELL_R*pulse,K.DEMON_WELL_R*.55*pulse,0,0,7);ctx.stroke();
+  if(!dead){
+    ctx.globalAlpha=0.45+0.35*open;ctx.strokeStyle='#ffb8ed';ctx.lineWidth=2;
+    for(let i=0;i<8;i++){const a=frame*.025+i*Math.PI/4,rr=K.DEMON_WELL_R*(1.15+0.22*Math.sin(frame*.11+i));ctx.beginPath();ctx.moveTo(w.x+Math.cos(a)*K.DEMON_WELL_R*.7,w.y+Math.sin(a)*K.DEMON_WELL_R*.35);ctx.lineTo(w.x+Math.cos(a)*rr,w.y+Math.sin(a)*rr*.35);ctx.stroke();}
+    if(w.state==='opening'){ctx.globalAlpha=0.3+0.5*open;ctx.fillStyle='#ff61d2';ctx.beginPath();ctx.ellipse(w.x,w.y-16-28*open,8+18*open,28+32*open,0,0,7);ctx.fill();}
+  }
+  ctx.restore();
+}
+
+function drawLopingDemon(ctx,x,y,d){
+  const emerge=Math.max(0,Math.min(1,1-(d.emergeT||0)/K.DEMON_WELL_EMERGE_T));
+  const run=frame*.24+(d.ph||0), stride=Math.sin(run), stride2=Math.sin(run+Math.PI);
+  const lift=(1-emerge)*24, bob=Math.abs(Math.sin(run))*2*emerge, R=K.DEMON_R;
+  ctx.save();ctx.translate(x,y+lift-bob);ctx.globalAlpha=Math.min(1,0.2+0.8*emerge);
+  const g=ctx.createRadialGradient(0,0,2,0,0,R*2.1);g.addColorStop(0,'rgba(255,91,193,.62)');g.addColorStop(1,'rgba(255,61,122,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,R*2.1,0,7);ctx.fill();
+  groundShadow(ctx,0,R*1.0,R*1.1,R*.25);
+  ctx.strokeStyle='#ff6a9f';ctx.lineWidth=3;ctx.lineCap='round';
+  // Low body and head: the silhouette reads as a four-legged lope instead of a fireball.
+  ctx.fillStyle='#9f3b73';ctx.beginPath();ctx.ellipse(0,0,R*1.05,R*.56,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(R*.82,-R*.18,R*.48,R*.38,-.18,0,7);ctx.fill();
+  ctx.fillStyle='#ffbfdc';ctx.beginPath();ctx.arc(R*1.05,-R*.19,2.2,0,7);ctx.fill();
+  ctx.strokeStyle='#ff9ac4';ctx.lineWidth=2.5;
+  const legs=[[-R*.62,R*.24,stride],[-R*.28,R*.27,stride2],[R*.35,R*.25,stride2],[R*.68,R*.22,stride]];
+  for(const [lx,ly,s] of legs){ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+s*R*.32,ly+R*.44);ctx.lineTo(lx+s*R*.44,ly+R*.52);ctx.stroke();}
+  ctx.beginPath();ctx.moveTo(-R*.88,-R*.05);ctx.quadraticCurveTo(-R*1.55,-R*.48-stride*4,-R*1.72,R*.18);ctx.stroke();
+  ctx.restore();
+}
+
 // ---- TITLE / START SCREEN: FWOOSH logo, Khet-Tak-Tor looming, the hero below, the town ablaze
 // ---------------------------------------------------------------- THE TOWN HUB (meta home base)
 function hubB(x,y,w,h,act,enabled){ hubBtns.push({x,y,w,h,act,enabled:enabled!==false}); }
@@ -955,6 +995,8 @@ function hubClick(x,y){
   else if(hubSheet) hubSheet=null;                                  // tap outside an open sheet closes it
 }
 function hubAct(a){
+  if(a==='title-start'){ onTitle=false; hinted=false; titleResetConfirm=false; reset(); return; }
+  if(a==='title-reset'){ titleResetAction(); return; }
   if(cityAction(a))return;
   if(a==='play'){ reset(); return; }
   if(a==='nextupgrade'){openNextUpgrade();return;}
@@ -1348,6 +1390,7 @@ function drawDiarySheet(ctx){
 }
 
 function drawTitle(ctx){
+  hubBtns = [];
   ctx.fillStyle='#0a0710'; ctx.fillRect(0,0,VW,VH);
   if(sprReady('bg')){ const im=MAKKO_IMG['bg'], sc=Math.max(VW/im.naturalWidth,VH/im.naturalHeight),
     w=im.naturalWidth*sc, h=im.naturalHeight*sc;
@@ -1379,9 +1422,16 @@ function drawTitle(ctx){
     ctx.fillStyle='#ffb04d'; ctx.font='900 120px "Chakra Petch",system-ui,sans-serif'; ctx.fillText('FWOOSH', VW/2, ty+bob); }
   ctx.fillStyle='#ffd0a0'; ctx.font='600 26px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText('carry their fire', VW/2, VH*0.335);
-  const blink=0.35+0.55*(0.5+0.5*Math.sin(frame*0.12));
-  ctx.fillStyle='rgba(255,255,255,'+blink.toFixed(2)+')'; ctx.font='700 30px "Chakra Petch",system-ui,sans-serif';
-  ctx.fillText('TAP TO START', VW/2, VH*0.90);
+  const startY=VH*0.80, resetY=VH*0.89;
+  panel(ctx,72,startY-34,VW-144,68,12,'#26382f','#8affc1');
+  ctx.fillStyle='#eaffdc';ctx.font='800 28px "Chakra Petch",system-ui,sans-serif';ctx.fillText('START',VW/2,startY+9);
+  hubB(72,startY-34,VW-144,68,'title-start');
+  panel(ctx,112,resetY-26,VW-224,52,10,titleResetConfirm?'#4b2430':'#202032',titleResetConfirm?'#ff9dbd':'#7d718d');
+  ctx.fillStyle=titleResetConfirm?'#ffd3df':'#d7cedd';ctx.font='700 20px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText(titleResetConfirm?'TAP AGAIN TO RESET':'RESET PROGRESS',VW/2,resetY+7);
+  hubB(112,resetY-26,VW-224,52,'title-reset');
+  ctx.fillStyle='rgba(255,255,255,0.42)';ctx.font='500 16px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillText('ENTER / SPACE: START  ·  R: RESET',VW/2,VH*0.965);
 }
 
 function drawDebugMenu(ctx){
@@ -1434,6 +1484,10 @@ function render(){
   for(const s of slag){
     wrapDraw(s.x, X=> SK.wall(ctx, X, s.y, s.grudge, oppScarred));
   }
+
+  // The pink well is the source the player can see and break. Its first crawler
+  // appears in the demon layer below; the well itself remains as the pressure marker.
+  if(demonWell) wrapDraw(demonWell.x, X=>drawDemonWell(ctx,{...demonWell,x:X}));
 
   // ---- HUSKS: villagers you failed to save. Ember-veined coals that brighten + shudder as they near cracking.
   for(const h of husks){
@@ -1536,6 +1590,7 @@ function render(){
   for(const d of demons){
     const town = d.source === 'town';
     wrapDraw(d.x, X=>drawWorldActor(ctx,X,d.y,K.DEMON_R*1.2,()=>{
+      if(d.wellSpawn){ drawLopingDemon(ctx,X,d.y,d); return; }
       const gr=(town?K.DEMON_R*2.15:K.DEMON_R*1.7)+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
       if(town){ g.addColorStop(0,'rgba(198,128,190,0.72)'); g.addColorStop(0.6,'rgba(150,95,155,0.30)'); g.addColorStop(1,'rgba(140,90,140,0)'); }
       else { g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)'); }
@@ -1803,3 +1858,4 @@ function render(){
 }
 
 function fmt(s){ const m = Math.floor(s/60), r = Math.floor(s%60); return m+':'+String(r).padStart(2,'0'); }
+

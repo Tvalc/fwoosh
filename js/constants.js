@@ -203,4 +203,15 @@ const K = {
   KEITH_STRIKE_TELE: 0.85,
   KEITH_STRIKE_R: 42,
   KEITH_STRIKE_HEARTS: 1,
+
+  // DEMON WELL: Keith's pressure has a visible source. The well can be broken by a dash,
+  // returns within three seconds, and releases low-running demons one at a time.
+  DEMON_WELL_R: 34,
+  DEMON_WELL_OPEN_T: 0.75,
+  DEMON_WELL_EMERGE_T: 0.72,
+  DEMON_WELL_SPAWN_EVERY: 2.15,
+  DEMON_WELL_RESPAWN_MIN: 1.10,
+  DEMON_WELL_RESPAWN_MAX: 3.00,
+  DEMON_WELL_MAX_ACTIVE: 6,
 };
+
