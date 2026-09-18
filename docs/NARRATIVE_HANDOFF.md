@@ -4,6 +4,28 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 17 — 2026-09-17 · branch `claude/narrative-batch-17` (on batch 16)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-32 | Seating of the five who charged (cit-015 lead spear, cit-009, cit-004, cit-014, cit-025 reserved). Ras-Ti-Vok's shriek meant "run". | batch-16 NP-21 → approved. Withdraws for good the batch-01 idea that Tav-Ri screamed. |
+| AD-33 | Ch14 repair: keep "nineteen" everywhere; 62 → 57 twice; add one sentence | AD-31's open repair question. **Tony applies it to `novel/`; agents do not.** |
+
+### 2. Finished content
+docs/narrative/NOVEL_EDIT_PROPOSALS.md: NE-01, four line edits for Ch14. Line 3's wording is DRAFT. Line 4 ("the only weapon there was" → "left") is a new finding, unapproved.
+
+### 4. Triggers (narrative intent)
+The cell cohort is 24: nineteen on Cuong's balance, five on Duy's. If the runtime ever labels residents by debt, those are the two groups.
+
+### 6. Open
+NE-01 line 4; NP-17 (Hollowbeech as an earlier lost village), NP-18 (naming), NP-19 (re-seating map), NP-20 (words come in sanctuary); Chit-tat-to's mother; Nim's parents; cit-025…029 unauthored. Profiles and scenes remain suspended drafts.
+
+### 7. Files and commit
+BIBLE.md, NOVEL_EDIT_PROPOSALS.md (new), NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-17 -1`.
+
+---
+
 ## Batch 16 — 2026-09-17 · branch `claude/narrative-batch-16` (on batch 15)
 
 ### 1. Approved decisions

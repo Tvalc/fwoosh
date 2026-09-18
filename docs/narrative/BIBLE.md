@@ -82,6 +82,8 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 - Fwoosh CANON (#75/#76): "destroyed the village… last nineteen survivors" → Blackroot **took** villagers from a living village and destroyed nothing.
 - Fwoosh CANON "unarmed Ratkin captives" → see N-12: the court reclassified **19 of 24** as non-combatants.
 **AD-31:** The five armed dead were villagers too. Twenty-four villagers died in the cell; the village went from 81 to **57**. Resolves N-12. This is a change **to the manuscript** (Ch14), by Tony's ruling.
+**AD-32:** The five who charged are seated: lead spear **cit-015 Ras-Ti-Vok**, whose shriek was the order to run for the open door; second spear **cit-009 Bru-Ka-Dol**; knives **cit-004 Tav-Ri**, **cit-014 Fen-Ya-Sool** and one reserved (cit-025). They are on Duy's balance. (Was NP-21.)
+**AD-33:** Ch14 repair: "nineteen" stays everywhere; 62 becomes 57 in two places; one added sentence gives the other five their marks and says why Chit-tat-to carries nineteen. Exact wording in NOVEL_EDIT_PROPOSALS.md is DRAFT.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
