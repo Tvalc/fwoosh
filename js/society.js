@@ -207,12 +207,12 @@ function drawSocietyCelebration(ctx){
   drawCityHeader(ctx,'WELCOME GATHERING');
   panel(ctx,42,132,636,820,18,'rgba(15,19,28,0.96)','#9a7048');
   ctx.textAlign='center';ctx.fillStyle='#ffe0a0';ctx.font='800 34px "Chakra Petch",system-ui,sans-serif';ctx.fillText('THE FIRE STAYS BEHIND',VW/2,205);
-  ctx.fillStyle='#cfe0d5';ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';
+  ctx.textAlign='left';ctx.fillStyle='#cfe0d5';ctx.font='500 22px "Chakra Petch",system-ui,sans-serif';
   wrapText(ctx,'A new arrival is welcomed without interrupting the work of rebuilding. This gathering is a first presentation layer; dedicated Makko celebration performances will replace the idle poses as they arrive.',86,255,548,32);
   const residents=c.residentIds.map(id=>s.residents.find(r=>r.id===id)).filter(Boolean);
   residents.forEach((r,i)=>societyDrawResident(ctx,r,150+i*140,480,128));
-  ctx.fillStyle='#ffdfa0';ctx.font='700 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText('WELCOME TO THE REFUGE',VW/2,670);
-  ctx.fillStyle='#cfe0d5';ctx.font='500 21px "Chakra Petch",system-ui,sans-serif';
+  ctx.textAlign='center';ctx.fillStyle='#ffdfa0';ctx.font='700 24px "Chakra Petch",system-ui,sans-serif';ctx.fillText('WELCOME TO THE REFUGE',VW/2,670);
+  ctx.textAlign='left';ctx.fillStyle='#cfe0d5';ctx.font='500 21px "Chakra Petch",system-ui,sans-serif';
   wrapText(ctx,'There is room to rest, remember, work and choose what comes next.',92,720,536,31);
   societyButton(ctx,180,996,360,'BACK TO SANCTUARY','society');
 }
