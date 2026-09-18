@@ -4,6 +4,34 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 19 — 2026-09-17 · branch `claude/narrative-batch-19` (on batch 18)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-37 | The Claw's favor waits on cit-004 Tav-Ri | AD-20's named holder (Ase-Ro-Wen, now living per AD-34). `adm-claw` r2 withdrawn. |
+| AD-38 | Re-seating map approved, including cit-013 as Chit-tat-to's mother under AD-35 | batch-15 NP-19 → approved |
+
+### 2. Finished content (DRAFT)
+New file **docs/narrative/CAST_REGISTRY_V2.md**: six profiles rewritten to the manuscript (cit-001, 002, 012, 010, 013, 017), each with a wall-mark, plus `adm-claw` r3. The old CAST_REGISTRY.md is now an archive of suspended drafts; **do not take content from it.**
+
+### 3. Reveal order
+- cit-013: AD-35 is a hard rule on every line about her.
+- cit-010's background says "her sister's boy got out": the earliest any Fwoosh text acknowledges Chit-tat-to. Same gate as other backgrounds (not before diary `cell`).
+- Wall-marks are safe to show on arrival.
+
+### 5. Makko art requests (blocked on profile approval)
+Wall-mark icons in wet-ash style, one per citizen: spiral-in-spiral (001), beetle (002), cradle (012), roof knot (010), grinding stone with teacher's dot-and-curve (013), fishing line (017). cit-010 and cit-013: the braided red cord at cit-013's throat (Ch06). cit-017: fisher variant of the farmer base.
+
+### 6. Open
+- **Asked:** NP-20 (few words in life, words come in sanctuary) and NP-17 (Hollowbeech as an earlier lost village).
+- NP-18 naming. `adm-hand` escort. Sixteen profiles still to rewrite (cit-003…009, 011, 014…016, 018, 019, 022) and cit-025…029 to author. `dia-cell` needs a new rewrite from Ch04.
+
+### 7. Files and commit
+CAST_REGISTRY_V2.md (new), BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-19 -1`.
+
+---
+
 ## Batch 18 — 2026-09-17 · branch `claude/narrative-batch-18` (on batch 17)
 
 ### 1. Approved decisions
