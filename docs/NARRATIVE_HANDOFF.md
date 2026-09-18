@@ -4,6 +4,52 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 22 — 2026-09-18 · branch `claude/narrative-batch-22` (on batch 21) · **use this branch**
+
+### 1. Approved decisions (Tony's interview; full text BIBLE §1b, reasoning STORY_SPINE.md)
+| ID | Decision | Supersedes / touches |
+|---|---|---|
+| AD-42 | Promise: stay until the fire is empty of **this village's dead** (the 24 + the 400-year wall), even if released sooner | New. Makes the authored backlog finite. |
+| AD-43 | The lost kingdom is **Atlantis**; the Ratkin were its first people | Completes AD-14/AD-16. **Touches Ledger and the novel at series level.** |
+| AD-44 | Ratkin are not the Authors; the System was built over them | Guards the bible's late-series Authors mystery |
+| AD-45 | Longer burned = heavier to carry | New rule of the fire |
+| AD-46 | One run = one **game day** among the living; on the death notice from run one | New rule of the fire |
+| AD-47 | Duy learns the cost midway, via a glimpse of Cuong | — |
+| AD-48 | Two promises: to Nim (cheap), to Khet-Tak-Tor (dear) | Moves the Nim page out of `dia-home-r2` |
+| AD-49 | Duy's lie: a debt can be closed. Truth: some you carry | — |
+| AD-50 | The one who knows the name: the first keeper of the first wall | — |
+| AD-51 | After release Duy returns to the fire nightly in his sleep until it is empty | **Supports keeping the side quest playable after release** |
+| AD-52 | Name reveal by route: early in Fwoosh + independently later in Ledger; in standalone, end of standalone progression | — |
+| AD-53 | Diary may exceed fifteen chapters; ranked writing priorities; Mistborn | CLAUDE_CITIZEN_STORY_BRIEF "preserve the fifteen chapters" |
+
+### 2. Finished content (DRAFT)
+| ID | Content | Path |
+|---|---|---|
+| spine-01 | Arc, seven rules of the fire, twist, plant/payoff ledger, proposed chapter order, beats for `name` | docs/narrative/STORY_SPINE.md (new) |
+| dia-asked-r1 | NEW chapter `asked`, 2 pages | docs/narrative/DIARY_REVISION.md |
+| dia-days-r1 | NEW chapter `days`, 5 pages | same |
+| dia-home-r3 | = r2 minus its Nim page (now in `asked`) | note only |
+
+### 3. Reveal order and spoiler boundaries
+- "Atlantis" as the kingdom's name appears **nowhere** player-facing until `name`. Not in chronicles, scenes, art filenames or alt text.
+- The time cost is never *explained* before `days`, but the notice text must be present from the first death. That is the fair clue.
+- Order: `keith` (scar clue) → `home` (confession) → `days` (price and vow) → release → `name`.
+
+### 4. Triggers
+**Narrative intent:** death notice always reads "Death recorded. One day entered." · `days` requires `home` read and first judgment heard · `name` requires release and the wall's backlog exhausted down to its first mark · ancestors arrive newest-death first (AD-16, AD-45).
+**Proposed mechanics (Codex decides):** a persistent run counter surfaced as "days entered" and substituted into `days` page 2; carry cost scaling with a citizen's years-burned; post-release play framed as Duy asleep; in the Ledger route, days entered could set how far the campaign has advanced when Duy returns; Memory bloc's "read all chapters" should exclude `name`.
+
+### 5. Makko art requests
+`dia-days-r1-a` Cuong in the well water: grey over the ears, white scar cheekbone to jaw, favouring the left leg. Spoiler-locked to `days`. **Check with Ledger's Cuong reference; this ages an approved character.**
+
+### 6. Open
+`name` prose (beats are in the spine). Whether the gods grant the night-returns on the page. "312" placeholder. Ten profile rewrites, cit-025…029, `adm-hand`, `adm-memory`, `dia-cell` from Ch04. Wall ancestors: a finite number now needs choosing.
+
+### 7. Files and commit
+STORY_SPINE.md (new), DIARY_REVISION.md, BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-22 -1`.
+
+---
+
 ## Batch 21 — 2026-09-17 · branch `claude/narrative-batch-21` (on batch 20) · **use this branch; it contains everything**
 
 ### 1. Approved decisions

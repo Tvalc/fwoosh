@@ -94,6 +94,19 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 **AD-39:** In life the Ratkin had few words and many pictures. In sanctuary the words come, as part of being lifted up. Chronicles and scenes are in sanctuary's voice; memories of life stay concrete and pictorial. (Was NP-20.)
 **AD-40:** Hollowbeech is an earlier lost village, named in the oldest songs people still understand. It is not the raid site. (Was NP-17; finishes the AD-17 change.)
 **AD-41:** Every Ratkin is given a full three-beat name at birth, a small picture-phrase. Everyday speech shortens it (Ptik, Rul, Kesh-ka, Nim, Kip, Tav-Ri). Nothing is earned. **Supersedes AD-05, AD-22 and AD-26** (milk-name, trail-name, hand-name; chosen journeys; beats by work). Khet-Tak-Tor's gloss "the voice that closes the debt" stands as a picture-phrase.
+**Interview decisions, 2026-09-18 (full reasoning in STORY_SPINE.md):**
+**AD-42:** Duy's promise: to stay until the fire is empty, even if released sooner. "Empty" means this village's dead: the twenty-four and everyone on the four-hundred-year wall. Finite and fully authored.
+**AD-43:** The lost kingdom's name is **Atlantis**. The Ratkin were its first people and hold the oldest claim of all. Completes AD-14 and AD-16.
+**AD-44:** The Ratkin are **not** the Authors. The Authors and their System came later and were built over them. The Authors' nature stays a late-series mystery.
+**AD-45:** The longer someone has burned, the more they cost to carry. The oldest dead are the heaviest.
+**AD-46:** One run costs one **game day** among the living (never a real-life day), no exceptions. The Auditor's death notice has shown it from the first run.
+**AD-47:** Duy learns the cost midway, from a glimpse of Cuong older and scarred.
+**AD-48:** He promises twice: lightly to Nim at the gate before he knows the price; again to Khet-Tak-Tor after he sees Cuong.
+**AD-49:** Duy's false belief: a debt can be paid off and closed. The truth: some debts you carry for good, and carrying is the point.
+**AD-50:** The heaviest carry, who knows the name, is nobody grand: the first keeper of the first wall.
+**AD-51:** Released before the fire is empty, Duy goes back to the living and returns to the fire every night in his sleep until it is empty.
+**AD-52:** Reveal by route: reached from inside Ledger, Fwoosh players learn the name early and Ledger reveals it independently later; in standalone Fwoosh it unlocks as part of standalone progression.
+**AD-53:** The diary may grow beyond fifteen chapters; Codex adapts. Writing priorities, ranked by Tony: promises kept, rules and costs, plants and payoffs, plain prose, lived-in culture. Touchstone: Mistborn.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.

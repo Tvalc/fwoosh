@@ -135,3 +135,92 @@ Until then there is usually someone calling. Now I know there are two of us who 
 - Assumes residents may come to the gate while Duy is barred (compatible with AD-02; not explicitly approved).
 - Replaces the current `home` summary of favor rules, which the Shrine already explains.
 - 6 pages vs current 2. Codex to confirm layout.
+
+---
+
+# Batch 22 · two new chapters (DRAFT)
+
+System format for both: the Auditor speaks in plain sentences on their own line. No boxes.
+
+## NEW `asked` ("And Then What") · scene ID `dia-asked-r1`
+**Purpose:** the first promise, made cheap. **Prerequisite:** `fire`; the player has seen the quarter gate. **New information:** Duy is barred; residents may come to the gate; a child has asked him for everyone on the wall. **Plants:** the wall; "all the ones on there"; the old woman's look. **Art:** none requested. **Teaser:** "A child came down to the gate and asked me a question I couldn't finish answering."
+
+**Page 1**
+The quarter I am building has a gate I can't go through. I lay the foundations from the fire's side, and on the far side the ratkin finish the work. Between deaths I stand at the gate and look. Today a child came down the lane to it. She had a front tooth missing and a string of beetle shells round her neck. An old woman followed ten steps behind and stopped where the child wouldn't see her stop.
+
+The child looked at my arms. "Does it hurt?"
+
+"Yes."
+
+"And then what?"
+
+"Then I go back down and get someone else."
+
+**Page 2**
+"And then what?"
+
+"They come up here."
+
+"All of them?"
+
+I asked her how many there were. She opened and closed her hands more times than I could follow, gave up, and pointed up the lane. A woman was marking a long wall with wet ash, one mark at a time, from a list.
+
+"All the ones on there," the child said.
+
+"Then all the ones on there."
+
+It cost me nothing to say. I would have promised a child anything that day. She nodded as if we had settled it and went back up the lane. The old woman stayed a moment longer, looking at me the way Cuong looks at a witness.
+
+## NEW `days` ("One Day Entered") · scene ID `dia-days-r1`
+**Purpose:** the price, and the second promise. **Prerequisite:** `home` (Khet-Tak-Tor's confession), first judgment heard. **New information:** one run is one day among the living; Cuong has aged; release will come before the wall is empty; Duy swears anyway and names the terms. **Pays:** the death notice; "I would have asked for you"; `asked`. **Plants:** the night-returns; the last mark. **Art request `dia-days-r1-a`:** Cuong on a road, seen in water: grey over the ears, a white scar from cheekbone to jaw. Never shown before this chapter. **Teaser:** "He showed me what my embers had bought. I should have been counting."
+
+**Page 1**
+After the first judgment Khet-Tak-Tor walked me to the well in the square. He said I had earned one look at what I was buying. The water went flat and showed me a road, a column of people on it, and Cuong.
+
+He had grey over his ears. He had none when I died. There was a scar from his cheekbone to his jaw, and it had healed white. I have seen enough of those on the job. A cut like that takes most of a year to go white. He was laughing at something Diep had said, and he was favouring his left leg.
+
+**Page 2**
+I asked how long I had been here.
+
+"Count your deaths," Khet-Tak-Tor said.
+
+Every time the fire finishes me the Auditor posts the same notice, and every time I have waved it away.
+
+Death recorded. One day entered.
+
+I had taken *entered* for clerk's talk. I asked for the total.
+
+Days entered to date: three hundred and twelve. The figure has been displayed on each occasion. It was not concealed.
+
+**Page 3**
+I did the sum the way I used to do overtime. The woman at the wall is still working through her list, and the marks she has not reached are the old ones. The old ones are heavy. Khet-Tak-Tor told me that the day the first of them came up: the longer they have burned, the more of it there is to take. I can bring six of the new dead out in a run. Of the old, one, if it goes well.
+
+At my rate the wall came to years. At his it came to centuries, and he would not live through the oldest.
+
+Cuong would do those years without me.
+
+**Page 4**
+"They will vote to let you go long before that wall is empty," Khet-Tak-Tor said. "When they do, go. Nobody will hold you to a thing you said to a child."
+
+"She told you."
+
+"She tells everyone everything."
+
+I used to think I understood debts. You owe, you pay, the line is closed. Diep owes me corn, and I had planned to enjoy collecting it. I came down here to close a line. It does not close. Every one I carry out is a day my partner fights alone, and every day I spend with him is someone still in the street.
+
+**Page 5**
+"I'll stay until that wall is empty," I said. "If they let me out first, I'll go to him. And every night I sleep, I come back here, until it's done."
+
+"That is not a thing the gods offered."
+
+"Then ask them. You said you would have asked for me."
+
+He looked at me for some time. "One day entered, each time. You understand it now."
+
+"Yes."
+
+"Then you are late."
+
+I went down.
+
+**Flags:** "three hundred and twelve" is a placeholder; the real figure should be the player's actual run count (proposed mechanic). The well in the square as the viewing place is my staging. Whether the gods grant the night-returns on the page or off it is open; AD-51 says he does return.
