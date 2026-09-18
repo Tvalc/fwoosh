@@ -4,6 +4,28 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 12 — 2026-09-17 · branch `claude/narrative-batch-12` (on batch 11)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-26 | Name beats track journeys and chosen work, not age. Chit-tat-to earned three young; "Kesh-ka" is a use-name. | Amends AD-05's age wording (batch 01 NP-02 text). Resolves L-03. No citizen renamed. |
+| AD-27 | The carried fire survived in the living village; Dof-Ma-Rek does not know. | batch-11 NP-15 → approved. BIBLE NP-05 "it went out" → "the village believes it went out". **Touches Ledger:** the Village of Nineteen Absences has Hollowbeech's fire. Codex: record in FWOOSH_SHARED_DECISIONS.md. |
+
+### 2. Finished content (DRAFT)
+cit-003: new reserved entry `arrival-from-living-village:first`. cit-022: one sentence changed so the narration no longer asserts the fire went out.
+
+### 3. Reveal order
+AD-27 is a late payoff. Nothing in Fwoosh may reveal it before a resident arrives from the living village, which no system supports yet. Ledger may show the fire in the living village at any time; the irony works in either play order.
+
+### 6. Open
+L-02, L-04 (both need the Blood Debt story bible), NP-14, NP-16. Profiles still must not ship.
+
+### 7. Files and commit
+`git log claude/narrative-batch-12 -1`.
+
+---
+
 ## Batch 11 — 2026-09-17 · branch `claude/narrative-batch-11` (on batch 10)
 
 ### 1. Approved decisions

@@ -69,6 +69,7 @@ cohort captive · adult man · village cook and coal-carrier · visual `cook` ·
 - `arrival` → "Asked where the kitchen was before he asked where he was."
 - `job:farm-or-food` → "Back at work. Complained about the pots all day, singing."
 - `celebration:shared-meal` → "Fed everyone. Sat down last. Was made, by general agreement, to eat a second helping himself."
+- `arrival-from-living-village:first` (AD-27; no system; reserved) → "Someone came up the road who had died old, in a village Dof-Ma-Rek never saw, beside a fire he knew. Forty-three carriers, they told him. He had to be helped to a bench."
 - `milestone:new-fire` (proposed landmark; handoff §4) → "Lit a new fire and said aloud that it was new. Let Tav-Ri carry the pot as far as the gate."
 
 ---
@@ -206,7 +207,7 @@ cohort village (ancestor; died of age at Hollowbeech, before the raid) · elder 
 
 **Voice:** slow, amused, gives advice as weather reports. **Temperament:** settled; difficult to alarm. **Skills:** fire in any rain; knowing when to stop talking. **Pleasures:** a nap beside something cooking; being proved right gently. **Shortcoming:** let his nephew take everything on alone, because it was easier than arguing.
 
-**Background (immutable).** Hal-Ne-Dur kept his people's fire for thirty-one years and carried it down the road twice. He handed the pot to his nephew Dof-Ma-Rek when his knees gave out, spent his last years on the bench by the common oven criticising the cooking, and died in his sleep in Hollowbeech's second winter, warm, with the fire in sight. He had a good death by any measure his people had. Then he burned. He had never heard of Blackroot, never saw a hobgoblin, and knew nothing of the raid or the cell until the refuge told him. He arrived to find the fire he had kept alive his whole life had gone out in his nephew's hands, and his nephew unable to look at him.
+**Background (immutable).** Hal-Ne-Dur kept his people's fire for thirty-one years and carried it down the road twice. He handed the pot to his nephew Dof-Ma-Rek when his knees gave out, spent his last years on the bench by the common oven criticising the cooking, and died in his sleep in Hollowbeech's second winter, warm, with the fire in sight. He had a good death by any measure his people had. Then he burned. He had never heard of Blackroot, never saw a hobgoblin, and knew nothing of the raid or the cell until the refuge told him. He arrived to be told that the fire he had kept alive his whole life had gone out in his nephew's hands, and to find his nephew unable to look at him.
 
 **Attitude to Duy:** Duy never harmed him. Duy carried him out of a fire he had been in longer than he can reckon. He says so, plainly, in front of people who find it hard to hear. **Wants in sanctuary:** to see Dof-Ma-Rek light a new fire and stop apologising for the old one.
 

@@ -69,6 +69,8 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 **AD-23:** While Duy is barred, residents of any age may come to the gate to look at or speak to him.
 **AD-24:** Khet-Tak-Tor's Makko design gains burn-scarred, furless forearms as a visible clue.
 **AD-25:** Same people. Blackroot destroyed Hollowbeech; some villagers escaped and built again. Ledger's living "Village of Nineteen Absences" is the village after Hollowbeech. The nineteen are the last of those Blackroot took, not the last of their people. Resolves L-01.
+**AD-26:** Name beats track journeys and chosen work, not age. Chit-tat-to earned all three young. "Kesh-ka" is a short use-name for a longer name. Amends AD-05; resolves L-03.
+**AD-27:** Hollowbeech's carried fire survived: an escapee saved a coal and it burns in the living village. Dof-Ma-Rek does not know (was NP-15).
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
@@ -95,7 +97,7 @@ Read: docs/00b_locked_decisions.md, 03_story.md, 21_canon_systems.md, FWOOSH_SHA
 |---|---|---|---|
 | L-01 | A **living Ratkin village** exists: "the Village of Nineteen Absences" (03_story Ch 4-1), with elders, Kesh-ka, deep tunnels; it is defended or relocated in Ch 5 and then chartered as "the first Ratkin place-name" (Chit-tat-to VI). | Fwoosh CANON (#75): Blackroot "destroyed" the village and the nineteen were its "last survivors". AD-13/AD-17 and my drafts: Hollowbeech, 150–200 people, everyone else killed; large raid-dead backlog; Nim's parents dead. | **Resolved by AD-25.** Reconciliation adopted: Hollowbeech *was* destroyed; some villagers escaped and, being who they are (AD-09), built again. The Village of Nineteen Absences is the village after Hollowbeech. "Last nineteen survivors" becomes "the last nineteen of those Blackroot took". |
 | L-02 | **Chit-tat-to (15, Ratkin) was in the cell room and ran** (novel Ch 14, per 03_story §reconciliation); he "watched them". He escapes on his own. | No draft mentions him. Twenty Ratkin were in that cell, not nineteen; one lived. Every one of the nineteen knew him. | Gap in my drafts, not a contradiction. Needs the bible before I write him into any profile. Does not answer AD-11 (the door). |
-| L-03 | Names: **Chit-tat-to** is 15 with three beats. **Kesh-ka**, an elder carried to the deep tunnels, has two. | AD-05: children one beat, adolescents two, adults three. | **Contradiction with an approved decision.** Options to put to Tony: beats track journeys and work, not age (Chit-tat-to chose his work young; Kesh-ka is a use-name). |
+| L-03 | Names: **Chit-tat-to** is 15 with three beats. **Kesh-ka**, an elder carried to the deep tunnels, has two. | AD-05: children one beat, adolescents two, adults three. | **Resolved by AD-26.** Adopted: beats track journeys and work, not age (Chit-tat-to chose his work young; Kesh-ka is a use-name). |
 | L-04 | "The ledger lists each Ratkin by name and pictogram… (canon)". | I invented nineteen names. | The novel bible may already name some of the nineteen. **Collision risk.** Needs the bible. |
 | L-05 | Keeping-place secrets: "the comb, the red cord". | Unused. | Opportunity: either may belong to one of the nineteen (a weaver's cord is an obvious candidate). Not written; needs the bible. |
 | L-06 | Warden is a boss who lifts the portcullis; an older outline had "a jailer dragging Chit-tat-to in". | AD-03: Warden and jailer are two beings. | Consistent. |
@@ -107,7 +109,7 @@ Read: docs/00b_locked_decisions.md, 03_story.md, 21_canon_systems.md, FWOOSH_SHA
 
 Anchors from canon: **Khet-Tak-Tor** = "the voice that closes the debt"; **Chit-tat-to**. Ratkin names are therefore short phrases of three hard-edged beats.
 
-Approved (AD-05): a name is earned in three beats.
+Approved (AD-05, amended by AD-26): a name is earned in three beats. Beats follow what a person has done, not how old they are: most children have one and most adults three, but a fifteen-year-old who has made his journey and chosen his work has all three (Chit-tat-to), and everyday speech often shortens a name to a use-name (Kesh-ka).
 1. **Milk-name** — given by family at birth. Children have one beat (Nim).
 2. **Trail-name** — given by the community after a child walks the road between villages on their own feet (adjusted for AD-09; see NP-12). Adolescents have two (Tav-Ri).
 3. **Hand-name** — chosen by the person when they take up their life's work.
@@ -120,7 +122,7 @@ Payoff this buys: a child who died with one beat can earn the others in sanctuar
 
 - No collective name (AD-12). They are the folk of their last village: Hollowbeech (NP-11).
 - NP-04 (revised) **The Road Song**: one verse per village built and lost, and the road between. Sung backwards it is the way home to the lost kingdom. See NP-10.
-- NP-05 **The one fire**: the common-oven fire is never relit; when a village is lost a live coal is carried to the next in a clay pot. It went out in the raid. I do *not* tie this to the recurring street fire; that question is open in CANON.
+- NP-05 **The one fire**: the common-oven fire is never relit; when a village is lost a live coal is carried to the next in a clay pot. The village believes it went out in the raid. It did not (AD-27): an escapee carried a coal to the next village. I do *not* tie this to the recurring street fire; that question is open in CANON.
 - NP-06 (revised) **Log-seeding**: hidden farming for a people who expect raids; logs are also seeded along the road behind each move, for whoever is driven down it next. Matches the implemented Mushroom Farm.
 - NP-07 (revised) The raid came at night with everyone in from the fields. Population 150–200 (AD-13). Per AD-25 the village split three ways: killed in the raid, taken by Blackroot (of whom the nineteen were the last alive), and escaped to build the Village of Nineteen Absences. Proportions are unstated; the raid-dead backlog is smaller than batch 03 assumed and should be sized once Ledger fixes the living village's population.
 
