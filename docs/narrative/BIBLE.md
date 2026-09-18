@@ -93,6 +93,7 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 **AD-38:** Re-seating map approved in full: cit-001 the song grandmother; cit-002 and cit-012 the two small ones; cit-010 Chit-tat-to's aunt; cit-017 is Ptik; cit-009 is Rul's brother; cit-016 and cit-011 the other two Elders; **cit-013 Mor-Ne-Dath is Chit-tat-to's mother**, under AD-35.
 **AD-39:** In life the Ratkin had few words and many pictures. In sanctuary the words come, as part of being lifted up. Chronicles and scenes are in sanctuary's voice; memories of life stay concrete and pictorial. (Was NP-20.)
 **AD-40:** Hollowbeech is an earlier lost village, named in the oldest songs people still understand. It is not the raid site. (Was NP-17; finishes the AD-17 change.)
+**AD-41:** Every Ratkin is given a full three-beat name at birth, a small picture-phrase. Everyday speech shortens it (Ptik, Rul, Kesh-ka, Nim, Kip, Tav-Ri). Nothing is earned. **Supersedes AD-05, AD-22 and AD-26** (milk-name, trail-name, hand-name; chosen journeys; beats by work). Khet-Tak-Tor's gloss "the voice that closes the debt" stands as a picture-phrase.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
@@ -194,18 +195,14 @@ Ch04: "two long spears, leveled… The lead spear carrier shrieked something and
 | Three with knives | **cit-004 Tav-Ri** (15), **cit-014 Fen-Ya-Sool**, one unassigned (cit-025 reserved) | The fast ones, in front of the old and the small. |
 Consequences: these five sit on **Duy's** balance, the nineteen on Cuong's. Under AD-06 that makes a third standing toward Duy inside the Claw. Where caged prisoners got iron blades and spears is unstated in the manuscript; I leave it open. Four new non-combatant IDs are needed to keep nineteen (cit-026…029 reserved): candidates are Chit-tat-to's mother, his uncle, the wearer of the red cord and the carver of the comb.
 
-## 2. Naming (APPROVED AD-05; see NP-12 for the AD-09 adjustment)
+## 2. Naming (AD-41; earlier system withdrawn)
 
-Anchors from canon: **Khet-Tak-Tor** = "the voice that closes the debt"; **Chit-tat-to**. Ratkin names are therefore short phrases of three hard-edged beats.
-
-Approved (AD-05, amended by AD-26): a name is earned in three beats. Beats follow what a person has done, not how old they are: most children have one and most adults three, but a fifteen-year-old who has made his journey and chosen his work has all three (Chit-tat-to), and everyday speech often shortens a name to a use-name (Kesh-ka).
-1. **Milk-name** — given by family at birth. Children have one beat (Nim).
-2. **Trail-name** — given by the community after a child walks the road between villages on their own feet (adjusted for AD-09; see NP-12). Adolescents have two (Tav-Ri).
-3. **Hand-name** — chosen by the person when they take up their life's work.
-
-A beat can be re-given after a life-changing event, which leaves room for "Khet-Tak-Tor" to be the name the Arbiter returned with rather than the one he was born to. Reserved beats I will not reuse with another meaning: khet (voice), tak (close), tor (debt), chit, tat, to.
-
-Payoff this buys: a child who died with one beat can earn the others in sanctuary. That is a celebration the simulation can actually cause.
+Anchors: **Khet-Tak-Tor**, "the voice that closes the debt"; **Chit-tat-to**; and the manuscript's everyday names **Ptik, Rul, Kesh-ka**.
+- A full name has three hard-edged beats and is a small picture-phrase, given at birth.
+- Everyday speech shortens it to one or two beats. Elders and strangers tend to get the full name; children and friends the short one.
+- Known pairs: Shi-Pa-Nol is Ptik. Nim, Kip and Tav-Ri are everyday forms; their full names are unwritten and reserved.
+- Reserved beats I will not reuse with another meaning: khet (voice), tak (close), tor (debt), chit, tat, to.
+- Withdrawn with AD-05/22/26: trail-names, the salt walk, a child earning beats in sanctuary.
 
 ## 3. The people of Hollowbeech (DRAFT detail on AD-08/09/12/13 canon)
 

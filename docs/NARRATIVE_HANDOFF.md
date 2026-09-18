@@ -4,6 +4,28 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 21 — 2026-09-17 · branch `claude/narrative-batch-21` (on batch 20) · **use this branch; it contains everything**
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-41 | Full three-beat name at birth (a picture-phrase); everyday speech shortens it; nothing earned | **AD-05, AD-22, AD-26** and every `milestone:trail-name` / `milestone:hand-name` entry in the archived registry |
+
+### Standing summary for Codex (state of the lane at end of day)
+- **Live approved decisions:** AD-01, 02, 03, 04, 06, 07, 10, 11, 12, 14, 15, 16, 18, 19, 21, 23, 24, 28, 30–41. AD-08/09/13/17 stand **as changed by AD-30/31/40**. **Withdrawn:** AD-05, 20 (holder only; principle kept by AD-37), 22, 25, 26, 27, 29.
+- **Source of truth order:** `novel/` manuscript → AD decisions → Fwoosh CANON.md. CANON.md still says the village was destroyed and the captives were unarmed; both are superseded (AD-30, N-12).
+- **Content safe to read:** docs/narrative/CAST_REGISTRY_V2.md (12 of 24 cell citizens, DRAFT), `dia-home-r2`, `dia-keith-c1`, `adm-claw` r3, `adm-bowl`, `adm-hearth`. **Do not use:** CAST_REGISTRY.md (archive), `dia-cell-r1`, `adm-claw` r1/r2, `adm-hand` and `adm-memory` until rewritten.
+- **`SOCIETY_PROFILES` stays empty.** No profile is Tony-approved as final prose yet.
+- **Tony-only edits to `novel/`:** NOVEL_EDIT_PROPOSALS.md NE-01 (four lines in Ch14). Also flag for Tony: story bible §7 calls Duy an orphan; Ch01/Ch07 give him a living mother and Da Lat.
+
+### 6. Open
+Ten profiles to rewrite; cit-025…029 to author; `adm-hand`, `adm-memory`; `dia-cell` from Ch04 (five humans present, torches, Odin's 41-second quest); the rest of `novel/` to read line by line; Arbiter's mandate limits; recruit identity (open by Tony's choice).
+
+### 7. Files and commit
+BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-21 -1`.
+
+---
+
 ## Batch 20 — 2026-09-17 · branch `claude/narrative-batch-20` (on batch 19)
 
 ### 1. Approved decisions
