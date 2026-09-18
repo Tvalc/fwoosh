@@ -81,6 +81,7 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 - AD-05/AD-26 → **suspended**; the manuscript's Ptik, Rul and Kesh-ka are adults with short names, and Chit-tat-to "had not done a thing". Rework pending (NP-18).
 - Fwoosh CANON (#75/#76): "destroyed the village… last nineteen survivors" → Blackroot **took** villagers from a living village and destroyed nothing.
 - Fwoosh CANON "unarmed Ratkin captives" → see N-12: the court reclassified **19 of 24** as non-combatants.
+**AD-31:** The five armed dead were villagers too. Twenty-four villagers died in the cell; the village went from 81 to **57**. Resolves N-12. This is a change **to the manuscript** (Ch14), by Tony's ruling.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
@@ -157,6 +158,30 @@ Read in full: README, Ch04 The Dark Cell, Ch14 Chit-tat-to I, Ch07 The Warden. S
 | Living, named in Ch14: **Kesh-ka, Rul** | Not citizens. They are alive. Reserved for the day they die. | — |
 
 **What must be rewritten in every profile:** raid-night material (oven pulled down, hearthstone split, creek crossing, cage break), surface-village details, market trips and trade tongues, and living-world speech. Proposal NP-20: in life they had few words and many pictures; **in sanctuary the words come**, which is part of being lifted up. Chronicles are written in sanctuary's voice; memories of life stay concrete and pictorial.
+
+### AD-31 ripple list (for Tony's novel edit; I have not touched `novel/`)
+Changing 62 to 57 is not a one-number fix. Ch14 lines that assume nineteen villagers died:
+- line 1, title: "THE VILLAGE OF NINETEEN ABSENCES" (also Ledger Ch 4-1's title and `03_story.md`)
+- line 19: "Nineteen." and the following sentence: Chit-tat-to counted them to carry the number home
+- line 27: "eighty-one… now it had sixty-two"
+- lines 53, 55: "Nineteen marks on the wall… Nineteen new ones, all in a row"
+- line 75: his hand sign, "four times short of nineteen"
+- line 89: "a ring of sixty-two people"
+- line 99: Kesh-ka looks "at the four hundred years, at the nineteen"
+
+Two ways to make it consistent, both Tony's call:
+1. **Twenty-four everywhere in the village's eyes.** The wall gets twenty-four marks; five of them are drawn as a spear or a blade, because that was their thing at the end. Title and Chit-tat-to's carried number become twenty-four. "Nineteen" stays the *court's* number only.
+2. **The village mourns twenty-four but Chit-tat-to carries nineteen**, because he, the Witness, saw which ones never raised a hand, and the court later agrees with him. Title stands; lines 27 and 89 become 57; the wall lines need one added sentence about the other five marks.
+Option 2 keeps the title, the Ledger chapter name and the 19 + 5 debt all aligned, and gives Chit-tat-to's counting a meaning it does not have yet. **My recommendation is 2.**
+
+### The five who charged (DRAFT, NP-21)
+Ch04: "two long spears, leveled… The lead spear carrier shrieked something and broke into a run. Three more came behind it, blades up." Proposed seating, IDs kept:
+| Manuscript | Citizen | Why |
+|---|---|---|
+| Lead spear carrier, who shrieked and ran | **cit-015 Ras-Ti-Vok**, "the one who says go" | His shriek was the order to run for the open door. The humans heard a war cry. This replaces my earlier invention that Tav-Ri screamed, and it is the manuscript's own event. |
+| Second spear carrier, "big for their kind" | **cit-009 Bru-Ka-Dol** (still Rul's brother) | The largest of the cast; put himself at the front. |
+| Three with knives | **cit-004 Tav-Ri** (15), **cit-014 Fen-Ya-Sool**, one unassigned (cit-025 reserved) | The fast ones, in front of the old and the small. |
+Consequences: these five sit on **Duy's** balance, the nineteen on Cuong's. Under AD-06 that makes a third standing toward Duy inside the Claw. Where caged prisoners got iron blades and spears is unstated in the manuscript; I leave it open. Four new non-combatant IDs are needed to keep nineteen (cit-026…029 reserved): candidates are Chit-tat-to's mother, his uncle, the wearer of the red cord and the carver of the comb.
 
 ## 2. Naming (APPROVED AD-05; see NP-12 for the AD-09 adjustment)
 

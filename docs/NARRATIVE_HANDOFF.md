@@ -4,6 +4,32 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 16 — 2026-09-17 · branch `claude/narrative-batch-16` (on batch 15)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-31 | The five armed dead were villagers. Twenty-four villagers died; the village went 81 → **57**. | **Manuscript Ch14** ("sixty-two", and by ripple the lines listed in BIBLE §1d) and AD-30's "81/62". Ledger `03_story.md` Ch 4-1 inherits whatever Tony does to the chapter title. **Codex: do not edit `novel/`; Tony owns it.** Fwoosh impact: the cell cohort is **twenty-four** citizens, not nineteen. |
+
+### 2. Finished content (DRAFT)
+AD-31 ripple list with two repair options; NP-21 seating of the five who charged; IDs cit-025…029 reserved.
+
+### 3. Reveal order
+cit-004's old background ("he screamed for everyone to run") is **withdrawn**; the manuscript's lead spear carrier made that cry. `dia-cell-r1` page 1 ("a young voice screamed a single word") is withdrawn with it.
+
+### 4. Triggers (narrative intent)
+Arrival cohort "captive" is now 24. Earlier unlock copy that says "nineteen" still describes the court's count and may stay, pending Tony's choice of repair option.
+
+### 6. Open
+- **Asked:** which Ch14 repair (village counts 24, or Chit-tat-to carries 19).
+- NP-17…NP-21 unapproved. Chit-tat-to's mother: how much may Fwoosh show. Whether Nim's parents live.
+- All profiles and scenes remain suspended drafts.
+
+### 7. Files and commit
+BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-16 -1`.
+
+---
+
 ## Batch 15 — 2026-09-17 · branch `claude/narrative-batch-15` (on batch 14)
 
 ### 1. Approved decisions
