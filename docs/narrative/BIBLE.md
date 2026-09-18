@@ -84,6 +84,11 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 **AD-31:** The five armed dead were villagers too. Twenty-four villagers died in the cell; the village went from 81 to **57**. Resolves N-12. This is a change **to the manuscript** (Ch14), by Tony's ruling.
 **AD-32:** The five who charged are seated: lead spear **cit-015 Ras-Ti-Vok**, whose shriek was the order to run for the open door; second spear **cit-009 Bru-Ka-Dol**; knives **cit-004 Tav-Ri**, **cit-014 Fen-Ya-Sool** and one reserved (cit-025). They are on Duy's balance. (Was NP-21.)
 **AD-33:** Ch14 repair: "nineteen" stays everywhere; 62 becomes 57 in two places; one added sentence gives the other five their marks and says why Chit-tat-to carries nineteen. Exact wording in NOVEL_EDIT_PROPOSALS.md is DRAFT.
+**AD-34:** Nim's parents are alive among the 57. Nim is a child waiting, not an orphan. cit-020 Ase-Ro-Wen and cit-021 Dak-Ro-Fen keep their IDs and identities but are **living villagers**, not sanctuary residents; their profiles are shelved until they die.
+**AD-35:** Chit-tat-to's mother is a citizen. Her chronicle shows only what she made and taught, never memories of her son.
+**AD-36:** Ch14 "the only weapon there was" → "the only weapon left" (NE-01 line 4).
+
+**Broken by AD-34 (needs Tony):** AD-20 made the Claw's favor wait on Ase-Ro-Wen, and `adm-claw` r2 is her scene; `adm-hand` is escorted by Dak-Ro-Fen. Neither is in sanctuary now. AD-20's *principle* (the Claw does not move until the person with the hardest claim does) can stand with a new holder. Proposal NP-22: **cit-004 Tav-Ri**, fifteen, one of the five who went first with a knife so the old and the small could reach the door.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
@@ -152,7 +157,7 @@ Read in full: README, Ch04 The Dark Cell, Ch14 Chit-tat-to I, Ch07 The Warden. S
 | Chit-tat-to's aunt: the roof-lashing knot that never slipped | **cit-010 Ili-Sa-Ven** | Exact trade. Makes Kip's carer Chit-tat-to's aunt. Wall-mark: the knot. |
 | Ptik: three fish on a day nobody else took one | **cit-017 Shi-Pa-Nol**, re-seated from snail-keeper to fisher; "Ptik" is the everyday name | Temperament (patient, never late) carries over whole. Wall-mark: the fishing line. |
 | Rul's brother | **cit-009 Bru-Ka-Dol** | Free slot; gives him living kin (Rul, 30). |
-| Chit-tat-to's mother: Elder, keeper of the history wall, grinding stone, taught | **cit-013 Mor-Ne-Dath** (miller) is the only trade match | **Sensitive.** The story bible forbids flashback grief and says she appears "through inherited obligations, not memories". I will not write her until Tony says how much Fwoosh may show. |
+| Chit-tat-to's mother: Elder, keeper of the history wall, grinding stone, taught | **cit-013 Mor-Ne-Dath** (miller). The village has one grinding stone, so the miller is the mother. Her existing temperament already fits a teacher: exacting, generous with bread, stingy with praise, "can't leave a thing be once she's seen how it could be better, including people". | **AD-35 governs:** chronicle shows what she made and taught, never her son. Seating still needs approval with the rest of NP-19. |
 | Two more Elders (four died) | **cit-016 Ume-Da-Ril, cit-011 Hes-Vo-Lim** | Age and standing fit. |
 | Wearer of the red cord | open; cord braided by cit-010 | — |
 | Carver of the comb | open; candidates cit-014 Fen-Ya-Sool or cit-019 Eth-Wa-Min | — |

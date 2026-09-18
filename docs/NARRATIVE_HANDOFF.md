@@ -4,6 +4,30 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 18 — 2026-09-17 · branch `claude/narrative-batch-18` (on batch 17)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-34 | Nim's parents are alive among the 57; Nim is a child waiting | batch-02 profiles cit-020, cit-021 as raid dead → shelved (IDs and identities kept for the day they die). **Breaks AD-20, `adm-claw` r2 and `adm-hand`'s escort**; see §6. |
+| AD-35 | Chit-tat-to's mother is a citizen; chronicle shows only what she made and taught, never memories of her son | BIBLE re-seating map "will not write her" note |
+| AD-36 | Ch14: "the only weapon there was" → "the only weapon left" | NE-01 line 4 → approved. Tony applies it. |
+
+### 2. Finished content
+None new; bookkeeping only.
+
+### 3. Reveal order (narrative intent)
+No chronicle, scene or line in Fwoosh may show Chit-tat-to's mother remembering, mentioning or waiting for her son. Other citizens may name him.
+
+### 6. Open
+- **Asked:** who holds the Claw's vote now (NP-22 proposes Tav-Ri), and approval of the re-seating map NP-19 including Mor-Ne-Dath as Chit-tat-to's mother.
+- NP-17, NP-18, NP-20; cit-025…029 unauthored. All profiles and scenes remain suspended drafts.
+
+### 7. Files and commit
+BIBLE.md, NOVEL_EDIT_PROPOSALS.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-18 -1`.
+
+---
+
 ## Batch 17 — 2026-09-17 · branch `claude/narrative-batch-17` (on batch 16)
 
 ### 1. Approved decisions
