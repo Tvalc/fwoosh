@@ -1,12 +1,26 @@
 ## CHAPTER 7: THE WARDEN
 
+"Say it back to me," Cuong said. "Fast."
+
+They stood under the gate in the torchlight with the keys still somewhere below the bend, and he had drawn it on the wall in soot, four strokes, and now he wanted it in their mouths.
+
+"I'm the bait," Duy said. "I stand in the middle. When it comes I run past the gate and keep going."
+
+"I'm in the third cell," Miss Hue said. "When it passes the door I take the knee. Left knee. It goes down under the gate or it does not, and if it does not, we are all dead and I will not be answering questions about it."
+
+"I drop the gate." Cuong put his hand on the crank. "Diep."
+
+"I'm behind you with Mei. I don't do anything."
+
+"You don't do anything."
+
 The keys came around the bend before the thing that carried them.
 
 Diep heard them before anything else, filling the corridor. Then the warden came up into the torchlight.
 
 Three meters of gray hide like wet stone. Hands that could palm a door. Grown into the flesh of its left fist, protruding between the knuckles, a ring of iron keys, dozens of them, worn bright with use.
 
-It saw the open cells first. It looked at each of them, one open door at a time, and a sound started low in it that Diep understood with her skin before her ears. The sound was grief. Then the sound was rage.
+It saw the open cells first. It looked at each of them, one open door at a time, and a sound started low in it that Diep felt in the floor before she heard it. The sound was grief. Then the sound was rage.
 
 A screen flickered at the edge of her sight, one line, gone almost before she read it.
 
@@ -14,7 +28,7 @@ A screen flickered at the edge of her sight, one line, gone almost before she re
 
 They were level one. All of them.
 
-"Positions," Cuong said, and his voice was the market voice, flat and clean, and her body obeyed it before her terror could vote. "Like we walked it. Duy."
+"Positions," Cuong said, and his voice was the market voice, flat and clean, and her legs were moving before she had decided anything. "Like we said it. Duy."
 
 "Yeah." Duy had gone gray again. He was grinning again. He stepped out into the middle of the corridor, in front of the bend, in front of the gate, alone, and cupped both hands to his mouth. "HEY. UGLY. Your zoo's empty."
 

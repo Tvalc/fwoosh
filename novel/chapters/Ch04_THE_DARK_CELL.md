@@ -20,7 +20,7 @@ A pause with a decision in it. "Mei."
 
 "Here." It came out thin and wet, through the broken face.
 
-Cloth moved in the dark. Diep's eyes, adjusting, found her brother's silhouette against the nearest torch, the Beretta already drawn and held low, muzzle at the floor, the way police carry a gun when they have not yet chosen a target. The service belt had come with him. There was weight on her own forearms that had not been there in the market. Her hands found it in the dark: her competition knives, sheathed and strapped where she wore them on the mat. She had died in a romper. Somebody had made a decision about that.
+Cloth moved in the dark. Diep's eyes, adjusting, found her brother's silhouette against the nearest torch, the Beretta already drawn and held low, muzzle at the floor, the way police carry a gun when they have not yet chosen a target. The service belt had come with him. There was weight on her own forearms that had not been there in the market. Her hands found it in the dark: her competition knives, sheathed and strapped where she wore them on the mat. She had died in a romper with nothing on her arms. Adonai had said provisions, and this was what a god thought a girl from Phu Nhuan needed for a dark room on another world, the two blades she had won a trophy with on Sunday.
 
 She put her thumb on the pommel of the left one and held it there.
 
@@ -45,6 +45,8 @@ They were not children.
 Snouts. Teeth in the snouts. Fur in reds and grays, naked tails dragging, eyes catching the torch flame in flat coins of green and yellow. Rags for clothes. In the front rank, blades of crude dark iron, and two long spears, leveled.
 
 The whole mass of them came on with the chittering rising to a scream.
+
+Diep got her hands up, open, empty, and took one step forward, and got as far as "We're not"
 
 "Weapons!" Duy's voice cracked. "They're charging!"
 
@@ -76,9 +78,19 @@ Duy made a sound she had never heard a man make and went down onto his knees in 
 
 Miss Hue began, very quietly, to pray. It did not sound like comfort. It sounded like testimony.
 
+Mei walked past all of them.
+
+She went to the nearest of the small bodies with her one working arm, took it under the shoulders, and began dragging it toward the wall, slowly, laying it straight. Then the next. Nobody had told her to. Nobody stopped her. She did not look at any of them while she did it, and by the fourth body Duy had gotten up off his knees and taken the other end.
+
+Diep watched them lay the row and could not make her own feet move.
+
 The dot at the edge of Diep's vision pulsed.
 
-She did not want to open it. She understood already, in the animal way you understand catastrophe before you can afford to think it, what it was going to be. She opened it because leaving it shut would change nothing, and because someone in this party was going to have to start looking at things straight, and her brother was standing in the middle of the room with his gun hanging from his hand like an amputation, unavailable for the duty.
+She did not want to open it.
+
+Her brother was standing in the middle of the room with the Beretta hanging from his hand, and he was not looking at the bodies, and he was not looking at the screen, and he was not looking at anything.
+
+Someone had to. She opened it.
 
 The screen unfolded with perfect courtesy.
 

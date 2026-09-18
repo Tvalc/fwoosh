@@ -2,7 +2,7 @@
 
 The road came down out of the pass and turned into a place where people lived.
 
-Diep smelled it before she saw it. Woodsmoke and animals and cooking fat, and under that the particular sourness of a lot of bodies in a small area with nowhere good to put their waste. She had smelled that in the alleys behind the market at the end of a hot week. It was the first thing on Atlantis that had smelled like home, and it took the top off something she had been holding shut since the terrace.
+Diep smelled it before she saw it. Woodsmoke and animals and cooking fat, and under that the particular sourness of a lot of bodies in a small area with nowhere good to put their waste. She had smelled that in the alleys behind the market at the end of a hot week. It was the first thing on Atlantis that had smelled like home, and her eyes stung.
 
 Then the trees opened.
 
@@ -48,7 +48,7 @@ She did not kneel to Odin. She nodded, once, the way you acknowledge weather.
 
 Nothing happened.
 
-Nobody moved, and the not-moving had a texture to it, a small resistance in the air like a held breath, and then the writing came, and it came for all of them at once, which was the part Diep would remember.
+Nobody moved. Then the writing came, and it came for all of them at once.
 
 > Order refused.
 > Companion Cuong Loc is not the party's Champion and cannot direct its members.

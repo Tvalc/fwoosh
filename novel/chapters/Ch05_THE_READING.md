@@ -2,7 +2,7 @@
 
 The torch nearest Diep guttered, and in its failing light the writing began.
 
-It came up out of the dark blue-bordered and patient, the way it had come over the water for a fisherman she would never meet, and it arranged itself in front of each of them separately, so that five people stood in one stone room in five private columns of light, being read to.
+It came up out of the dark blue-bordered and patient, and it arranged itself in front of each of them separately, so that five people stood in one stone room in five private columns of light, being read to.
 
 > Your party has been awarded 700 experience.
 > Experience is awarded without regard to circumstance.
@@ -39,7 +39,7 @@ She crossed to him and read over his shoulder, and that was how she learned what
 
 "Persistent," Diep said.
 
-"Later," Cuong said quietly, and the word had no later in it, because the column was still coming.
+"Later," Cuong said quietly. The column was still coming.
 
 > **Title earned: The Last Hand.**
 > You had eight rounds and one hand. The record does not show a decision. The record shows where your hand was.
@@ -68,13 +68,25 @@ She crossed to him and read over his shoulder, and that was how she learned what
 > She died within reach of your hand.
 > Breach recorded.
 
-Cuong read it, and read it again, and then his legs stopped holding him and he sat down in the dirt of the cell floor with his back against the stone and his hand over his mouth. He did not make much noise. That was somehow the worst part of it, Diep would think later, that her brother cried the way a man cries when he is trying not to wake anyone up.
+Cuong read it, and read it again, and then his legs stopped holding him and he sat down in the dirt of the cell floor with his back against the stone and his hand over his mouth. He did not make much noise. He cried the way a man cries when he is trying not to wake anyone up.
 
-She read the last judgment three times, and on the third reading she stopped being able to see it, and understood she was crying too.
+She read the last judgment three times, and on the third reading the letters swam, and she wiped her face with the back of her wrist and it came away wet.
 
 "That isn't fair," she said. "You were shot. You saved me. You saved Mei. None of that is fair."
 
 "It isn't about fair." Miss Hue had come up on Cuong's other side. She read the judgments top to bottom the way she read newspapers, completely, withholding comment until the end. "It's a court. I have seen courts before. Fair is not what they sell."
+
+Duy's column had been short, and he had not shared it, and now he did. He turned it toward them with one hand, the way you turn a bad card face up.
+
+> **JUDGMENT: BLOOD DEBT (SECOND INSTRUMENT).**
+> Findings: 5 non-combatants, deceased, your instrument.
+> Balance: 5.
+> Sentence: garnishment, at the same rate.
+> The court notes that you fired fewer rounds. The court notes that this is not a defense.
+
+"Five," Duy said. "I thought it was more. I thought it was all of them."
+
+"It was both of you," Miss Hue said. "The court can count. So can I."
 
 The final screen arrived for all five of them at once, one shared column in the center of the room.
 

@@ -4,7 +4,17 @@ Diep sat up on a slab of marble and the first thing she did was put both hands t
 
 The wound was gone. The romper was whole, no blood, no cut, the lotus flowers as white as the morning her mother gave it to her. She pushed her fingers into the place where the knife had gone in, hard, and felt nothing but her own stomach. She did it again. Then she looked at her hands, and her hands were clean, and she wiped them on the romper anyway.
 
-Light stood over her in a column, and beyond it, dark with no walls in it. Four more slabs, four more columns. Cuong, already on his feet, whole, staring at his own chest. Duy, sitting with his head in his hands. Miss Hue, cross-legged, hands folded, lips moving in prayer, market bag gone. And Mei.
+Light stood over her in a column, and beyond it, dark with no walls in it. Four more slabs, four more columns.
+
+Cuong was already on his feet. He had both hands flat against his own chest, pressing, the way she had just pressed her stomach, and he was looking down at the uniform shirt where two holes should have been and were not.
+
+Duy sat with his head in his hands. He had not looked up.
+
+Miss Hue sat cross-legged with her hands folded and her lips moving in prayer, and her market bag was gone, and the top of her head was where it belonged.
+
+And Mei.
+
+Mei was on the last slab, and she was already looking at Diep, and she had been looking at Diep since before Diep opened her eyes. Her hands were folded in her lap. There was nothing in them.
 
 Diep came off the slab.
 
@@ -72,6 +82,16 @@ Her head went down onto the stone.
 
 "I know," Mei said.
 
+Duy had not let go of Cuong. He stood behind him with his arms still locked around his partner's chest, and his face over Cuong's shoulder had gone the color of paper.
+
+"Somebody tell me," he said. "I was across the lane. I saw you shoot her, Cuong, I saw it and I didn't, somebody tell me what she did."
+
+Nobody answered him.
+
+"She put a knife in my sister," Cuong said finally, "while I was thanking her for saving my sister's life."
+
+Duy let go of him.
+
 "Well," said a voice. "That was about how I figured that would go."
 
 It came from everywhere, an easy drawl, and a man was suddenly present in the way furniture is present, as if he had always been standing there and the darkness had only now admitted it. Tall, bearded, a shepherd's crook in one hand, a battered hat pushed back on his head. Boots with spurs. He looked like a film their father used to make them watch on Sunday afternoons. Diep got up off the floor and stood between him and the others, with her bloody hands loose at her sides.
@@ -108,7 +128,7 @@ He looked over at Mei then, at the arm and the face and the blood on the stone, 
 
 "That I can't undo," he said. "Not here. You'll carry that across with you, girl, and I'm sorry, and I'd say you know why."
 
-Mei nodded, and did not ask him to.
+Mei nodded. She did not ask him to try.
 
 Writing appeared in the air.
 
@@ -129,6 +149,10 @@ Across the slabs she saw the others reading their own floating text, and she saw
 > Refusal: the line is over there. It does not move quickly, but it moves.
 
 Diep read it twice. Her hands had stopped shaking. She noticed that, and did not know what to do with it.
+
+Across from her, Duy was reading his own column with his mouth slightly open.
+
+"It knows about my mother," he said, to nobody. "How does it know about my mother."
 
 "A year," Cuong said. "You're telling us the world ends in a year, and your plan is five dead people from Phu Nhuan."
 

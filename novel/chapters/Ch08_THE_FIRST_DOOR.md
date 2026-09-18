@@ -20,9 +20,9 @@ Atlantis at dusk went up forever.
 
 They stood on a terrace of pale stone high on a mountainside. Below them forests fell away in shelves toward a plain veined with rivers. Above them, past the shoulder of the mountain, towers stood that no human hand had stacked, joined by bridges thin as written lines. The air tasted of rain and some spice Diep had no name for. Far off, over the plain, something with a wingspan she refused to estimate turned once, unhurried, and slid behind a cloud.
 
-Nobody spoke. There was too much world.
+Nobody spoke.
 
-The writing found them there, the way it would always find them.
+The writing found them there.
 
 > **Questline available: BLOOD DEBT.**
 > Balance outstanding: 19, plus 5, plus findings.
@@ -30,12 +30,14 @@ The writing found them there, the way it would always find them.
 > This world is short of no one who needs preserving.
 > Accept?
 
-Diep read it in the failing light. It was a door. Numbered and ruled and garnished, and still a door.
+Diep read it in the failing light. It was a door.
 
 She looked at her brother. Cuong stood at the terrace rail with the dusk on his face and the debtor's mark over his head where every eye on this world could read it, and he was looking out at the plain the way he used to look at case files.
 
+She looked at Miss Hue, who nodded once. She looked at Mei, who did not look back, and who nodded anyway.
+
 "Accept," Diep said.
 
-High above the towers, with a crack that rolled down the mountain like a verdict, black wings the size of a fishing boat unfolded from a spire, and a raven older than her country fell toward them down the dark.
+High above the towers, with a crack that rolled down the mountain, black wings the size of a fishing boat unfolded from a spire, and a raven fell toward them down the dark.
 
 ---

@@ -28,7 +28,9 @@ It meant the sea floor was climbing toward them out of water that had been two k
 
 Birds streamed overhead, more than either of them had ever seen, all flying the wrong way, out to sea, screaming.
 
-Tuan was not watching the coastline anymore. He was watching his uncle see it. His whole life, no one else had ever seen the things he saw. That was the entire problem with him, according to everyone who had ever been paid to have an opinion. Now one of those things stood in the open ocean with surf breaking on it, his uncle was staring straight at it, and the feeling rising in Tuan's chest was so unfamiliar it took him a breath to recognize it as joy.
+Tuan was not watching the coastline anymore. He was watching his uncle see it. His whole life, no one else had ever seen the things he saw. That was the entire problem with him, according to everyone who had ever been paid to have an opinion. Now one of those things stood in the open ocean with surf breaking on it, and his uncle was staring straight at it.
+
+Tuan found that he was smiling. He put his hand over his mouth to stop it and could not.
 
 "What country is that?" his uncle said, smaller than Tuan had ever heard him.
 

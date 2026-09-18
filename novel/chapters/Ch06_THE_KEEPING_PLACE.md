@@ -1,10 +1,12 @@
 ## CHAPTER 6: THE KEEPING PLACE
 
-Cuong went through the door low, with the Beretta up in both hands, and his habits were all he had left.
+Cuong went through the door low, with the Beretta up in both hands.
+
+"Duy, rear," he said. "Nobody walks in front of the muzzle. Miss Hue, you're on the left wall, I'm on the right. Diep, Mei, center, three paces back, and if I say down you are on the floor before I finish the word."
 
 The Beretta led into a corridor of the same wet black stone as the cell, torch brackets at intervals a taller people had set. He moved along it as he had been taught, weapon and eyes arriving at each corner together.
 
-None of it meant anything anymore, because the numbers over his head said what he was now. A rat the size of a hound had come at Duy from a drain before they moved out, and Cuong had put it down with one shot, clean, with two working arms and no pain anywhere in him, and the screen that followed had shown him his future.
+A rat the size of a hound had come at Duy from a drain before they moved out, and Cuong had put it down with one shot, clean, with two working arms and no pain anywhere in him. He had opened the screen that followed while the echo was still in the corridor.
 
 > Awarded: 40 experience.
 > Garnished: 36. Held.
@@ -21,6 +23,8 @@ Cuong crouched at the cell mouth with the comb in his hand and made himself look
 Sleek dark fur, dust-gray at the muzzles on the older ones. Rounded ears. Hands, actual hands, four-fingered and clever, one of them still closed around a stone the size of a plum, which was the whole of that person's armory.
 
 The tallest of them came up to his chest. One had been wearing a braided cord of red thread at the throat, dyed, knotted, made by somebody for somebody. The comb in Cuong's hand had been carved by a person who had time, in a cell, and wanted to be beautiful.
+
+He put the comb in his shirt pocket, behind the badge, and buttoned it.
 
 Nobody spoke.
 

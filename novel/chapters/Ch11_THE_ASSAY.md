@@ -2,7 +2,7 @@
 
 The hall at Threshold took the sound out of everything. The door that closed behind Diep was not the door she had walked through.
 
-One moment the four of them stood in the classing hall under ceilings built for wings, with Odin talking to a clerk-shaped column of light, and the next Diep stood alone on a wooden floor she knew before she understood knowing it. Phan Dang Luu. The training hall. Evening light through the high windows, the smell of mats and liniment, every board of it correct, and the writing hanging where the master's portrait should have been.
+One moment the four of them stood in the classing hall under ceilings built for wings, with Odin talking to a clerk-shaped column of light, and the next Diep stood alone on a wooden floor she knew. Phan Dang Luu. The training hall. Evening light through the high windows, the smell of mats and liniment, every board of it correct, and the writing hanging where the master's portrait should have been.
 
 > Assay: commenced.
 > This is a simulacrum. Nothing here persists. Everything here counts.
@@ -14,13 +14,13 @@ The far door of the training hall stood barred, and through its slats she could 
 > None of them do.
 > The fire does not care. You have what time you have.
 
-Diep looked at her own hands. Twelve years, and every hour of it spent making her body better, and not one hour spent putting what her body knew into someone else's, and the System had read her to the floorboards, because that was exactly the shape of the hole in her.
+Diep looked at her own hands. Twelve years of training, and not one hour of it spent teaching anybody anything. She had never once been asked to.
 
 She picked the calmest-looking one, a wiry aunty with flour on her sleeves.
 
-"You," Diep said, and heard her own voice shake, and kept going anyway, the way you walk out when the bracket posts. "Look at me, not the fire. Feet like this."
+"You," Diep said, and heard her own voice shake, and kept going anyway. "Look at me, not the fire. Feet like this."
 
-She kicked off her shoes, red canvas, the good ones, because you do not step on a mat shod, her body did it before her mind voted, and the writing flickered small in the corner of her eye.
+She kicked off her shoes, red canvas, the good ones, because you do not step on a mat shod, and her feet had done it before she thought about it, and the writing flickered small in the corner of her eye.
 
 > Cultural rite recognized: unshod instruction.
 > Honest Feet: minor bonus applied.
@@ -28,7 +28,17 @@ She kicked off her shoes, red canvas, the good ones, because you do not step on 
 
 She had no time to read it twice.
 
-She taught badly, then less badly. Hands on the aunty's wrists. Breathe. Again. Lower. Again. Good. She used the master's old cadence because it was the only teaching voice she had.
+She taught badly.
+
+She showed the aunty the guard with her own body, both arms, the turn from the hip, and the aunty copied it with her arms only, the way everyone does the first time, and her bracket did not move. Diep showed it again. The aunty's eyes went to the fire. Diep put herself between the aunty and the door so there was nothing to look at but Diep.
+
+"Not your arms. Here." She put her hand flat on the woman's stomach. "It starts here. Turn from here and your arms come along whether they want to or not."
+
+The third attempt, the aunty's bracket moved and Diep's did not, because Diep had been watching the aunty instead of doing her own half, and she heard Master Thanh's voice in her head say the thing he had said to her at eleven, and she said it out loud without meaning to. "Again. I was wrong, not you. Again."
+
+Smoke was coming under the door now. Somebody behind them had started to cry.
+
+She taught less badly. Hands on the aunty's wrists. Breathe. Again. Lower. Again. Good. She used the master's old cadence because it was the only teaching voice she had.
 
 The fire came through the far side of the door.
 

@@ -14,7 +14,9 @@ Halfway through, with the thing in the corridor two turns away, the writing came
 > They are simulacra. Nothing here persists.
 > Everything here counts.
 
-Cuong read it once. He looked at the nine market faces, at one aunty with flour on her sleeves, and understood that the court was not asking whether he could hold a door. It was asking what he was, at one-tenth, in the dark, with permission.
+Cuong read it once. He looked at the nine market faces, at one aunty with flour on her sleeves.
+
+The court was not asking whether he could hold a door. It was asking what he was, at one-tenth, in the dark, with permission.
 
 "No," he said, and turned back to the corridor, and held the door at the price marked. He was crying while he did it, and his hand shook so badly on the third shot that he missed a target the width of a door, and he kept firing anyway, and kept standing there anyway, one arm and four rounds and a crank and everything the Korean instructors had ever screamed at him. When the thing in the corridor finally filled the last turn he did not feel brave. He felt sick, and small, and absolutely certain that he was not going to move.
 
@@ -33,9 +35,9 @@ The assay ended before it reached him, because the assay had its answer.
 
 He accepted. It named nothing he had not already been for nineteen years. The only difference was that the multiverse would enforce it now. The hall rebuilt itself around him. Standard issue was waiting on the stone: a short iron stave that drank the light, and a badge of pale metal that settled onto his chest and sank, and above his head, beside the judgments that everyone could read, a new line took its place in the record.
 
-Miss Hue came out of her own door upright and furious and gold-lit, gripping a morningstar that had grown considerably in ambition, and behind her eyes something had been said that she was not sharing. "Priestess," she announced, in the voice of a woman who had lodged her complaint with the specific official and received, apparently, an answer. "We will discuss what he said later. Or never."
+Miss Hue came out of her own door upright and furious and gold-lit, gripping a morningstar that had grown considerably in ambition. "Priestess," she announced, in the voice of a woman who had lodged her complaint with the specific official and received, apparently, an answer. "We will discuss what he said later. Or never."
 
-Mei came out last and shared nothing. Above her head, where a class should have shown, a single line of fine print held its place, unreadable from any angle, and her face asked no one to try.
+Mei came out last and shared nothing. Above her head, where a class should have shown, a single line of fine print held its place, unreadable from any angle. Nobody asked.
 
 At the center of the hall the clerk-light brightened, and the day's business concluded the only way business concluded here.
 
