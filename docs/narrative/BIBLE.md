@@ -204,3 +204,4 @@ Payoff this buys: a child who died with one beat can earn the others in sanctuar
 | Post first judgment | Blackroot by name, through citizen chronicles. | Blackroot's link to pit network / keeping place (open). |
 | `keith` (34) | Clue: the Arbiter flinches; his forearms are scarred like Duy's. | Why. |
 | `home` (final chapter) | **AD-07 payoff:** the Arbiter carries the burning too, one at a time, and is getting stronger the slow way. The fire is the road out. | Verdict; the kingdom's name; who opened the door. |
+

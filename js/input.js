@@ -95,6 +95,28 @@ function resetDebugProgress(){
   reset();saveMeta();return true;
 }
 
+// Title-screen reset is deliberately two taps/keypresses. It clears only Fwoosh's
+// own saves, leaves the player on the title screen, and makes the next Start run
+// the opening dialogue again.
+function titleResetAction(){
+  if(!onTitle)return false;
+  if(!titleResetConfirm){ titleResetConfirm=true; return false; }
+  const snapshots=[];
+  try{
+    for(const key of [SAVE_KEYS.meta,SAVE_KEYS.opp])snapshots.push([key,localStorage.getItem(key)]);
+    for(const [key] of snapshots)localStorage.removeItem(key);
+    for(const [key] of snapshots)if(localStorage.getItem(key)!==null)throw Error('Save was not removed');
+  }catch(e){
+    for(const [key,value] of snapshots){try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}catch(ignore){}}
+    titleResetConfirm=false; return false;
+  }
+  cancelPointer();for(const k in keys)keys[k]=false;
+  META=loadMeta();opp=loadOpp();selDistrict=1;god=false;ghost=false;
+  hubSheet=null;hubBtns=[];hubScroll=0;hubToast=0;hubToastMsg='';wellJustRose=false;
+  diaryOpen=null;diaryPage=0;dialogueHistoryPage=0;hinted=false;mode='play';onTitle=true;
+  reset();onTitle=true;titleResetConfirm=false;return true;
+}
+
 function lungeDir(dx,dy){
   if(debugMenu.open)return;
   const m = Math.hypot(dx,dy); if(m < 0.0001) return;
@@ -201,7 +223,11 @@ function resultClick(x,y){
 
 function onDown(x,y,swipe=isTouch){
   if(debugMenu.open){debugMenuClick(x,y);return;}
-  if(onTitle){ onTitle = false; hinted = false; reset(); return; }   // start from the title screen
+  if(onTitle){
+    if(hubBtns.length) hubClick(x,y);
+    else { onTitle=false; hinted=false; titleResetConfirm=false; reset(); } // synthetic/test taps before the first paint still start
+    return;
+  }                              // title buttons: Start or Reset Progress
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ resultClick(x,y); return; }        // run ended -> return to the town hub
@@ -295,7 +321,11 @@ window.addEventListener('keydown', e=>{
   }
   if(k === 'k'){ e.preventDefault();                       // cycle art skins (dev/preview)
     const names = Object.keys(SKINS); setSkin(names[(names.indexOf(SKIN_NAME)+1)%names.length]); return; }
-  if(onTitle){ if(KEYVEC[k]||k===' '||k==='enter'){ e.preventDefault(); onTitle=false; hinted=false; reset(); } return; }
+  if(onTitle){
+    if(k==='r'){ e.preventDefault(); if(!e.repeat)titleResetAction(); return; }
+    if(KEYVEC[k]||k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat){onTitle=false;hinted=false;titleResetConfirm=false;reset();} }
+    return;
+  }
   if(introT > 0){ introT = 0; if(KEYVEC[k]||k===' '||k==='shift'||k==='enter'){ e.preventDefault(); } return; }
   if(mode === 'over'){
     if(k==='r'||k==='enter'||k===' '||k==='t'){e.preventDefault();if(!e.repeat)resultAction(k==='t'?'town':'retry');}
@@ -325,3 +355,4 @@ window.addEventListener('keyup', e=>{
 });
 // dropping focus mid-key would otherwise leave you steering forever
 window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; cancelPointer(); setVentHeld(false); player.ventDash=null; });
+
