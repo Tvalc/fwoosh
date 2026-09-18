@@ -91,6 +91,8 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 **Broken by AD-34 (needs Tony):** AD-20 made the Claw's favor wait on Ase-Ro-Wen, and `adm-claw` r2 is her scene; `adm-hand` is escorted by Dak-Ro-Fen. Neither is in sanctuary now. AD-20's *principle* (the Claw does not move until the person with the hardest claim does) can stand with a new holder. Proposal NP-22: **cit-004 Tav-Ri**, fifteen, one of the five who went first with a knife so the old and the small could reach the door.
 **AD-37:** The Claw's favor now waits on **cit-004 Tav-Ri** (replaces AD-20's holder; the principle stands).
 **AD-38:** Re-seating map approved in full: cit-001 the song grandmother; cit-002 and cit-012 the two small ones; cit-010 Chit-tat-to's aunt; cit-017 is Ptik; cit-009 is Rul's brother; cit-016 and cit-011 the other two Elders; **cit-013 Mor-Ne-Dath is Chit-tat-to's mother**, under AD-35.
+**AD-39:** In life the Ratkin had few words and many pictures. In sanctuary the words come, as part of being lifted up. Chronicles and scenes are in sanctuary's voice; memories of life stay concrete and pictorial. (Was NP-20.)
+**AD-40:** Hollowbeech is an earlier lost village, named in the oldest songs people still understand. It is not the raid site. (Was NP-17; finishes the AD-17 change.)
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.

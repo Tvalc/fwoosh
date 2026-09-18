@@ -121,3 +121,83 @@ Speaker: cit-004 Tav-Ri, fifteen, one of the five who went first (AD-32), on Duy
 5. TAV-RI (stern): "You went back into the fire twelve more times. I counted. I haven't forgiven you. You met the count. Walk where you like."
 
 `adm-claw` r2 (Ase-Ro-Wen) is withdrawn. `adm-hand` needs a new escort in place of Dak-Ro-Fen; next batch.
+
+---
+
+# Batch 20 · the five who went first (AD-32) and their teacher
+
+All five are on **Duy's** balance. The manuscript does not say where caged prisoners found iron, so neither do these.
+
+## cit-015 · Ras-Ti-Vok · the one who says go
+cohort: cell, went first, lead spear · visual `ratkin` · leans Claw, toward favor
+**Wall-mark:** a spear. It went up with the other four, beside the nineteen.
+
+**Background.** When a party went up the drop-shaft to forage, Ras-Ti-Vok was the one who said when to go and when to come back, and people came back. He raised his sister Fen-Ya-Sool after a fever took their parents, and she is the only one who has ever teased him. In the room in the deep he saw the door standing open. He had a spear in his hands and the old and the small behind him. He shouted the word he always shouted, which is *go*, and he ran at the tall shapes so the rest could run past them. He has learned since that the tall folk heard a war cry. He turns that over every day.
+
+**Wants in sanctuary:** to stop being the one who decides. He does not know how.
+**Toward Duy:** he counts. So many dead, so many carried out, more each day. He does not like where the sum is heading and he will not pretend it heads elsewhere.
+**First meeting:** "Ras-Ti-Vok led the foraging parties. He is still counting heads."
+
+**Conditional entries**
+- `arrival` → "He asked how many had come through and how many had not. He was given the first number."
+- `reunion:cit-014` → "He said nothing. Fen-Ya-Sool said it for him, in his voice, badly. He laughed."
+
+## cit-009 · Bru-Ka-Dol · the one who sets the stone · Rul's brother
+cohort: cell, went first, second spear · visual `mason` · leans Hand, holds out
+**Wall-mark:** a spear. His brother Rul asked for a laid stone beside it, and Kesh-ka allowed it.
+
+**Background.** The water pipe from the black spring was laid by somebody long dead, and Bru-Ka-Dol kept it whole. Where a stone fell he cut another and set it, and he would let no one else touch the work. He and Mor-Ne-Dath disagreed about the smoke hole for as long as anyone can remember. He was the biggest of them, so when the door opened he went to the front. Since he was taken, two stones have fallen from the pipe and no one has set them back.
+
+**Wants in sanctuary:** to cut a hearthstone and set it himself. To be wrong about the human's walls.
+**Toward Duy:** he will not look at him. An outsider is building his people's houses, and he has never seen outsiders' work stand.
+**First meeting:** "Bru-Ka-Dol sets stone. He is Rul's brother. He builds the part that everything else is built around."
+
+**Conditional entries**
+- `job:yard-or-storehouse` → "He went through the salvage stone by hand. He set most of it aside. He kept going."
+- `favor:hand-earned` → "He looked at the human. He nodded once. He went back to work."
+
+## cit-004 · Tav-Ri · fifteen · holds the Claw's vote (AD-37)
+cohort: cell, went first, knife · visual `lantern` · leans Claw
+**Wall-mark:** a blade.
+
+**Background.** Tav-Ri was learning from Hes-Vo-Lim how to go ahead in the dark tunnels where no fire is carried. He was fast and he knew it. He is the same age as Chit-tat-to. In the room in the deep he was near the front because he is always nearest the way out. He took a knife so his teacher could get the little ones to the door. He was one of the first to fall. He learned afterwards that the little ones did not reach it.
+
+**Wants in sanctuary:** work that is his own. He has not found it.
+**Toward Duy:** plain anger. He keeps a count of Duy's failures and says it aloud. It is easier than the other count.
+**First meeting:** "Tav-Ri is fifteen. He went first. He will tell you so, and then he will go quiet."
+
+**Conditional entries**
+- `arrival` → "He walked the edge of the refuge twice before he would sit. He found every way out. He checked again."
+- `reunion:cit-011` → "Hes-Vo-Lim looked him over and put a hand flat on his head, as you do for a child. Tav-Ri let him."
+- `adm-claw` → "He stopped saying the count aloud."
+
+## cit-014 · Fen-Ya-Sool · the one who sees it first
+cohort: cell, went first, knife · visual `ratkin` · leans Claw
+**Wall-mark:** a blade. Someone added a small root beside it, for the drop-shaft.
+
+**Background.** Fen-Ya-Sool kept watch from the mouth of the drop-shaft, high on the knotted root where the cold comes in. She and Tav-Ri had raced each other up that root since they were small, and the score is disputed. Her brother Ras-Ti-Vok raised her. When he shouted *go* she went, a step behind him, because she has always gone when he goes.
+
+**Wants in sanctuary:** something tall enough to see all of what they build, and Tav-Ri racing her again as if it were a game.
+**Toward Duy:** angry. She watches Tav-Ri's anger with more worry than her own.
+**First meeting:** "Fen-Ya-Sool kept the watch at the tunnel mouth. If there is something tall nearby, look up."
+
+**Conditional entries**
+- `arrival` → "She climbed the refuge roof to see where she was. She stayed up there until someone brought her supper."
+- `reunion:cit-004` → "She hit him on the arm. Then she did not let go of the arm."
+
+## cit-025 · reserved · the fifth, a knife
+Unauthored.
+
+## cit-011 · Hes-Vo-Lim · Elder · the one who goes ahead in the dark
+cohort: cell, non-combatant · visual `lantern` · leans Claw
+**Wall-mark:** an open hand on a line, for the ground-line he followed.
+
+**Background.** There are tunnels where no fire can be carried because of the bad air, and Hes-Vo-Lim went ahead in them with one hand on the ground-line and brought people through. He spoke very little. He took Tav-Ri to teach because the boy was fast and careless and would have been lost in the deep otherwise, and he came to love him, and never found a way to say it. In the room in the deep he gathered the old and the small and started them for the door while the five went first. He heard Ras-Ti-Vok shout *go*. He would have shouted the same.
+
+**Wants in sanctuary:** to tell Tav-Ri that going first was right. He is working up to it.
+**Toward Duy:** he has watched him from the gate for many nights, as he would listen to a tunnel. He has reached a view and has not shared it.
+**First meeting:** "Hes-Vo-Lim went ahead where no light could go. He will not say much. He has noticed everything."
+
+**Conditional entries**
+- `arrival` → "He walked the bounds of the refuge once, at night, alone. He came back and said there was nothing out there. No one had heard him say that before."
+- `gate:first-visit` → "He stood at the gate through one whole return of the human's. He watched him go back down. He said, 'He does not wait.' He went home."

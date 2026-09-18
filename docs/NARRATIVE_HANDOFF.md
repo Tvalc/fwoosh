@@ -4,6 +4,32 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 20 — 2026-09-17 · branch `claude/narrative-batch-20` (on batch 19)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| AD-39 | Few words in life, words come in sanctuary | batch-15 NP-20 → approved. Squares AD-28 (Brooks voice) with the manuscript's near-wordless living Ratkin. |
+| AD-40 | Hollowbeech = an earlier lost village in the oldest understood songs | AD-17 as changed by AD-30; NP-17 → approved. `adm-memory` line 3 ("Hollowbeech is the first verse. You're in it.") is now wrong and must be rewritten: the newest song is the room in the deep. |
+
+### 2. Finished content (DRAFT)
+CAST_REGISTRY_V2.md gains six entries: the five who went first (cit-015, 009, 004, 014; cit-025 reserved) and their teacher cit-011. Twelve of twenty-four cell citizens now have manuscript-seated drafts.
+
+### 3. Reveal order
+cit-015's background explains the shriek in Ch04 from the Ratkin side. Same gate as all backgrounds: not before diary `cell`.
+
+### 5. Makko art (blocked on profile approval)
+Wall-marks: spear (015), spear with a laid stone (009), blade (004), blade with a root (014), open hand on a line (011).
+
+### 6. Open
+- **Asked:** naming (NP-18).
+- `adm-hand` escort; `adm-memory` line 3; `adm-hearth` (cit-022 and the propped door still fit); ten profiles to rewrite (cit-003, 005, 006, 007, 008, 016, 018, 019, 022 and the archive's trader material, which the manuscript only thinly supports: "the kind the traders used"); cit-025…029; `dia-cell` from Ch04.
+
+### 7. Files and commit
+CAST_REGISTRY_V2.md, BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-20 -1`.
+
+---
+
 ## Batch 19 — 2026-09-17 · branch `claude/narrative-batch-19` (on batch 18)
 
 ### 1. Approved decisions
