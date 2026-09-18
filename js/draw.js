@@ -966,6 +966,7 @@ function hubAct(a){
   if(a==='shrine'){ hubSheet='shrine'; return; }
   if(a==='judgmentstart'){judgmentOpen();return;}
   if(a==='judgmentnext'){judgmentAdvance();return;}
+  if(a.indexOf('favorsecure:')===0){favorSecure(a.split(':')[1]);return;}
   if(a==='verdictstart'){verdictOpen();return;}
   if(a==='verdictnext'){verdictAdvance();return;}
   if(a==='conversations'){hubSheet='conversations';dialogueHistoryPage=Math.max(0,dialogueSave().history.length-1);return;}
@@ -1086,7 +1087,7 @@ function drawJudgmentCard(ctx,x,y,w,h){
   for(let i=0;i<terms.length;i++){ctx.beginPath();ctx.arc(start+i*gap,y+23,8,0,7);ctx.fillStyle=terms[i].done?'#8affc1':'#494055';ctx.fill();}
   ctx.textAlign='center';ctx.fillStyle='#f0e5ff';ctx.font='800 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText('RATKIN JUDGMENT',VW/2,y+56);
   ctx.fillStyle=j.released?'#ffcf6b':heard?'#8affc1':'#c9a0ff';ctx.font='500 15px "Chakra Petch",system-ui,sans-serif';
-  ctx.fillText(j.released?(j.unanimous?'released · unanimous · best Invoice + recruit':'released · '+votes+' / 5 blocs support you'):heard?votes+' / 5 blocs support release':j.eligible?'the Ratkin have summoned you':done+' / 5 terms fulfilled',VW/2,y+79);
+  ctx.fillText(j.released?(j.pledgeReady?'released · five strong votes · recruit eligible':j.unanimous?'released · five votes recorded':'released · '+votes+' / 5 blocs support you'):heard?votes+' / 5 blocs secured for release':j.eligible?'the Ratkin have summoned you':done+' / 5 terms fulfilled',VW/2,y+79);
   hubB(x,y,w,h,'shrine');
 }
 
@@ -1207,12 +1208,16 @@ function drawShrineSheet(ctx){
   ctx.fillStyle='rgba(210,195,235,0.72)';ctx.font='italic 500 15px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText(j.released?(j.unanimous?'every Ratkin voice released Duy.':'four Ratkin voices released Duy.'):j.heard?'four voices release Duy; all five improve the Invoice.':'build a society that can survive without you.',VW/2,y+76);
   for(let i=0;i<terms.length;i++){
-    const t=terms[i],yy=y+128+i*78;
+    const t=terms[i],yy=y+118+i*78;
     panel(ctx,34,yy-34,VW-68,58,10,t.done?'rgba(21,50,42,0.82)':'rgba(32,28,43,0.78)',t.done?'rgba(138,255,193,0.62)':'rgba(120,110,145,0.5)');
     const title=t.name||t.label,progress=t.progress||(t.value+' / '+t.need);
     ctx.textAlign='left';ctx.fillStyle=t.done?'#8affc1':'#d7cde5';ctx.font='800 19px "Chakra Petch",system-ui,sans-serif';ctx.fillText(t.done?'✓  '+title:'○  '+title,52,yy-6);
     if(j.heard&&t.desc){ctx.fillStyle='rgba(225,216,238,.82)';ctx.font='500 15px "Chakra Petch",system-ui,sans-serif';ctx.fillText(t.role+' · '+t.desc,76,yy+16);}
-    ctx.textAlign='right';ctx.fillStyle=t.done?'#8affc1':'#c9a0ff';ctx.font='800 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText(progress,VW-52,yy);
+    ctx.textAlign='right';ctx.fillStyle=t.done?'#8affc1':'#c9a0ff';ctx.font='800 17px "Chakra Petch",system-ui,sans-serif';ctx.fillText(progress,VW-190,yy);
+    if(j.heard&&t.minimumMet){const canUpgrade=t.secured&&t.tier>(j.voteTiers?.[t.id]||0),label=t.secured?(canUpgrade?'UPGRADE':'SECURED'):'SECURE';
+      panel(ctx,VW-170,yy-25,116,40,8,t.secured?'rgba(28,55,47,.9)':'rgba(52,37,68,.96)',t.secured?'rgba(138,255,193,.5)':'#c9a0ff');
+      ctx.textAlign='center';ctx.fillStyle=t.secured?'#8affc1':'#f3e9ff';ctx.font='800 13px "Chakra Petch",system-ui,sans-serif';ctx.fillText(label,VW-112,yy);if(!t.secured||canUpgrade)hubB(VW-170,yy-25,116,40,'favorsecure:'+t.id);
+    }
   }
   ctx.textAlign='center';ctx.fillStyle='#d7cde5';ctx.font='500 16px "Chakra Petch",system-ui,sans-serif';ctx.fillText(j.heard?done+' of 5 blocs support Duy · 4 release · 5 unanimous':done+' of 5 terms fulfilled · connected and sealed buildings only',VW/2,y+526);
   if(j.heard){
@@ -1226,10 +1231,10 @@ function drawShrineSheet(ctx){
   const bY=y+h-112,bX=60,bW=VW-120,bH=76;
   panel(ctx,bX,bY,bW,bH,14,'rgba(40,30,58,0.94)',META.judgment.eligible?'#8affc1':'#c9a0ff');
   ctx.fillStyle=META.judgment.eligible?'#b9ffda':'#eadfff';ctx.font='800 23px "Chakra Petch",system-ui,sans-serif';
-  const label=j.verdictReady&&!j.verdictHeard?'HEAR THE VERDICT':j.eligible&&!j.heard?'ANSWER THE SUMMONS':j.released?'DUY IS RELEASED':j.heard?'RETURN TO THE QUARTER':'OPEN THE RATKIN QUARTER';
+  const label=j.verdictReady&&!j.verdictHeard?'HEAR THE VERDICT':j.eligible&&!j.heard?'ANSWER THE SUMMONS':j.released?'DUY IS RELEASED':j.heard?'KEEP BUILDING SUPPORT':'OPEN THE RATKIN QUARTER';
   ctx.fillText(label,VW/2,bY+34);ctx.font='500 14px "Chakra Petch",system-ui,sans-serif';
   ctx.fillText(j.released?(j.unanimous?'best Invoice tier · Ratkin recruit eligible':'the fifth voice can still improve the Invoice'):j.verdictReady?'Khet-Tak-Tor is waiting':j.heard?'earn support through action, rebuilding and truth':j.eligible?'Khet-Tak-Tor is waiting':'roads, homes, food, work and storage',VW/2,bY+57);
-  hubB(bX,bY,bW,bH,j.verdictReady&&!j.verdictHeard?'verdictstart':j.eligible&&!j.heard?'judgmentstart':j.released?'close':'city');
+  hubB(bX,bY,bW,bH,j.verdictReady&&!j.verdictHeard?'verdictstart':j.eligible&&!j.heard?'judgmentstart':j.released?'close':'close');
   ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='500 14px "Chakra Petch",system-ui,sans-serif';ctx.fillText('tap outside to close',VW/2,VH-12);
 }
 
@@ -1255,7 +1260,7 @@ function drawVerdictSheet(ctx){
   ctx.fillStyle='#090711';ctx.fillRect(0,0,VW,VH);
   if(sprReady('ashford')){const bg=MAKKO_IMG.ashford,sc=Math.max(VW/bg.naturalWidth,VH/bg.naturalHeight),w=bg.naturalWidth*sc,h=bg.naturalHeight*sc;ctx.globalAlpha=.24;ctx.drawImage(bg,(VW-w)/2,(VH-h)/2,w,h);ctx.globalAlpha=1;}
   ctx.fillStyle='rgba(8,5,14,.72)';ctx.fillRect(0,0,VW,VH);ctx.textAlign='center';ctx.fillStyle='#ffcf6b';ctx.font='800 38px "Chakra Petch",system-ui,sans-serif';ctx.fillText('THE RATKIN VERDICT',VW/2,92);
-  const votes=favorVotes();ctx.fillStyle='#8affc1';ctx.font='600 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText(votes===5?'UNANIMOUS · DUY WILL RISE':'FOUR VOICES · DUY WILL RISE',VW/2,128);
+  const votes=favorVotes();ctx.fillStyle='#8affc1';ctx.font='600 18px "Chakra Petch",system-ui,sans-serif';ctx.fillText(favorStrongVotes()===5?'UNANIMOUS · DUY WILL RISE':'FOUR VOICES · DUY WILL RISE',VW/2,128);
   const gap=70,start=VW/2-gap*2;for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(start+i*gap,190,18,0,7);ctx.fillStyle=i<votes?'#8affc1':'#494055';ctx.fill();ctx.fillStyle=i<votes?'#0a1712':'#b6aec4';ctx.font='800 19px "Chakra Petch",system-ui,sans-serif';ctx.fillText(i<votes?'✓':'–',start+i*gap,197);}
   const by=650,bh=360,px=38,py=by+44,ps=126;panel(ctx,20,by,VW-40,bh,18,'rgba(13,16,32,.97)','rgba(255,207,107,.9)');panel(ctx,px,py,ps,ps,10,'#151323','#5d5272');
   ctx.save();roundRectPath(ctx,px,py,ps,ps,10);ctx.clip();const actor=line.who==='DUY'?'duy':'keith';

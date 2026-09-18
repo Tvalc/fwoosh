@@ -186,7 +186,7 @@ function drawCitySheet(ctx){
   ctx.save();ctx.fillStyle='#080a10';ctx.fillRect(0,0,VW,VH);
   if(sprReady('ashford')){ctx.globalAlpha=0.20;const im=MAKKO_IMG.ashford,sc=Math.max(VW/im.naturalWidth,VH/im.naturalHeight);ctx.drawImage(im,(VW-im.naturalWidth*sc)/2,(VH-im.naturalHeight*sc)/2,im.naturalWidth*sc,im.naturalHeight*sc);ctx.globalAlpha=1;}
   ctx.fillStyle='rgba(7,10,16,0.84)';ctx.fillRect(0,0,VW,VH);
-  if(cityView==='station')drawCityStation(ctx);else if(cityView==='society')drawSociety(ctx);else if(cityView==='household')drawHousehold(ctx);else if(cityView==='celebration')drawSocietyCelebration(ctx);else drawCityMap(ctx);
+  if(cityView==='station')drawCityStation(ctx);else if(cityView==='society')drawSociety(ctx);else if(cityView==='support')drawSocietySupport(ctx);else if(cityView==='household')drawHousehold(ctx);else if(cityView==='celebration')drawSocietyCelebration(ctx);else drawCityMap(ctx);
   ctx.restore();
 }
 function drawCityHeader(ctx,title){
