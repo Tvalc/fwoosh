@@ -4,6 +4,32 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 10 — 2026-09-17 · branch `claude/narrative-batch-10` · based on `claude/narrative-batches-01-09` @ 2bb09ec (Codex's import + reconcile commit)
+
+### 0. Sync note
+Codex had already imported batches 01–09 onto current main and added "Reconcile approved narrative canon and Warden wording" (2bb09ec). I did not push over it. This batch sits on top of that commit. Main has also gained #76–#78 and the authored profile contract (`js/society-content.js`, `SOCIETY_PROFILES`), which I have read: profiles need `{name, pronunciation, lifeStage, formerRole, voice, chronicleIntro, background, desire, milestones}`. My registry fields map onto it directly once Tony approves profiles.
+
+### 1. Approved decisions
+None new.
+
+### 2. Finished content
+Ledger cross-check, docs/narrative/BIBLE.md §1c (L-01…L-09). vovinam-ledger read at e61dda2.
+
+### 3–5.
+Unchanged.
+
+### 6. Open: **do not ship any citizen profile to `SOCIETY_PROFILES` until L-01…L-04 are answered**
+- **L-01** Ledger has a living "Village of Nineteen Absences"; Fwoosh canon says the village was destroyed and the nineteen were its last survivors. Asked.
+- **L-02** Chit-tat-to was in the cell and escaped. No profile mentions him yet.
+- **L-03** Chit-tat-to (15, three beats) and Kesh-ka (elder, two beats) break AD-05's age rule.
+- **L-04** Ledger says the nineteen are listed by name. My nineteen names may collide with the novel bible.
+- Still blocked on the Blood Debt story bible for ten diary chapters.
+
+### 7. Files and commit
+docs/narrative/BIBLE.md, docs/NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-10 -1`. **Pushed** to origin as `claude/narrative-batch-10`.
+
+---
+
 ## Batch 09 — 2026-09-17 · branch `claude/narrative-batch-09` (stacked on 08) · base `main` 8f23fdc
 
 ### 1. Approved decisions
