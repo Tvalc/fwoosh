@@ -4,6 +4,36 @@ Newest batch first. Earlier batches are never edited except to mark items supers
 
 ---
 
+## Batch 15 — 2026-09-17 · branch `claude/narrative-batch-15` (on batch 14)
+
+### 1. Approved decisions
+| ID | Decision | Supersedes |
+|---|---|---|
+| **AD-30** | **The manuscript (`novel/`) governs wherever it collides with Fwoosh canon or earlier approvals.** | **Withdrawn:** AD-25, AD-27, AD-29. **Changed:** AD-13 → 81 before / 62 after; AD-17 → Hollowbeech is not the raid site; AD-08/09 → kingdomless people who move, but the village is underground and intact. **Suspended:** AD-05, AD-26 (naming). **Fwoosh CANON.md (#75/#76):** "destroyed the village… captured its last nineteen survivors" → Blackroot took villagers from a living village of 81 and destroyed nothing; "unarmed captives" → the court reclassified 19 of 24 dead as non-combatants (Ch05). **Codex: if you already mirrored AD-25…AD-27 anywhere, revert those lines. Do not mirror AD-13 or AD-17 as originally worded.** Full list: BIBLE §1b. |
+
+Untouched and still approved: AD-01, 02, 03, 04, 06, 07, 10, 11, 12, 14, 15, 16, 18–24, 28.
+
+### 2. Finished content (DRAFT)
+- BIBLE §1d continued: N-12 (24 dead vs 19 absences), N-13 (red cord, comb), N-14 (Miss Hue's wording).
+- Re-seating map NP-19: which of my citizens become the manuscript's named dead, IDs kept.
+
+### 3. Reveal order
+Unchanged in structure. The cell's spoiler gate now protects more: a citizen's background may reveal they are Chit-tat-to's aunt or mother.
+
+### 5. Makko art (proposal)
+One **wall-mark** per citizen, in the style of the village history wall (Ch14: a fishing line, a knot, a spiral, a grinding stone). Blocked on re-seating approval.
+
+### 6. Open
+- **Asked:** who the five armed dead were (N-12).
+- NP-17 Hollowbeech as an earlier lost village; NP-18 naming rework; NP-19 re-seating map; NP-20 words come in sanctuary; how much of Chit-tat-to's mother Fwoosh may show; whether Nim's parents live.
+- All 22 profiles, 5 admission scenes, `dia-cell-r1` are **suspended drafts**. `dia-home-r2` and `dia-keith-c1` are unaffected.
+- Still to read line by line: the complete handoff and chapters 0–3, 8–13, 15–16.
+
+### 7. Files and commit
+BIBLE.md, NARRATIVE_HANDOFF.md. `git log claude/narrative-batch-15 -1`.
+
+---
+
 ## Batch 14 — 2026-09-17 · branch `claude/narrative-batch-14` (on batch 13) · main now 5e32257 (`novel/` added)
 
 ### 1. Approved decisions

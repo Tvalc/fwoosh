@@ -73,6 +73,14 @@ Tony's `blood-debt-writing` skill governs prose in this universe and Fwoosh is i
 **AD-27:** Hollowbeech's carried fire survived: an escapee saved a coal and it burns in the living village. Dof-Ma-Rek does not know (was NP-15).
 **AD-28:** All Ratkin material in Fwoosh (chronicles, first-meeting lines, admission scenes) takes the Brooks register: earnest, fellowship, landscape as mood, grief underneath; no winking narration. Duy's diary stays Griffin; System text stays the Auditor. (Was NP-14.)
 **AD-29:** Sanctuary residents know some of their people escaped Hollowbeech but not who. Later arrivals from the living village are their only news. (Was NP-16.)
+**AD-30 (Tony, after reading the novel cross-check): the manuscript governs wherever it collides with Fwoosh canon or earlier approvals.** Kept untouched: AD-01, 02, 03, 04, 06, 07, 10, 11, 12, 14, 15, 16, 18–24, 28. Changed by AD-30:
+- AD-08/AD-09 stand in spirit (a kingdomless people who survive by moving: Ch14 "In her mother's time they had moved twice… You survive by being where the boots are not") but the village is **underground and intact**: root tunnels, black spring, low fire, history wall.
+- AD-13 → **81 people before, 62 after** (Ch14).
+- AD-17 → Hollowbeech is **not** the raid site. It may survive as an earlier lost village named in the songs (proposal NP-17); otherwise it is dropped.
+- AD-25, AD-27, AD-29 → **withdrawn.** The village was never destroyed, the fire never went out, and everyone knows exactly who is missing.
+- AD-05/AD-26 → **suspended**; the manuscript's Ptik, Rul and Kesh-ka are adults with short names, and Chit-tat-to "had not done a thing". Rework pending (NP-18).
+- Fwoosh CANON (#75/#76): "destroyed the village… last nineteen survivors" → Blackroot **took** villagers from a living village and destroyed nothing.
+- Fwoosh CANON "unarmed Ratkin captives" → see N-12: the court reclassified **19 of 24** as non-combatants.
 
 ### Canon text these supersede (for Codex to reconcile in CANON.md, SANCTUARY_SOCIETY.md, CLAUDE_CITIZEN_STORY_BRIEF.md, CURSOR_SANCTUARY_KICKOFF.md, ROADMAP.md)
 - Every "nomadic forest tribe", "forest society", "forest culture", "woodland community props" → displaced villagers (AD-08/09). PRs #73–#75 wording.
@@ -113,7 +121,7 @@ Read in full: README, Ch04 The Dark Cell, Ch14 Chit-tat-to I, Ch07 The Warden. S
 
 | # | Manuscript / story bible | Fwoosh canon and approved decisions | Severity |
 |---|---|---|---|
-| N-01 | The Ratkin village is **underground and intact**: root tunnels, black spring, moss ceiling, low fire. **81 people before, 62 after.** The nineteen were taken from it a day or two earlier. Its history wall holds **four hundred years** of marks. After the massacre the village chooses to go deeper (Ch14). | Fwoosh #75: Blackroot **destroyed** the village; nineteen were the last survivors. AD-08/09 surface villagers; AD-13 150–200; AD-17 Hollowbeech destroyed; AD-25 "the Village of Nineteen Absences is the village *after* Hollowbeech". | **Direct contradiction.** AD-25 cannot stand as worded: Ch14's village is the one the nineteen were taken from. |
+| N-01 | The Ratkin village is **underground and intact**: root tunnels, black spring, moss ceiling, low fire. **81 people before, 62 after.** The nineteen were taken from it; how long before is unstated (Ch06's carved comb implies real time in the cells; the "two days" in Ch14 is the time since the massacre). Its history wall holds **four hundred years** of marks. After the massacre the village chooses to go deeper (Ch14). | Fwoosh #75: Blackroot **destroyed** the village; nineteen were the last survivors. AD-08/09 surface villagers; AD-13 150–200; AD-17 Hollowbeech destroyed; AD-25 "the Village of Nineteen Absences is the village *after* Hollowbeech". | **Direct contradiction.** AD-25 cannot stand as worded: Ch14's village is the one the nineteen were taken from. |
 | N-02 | Ratkin are rated **"barely sentient"** by the System, **think in pictures**, read screens as pictograms, sign with their hands. Ch14: "He did not have the words for *on purpose*. He was not sure the village had them." Elders do speak short sentences. Records are a **pictogram history wall**; one grandmother "knew all the songs". | My cast: a four-tongue trader, knot-cord accounts, wry talkers, a Road Song as the people's record. | **Major.** Voices and several trades are too verbally sophisticated for the living Ratkin. Possible bridge (proposal only): being "lifted up" includes words, so sanctuary speech is richer than life was. |
 | N-03 | Names: **Chit-tat-to** (15, "had not done a thing"), **Ptik** (adult fisher), **Rul** (30), **Kesh-ka** (old). | AD-05/AD-26: beats earned by journeys and work; Chit-tat-to "earned all three young". | **Contradiction.** Adults have one beat; Chit-tat-to has three having done nothing yet. The three-beat system does not fit the manuscript. |
 | N-04 | The nineteen, as written: **four Elders**, one of them **Chit-tat-to's mother**, keeper of the history wall (grinding stone; she taught); his **aunt** (the roof-lashing knot); **Ptik** (fishing); **the old grandmother who knew all the songs, arms out behind her holding two small ones, both killed**; **Rul's brother**; two big spear carriers and three with knives at the front. His uncle pushed him low. | My nineteen are invented from nothing. None is Chit-tat-to's mother, aunt, Ptik or Rul's brother. | **Major, but fixable with identities kept:** cit-001 Sek-Ra-Tun already *is* the song grandmother holding a child; the two small ones match AD-04 (Nim, Kip). Others can be re-seated onto the manuscript's dead. Answers L-04. |
@@ -124,6 +132,31 @@ Read in full: README, Ch04 The Dark Cell, Ch14 Chit-tat-to I, Ch07 The Warden. S
 | N-09 | Ch28 outline: the defended village is chartered as "the first Ratkin place-name in Atlantis's ledger". | AD-17 names a Ratkin village Hollowbeech. | Soft conflict: fine if "Hollowbeech" is their own word and never a System name; otherwise drop. |
 | N-10 | No Blackroot Company, slavers or fallen Ratkin kingdom appear in the manuscript or bible. The bible leaves room: "the villain space: whoever profits from the discarded staying discarded." | Fwoosh #75 Blackroot; AD-08 fallen kingdom. | Additions, not contradictions, **except** "destroyed the village" (N-01). |
 | N-11 | Ch14 rite: each absence is drawn on the wall as **their thing** (a fishing line, a knot, a spiral, a grinding stone). | Unused. | **Gift.** Every citizen should have a wall-mark. It is the natural Makko icon per citizen and the link between the living village and sanctuary. |
+
+
+### 1d continued (batch 15): Ch05–06 findings
+| # | Manuscript | Consequence |
+|---|---|---|
+| N-12 | Ch05: **"19 of the 24 have been reclassified: non-combatant."** Twenty-four Ratkin died in the cell. Five were the armed front rank; they are the "5" in the 19 + 5 debt. Yet Ch14 counts the village at 81 → 62, a loss of nineteen, and Chit-tat-to carries home the number nineteen. | Either the five armed dead were **not of the village**, or Ch14's arithmetic should be 81 → 57. **Asked.** Under AD-01 all twenty-four burned and all twenty-four are owed a citizen identity. |
+| N-13 | Ch06: the keeping place has waist-high cells with shackle points and **feeding locks**; something "kept" them. One of the dead wore **a braided red cord at the throat, "made by somebody for somebody"**. In the third cell, **a carved comb**, made by "a person who had time, in a cell, and wanted to be beautiful." | Two objects waiting for owners. Proposal: cit-010 (the knot-maker) braided the cord; the comb's carver is one of the nineteen still to be re-seated. |
+| N-14 | Ch06, Diep: "They were running from something, out of their cells, toward the first open door." Miss Hue: "The first thing through it was gunfire. Say it correctly or don't say it." | Supports AD-11. Also supplies the honest wording for Fwoosh CANON's cell paragraph. |
+
+### Re-seating map (DRAFT, NP-19): my citizens onto the manuscript's dead. IDs and temperaments kept.
+| Manuscript figure | Proposed citizen | Fit |
+|---|---|---|
+| The old grandmother who knew all the songs, arms out behind her holding two small ones | **cit-001 Sek-Ra-Tun** | Near-exact. Road Song becomes "all the songs", now unheld (Kesh-ka's double spiral). One of the four Elders. |
+| The two small ones | **cit-002 Nim, cit-012 Kip** | Exact (AD-04). Both were with the grandmother; cit-010's "Kip on her hip" line must change. |
+| Chit-tat-to's aunt: the roof-lashing knot that never slipped | **cit-010 Ili-Sa-Ven** | Exact trade. Makes Kip's carer Chit-tat-to's aunt. Wall-mark: the knot. |
+| Ptik: three fish on a day nobody else took one | **cit-017 Shi-Pa-Nol**, re-seated from snail-keeper to fisher; "Ptik" is the everyday name | Temperament (patient, never late) carries over whole. Wall-mark: the fishing line. |
+| Rul's brother | **cit-009 Bru-Ka-Dol** | Free slot; gives him living kin (Rul, 30). |
+| Chit-tat-to's mother: Elder, keeper of the history wall, grinding stone, taught | **cit-013 Mor-Ne-Dath** (miller) is the only trade match | **Sensitive.** The story bible forbids flashback grief and says she appears "through inherited obligations, not memories". I will not write her until Tony says how much Fwoosh may show. |
+| Two more Elders (four died) | **cit-016 Ume-Da-Ril, cit-011 Hes-Vo-Lim** | Age and standing fit. |
+| Wearer of the red cord | open; cord braided by cit-010 | — |
+| Carver of the comb | open; candidates cit-014 Fen-Ya-Sool or cit-019 Eth-Wa-Min | — |
+| cit-020, cit-021 (Nim's parents), cit-022 (Hal-Ne-Dur) | No longer raid dead. cit-022 stands as an ancestor. **Nim's parents may be alive among the 62**, which changes her story from orphan to child waiting. | Needs Tony. |
+| Living, named in Ch14: **Kesh-ka, Rul** | Not citizens. They are alive. Reserved for the day they die. | — |
+
+**What must be rewritten in every profile:** raid-night material (oven pulled down, hearthstone split, creek crossing, cage break), surface-village details, market trips and trade tongues, and living-world speech. Proposal NP-20: in life they had few words and many pictures; **in sanctuary the words come**, which is part of being lifted up. Chronicles are written in sanctuary's voice; memories of life stay concrete and pictorial.
 
 ## 2. Naming (APPROVED AD-05; see NP-12 for the AD-09 adjustment)
 
