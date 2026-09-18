@@ -401,7 +401,7 @@ function drawVillager(ctx,X,y,c,action,H,o){
 // Full-body clips remain full-body clips. Dedicated dialogue exports take priority;
 // until they arrive use a still head-and-shoulders crop of the Makko Ratkin.
 function drawDialoguePortrait(ctx,actor,emotion,x,y,size,talking,t){
-  const name=actor==='duy'?'duy':'arbiter';
+  const name=actor==='duy'?'duy':actor==='keith'?'keith':'arbiter';
   const key='dialogue_'+name+'_'+emotion,legacy='dialogue_'+actor+'_'+emotion;
   const clip=animReady(key)?key:legacy,im=MAKKO_ANIM_IMG[clip],meta=MAKKO_ANIM[clip];
   if(im&&im.complete&&im.naturalWidth&&meta){
@@ -893,7 +893,7 @@ function drawRunMeters(ctx){
   ctx.fillText('RUN +'+runEmbers+' EMBERS',VW-18,89);
   ctx.textAlign='left';ctx.font='600 22px "Chakra Petch",system-ui,sans-serif';
   ctx.fillStyle=duelActive?'#ff9dbd':'#c2b6c8';
-  ctx.fillText(duelActive?'KHET-TAK-TOR '+Math.floor(dumped)+' / '+((boss&&boss.dumpNeeded)||K.DUEL_DUMP):'EDGE '+(edge>0?'+':'')+Math.round(edge),18,118);
+  ctx.fillText(duelActive?'KEITH '+Math.floor(dumped)+' / '+((boss&&boss.dumpNeeded)||K.DUEL_DUMP):'EDGE '+(edge>0?'+':'')+Math.round(edge),18,118);
   ctx.textAlign='right';ctx.fillStyle=rescueReward?'#b0ffd8':'#b4a7ba';
   ctx.fillText(rescueReward?rescueReward.count+' RESCUED · +'+rescueReward.embers+' EMBERS':'SCORE '+score,VW-18,118);
   ctx.restore();
@@ -912,11 +912,11 @@ function drawDialogue(ctx){
   ctx.save();panel(ctx,bx,by,bw,bh,10,'rgba(13,20,45,0.96)','rgba(185,200,239,0.95)');
   const px=bx+pad,py=by+pad;
   ctx.save();roundRectPath(ctx,px,py,ps,ps,6);ctx.fillStyle='#151323';ctx.fill();ctx.clip();
-  const actor=line.who==='DUY'?'duy':'keith';
+  const actor=line.who==='DUY'?'duy':line.who==='KEITH'?'keith':'arbiter';
   drawDialoguePortrait(ctx,actor,line.emotion||'stern',px,py,ps,talking,t);
   ctx.restore();
   const tx=px+ps+16,tw=bx+bw-pad-tx;
-  ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':'#ffb8c9';
+  ctx.textAlign='left';ctx.fillStyle=line.who==='DUY'?'#a9e9ff':line.who==='KEITH'?'#ff7aa6':'#ffd18a';
   ctx.font='800 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,tx,by+25);
   ctx.fillStyle='#f2f3ff';ctx.font='500 26px "Chakra Petch",system-ui,sans-serif';
   wrapText(ctx,line.text.slice(0,shown),tx,by+54,tw,28);
@@ -1645,6 +1645,29 @@ function render(){
       const dx = wrapDX(snipe.tx - snipe.ox);
       const sx = ((snipe.ox + dx*k)%VW+VW)%VW, sy = snipe.oy + (snipe.ty-snipe.oy)*k;
       wrapDraw(sx, X=>{ ctx.fillStyle = '#ff3d7a'; ctx.beginPath(); ctx.arc(X, sy, 5, 0, 7); ctx.fill(); });
+    }
+  }
+
+  // Keith's ordinary-run strike. The mark is the counterplay: leave it before the ring closes.
+  if(keithStrike){
+    const k = Math.min(1, keithStrike.t/K.KEITH_STRIKE_TELE);
+    wrapDraw(keithStrike.ox,X=>{
+      drawSpr(ctx,'keith',X,keithStrike.oy,54,{rot:0.08*Math.sin(frame*0.12),sy:1+0.04*Math.sin(frame*0.16)});
+    });
+    const rr = K.KEITH_STRIKE_R*(1.8-0.8*k);
+    wrapDraw(keithStrike.tx, X=>{
+      const col = keithStrike.done ? '255,180,120' : '255,61,122';
+      const gg = ctx.createRadialGradient(X,keithStrike.ty,1,X,keithStrike.ty,rr);
+      gg.addColorStop(0,'rgba('+col+','+(0.45+0.35*k).toFixed(2)+')');
+      gg.addColorStop(0.55,'rgba('+col+',0.14)'); gg.addColorStop(1,'rgba('+col+',0)');
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(X,keithStrike.ty,rr,0,7); ctx.fill();
+      ctx.strokeStyle='rgba('+col+',0.9)'; ctx.lineWidth=3; ctx.beginPath();
+      ctx.arc(X,keithStrike.ty,rr*0.72,-Math.PI/2,-Math.PI/2+(1-k)*Math.PI*2); ctx.stroke();
+    });
+    if(!keithStrike.done){
+      const dx=wrapDX(keithStrike.tx-keithStrike.ox), sx=keithStrike.ox+dx*k;
+      const sy=keithStrike.oy+(keithStrike.ty-keithStrike.oy)*k;
+      wrapDraw(sx,X=>{ctx.fillStyle='#ff7aa6';ctx.beginPath();ctx.arc(X,sy,5,0,7);ctx.fill();});
     }
   }
 

@@ -23,12 +23,12 @@ const K = {
   CINDER_EAT_T: 0.65,              // warning window: shatter demon or rekindle husk to interrupt
   CINDER_BLAST_R: 120,
   CINDER_BLAST_HEARTS: 1,
-  MAX_DEMONS: 6, DEMON_SPD: 135,    // legacy Khet-Tak-Tor cap; vent units always release their demon
+  MAX_DEMONS: 8, DEMON_SPD: 145,    // pressure cap; vent units always release their demon
   DEMON_TGT_VILL: 0.6,
-  DEMON_HIT: 0.06, DEMON_HIT_CD: 0.8,
+  DEMON_HIT: 0.075, DEMON_HIT_CD: 0.8,
   DEMON_KNOCK_SPD: 520, DEMON_KNOCK_T: 0.14, // a bite breaks the heal stack and throws Duy clear
   HURT_IFRAME: 0.5,
-  DEMON_LIFE: 2.5, DEMON_R: 16,     // expiry remains only for Khet-Tak-Tor's temporary summons
+  DEMON_LIFE: 2.5, DEMON_R: 16,     // expiry remains for Keith's pressure summons and other temporary demons
   CHAIN_R: 120,                     // holding heat arcs the rescue to flaming villagers this close (save floor(heat) extra)
   VENT_ANIM_SC_F: 1.20,             // fire-man vent-anim: 280px cell (body at bottom, tall tapered flame up top) — keeps body size, flame reaches high without clipping
   VENT_ANIM_SC_C: 1.23,             // cinder-man vent-anim scale
@@ -48,17 +48,17 @@ const K = {
   FUSE_MAX: 3.20,                   // also the inherit cap on EAT
   HUNTER_FUSE: 8.0,
 
-  // ABSORBER loop: Khet-Tak-Tor's fire spreads through the town; you pull it off villagers to save them.
+  // ABSORBER loop: Keith's fire spreads through the town; you pull it off villagers to save them.
   HEAT_MAX: 6,                      // fires you can carry at once
   HEAT_VENT: 0.30,                  // sec per heat shed while BRACING (running does NOT cool — fire persists)
-  SPARK_EVERY: 2.6,                 // Khet-Tak-Tor ignites a fresh villager this often
-  // ARSON IMPS — Khet-Tak-Tor no longer ignites villagers out of thin air. He SENDS a fire imp in from an edge that
+  SPARK_EVERY: 2.6,                 // reserved cadence for authored fire pressure
+  // ARSON IMPS — Keith sends a fire imp in from an edge that
   // flies to a chosen villager and torches it on contact. DASH/run into the imp first to INTERCEPT it:
-  // you eat its fire (+heat), it mints bonus embers, and it banks an edge you cash in against Khet-Tak-Tor at the duel.
-  ARSON_EVERY: 2.6,                 // how often Khet-Tak-Tor sends an imp (scales down as the town heats up)
-  ARSON_MIN: 1.4,                   // fastest send cadence
+  // you eat its fire (+heat), it mints bonus embers, and it banks an edge you cash in against Keith at the duel.
+  ARSON_EVERY: 2.25,                // how often Keith sends an imp (scales down as the town heats up)
+  ARSON_MIN: 1.15,                  // fastest send cadence
   ARSON_SPD: 156,                   // imp flight speed toward its mark (a hair faster than you run, so cut the angle)
-  ARSON_MAX: 4,                     // imps in flight at once
+  ARSON_MAX: 5,                     // imps in flight at once
   ARSON_R: 15,                      // imp radius (intercept + reach-the-villager)
   ARSON_WARN: 0.45,                 // spawn telegraph: the imp hovers at the edge this long before it commits
   ARSON_HEAT: 1,                    // heat you take when you intercept (its fire is now yours)
@@ -75,7 +75,7 @@ const K = {
   EDGE_EXTRA_CAP: 2,               // most extra downs a deficit can add
   SPREAD_R: 52,                     // a flaming villager torches calm ones within this
   SPREAD_EVERY: 0.9,               // spread check cadence per flaming villager
-  SPREAD_CHANCE: 0.5,              // chance a nearby calm villager catches on a check
+  SPREAD_CHANCE: 0.58,              // chance a nearby calm villager catches on a check
   BURN_FUSE: 6.5,                   // a flaming villager burns into a WALL after this (unsaved)
   PANIC_SPD: 205,                   // flaming villagers outrun a clear-headed jog; dash or build heat to close
   SAVE_SCORE: 120,                  // base points per villager saved
@@ -192,4 +192,15 @@ const K = {
   OPP_SNIPE_R: 34,                  // impact radius
   OPP_SNIPE_HEARTS: 1,             // staying on the marked vent spot costs one heart
   INTRO_T: 1.9,                     // cold-open reveal length
+
+  // KEITH PRESSURE: hostile interruptions during ordinary rescue runs. Each event is telegraphed,
+  // adds a short demon wave and marks the player's current position for direct damage.
+  KEITH_PRESSURE_FIRST: 11,
+  KEITH_PRESSURE_EVERY: 17,
+  KEITH_PRESSURE_MIN: 9,
+  KEITH_PRESSURE_DEMONS: 2,
+  KEITH_PRESSURE_DEMON_TTL: 9,
+  KEITH_STRIKE_TELE: 0.85,
+  KEITH_STRIKE_R: 42,
+  KEITH_STRIKE_HEARTS: 1,
 };
