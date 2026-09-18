@@ -1495,6 +1495,22 @@ function render(){
     ctx.globalAlpha = 1;
   }
 
+  // Keith's pressure demons visibly lock onto a Ratkin. The moving tether is the warning:
+  // cut across it before the demon reaches the marked villager.
+  for(const d of demons){if(d.source!=='keith')continue;
+    if(d.tgt){
+      ctx.save();
+      const pulse = 0.55 + 0.25*Math.sin(frame*0.25+(d.ph||0));
+      ctx.globalAlpha=pulse;ctx.strokeStyle='#ff4f66';ctx.lineWidth=2.5;
+      ctx.setLineDash([8,10]);ctx.lineDashOffset=-frame*0.8;
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.tgt.x,d.tgt.y);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle='#ffb04f';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(d.tgt.x,d.tgt.y,K.R_CELL+8+3*Math.sin(frame*0.22),0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    }
+  }
+
   // Vent-demon intent stays readable without charge/explosion circles. The tether shows
   // who is in danger; a small bar shows the remaining interruption window. The target
   // itself intensifies with the existing Makko flame animation.

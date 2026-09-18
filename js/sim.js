@@ -259,10 +259,10 @@ function step(){
       const line = STORY.intro[intro.i];
       if(!line){ intro = null; }
       else {
-        const full = line.text.length * INTRO.CHAR;
-        const hold = INTRO.HOLD + line.text.length*0.012;
+        const full = line.text.length * INTRO.TALK_CHAR;
+        const hold = INTRO.TALK_HOLD + line.text.length*INTRO.TALK_TAIL;
         if(intro.lineT >= full + hold){
-          rememberDialogue(line);presentGap=1.5;
+          rememberDialogue(line);presentGap=INTRO.TALK_GAP;
           intro.i++; intro.lineT = 0;
           if(intro.i >= STORY.intro.length) intro = null;   // done -> pure gameplay
         }
@@ -990,7 +990,7 @@ function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat yo
   p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
   ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
   for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:town?285:24}); }
-  if(!demonKillSeen){ demonKillSeen = true; callout = { text:d.source==='vent'?'VENT DEMON CLEARED · +1 HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +1 HEAT +EMBERS', t:0, life:2.3, good:true }; }
+  if(!demonKillSeen){ demonKillSeen = true; notePresentEvent('demonKill'); callout = { text:d.source==='vent'?'VENT DEMON CLEARED · +1 HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +1 HEAT +EMBERS', t:0, life:2.3, good:true }; }
   else callout = { text:em>0?'SHATTERED! +1 HEAT +EMBERS':'SHATTERED! +1 HEAT', t:0, life:0.7, good:true };
 }
 

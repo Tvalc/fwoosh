@@ -43,17 +43,14 @@ const STORY = {
   // Short observations, not a chronological briefing. Diary chapters carry the deeper revelations.
   lore: [], // Present dialogue is now paced by witnessed events, not a lore timer.
   overload: ['MORE FIRE!', 'IT JUMPED TO YOU!', 'TOO MUCH!', 'IT PUSHED THROUGH!'],
-  // First run: instructions and fragments, delivered during fully controllable action.
+  // First run: a short, plain-language premise. Mechanics are taught by witnessed events below.
   intro: [
-    { who:ARBITER_NAME, emotion:"stern", text:"On your feet, Duy. Take the fire off them." },
-    { who:THREAT_NAME, emotion:"angry", text:"Keep carrying it. Every rescue feeds my fire." },
-    { who:ARBITER_NAME, emotion:"stern", text:"That is Keith. He turns the afterlife against my people." },
-    { who:'DUY', emotion:"questioning", text:"What does the heat do to me?" },
-    { who:ARBITER_NAME, emotion:"stern", text:"Heat hurts you, and heat frees them. Touch a burning Ratkin to carry it." },
-    { who:ARBITER_NAME, emotion:"stern", text:"Hold VENT or SPACE to spend one heat and heal. Venting roots you and calls a demon." },
-    { who:THREAT_NAME, emotion:"angry", text:"Then I will send more." },
-    { who:ARBITER_NAME, emotion:"stern", text:"Dash through a demon to break it. Its heat can pay for another rescue." },
-    { who:ARBITER_NAME, emotion:"stern", text:"I keep the gate. Save them, overcome Keith, and let the ratkin judge what you owe." },
+    { who:'DUY', emotion:"questioning", text:"Why are they burning?" },
+    { who:ARBITER_NAME, emotion:"stern", text:"You kill them." },
+    { who:ARBITER_NAME, emotion:"stern", text:"Human get quest. See Rat people. Use gun. Bang." },
+    { who:ARBITER_NAME, emotion:"stern", text:"You pay debt. Help now. They judge." },
+    { who:THREAT_NAME, emotion:"angry", text:"Go on, hero. Save the rats. I'll put them back." },
+    { who:ARBITER_NAME, emotion:"stern", text:"Keith keep fire. He send demons." },
   ],
 };
 
@@ -163,8 +160,8 @@ function diaryMarkRead(id){ if(!META.diary) META.diary={read:[]}; if(!META.diary
   if(META.diary.read.indexOf(id)<0){ META.diary.read.push(id); saveMeta(); if(typeof favorEvaluate==='function')favorEvaluate(false); } }
 function diaryFreshCount(){ return DIARY.filter(e=>diaryUnlocked(e) && !diaryIsRead(e.id)).length; }
 
-const INTRO = { WALK: 205, CHAR: 0.028, HOLD: 1.5, START_Y: 0.90, IGNITE_Y: 0.5 };
-const INTRO_VERSION = 6;   // replay the expanded Keith/Khet tutorial once after the story change
+const INTRO = { WALK: 205, CHAR: 0.028, TALK_CHAR: 0.018, TALK_TAIL: 0.006, HOLD: 1.5, TALK_HOLD: 0.25, TALK_GAP: 0.05, START_Y: 0.90, IGNITE_Y: 0.5 };
+const INTRO_VERSION = 7;   // replay the short premise once after the story change
 
 
 // Present-tense exchanges: witnessed events first, explanations on later returns.
@@ -178,19 +175,22 @@ const PRESENT = {
     {who:ARBITER_NAME,emotion:'stern',text:"Look. They're free of it. Get the next one."}],
   heat:[
     {who:'DUY',emotion:'pain',text:"Every one hurts more. I can barely hold it."},
-    {who:ARBITER_NAME,emotion:'stern',text:'Let some heat out. Watch what comes out with it.'}],
+    {who:ARBITER_NAME,emotion:'stern',text:'Heat drains your life. Save one, then vent it before it takes you.'}],
   vent:[
-    {who:'DUY',emotion:'startled',text:'That thing came out of me?'},
-    {who:ARBITER_NAME,emotion:'dry',text:'You let the heat loose. Now deal with it.'}],
+    {who:'DUY',emotion:'startled',text:'I stopped. It healed me.'},
+    {who:ARBITER_NAME,emotion:'dry',text:'VENT roots you. It spends heat first, then heals a heart.'}],
   demon:[
     {who:'DUY',emotion:'startled',text:'The demon came when I vented.'},
-    {who:ARBITER_NAME,emotion:'stern',text:'Venting spends heat and heals you. The demon is the price.'},
-    {who:ARBITER_NAME,emotion:'stern',text:'Dash through it before it reaches a cinder or bites you. Breaking it gives you heat back.'}],
+    {who:ARBITER_NAME,emotion:'stern',text:'The demon is the price. If it hits, healing stops.'},
+    {who:ARBITER_NAME,emotion:'stern',text:'Vent away from demons. Dash through one to break it.'}],
+  demonKill:[
+    {who:'DUY',emotion:'startled',text:'Dash broke it. It gave me heat.'},
+    {who:ARBITER_NAME,emotion:'stern',text:'Use that heat. Save a Ratkin or vent it away.'}],
   keith:[
-    {who:THREAT_NAME,emotion:'angry',text:'You keep pulling them out. I keep putting the fire back.'},
-    {who:ARBITER_NAME,emotion:'stern',text:'Keith is the hand making this suffering useful to him. Stop his fire and the ratkin can rise.'},
-    {who:'DUY',emotion:'questioning',text:'And you?'},
-    {who:ARBITER_NAME,emotion:'stern',text:'I keep the gate and record the debt. I do not choose the fire. The ratkin decide what comes after.'}],
+    {who:THREAT_NAME,emotion:'angry',text:'You save one. I mark the next.'},
+    {who:'DUY',emotion:'questioning',text:'Those demons are chasing them.'},
+    {who:ARBITER_NAME,emotion:'stern',text:'Keith sends them. They lock on to Ratkin. Stop them first.'},
+    {who:THREAT_NAME,emotion:'angry',text:"Vent. I'll send more."}],
   return:[
     {who:'DUY',emotion:'startled',text:'I died. How am I here?'},
     {who:ARBITER_NAME,emotion:'stern',text:"You'll come back every time. They're still burning."}],
@@ -269,6 +269,7 @@ function tickPresentDialogue(dt){
   if(fresh('vent') && (presentSeen('rescue')||presentSeen('ascend')) && !presentSeen('vent')){startPresentDialogue('vent');return;}
   if(fresh('demon') && presentSeen('vent') && !presentSeen('demon')){startPresentDialogue('demon');return;}
   if(fresh('keith') && !presentSeen('keith')){startPresentDialogue('keith');return;}
+  if(fresh('demonKill') && !presentSeen('demonKill')){startPresentDialogue('demonKill');return;}
   // Only one return-related exchange per run, near its beginning. Missed beats can recur later.
   if(elapsed<4 || elapsed>12 || presentEvents.returnUsed) return;
   const runs=opp.runs||0,last=META.recentRuns[META.recentRuns.length-1];
