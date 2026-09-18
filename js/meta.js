@@ -24,7 +24,7 @@ function loadMeta(){
     hero:'stranger', diary:{ read:[] }, flags:{}, recentRuns:[], city:cityFresh(), society:societyFresh(),
     emberLedger:{v:1,earned:0,historyComplete:true},
     judgment:{eligible:false,heard:false,favorBegun:false,baseSaved:0,baseFood:0,baseMaterials:0,
-      baseBurrows:0,baseDuelWins:0,votes:[],verdictReady:false,verdictHeard:false,released:false,unanimous:false} };
+      baseBurrows:0,baseDuelWins:0,baseEmbers:0,votes:[],voteTiers:{},securedAt:{},revokedVotes:[],verdictReady:false,verdictHeard:false,released:false,unanimous:false,pledgeReady:false} };
   if(!s || s.v!==1) return d;
   // Current saves record clears explicitly; never reconstruct them from unlocks.
   s.district = Math.max(1, Math.min(5, Math.trunc(Number(s.district)||1)));
@@ -41,11 +41,16 @@ function loadMeta(){
   s.society = societyNormalize(s.society);
   s.judgment = Object.assign({}, d.judgment, s.judgment||{});
   for(const key of ['eligible','heard','favorBegun','verdictReady','verdictHeard','released','unanimous'])s.judgment[key]=!!s.judgment[key];
-  for(const key of ['baseSaved','baseFood','baseMaterials','baseBurrows','baseDuelWins'])s.judgment[key]=Math.max(0,Math.trunc(Number(s.judgment[key])||0));
+  for(const key of ['baseSaved','baseFood','baseMaterials','baseBurrows','baseDuelWins','baseEmbers'])s.judgment[key]=Math.max(0,Math.trunc(Number(s.judgment[key])||0));
   const validVotes=new Set(['hearth','bowl','hand','claw','memory']);
   s.judgment.votes=[...new Set((Array.isArray(s.judgment.votes)?s.judgment.votes:[]).filter(v=>validVotes.has(v)))];
+  s.judgment.voteTiers=Object.fromEntries(Object.entries(s.judgment.voteTiers||{}).filter(([k,v])=>validVotes.has(k)&&[1,2,3].includes(Math.trunc(Number(v)))).map(([k,v])=>[k,Math.trunc(Number(v))]));
+  s.judgment.securedAt=Object.fromEntries(Object.entries(s.judgment.securedAt||{}).filter(([k,v])=>validVotes.has(k)&&Number.isFinite(Number(v))).map(([k,v])=>[k,Number(v)]));
+  s.judgment.revokedVotes=[...new Set((Array.isArray(s.judgment.revokedVotes)?s.judgment.revokedVotes:[]).filter(v=>validVotes.has(v)))];
+  for(const vote of s.judgment.votes)if(!s.judgment.voteTiers[vote])s.judgment.voteTiers[vote]=1;
   if(s.judgment.votes.length>=4)s.judgment.verdictReady=true;
   if(s.judgment.votes.length===5)s.judgment.unanimous=true;
+  s.judgment.pledgeReady=!!s.judgment.pledgeReady;
   if(s.judgment.released){s.judgment.verdictReady=true;s.judgment.verdictHeard=true;}
   return Object.assign({}, d, s);
 }
@@ -170,32 +175,72 @@ const FAVOR_DEFS=[
   {id:'claw',name:'THE CLAW',role:'protection',need:12,desc:'ascend 12 Ratkin and win one trial'},
   {id:'memory',name:'THE MEMORY',role:'truth',need:DIARY.length,desc:'read Duy’s full diary'}
 ];
+const FAVOR_KEY_ADVOCATES={hearth:['cit-022','cit-008'],bowl:['cit-003','cit-017'],hand:['cit-005','cit-021'],claw:['cit-015','cit-020'],memory:['cit-016','cit-001']};
 let verdictPage=0,verdictScene=[];
 function favorBegin(){
   const j=META.judgment;if(!j.heard||j.favorBegun)return false;
   const c=cityData();j.favorBegun=true;j.baseSaved=Math.max(0,META.saved||0);
   j.baseFood=Math.max(0,c.producedFood||0);j.baseMaterials=Math.max(0,c.producedMaterials||0);
   j.baseBurrows=societyHomeCount();j.baseDuelWins=Math.max(0,(typeof opp!=='undefined'&&opp.duelWins)||0);
-  j.votes=[];return true;
+  j.baseEmbers=Math.max(0,META.embers||0);j.votes=j.votes||[];j.voteTiers=j.voteTiers||{};societyBackfillProfiles(META.society);
+  for(const resident of META.society.residents||[])societyEnsureDuyRelationship(resident);
+  return true;
 }
-function favorTerms(){
-  const j=META.judgment,c=cityData(),earned=new Set(j.votes||[]),begun=!!j.favorBegun;
+function favorProgress(){
+  const j=META.judgment,c=cityData(),begun=!!j.favorBegun;
   const homes=Math.max(0,societyHomeCount()-(j.baseBurrows||0));
   const food=Math.max(0,(c.producedFood||0)-(j.baseFood||0));
   const materials=Math.max(0,(c.producedMaterials||0)-(j.baseMaterials||0));
   const ascended=Math.max(0,(META.saved||0)-(j.baseSaved||0));
   const trials=Math.max(0,((typeof opp!=='undefined'&&opp.duelWins)||0)-(j.baseDuelWins||0));
   const memories=DIARY.filter(e=>diaryIsRead(e.id)).length;
-  const raw={
+  return {
     hearth:{value:Math.min(1,homes),progress:Math.min(1,homes)+' / 1',met:begun&&homes>=1},
     bowl:{value:Math.min(8,food),progress:Math.min(8,food)+' / 8',met:begun&&food>=8},
     hand:{value:Math.min(6,materials),progress:Math.min(6,materials)+' / 6',met:begun&&materials>=6},
     claw:{value:Math.min(12,ascended),progress:Math.min(12,ascended)+' / 12 · '+(trials>=1?'TRIAL WON':'WIN A TRIAL'),met:begun&&ascended>=12&&trials>=1},
     memory:{value:memories,progress:memories+' / '+DIARY.length,met:begun&&memories>=DIARY.length}
   };
-  return FAVOR_DEFS.map(def=>({...def,...raw[def.id],done:earned.has(def.id)||raw[def.id].met}));
 }
-function favorVotes(){return favorTerms().filter(t=>t.done).length;}
+const FAVOR_TIER_NAMES=['UNAVAILABLE','RELUCTANT','SECURED','STRONG'];
+const FAVOR_THRESHOLDS=[0,45,64,82];
+function favorSupportState(id){
+  const def=FAVOR_DEFS.find(d=>d.id===id),progress=favorProgress()[id],j=META.judgment;if(!def||!progress)return {tier:0,score:0,reasons:[]};
+  const residents=(META.society&&META.society.residents)||[];let total=0,weight=0;const reasons=[];
+  const keyIds=FAVOR_KEY_ADVOCATES[id]||[];const missingKeys=keyIds.filter(k=>!residents.some(r=>r.profileId===k));
+  for(const resident of residents){const p=societyProfileForResident(resident);if(!p)continue;let w=Number(p.influence)||0.35;
+    if(p.bloc===id)w+=2;if(keyIds.includes(resident.profileId))w+=2;const score=societyAdvocacyScore(resident,id);total+=score*w;weight+=w;
+    if(p.bloc===id&&score<42)reasons.push((p.name||resident.profileId)+' carries a grievance');
+  }
+  let score=weight?total/weight:50;const spent=Math.max(0,(j.baseEmbers||0)-(META.embers||0));
+  const authored=(META.society.advocacyEvents||[]).filter(e=>e.bloc===id).reduce((n,e)=>n+Number(e.delta||0),0);
+  if(authored){score+=Math.max(-15,Math.min(15,authored));reasons.push('completed advocacy work changed the bloc record');}
+  if(spent){score+=Math.min(10,spent/20);reasons.push('sanctuary work funded with '+spent+' embers');}
+  const key=String(id);if((j.voteTiers||{})[key]>=3)score=Math.max(score,82);
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  let tier=score>=FAVOR_THRESHOLDS[3]?3:score>=FAVOR_THRESHOLDS[2]?2:score>=FAVOR_THRESHOLDS[1]?1:0;
+  if(progress.met)tier=Math.max(1,tier);else tier=0;
+  if(id==='claw'&&missingKeys.includes('cit-020')){tier=0;reasons.unshift('Ase-Ro-Wen must be present for the Claw');}
+  if(!progress.met)reasons.unshift(def.desc+' is still required');
+  else if(!reasons.length)reasons.push('the minimum work is complete');
+  return {tier,score,reasons:[...new Set(reasons)].slice(0,2),minimumMet:!!progress.met,secured:!!(j.votes||[]).includes(id),securedTier:(j.voteTiers||{})[key]||0};
+}
+function favorTerms(){
+  const j=META.judgment,progress=favorProgress(),secured=new Set(j.votes||[]);
+  return FAVOR_DEFS.map(def=>{const state=favorSupportState(def.id),p=progress[def.id];return {...def,...p,minimumMet:!!p.met,secured:secured.has(def.id),tier:state.tier,score:state.score,tierName:FAVOR_TIER_NAMES[state.tier],reasons:state.reasons,done:secured.has(def.id)};});
+}
+function favorVotes(){return (META.judgment.votes||[]).length;}
+function favorStrongVotes(){return (META.judgment.votes||[]).filter(id=>(META.judgment.voteTiers||{})[id]>=3).length;}
+function favorSecure(id){
+  const state=favorSupportState(id),j=META.judgment;if(!state.minimumMet||state.tier<1)return false;
+  j.votes=[...new Set([...(j.votes||[]),id])];j.voteTiers=j.voteTiers||{};j.voteTiers[id]=Math.max(j.voteTiers[id]||0,state.tier);j.securedAt=j.securedAt||{};j.securedAt[id]=j.securedAt[id]||Date.now();
+  favorEvaluate(false);saveMeta();hubToast=3;hubToastMsg=id.toUpperCase()+' VOTE '+FAVOR_TIER_NAMES[j.voteTiers[id]];return true;
+}
+function favorRevoke(id,reason){
+  const j=META.judgment;if(!j.votes||!j.votes.includes(id)||j.verdictHeard)return false;
+  j.votes=j.votes.filter(v=>v!==id);j.revokedVotes=[...new Set([...(j.revokedVotes||[]),id])];delete (j.voteTiers||{})[id];
+  j.verdictReady=j.votes.length>=4;j.unanimous=j.votes.length===5;j.pledgeReady=false;saveMeta();hubToast=3;hubToastMsg=id.toUpperCase()+' VOTE REVOKED'+(reason?' · '+reason:'');return true;
+}
 function finalVerdictLines(unanimous){return [
   {who:ARBITER_NAME,emotion:'stern',text:unanimous?'The vote is counted. Every Ratkin voice speaks for your release.':'The vote is counted. Four of the five Ratkin voices speak for your release.'},
   {who:'DUY',emotion:'questioning',text:'Then the ratkin are letting me go?'},
@@ -205,12 +250,21 @@ function finalVerdictLines(unanimous){return [
 ];}
 function favorEvaluate(autoOpen=false){
   const j=META.judgment;if(!j.heard)return 0;
-  let changed=favorBegin(),newVote=null;const votes=new Set(j.votes||[]);
-  for(const term of favorTerms())if(term.met&&!votes.has(term.id)){votes.add(term.id);newVote=term;changed=true;}
-  j.votes=[...votes];const count=j.votes.length;
+  let changed=favorBegin();
+  // Pre-relationship saves have no resident records to ask. Preserve their
+  // historical automatic vote behavior while every live sanctuary uses the
+  // explicit Secure Vote flow.
+  const legacyMode=!(META.society&&META.society.residents&&META.society.residents.length);
+  if(legacyMode){
+    const legacyVotes=new Set(j.votes||[]);j.voteTiers=j.voteTiers||{};
+    for(const term of favorTerms())if(term.minimumMet&&!legacyVotes.has(term.id)){legacyVotes.add(term.id);j.voteTiers[term.id]=3;changed=true;}
+    j.votes=[...legacyVotes];
+  }
+  const count=(j.votes||[]).length;
   if(count>=4&&!j.verdictReady){j.verdictReady=true;changed=true;hubToast=4;hubToastMsg='FOUR RATKIN BLOCS CALL FOR RELEASE';}
-  if(count===5&&!j.unanimous){j.unanimous=true;changed=true;hubToast=4;hubToastMsg=j.released?'UNANIMOUS · INVOICE AND RECRUIT UPGRADED':'THE RATKIN VERDICT IS UNANIMOUS';}
-  else if(newVote&&!j.verdictReady){hubToast=3.2;hubToastMsg=newVote.name+' SUPPORTS YOU · '+count+' / 5';}
+  const strong=favorStrongVotes()===5;
+  if(count===5&&!j.unanimous){j.unanimous=true;changed=true;hubToast=4;hubToastMsg=legacyMode&&j.released?'UNANIMOUS · INVOICE AND RECRUIT UPGRADED':j.released?'UNANIMOUS · RECRUIT ELIGIBLE':'THE RATKIN VERDICT IS UNANIMOUS';}
+  if(strong&&!j.pledgeReady){j.pledgeReady=true;changed=true;}
   if(changed)saveMeta();
   if(autoOpen&&j.verdictReady&&!j.verdictHeard){verdictPage=0;verdictScene=finalVerdictLines(count===5);hubSheet='verdict';rememberDialogue(verdictScene[0]);}
   return count;
@@ -218,12 +272,17 @@ function favorEvaluate(autoOpen=false){
 function verdictAdvance(){
   if(hubSheet!=='verdict')return;
   if(verdictPage<verdictScene.length-1){verdictPage++;rememberDialogue(verdictScene[verdictPage]);return;}
-  const j=META.judgment;j.verdictHeard=true;j.released=true;saveMeta();hubSheet='shrine';hubToast=5;
+  const j=META.judgment;j.verdictHeard=true;j.released=true;
+  if(j.pledgeReady){
+    const candidate=(META.society.residents||[]).find(r=>{const p=societyProfileForResident(r);return p&&!p.killedByDuy&&societyAdvocacyScore(r,p.bloc||'memory')>=64;})||(META.society.residents||[]).find(r=>r.profileId);
+    if(candidate){META.flags.ratkinPledgeProfile=candidate.profileId;META.flags.ratkinPledgeReady=true;if(!candidate.events.some(e=>e.kind==='milestone'&&e.milestone==='pledge-follow'))candidate.events.push({kind:'milestone',at:Date.now(),home:candidate.home,type:'',milestone:'pledge-follow'});}
+  }
+  saveMeta();hubSheet='shrine';hubToast=5;
   hubToastMsg=j.unanimous?'DUY RELEASED · UNANIMOUS VERDICT':'DUY RELEASED · FOUR VOICES CARRY THE VERDICT';
 }
 function verdictOpen(){
   const j=META.judgment;if(!j.verdictReady||j.verdictHeard)return;
-  verdictPage=0;verdictScene=finalVerdictLines(favorVotes()===5);hubSheet='verdict';rememberDialogue(verdictScene[0]);
+  verdictPage=0;verdictScene=finalVerdictLines(favorStrongVotes()===5);hubSheet='verdict';rememberDialogue(verdictScene[0]);
 }
 
 // land in the town after a run; raise any building whose saves-milestone you just crossed
@@ -247,3 +306,7 @@ function enterHub(){
 }
 
 let META = loadMeta();
+// Older saves predate resident relationships. Seed their deterministic graph
+// once the global META object exists, then keep all later changes persistent.
+societySeedRelationships(META.society);
+for(const resident of META.society.residents||[])societyEnsureDuyRelationship(resident);
