@@ -13,7 +13,10 @@ const MAKKO_SPR_SRC = {
   "beacon": "./media/spr/beacon.png",
   "heart": "./media/spr/heart.png",
   "happy": "./media/spr/ratkin.png",
-  "ashford": "./media/spr/ashford.png"
+  "ashford": "./media/spr/ashford.png",
+  "well_idle": "./media/spr/well_idle.png",
+  "well_open": "./media/spr/well_open.png",
+  "well_destroyed": "./media/spr/well_destroyed.png"
 };
 
 const MAKKO_DIARY_SRC = {
@@ -37,12 +40,27 @@ const MAKKO_ANIM_SRC = {
   "hero_run": "./media/anim/hero_run.png",
   "save": "./media/anim/save.png",
   "ventfire": "./media/anim/ventfire.png",
-  "ventcinder": "./media/anim/ventcinder.png"
+  "ventcinder": "./media/anim/ventcinder.png",
+  "demon_emerge": "./media/anim/demon_emerge.png",
+  "demon_loping": "./media/anim/demon_loping.png"
 };
 
 const MAKKO_DIGITS_SRC = "./media/ui/digits.png";
 const MAKKO_GLYPH_SRC = "./media/ui/glyphs.png";
 const MAKKO_FLAME_SRC = "./media/fx/flame.png";
+
+// UI exports are registered by the Makko handoff. Keeping the registry here
+// gives the renderer one stable contract without putting pending file paths in
+// the runtime before the art is actually checked in.
+const MAKKO_UI_SRC = Object.create(null);
+const MAKKO_UI_IMG = Object.create(null);
+const MAKKO_UI_META = Object.create(null);
+function registerMakkoUiAsset(key,src,meta){
+  if(!key||!src) return;
+  MAKKO_UI_SRC[key]=src;
+  if(meta) MAKKO_UI_META[key]=meta;
+  try{ const im=new Image(); im.src=src; MAKKO_UI_IMG[key]=im; }catch(e){}
+}
 
 const MAKKO_IMG = {};
 const MAKKO_ANIM_IMG = {};
@@ -174,4 +192,5 @@ const MAKKO_GLYPH_IMG = new Image();
     MAKKO_GLYPH_IMG.src = MAKKO_GLYPH_SRC;
   } catch (e) {}
 })();
+
 
