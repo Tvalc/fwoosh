@@ -909,9 +909,10 @@ function drawDialogue(ctx){
   const d=presentDialogue;
   const line=intro?STORY.intro[intro.i]:d?d.lines[d.i]:null;
   if(!line) return;
-  const charRate=intro?INTRO.TALK_CHAR:INTRO.CHAR;
-  const t=intro?intro.lineT:d.t,shown=Math.min(line.text.length,Math.floor(t/charRate));
-  const talking=shown<line.text.length;
+  // The player controls pacing. Render the complete line immediately so a
+  // single tap always means "continue" instead of making the first tap look
+  // like it did nothing while a typewriter catches up.
+  const t=intro?intro.lineT:d.t,shown=line.text.length,talking=false;
   // Bottom dialogue strip stays above the mobile vent circle and dash-charge row.
   const bx=8,bw=538,bh=144,by=PLAY_VIEW.bottom+4,pad=8,ps=76;
   ctx.save();panel(ctx,bx,by,bw,bh,10,'rgba(13,20,45,0.96)','rgba(185,200,239,0.95)');
@@ -927,7 +928,7 @@ function drawDialogue(ctx){
   wrapText(ctx,line.text.slice(0,shown),tx,by+54,tw,28);
   ctx.textAlign='right';ctx.font='700 15px "Chakra Petch",system-ui,sans-serif';
   ctx.fillStyle=talking?'rgba(255,255,255,0.52)':'rgba(255,210,138,0.86)';
-  ctx.fillText(talking?'TAP TO REVEAL':'TAP TO CONTINUE',bx+bw-pad,by+bh-10);
+  ctx.fillText('TAP TO CONTINUE',bx+bw-pad,by+bh-10);
 
   ctx.restore();
 }
@@ -1927,4 +1928,3 @@ function render(){
 }
 
 function fmt(s){ const m = Math.floor(s/60), r = Math.floor(s%60); return m+':'+String(r).padStart(2,'0'); }
-

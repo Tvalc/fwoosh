@@ -49,6 +49,19 @@ const MAKKO_DIGITS_SRC = "./media/ui/digits.png";
 const MAKKO_GLYPH_SRC = "./media/ui/glyphs.png";
 const MAKKO_FLAME_SRC = "./media/fx/flame.png";
 
+// UI exports are registered by the Makko handoff. Keeping the registry here
+// gives the renderer one stable contract without putting pending file paths in
+// the runtime before the art is actually checked in.
+const MAKKO_UI_SRC = Object.create(null);
+const MAKKO_UI_IMG = Object.create(null);
+const MAKKO_UI_META = Object.create(null);
+function registerMakkoUiAsset(key,src,meta){
+  if(!key||!src) return;
+  MAKKO_UI_SRC[key]=src;
+  if(meta) MAKKO_UI_META[key]=meta;
+  try{ const im=new Image(); im.src=src; MAKKO_UI_IMG[key]=im; }catch(e){}
+}
+
 const MAKKO_IMG = {};
 const MAKKO_ANIM_IMG = {};
 // Civilian appearances only: never use the Arbiter as someone Duy can rescue.

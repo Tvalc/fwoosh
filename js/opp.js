@@ -85,7 +85,7 @@ function setupOpp(){
   }
   // The title boot must not consume the intro. Begin narration with control on the first actual run.
   if(opp.introVer !== INTRO_VERSION){
-    intro = { phase:'talk', i:0, lineT:0 };
+    intro = { phase:'talk', i:0, lineT:0, recorded:false };
     player.lit = false; player.fuse = 0;
     slag = slag.filter(s => !s.grudge); snipeArmed = false; snipe = null;
     if(!onTitle){ opp.introVer = INTRO_VERSION; opp.seenIntro = true; saveOpp(); }
@@ -104,8 +104,11 @@ function igniteIntro(){
   const pool = crowd();
   for(let k=0;k<3 && pool.length;k++){ ignite(pool[Math.floor(rnd()*pool.length)], 'spark'); }
   intro.phase = 'talk';
-  intro.i = Math.max(intro.i, 1);           // line 0 was the walk-in; roll into the narration
+  // Keep the current line parked. The player must explicitly tap/press to
+  // move from the walk-in line into the rest of the opening exchange.
+  intro.i = Math.max(intro.i, 0);
   intro.lineT = 0;
+  intro.recorded = false;
 }
 
 function fireSnipe(){

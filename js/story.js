@@ -244,20 +244,43 @@ function speakKeith(text,emotion='angry'){
   if(mode!=='play' || onTitle || intro || presentDialogue || presentGap>0 || presentTaunts>=1 || elapsed<12) return;
   presentDialogue={id:null,lines:[{who:THREAT_NAME,emotion,text}],i:0,t:0,recorded:false};presentTaunts++;
 }
+// Dialogue never advances on a timer. Each tap or confirm key moves to the
+// next complete line. Keeping this rule in one place makes mouse, touch, and
+// keyboard testing behave identically.
+function advanceIntroDialogue(){
+  if(!intro || intro.phase!=='talk') return false;
+  const line=STORY.intro[intro.i];
+  if(!line) return false;
+  if(!intro.recorded){rememberDialogue(line);intro.recorded=true;}
+  intro.i++;intro.lineT=0;intro.recorded=false;
+  if(intro.i>=STORY.intro.length) intro=null;
+  return true;
+}
+function advancePresentDialogue(){
+  if(!presentDialogue) return false;
+  const d=presentDialogue,line=d.lines[d.i];
+  if(!line) return false;
+  if(!d.recorded){rememberDialogue(line);d.recorded=true;}
+  d.i++;d.t=0;d.recorded=false;
+  if(d.i>=d.lines.length){
+    if(d.id){const saved=dialogueSave();if(!saved.seen.includes(d.id))saved.seen.push(d.id);saveMeta();}
+    presentDialogue=null;presentGap=16;
+  }
+  return true;
+}
+function advanceActiveDialogue(){
+  if(mode!=='play') return false;
+  if(intro && intro.phase==='talk') return advanceIntroDialogue();
+  if(mode==='play' && presentDialogue) return advancePresentDialogue();
+  return false;
+}
 function tickPresentDialogue(dt){
   if(mode!=='play' || onTitle) return;
   if(intro) return;
   if(presentDialogue){
-    const d=presentDialogue,line=d.lines[d.i];d.t+=dt;
+    const d=presentDialogue,line=d.lines[d.i];
+    d.t+=dt;
     if(!d.recorded && d.t>=line.text.length*INTRO.CHAR){rememberDialogue(line);d.recorded=true;}
-    const duration=line.text.length*INTRO.CHAR+Math.max(2.6,line.text.length*0.045);
-    if(d.t>=duration){
-      d.i++;d.t=0;d.recorded=false;
-      if(d.i>=d.lines.length){
-        if(d.id){const saved=dialogueSave();if(!saved.seen.includes(d.id))saved.seen.push(d.id);saveMeta();}
-        presentDialogue=null;presentGap=16;
-      }
-    }
     return;
   }
   presentGap=Math.max(0,presentGap-dt);
@@ -279,4 +302,3 @@ function tickPresentDialogue(dt){
     runs>=6 && presentSeen('release') && META.saved>=16 && !presentSeen('rebuild')?'rebuild':null;
   if(id){presentEvents.returnUsed=true;startPresentDialogue(id);}
 }
-

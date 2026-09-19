@@ -446,11 +446,27 @@ test('Title boot does not consume the live intro; first start gives control duri
   assert.equal(g.run('introT'),0);
   g.dispatch('keydown',{key:'d'});
   const x=g.run('player.x');g.run('step()');
-  assert.ok(g.run('player.x')>x,'Player must move while Khet-Tak-Tor speaks');
+  assert.ok(Math.abs(g.run('player.x')-x)<0.01,'Keyboard movement stays behind the tap-to-advance dialogue');
   g.dispatch('keydown',{key:'Shift',repeat:false});
-  assert.equal(g.run('player.charges'),2,'Dialogue must not block dashing');
+  assert.equal(g.run('player.charges'),3,'Dialogue must not turn a dialogue key into a dash');
   g.run('player.heat=1');g.dispatch('keydown',{key:' ',repeat:false});
-  assert.equal(g.run('player.venting'),true,'Dialogue must not block venting');
+  assert.equal(g.run('player.venting'),false,'Dialogue must not turn a dialogue key into venting');
+  assert.equal(g.run('intro.i'),1,'The first explicit advance moves to the next line');
+});
+
+test('Live intro dialogue does not grant invulnerability while it waits for a tap', () => {
+  const g=game();
+  g.run('onTitle=false;intro={phase:"talk",i:0,lineT:0,recorded:false};introT=0;cells=[];demons=[];player.heat=K.HEAT_MAX;player.hp=1;mode="play"');
+  g.run('for(let i=0;i<300&&mode==="play";i++)step()');
+  assert.ok(g.run('player.hp')<1,'The player stayed invulnerable while dialogue was waiting');
+});
+
+test('The first opening line advances on one explicit tap', () => {
+  const g=game();
+  g.run('onTitle=false;reset(17);onTitle=false;introT=0');
+  assert.equal(g.run('intro.i'),0);
+  g.run('onDown(360,1100)');
+  assert.equal(g.run('intro.i'),1,'The opening line did not advance on the tap');
 });
 
 test('Updated intro replays once for an older save while preserving progression and diary reads', () => {
@@ -470,6 +486,12 @@ test('Mobile vent HUD remains visible and usable during the live intro', () => {
   const g=game();g.run('onDown(360,1100);isTouch=true;var ventDraws=0;drawVentButton=()=>ventDraws++;render()');
   assert.equal(g.run('ventDraws'),1);
   g.run('player.heat=1;var vb=ventBtn();onDown(vb.x,vb.y)');
+  assert.equal(g.run('player.venting'),false,'A touch during dialogue advances speech instead of venting');
+  assert.equal(g.run('intro.i'),1,'The first tap advances the opening line');
+  g.run('onDown(vb.x,vb.y)');
+  assert.equal(g.run('player.venting'),false,'A second dialogue tap advances speech instead of venting');
+  assert.equal(g.run('intro.i'),2);
+  g.run('intro=null;onDown(vb.x,vb.y)');
   assert.equal(g.run('player.venting'),true);g.run('onUp();ventHold(K.VENT_PURGE)');
   assert.equal(g.run('player.venting'),false);
 });
@@ -789,11 +811,12 @@ test('Assumed event profiles exercise real rewards and expose initial price cade
 
 
 
-test('Present rescue exchange follows a witnessed rescue without pausing control',()=>{
+test('Present rescue exchange waits for an explicit tap and does not auto-advance',()=>{
  const g=game();g.run("onTitle=false;reset();intro=null;notePresentEvent('rescue');tickPresentDialogue(DT)");
  assert.equal(g.run('presentDialogue.id'),'rescue');
- const y=g.run('player.y');g.dispatch('keydown',{key:'w'});g.run('step()');assert.notEqual(g.run('player.y'),y);
- g.dispatch('keydown',{key:'Shift'});assert.equal(g.run('player.charges'),2);
+ const line=g.run('presentDialogue.i');g.run('tickPresentDialogue(20)');
+ assert.equal(g.run('presentDialogue.i'),line,'A long tick only finishes typing the line');
+ g.run('onDown(360,1100)');assert.equal(g.run('presentDialogue.i'),1,'The first tap advances the completed line');
 });
 test('Unwitnessed and stale events do not create a dialogue backlog',()=>{
  const g=game();g.run('onTitle=false;reset();intro=null;elapsed=20;tickPresentDialogue(DT)');assert.equal(g.run('presentDialogue'),null);
@@ -801,7 +824,10 @@ test('Unwitnessed and stale events do not create a dialogue backlog',()=>{
 });
 test('Two-line exchanges save delivered text, leave silence, and survive reload',()=>{
  const g=game();g.run("onTitle=false;reset();intro=null;startPresentDialogue('rescue');tickPresentDialogue(10);tickPresentDialogue(10)");
- assert.equal(g.run('presentDialogue'),null);assert.equal(g.run('presentGap'),16);assert.equal(g.run('dialogueSave().history.length'),2);
+ assert.equal(g.run('presentDialogue.i'),0);assert.equal(g.run('dialogueSave().history.length'),1);
+ g.run('onDown(360,1100)');assert.equal(g.run('presentDialogue.i'),1);
+ g.run('tickPresentDialogue(10)');assert.equal(g.run('dialogueSave().history.length'),2);
+ g.run('onDown(360,1100)');assert.equal(g.run('presentDialogue'),null);assert.equal(g.run('presentGap'),16);
  g.run("player.heat=3;tickPresentDialogue(1)");assert.equal(g.run('presentDialogue'),null);
  const reloaded=game(Object.fromEntries(g.storage));assert.equal(reloaded.run("presentSeen('rescue')"),true);assert.equal(reloaded.run('dialogueSave().history.length'),2);
 });
@@ -850,6 +876,20 @@ test('Keith pressure adds hostile demons and a telegraphed direct strike',()=>{
  const before=g.run('player.hp');g.run('keithStrike.t=K.KEITH_STRIKE_TELE;stepKeithPressure(DT)');
  assert.ok(g.run('player.hp')<before,'Keith pressure did not damage Duy when he stayed on the telegraph.');
  assert.equal(g.run('keithStrike.done'),true);
+});
+
+test('Keith pressure gives an overloaded player breathing room and speeds up only when the field is calm',()=>{
+ const g=game();
+ const out=g.run("(()=>{onTitle=false;intro=null;mode='play';duelActive=false;boss=null;runDistrict=1;keithPressureCount=1;player.heat=0;player.hp=1;demons=[];const calm=keithPressureCadence();player.heat=6;player.hp=.1;demons=[{source:'keith'},{source:'well'},{source:'vent'},{source:'keith'},{source:'well'},{source:'vent'}];const loaded=keithPressureCadence();return {calm,loaded,stress:encounterStress()};})()");
+ assert.ok(out.loaded>out.calm,'Keith did not back off while the player was overloaded');
+ assert.ok(out.stress>=g.run('K.KEITH_PRESSURE_OVERLOAD'),'stress sample did not cross the overload threshold');
+});
+
+test('Well demons hold a readable Ratkin target instead of retargeting every frame',()=>{
+ const g=game();
+ g.run("onTitle=false;intro=null;mode='play';demons=[];cells=[];spawnCrowd(true);const d={x:360,y:500,t:0,hitCd:0,huntVill:true,ph:0,tgt:null,source:'well',wellSpawn:true,emergeT:0,speed:K.DEMON_SPD,targetLock:0};demons=[d];stepDemons(DT)");
+ assert.ok(g.run('demons[0].tgt'),'well demon did not acquire a target');
+ assert.ok(g.run('demons[0].targetLock>0'),'well demon target was not locked for the telegraph window');
 });
 
 test('Title screen exposes Start and a confirmed reset that clears Fwoosh saves',()=>{
@@ -1581,4 +1621,3 @@ const report={checkpoint:root, generated_at:new Date().toISOString(), method:'Ac
 if(process.argv[3])fs.writeFileSync(path.resolve(process.argv[3]),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({pass:report.pass,fail:report.fail,results},null,2));
 process.exitCode=report.fail?1:0;
-
