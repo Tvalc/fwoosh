@@ -24,6 +24,7 @@ const K = {
   CINDER_BLAST_R: 120,
   CINDER_BLAST_HEARTS: 1,
   MAX_DEMONS: 8, DEMON_SPD: 145,    // pressure cap; vent units always release their demon
+  DEMON_TARGET_LOCK: 0.42,          // keep a demon's mark stable long enough to read and intercept
   DEMON_TGT_VILL: 0.6,
   DEMON_HIT: 0.075, DEMON_HIT_CD: 0.8,
   DEMON_KNOCK_SPD: 520, DEMON_KNOCK_T: 0.14, // a bite breaks the heal stack and throws Duy clear
@@ -198,6 +199,8 @@ const K = {
   KEITH_PRESSURE_FIRST: 11,
   KEITH_PRESSURE_EVERY: 17,
   KEITH_PRESSURE_MIN: 9,
+  KEITH_PRESSURE_OVERLOAD: 0.72,    // above this stress, Keith waits instead of stacking punishment
+  KEITH_PRESSURE_RELIEF: 1.8,       // calm runs get a little more pressure so empty space never goes flat
   KEITH_PRESSURE_DEMONS: 2,
   KEITH_PRESSURE_DEMON_TTL: 9,
   KEITH_STRIKE_TELE: 0.85,
@@ -214,4 +217,3 @@ const K = {
   DEMON_WELL_RESPAWN_MAX: 3.00,
   DEMON_WELL_MAX_ACTIVE: 6,
 };
-

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "policy": "Makko authors identity-bearing gameplay and UI art. Engineering owns layout, state, feedback effects, and responsive sizing.",
+  "ready": [
+    {"key": "firedemon", "kind": "animation", "path": "media/anim/firedemon.png"},
+    {"key": "hero_run", "kind": "animation", "path": "media/anim/hero_run.png"},
+    {"key": "ashford", "kind": "background", "path": "media/spr/ashford.png"},
+    {"key": "ratkin_villagers", "kind": "character-set", "path": "media/spr/ratkin.png"},
+    {"key": "digits", "kind": "ui-atlas", "path": "media/ui/digits.png"},
+    {"key": "glyphs", "kind": "ui-atlas", "path": "media/ui/glyphs.png"},
+    {"key": "demon_loping", "kind": "animation", "path": "media/anim/demon_loping.png"},
+    {"key": "demon_emerge", "kind": "animation", "path": "media/anim/demon_emerge.png"},
+    {"key": "well_idle", "kind": "environment", "path": "media/spr/well_idle.png"},
+    {"key": "well_open", "kind": "environment", "path": "media/spr/well_open.png"},
+    {"key": "well_destroyed", "kind": "environment", "path": "media/spr/well_destroyed.png"}
+  ],
+  "pending": [
+    {"key": "ui_kit", "kind": "ui-surfaces-and-controls", "glob": "media/ui/{panel,card,button_*,badge_*,dialogue,diary,chronicle,judgment,vent}.*", "owner": "Cursor/Makko"}
+  ]
+}

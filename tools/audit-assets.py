@@ -28,6 +28,23 @@ local = sorted({str((base / ref.split('?', 1)[0].split('#', 1)[0]).resolve())
 missing = [str(Path(p).relative_to(root)) for p in local if not Path(p).is_file()]
 check('All referenced local resources exist', not missing, {'references':len(local), 'missing':missing})
 
+# The contract intentionally distinguishes shipped art from Cursor's pending
+# exports. Pending entries are reported for handoff visibility and do not fail
+# CI. Ready entries are hard requirements and do fail the audit if removed.
+contract_path = root / 'tools' / 'art-contract.json'
+if contract_path.exists():
+    contract = json.loads(contract_path.read_text(encoding='utf-8-sig'))
+    ready_missing = [entry['path'] for entry in contract.get('ready', [])
+                     if not (root / entry['path']).is_file()]
+    pending = [{'key':entry.get('key'), 'glob':entry.get('glob')}
+               for entry in contract.get('pending', [])]
+    check('Art contract ready assets exist', not ready_missing,
+          {'missing':ready_missing, 'ready':len(contract.get('ready', []))})
+    check('Art contract pending exports recorded', True,
+          {'pending':pending})
+else:
+    check('Art contract exists', False, 'tools/art-contract.json is missing')
+
 metadata = root / 'js' / 'media-meta.js'
 if not metadata.exists():
     check('Modular media metadata exists', False, 'This tool targets the modular layout; use the state audit for the embedded build.')

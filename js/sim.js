@@ -339,7 +339,10 @@ function step(){
   p.lit = p.heat > 0;                                   // legacy flag some draws read
   // ---- HEALTH: carrying fire burns you down (faster the more you hold). Venting heals (in ventHold);
   // otherwise only a faint idle trickle. So you MUST vent to recover — and eat the demons.
-  if(god || intro){ p.hp = 1; }
+  // Protect only the scripted walk-in. Once the live intro is talking, the
+  // arena remains active and the player must be able to take damage while
+  // the line waits for an explicit tap.
+  if(god || introWalk){ p.hp = 1; }
   else if(p.venting){ /* healing handled in ventHold(); no burn while purging it out */ }
   else if(p.heat > 0){ p.hp -= dt * p.heat * K.HP_DRAIN * (5/maxHearts);   // more hearts -> burn slower
     if(p.hp <= 0){ p.hp = 0; pop('burned up'); return; } }
@@ -1389,4 +1392,3 @@ function pop(cause){
   ring(player.x,player.y,10,180,'#ff4d3d',0.8);
   flash = DT*3;
 }
-
