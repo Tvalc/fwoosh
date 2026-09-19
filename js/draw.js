@@ -379,7 +379,10 @@ function drawAnim(ctx, key, X, y, targetH, o){ o=o||{};
   if(o.alpha!=null) ctx.globalAlpha*=o.alpha;
   ctx.imageSmoothingEnabled=true;
   const anchor=m.anchorX==null?m.fw/2:m.anchorX;
-  ctx.drawImage(im, fi*m.fw, 0, m.fw, m.fh, -anchor*sc, -targetH/2, w, targetH);
+  const cols=m.cols||m.frames, padding=m.padding||0;
+  const col=fi%cols, row=Math.floor(fi/cols);
+  const sx=padding+col*(m.fw+padding*2), sy=padding+row*(m.fh+padding*2);
+  ctx.drawImage(im, sx, sy, m.fw, m.fh, -anchor*sc, -targetH/2, w, targetH);
   ctx.restore(); return true; }
 
 function arbiterAnimation(b,flat){

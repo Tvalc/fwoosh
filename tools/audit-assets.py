@@ -40,7 +40,11 @@ else:
     check('Animation metadata parsed', bool(atlases), {'keys':sorted(atlases)})
     for key, meta in atlases.items():
         p = root / 'media' / 'anim' / (key + '.png')
-        expected = [meta['frames'] * meta['fw'], meta['fh']]
+        cols = int(meta.get('cols', meta['frames']))
+        rows = int(meta.get('rows', 1))
+        padding = int(meta.get('padding', 0))
+        expected = [cols * (meta['fw'] + 2 * padding),
+                    rows * (meta['fh'] + 2 * padding)]
         actual = None
         if p.is_file():
             data = p.read_bytes()
