@@ -227,7 +227,7 @@ function onDown(x,y,swipe=isTouch){
     // Keep the title hit target generous while the mobile URL bar and safe-area insets settle.
     const startY=VH*0.80, resetY=VH*0.89;
     if(x>=48&&x<=VW-48&&y>=startY-58&&y<=startY+58) hubAct('title-start');
-    else if(x>=88&&x<=VW-88&&y>=resetY-44&&y<=resetY+44) hubAct('title-reset');
+    else if(x>=88&&x<=VW-88&&y>=resetY-30&&y<=resetY+44) hubAct('title-reset');
     else if(hubBtns.length) hubClick(x,y);
     else { onTitle=false; hinted=false; titleResetConfirm=false; reset(); } // synthetic/test taps before the first paint still start
     return;
