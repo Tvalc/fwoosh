@@ -229,6 +229,7 @@ function onDown(x,y,swipe=isTouch){
     return;
   }                              // title buttons: Start or Reset Progress
   if(introT > 0){ introT = 0; return; }            // dismiss intro card; keep the controls hint alive
+  if(mode==='play' && advanceActiveDialogue()) return; // dialogue owns the tap until the player advances it
   hinted = true;                                   // touch player: the keyboard hint isn't for you
   if(mode === 'over'){ resultClick(x,y); return; }        // run ended -> return to the town hub
   if(mode === 'hub'){ hubClick(x,y); return; }      // tapping the town: buildings / shop / PLAY
@@ -267,6 +268,11 @@ function captureControlPointer(e){try{cv.setPointerCapture?.(e.pointerId);}catch
 cv.addEventListener('pointerdown', e=>{
   e.preventDefault();const id=e.pointerId??0,q=local(e),touch=e.pointerType==='touch';
   if(touch)isTouch=true;
+  if(mode==='play' && ((intro && intro.phase==='talk') || presentDialogue)){
+    if(id===touchStick.id||id===touchVentId)return;
+    advanceActiveDialogue();
+    return;
+  }
   if(touch&&touchControlsActive()){
     if(id===touchStick.id||id===touchVentId)return;
     if(touchVentHit(q.x,q.y)){
@@ -327,6 +333,10 @@ window.addEventListener('keydown', e=>{
     return;
   }
   if(introT > 0){ introT = 0; if(KEYVEC[k]||k===' '||k==='shift'||k==='enter'){ e.preventDefault(); } return; }
+  if(mode==='play' && ((intro && intro.phase==='talk') || presentDialogue)){
+    if(k===' '||k==='enter'){ e.preventDefault(); if(!e.repeat)advanceActiveDialogue(); }
+    return;
+  }
   if(mode === 'over'){
     if(k==='r'||k==='enter'||k===' '||k==='t'){e.preventDefault();if(!e.repeat)resultAction(k==='t'?'town':'retry');}
     return;
@@ -355,4 +365,3 @@ window.addEventListener('keyup', e=>{
 });
 // dropping focus mid-key would otherwise leave you steering forever
 window.addEventListener('blur', ()=>{ for(const k in keys) keys[k] = false; cancelPointer(); setVentHeld(false); player.ventDash=null; });
-
