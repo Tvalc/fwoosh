@@ -951,6 +951,21 @@ function drawDemonWell(ctx,w){
   if(!w)return;
   const dead=w.state==='destroyed';
   const open=dead?0:Math.min(1,(w.t||0)/K.DEMON_WELL_OPEN_T);
+  // Makko's authored well replaces the procedural silhouette as soon as its
+  // export is present. The glow and destruction fade remain engine feedback.
+  const artKey=dead?'well_destroyed':(open<1?'well_open':'well_idle');
+  let drewArt=false;
+  if(typeof drawAnim==='function') drewArt=drawAnim(ctx,artKey,w.x,w.y,K.DEMON_WELL_R*2.6,{fps:10,frame:dead?undefined:undefined});
+  if(!drewArt && typeof drawSpr==='function') drewArt=drawSpr(ctx,artKey,w.x,w.y,K.DEMON_WELL_R*2.6);
+  if(drewArt){
+    ctx.save();
+    ctx.globalAlpha=dead?0.18:0.2+0.18*open;
+    const glow=ctx.createRadialGradient(w.x,w.y,2,w.x,w.y,K.DEMON_WELL_R*2.6);
+    glow.addColorStop(0,'rgba(255,61,202,.5)');glow.addColorStop(1,'rgba(255,61,202,0)');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(w.x,w.y,K.DEMON_WELL_R*2.6,0,7);ctx.fill();
+    ctx.restore();
+    return;
+  }
   const pulse=1+0.08*Math.sin(frame*0.25);
   ctx.save();
   ctx.globalAlpha=dead?0.22:0.9;
@@ -970,6 +985,12 @@ function drawDemonWell(ctx,w){
 
 function drawLopingDemon(ctx,x,y,d){
   const emerge=Math.max(0,Math.min(1,1-(d.emergeT||0)/K.DEMON_WELL_EMERGE_T));
+  const flip=(d.tgt ? d.tgt.x<d.x : player.x<d.x);
+  // The procedural four-legged placeholder stays available for old saves and
+  // offline tests. A Makko emerge/lope atlas takes over automatically.
+  if(emerge<1 && typeof drawAnim==='function' && drawAnim(ctx,'demon_emerge',x,y,K.DEMON_R*3.2,{fps:12,flip,frame:undefined})) return;
+  if(emerge>=1 && typeof drawAnim==='function' && drawAnim(ctx,'demon_loping',x,y,K.DEMON_R*3.2,{fps:12,flip})) return;
+  if(emerge>=1 && typeof drawSpr==='function' && drawSpr(ctx,'demon_loping',x,y,K.DEMON_R*3.0,{flip})) return;
   const run=frame*.24+(d.ph||0), stride=Math.sin(run), stride2=Math.sin(run+Math.PI);
   const lift=(1-emerge)*24, bob=Math.abs(Math.sin(run))*2*emerge, R=K.DEMON_R;
   ctx.save();ctx.translate(x,y+lift-bob);ctx.globalAlpha=Math.min(1,0.2+0.8*emerge);
@@ -986,6 +1007,8 @@ function drawLopingDemon(ctx,x,y,d){
   ctx.beginPath();ctx.moveTo(-R*.88,-R*.05);ctx.quadraticCurveTo(-R*1.55,-R*.48-stride*4,-R*1.72,R*.18);ctx.stroke();
   ctx.restore();
 }
+
+
 
 // ---- TITLE / START SCREEN: FWOOSH logo, Khet-Tak-Tor looming, the hero below, the town ablaze
 // ---------------------------------------------------------------- THE TOWN HUB (meta home base)
