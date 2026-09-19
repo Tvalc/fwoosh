@@ -224,7 +224,11 @@ function resultClick(x,y){
 function onDown(x,y,swipe=isTouch){
   if(debugMenu.open){debugMenuClick(x,y);return;}
   if(onTitle){
-    if(hubBtns.length) hubClick(x,y);
+    // Keep the title hit target generous while the mobile URL bar and safe-area insets settle.
+    const startY=VH*0.80, resetY=VH*0.89;
+    if(x>=48&&x<=VW-48&&y>=startY-58&&y<=startY+58) hubAct('title-start');
+    else if(x>=88&&x<=VW-88&&y>=resetY-44&&y<=resetY+44) hubAct('title-reset');
+    else if(hubBtns.length) hubClick(x,y);
     else { onTitle=false; hinted=false; titleResetConfirm=false; reset(); } // synthetic/test taps before the first paint still start
     return;
   }                              // title buttons: Start or Reset Progress
@@ -262,12 +266,19 @@ function cancelPointer(){
 // ---------------------------------------------------------------- wiring
 function local(e){
   const r = cv.getBoundingClientRect();
-  return { x:(e.clientX-r.left)/scale, y:(e.clientY-r.top)/scale };
+  // Use the live CSS rect instead of the cached simulation scale. Mobile browsers
+  // can resize or letterbox the canvas while the URL bar settles.
+  const sx=(r.width>0? r.width/VW : scale)||1;
+  const sy=(r.height>0? r.height/VH : scale)||1;
+  return { x:(e.clientX-r.left)/sx, y:(e.clientY-r.top)/sy };
 }
 function captureControlPointer(e){try{cv.setPointerCapture?.(e.pointerId);}catch(err){/* Detached/synthetic pointer. */}}
+let lastPointerDownAt=0;
 cv.addEventListener('pointerdown', e=>{
-  e.preventDefault();const id=e.pointerId??0,q=local(e),touch=e.pointerType==='touch';
+  e.preventDefault();lastPointerDownAt=Date.now();const id=e.pointerId??0,q=local(e),touch=e.pointerType==='touch';
   if(touch)isTouch=true;
+  // Boot prepares the opening exchange, but the title must own the first tap.
+  if(onTitle){onDown(q.x,q.y,false);return;}
   if(mode==='play' && ((intro && intro.phase==='talk') || presentDialogue)){
     if(id===touchStick.id||id===touchVentId)return;
     advanceActiveDialogue();
@@ -283,6 +294,12 @@ cv.addEventListener('pointerdown', e=>{
   if(ptr.id!==null)return;
   onDown(q.x,q.y,false);ptr.id=(ptr.down||ptr.onVent)?id:null;
   if(ptr.id!==null)captureControlPointer(e);
+});
+// Fallback for embedded mobile browsers that expose click without a usable pointerdown.
+cv.addEventListener('click', e=>{
+  if(Date.now()-lastPointerDownAt<500)return;
+  const q=local(e);
+  if(onTitle||mode==='hub'||mode==='over'||introT>0||presentDialogue)onDown(q.x,q.y,false);
 });
 cv.addEventListener('pointermove', e=>{
   const id=e.pointerId??0;
