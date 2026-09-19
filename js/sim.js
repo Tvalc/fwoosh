@@ -41,7 +41,7 @@ let allies = [];     // rescued villagers fighting at your side in the duel — 
 let arsonT = 0;      // send-cadence timer
 let intercepts = 0, edge = 0;   // imps you cut off this run + THE EDGE (town war balance; + you, - Khet-Tak-Tor)
 let arsonSeen = false, huskSeen = false;   // first-imp / first-husk teach lines fire once
-let keithPressureT = 0, keithPressureCount = 0, keithStrike = null;
+let keithPressureT = 0, keithPressureCount = 0, keithStrike = null, keithSummon = null;
 let demonWell = null;                       // Keith's visible demon source
 let maxHearts = 5;   // hearts of health — NOT fixed; the player can earn more. hp stays a 0..1 fraction,
                      // so the burn transformation is fraction-based; more hearts = proportionally tankier.
@@ -89,14 +89,14 @@ function reset(seed){
   hunterFuse = K.BURN_FUSE; sparkT = 0; heatCoolT = 0; dumped = 0; saved = 0; overloadT = 0; sparks = [];
   demons = []; cinderBlasts = [];
   arson = []; arsonT = 0; intercepts = 0; edge = 0; arsonSeen = false;
-  keithPressureT = 0; keithPressureCount = 0; keithStrike = null;
+  keithPressureT = 0; keithPressureCount = 0; keithStrike = null; keithSummon = null;
   demonWell = null;
   husks = []; huskSeen = false; edgePop = 0;
   shots = []; wake = []; pulses = []; allies = []; demonKillSeen = false; pendCall = null;
   player = {
     x: VW/2, y: VH*0.62, hx: 0, hy: -1,   // heading
     spd: K.RUN, lunge: 0, charges: RUN_MAX_CHARGES, chargeT: 0, dashCd: 0, hurtCd: 0,
-    venting: false, ventHeld: false, ventUnit: null, ventDash: null, ventCd: 0, ventFlash: 0,
+    venting: false, ventHeld: false, ventNoticeSent:false, ventUnit: null, ventDash: null, ventCd: 0, ventFlash: 0,
     knockT:0, knockX:0, knockY:0, wph: rnd()*7,  // vent, hit knockback + auto-wander phase
     bracing: false, r: K.R_PLAYER,
     lit: true, fuse: K.FUSE_START,        // legacy (kept for skins); real state is heat
@@ -251,6 +251,7 @@ function step(){
   if(onTitle) return;                                // title screen: only animate (frame++), no sim
   if(hitstop > 0){ hitstop -= DT; return; }          // hitstop freezes the sim
   if(mode !== 'play') return;
+  if(keithSummon){ keithSummon.t += DT; if(keithSummon.t >= keithSummon.life) keithSummon = null; }
   if(introT > 0){ introT -= DT; if(introT < 0) introT = 0; return; }  // cold-open reveal, sim frozen
 
   // ---- LIVE intro: sim runs the whole time. During 'walkin' the player auto-walks up as a human;
@@ -263,11 +264,8 @@ function step(){
       if(!line){ intro = null; }
       else {
         const full = line.text.length * INTRO.TALK_CHAR;
-        const hold = INTRO.TALK_HOLD + line.text.length*INTRO.TALK_TAIL;
-        if(intro.lineT >= full + hold){
-          rememberDialogue(line);presentGap=INTRO.TALK_GAP;
-          intro.i++; intro.lineT = 0;
-          if(intro.i >= STORY.intro.length) intro = null;   // done -> pure gameplay
+        if(intro.lineT >= full && !intro.recorded){
+          rememberDialogue(line);intro.recorded=true;
         }
       }
     }
@@ -705,12 +703,16 @@ function beginVentUnit(){
   if(demonWell && demonWell.state==='destroyed') restoreDemonWell('vent');
   p.ventUnit={kind,t:0,duration:kind==='heat'?K.VENT_PURGE:RUN_VENT_HEAL_T};
   p.venting=true; p.lunge=0; p.spd=0;
+  if(!p.ventNoticeSent){
+    p.ventNoticeSent=true;
+    callout={text:kind==='heat'?'VENTING HEAT · HOLD TO CLEAR':'VENTING HEALTH · STAY CLEAR',t:0,life:1.0,good:true};
+  }
   if(snipeArmed&&!snipeUsed&&!intro)fireSnipe();
 }
 function setVentHeld(held){
   player.ventHeld=held;
   if(held) beginVentUnit();
-  else if(!player.ventUnit) player.venting=false;
+  else { player.ventNoticeSent=false; if(!player.ventUnit) player.venting=false; }
 }
 function ventHold(dt=DT){
   const p=player;
@@ -732,11 +734,11 @@ function ventHold(dt=DT){
   else beginVentUnit();
 }
 // ---- DEMON WELL: Keith's visible source of pressure
-function chooseDemonWellSpot(){
+function chooseDemonWellSpot(minPlayer=220){
   const spots=[];
   for(let i=0;i<48;i++){
     const s={x:K.EDGE+48+rnd()*(VW-2*(K.EDGE+48)), y:100+rnd()*(VH-200)};
-    if(player && dist(s.x,s.y,player.x,player.y)<220)continue;
+    if(player && dist(s.x,s.y,player.x,player.y)<minPlayer)continue;
     if(nearObstacle(s.x,s.y,K.DEMON_WELL_R+18) || nearSlag(s.x,s.y,K.DEMON_WELL_R+18))continue;
     if(cells && cells.some(c=>!c.dead&&dist(s.x,s.y,c.x,c.y)<K.DEMON_WELL_R+K.R_CELL+26))continue;
     spots.push(s);
@@ -745,7 +747,7 @@ function chooseDemonWellSpot(){
   return {x:VW/2,y:Math.max(120,Math.min(VH-120,VH*0.34))};
 }
 function createDemonWell(reason='keith'){
-  const s=chooseDemonWellSpot();
+  const s=chooseDemonWellSpot(reason==='vent'?K.VENT_DEMON_MIN_R+K.DEMON_WELL_R:220);
   return {x:s.x,y:s.y,state:'opening',t:0,spawnT:0,respawnT:0,reason};
 }
 function restoreDemonWell(reason='keith'){
@@ -767,9 +769,11 @@ function spawnDemonFromWell(pressure=false){
   if(!pressure && live>=K.DEMON_WELL_MAX_ACTIVE)return false;
   const ang=rnd()*Math.PI*2;
   const rr=pressure ? 18+rnd()*26 : K.DEMON_WELL_R*1.2+8+rnd()*20;
+  const source=pressure?'keith':'well';
   demons.push({x:demonWell.x+Math.cos(ang)*rr,y:demonWell.y+Math.sin(ang)*rr,t:0,
     ttl:pressure?K.KEITH_PRESSURE_DEMON_TTL:999,hitCd:0,huntVill:true,ph:rnd()*7,tgt:null,
-    source:pressure?'keith':'well',wellSpawn:true,emergeT:K.DEMON_WELL_EMERGE_T});
+    source,wellSpawn:true,emergeT:K.DEMON_WELL_EMERGE_T,
+    speed:K.DEMON_SPD*(pressure?1.06:0.92),targetLock:0});
   return true;
 }
 function stepDemonWell(dt){
@@ -791,10 +795,22 @@ function stepDemonWell(dt){
   }
 }
 
+function isVentDemon(d){ return !!d && (d.ventSpawn===true || d.source==='vent'); }
+function showKeithSummon(x,y){ keithSummon={x,y,t:0,life:0.95}; }
+function spawnKeithDemonAt(x,y,opts={}){
+  const d={x,y,t:0,ttl:opts.ttl??K.KEITH_PRESSURE_DEMON_TTL,hitCd:0,
+    huntVill:opts.huntVill!==false,ph:rnd()*7,tgt:null,source:'keith',wellSpawn:false,
+    emergeT:opts.emergeT??0,speed:opts.speed??K.DEMON_SPD,targetLock:0};
+  demons.push(d); showKeithSummon(x,y); return d;
+}
 function spawnVentDemon(){
-  const p=player, spot=ventDemonSpawn(p);
-  const d={x:spot.x,y:spot.y,t:0,hitCd:0,
-    source:'vent',warn:K.VENT_DEMON_WAKE,ph:rnd()*7,tgt:null,feast:null,eatT:0};
+  // Vent wakes the same visible well. A vent demon is still a well demon with
+  // a different target rule, so no enemy can appear from an arbitrary screen edge.
+  if(!demonWell || demonWell.state==='destroyed') restoreDemonWell('vent');
+  const w=demonWell, ang=rnd()*Math.PI*2, rr=K.DEMON_WELL_R*1.2+8+rnd()*18;
+  const d={x:w.x+Math.cos(ang)*rr,y:w.y+Math.sin(ang)*rr,t:0,hitCd:0,
+    source:'vent',wellSpawn:true,ventSpawn:true,warn:K.VENT_DEMON_WAKE,emergeT:0,
+    ph:rnd()*7,tgt:null,feast:null,eatT:0,speed:K.DEMON_SPD,targetLock:0,ttl:999};
   demons.push(d);
   notePresentEvent('demon');
 }
@@ -856,15 +872,16 @@ function stepDemons(dt){
   const order = demons.map((d,i)=>({i,dd:dist(d.x,d.y,p.x,p.y)})).sort((a,b)=>a.dd-b.dd);
   const canHit = new Set(order.slice(0,2).map(o=>o.i));
   for(let i=demons.length-1;i>=0;i--){ const d=demons[i]; d.t+=dt; if(d.hitCd>0) d.hitCd-=dt; if(d.fresh!=null) d.fresh+=dt;
+    if(d.targetLock>0) d.targetLock-=dt;
     if(d.emergeT>0){ d.emergeT=Math.max(0,d.emergeT-dt); continue; }
     // DASH-KILL: dash through ANY fire monster to shatter it for heat + embers (your reward for clearing them).
     // You can't while venting (rooted) — so vent to heal, then dash the swarm down.
     if(!god && p.lunge > 0 && dist(d.x,d.y,p.x,p.y) <= K.DEMON_R + p.r){ killDemon(d); demons.splice(i,1); continue; }
     // Only Khet-Tak-Tor summons expire; vent demons persist until killed or cinder consumption.
-    if(d.source !== 'town' && d.source !== 'vent' && d.source !== 'well' && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
+    if(d.source !== 'well' && d.source !== 'keith' && !isVentDemon(d) && !p.venting){ d.ttl -= dt; if(d.ttl<=0){
         for(let k=0;k<6;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3,out:true,vx:Math.cos(a)*120,vy:Math.sin(a)*120,hue:16}); }
         demons.splice(i,1); continue; } }
-    if(d.source==='vent'){
+    if(isVentDemon(d)){
       if(d.warn>0){d.warn=Math.max(0,d.warn-dt);continue;}
       if(d.feast && !husks.includes(d.feast)){d.feast=null;d.eatT=0;}
       if(d.feast){
@@ -873,8 +890,9 @@ function stepDemons(dt){
         continue;
       }
     }
-    let tx=p.x, ty=p.y; d.tgt=null;
-    if(d.source==='vent'){
+    let tx=p.x, ty=p.y;
+    if(isVentDemon(d)) d.tgt=null;
+    if(isVentDemon(d)){
       let best=null,bd=K.CINDER_SEEK_R;
       for(const h of husks){
         if(demons.some(other=>other!==d && other.feast===h))continue;
@@ -882,13 +900,17 @@ function stepDemons(dt){
       }
       if(best){d.tgt=best;tx=best.x;ty=best.y;}
     }
-    if(d.source!=='vent' && d.huntVill){ let best=null,bd=1e9; for(const c of cells){ if(c.saving||c.dead) continue; const dd=dist(c.x,c.y,d.x,d.y); if(dd<bd){bd=dd;best=c;} }
-      if(best){ tx=best.x; ty=best.y; d.tgt=best; } }
+    if(d.source!=='vent' && d.huntVill && (!d.tgt || d.tgt.dead || d.tgt.saving || d.targetLock<=0)){
+      let best=null,bd=1e9;
+      for(const c of cells){ if(c.saving||c.dead) continue; const dd=dist(c.x,c.y,d.x,d.y); if(dd<bd){bd=dd;best=c;} }
+      if(best){ tx=best.x; ty=best.y; d.tgt=best; d.targetLock=K.DEMON_TARGET_LOCK; }
+    } else if(d.source!=='vent' && d.tgt){ tx=d.tgt.x; ty=d.tgt.y; }
     const dx=wrapDX(tx-d.x), dy=ty-d.y, m=Math.hypot(dx,dy)||1;
-    d.x += (dx/m)*K.DEMON_SPD*dt; d.y += (dy/m)*K.DEMON_SPD*dt;
+    const speed=d.speed||K.DEMON_SPD;
+    d.x += (dx/m)*speed*dt; d.y += (dy/m)*speed*dt;
     if(d.x<K.EDGE)d.x=K.EDGE; if(d.x>VW-K.EDGE)d.x=VW-K.EDGE; if(d.y<40)d.y=40; if(d.y>VH-40)d.y=VH-40;
     collideObstacles(d, K.DEMON_R);                                 // fire monsters can't phase through props
-    if(d.source==='vent' && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y)<=K.DEMON_R+K.HUSK_R){
+    if(isVentDemon(d) && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y)<=K.DEMON_R+K.HUSK_R){
       d.feast=d.tgt;d.eatT=0;
       callout={text:'DEMON EATING CINDER — DASH TO STOP IT!',t:0,life:1.4,good:false};
       continue;
@@ -897,7 +919,7 @@ function stepDemons(dt){
       p.hp -= K.DEMON_HIT; d.hitCd = K.DEMON_HIT_CD; p.hurtCd = K.HURT_IFRAME; flash = DT*2;
       demonHitReaction(d);hitstop=K.HITSTOP*0.45;
       if(p.hp<=0){ p.hp=0; pop('the demons took you'); return; } }
-    if(d.source!=='vent' && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
+    if(!isVentDemon(d) && d.tgt && dist(d.x,d.y,d.tgt.x,d.tgt.y) <= K.DEMON_R+K.R_CELL){    // reach a villager
       if(d.tgt.hunter) becomeHusk(d.tgt);                              // flaming -> the fire finishes them into a husk
       else if(!d.tgt.saving && d.tgt.grace<=0) ignite(d.tgt,'demon');   // calm -> re-ignited
       d.tgt=null; }
@@ -914,7 +936,8 @@ function spawnArson(){
   // enter from the edge nearest the mark, so it reads as arriving from outside
   const cand = [ {x:K.EDGE, y:c.y}, {x:VW-K.EDGE, y:c.y}, {x:c.x, y:40}, {x:c.x, y:VH-40} ];
   const e = cand.reduce((b,p)=> dist(p.x,p.y,c.x,c.y) < dist(b.x,b.y,c.x,c.y) ? p : b);
-  arson.push({ x:e.x, y:e.y, tgt:c, t:0, warn:K.ARSON_WARN, ph:rnd()*7 });
+  arson.push({ x:e.x, y:e.y, tgt:c, t:0, warn:K.ARSON_WARN, ph:rnd()*7, source:'keith' });
+  showKeithSummon(e.x,e.y);
   if(!arsonSeen){ arsonSeen = true; callout = { text:'KEITH SENDS A FIRE IMP · CUT IT OFF', t:0, life:1.9, good:false }; }
 }
 
@@ -935,6 +958,21 @@ function triggerKeithPressure(){
   callout = { text:'KEITH APPEARS · MORE DEMONS INCOMING', t:0, life:2.0, good:false };
   return true;
 }
+function encounterStress(){
+  const p=player||{};
+  const heat=(p.heat||0)/Math.max(1,K.HEAT_MAX);
+  const hp=1-(p.hp==null?1:p.hp);
+  const active=Math.min(1,demons.filter(d=>d.source==='keith'||d.source==='well'||d.source==='vent').length/Math.max(1,K.MAX_DEMONS));
+  const burning=Math.min(1,hunters().length/Math.max(1,K.CROWD_CAP));
+  return Math.max(0,Math.min(1,heat*.36+hp*.30+active*.22+burning*.12));
+}
+function keithPressureCadence(){
+  const base=Math.max(K.KEITH_PRESSURE_MIN,K.KEITH_PRESSURE_EVERY-(runDistrict-1)*1.4-keithPressureCount*.35);
+  const stress=encounterStress();
+  if(stress>=K.KEITH_PRESSURE_OVERLOAD) return base+(stress-K.KEITH_PRESSURE_OVERLOAD)*8;
+  if(stress<0.25) return Math.max(K.KEITH_PRESSURE_MIN,base-K.KEITH_PRESSURE_RELIEF);
+  return base;
+}
 function stepKeithPressure(dt){
   if(mode!=='play' || duelActive || intro) return;
   if(keithStrike){
@@ -952,6 +990,9 @@ function stepKeithPressure(dt){
     if(keithStrike.done){ keithStrike.lt += dt; if(keithStrike.lt > 0.55) keithStrike = null; }
     return;
   }
+  // Do not stack a fresh direct strike on top of a committed vent or a bite.
+  // The cadence remains armed and resumes as soon as the player can respond.
+  if(player.venting || player.hurtCd>0) return;
   if(keithPressureCount===0){
     if(elapsed < K.KEITH_PRESSURE_FIRST) return;
     keithPressureT = 0;
@@ -959,7 +1000,7 @@ function stepKeithPressure(dt){
     return;
   }
   keithPressureT += dt;
-  const cadence = Math.max(K.KEITH_PRESSURE_MIN, K.KEITH_PRESSURE_EVERY - (runDistrict-1)*1.4 - keithPressureCount*0.35);
+  const cadence = keithPressureCadence();
   if(keithPressureT >= cadence){ keithPressureT = 0; triggerKeithPressure(); }
 }
 function stepArson(dt){
@@ -1025,13 +1066,13 @@ function stepHusks(dt){
       if(d < min && d > 0.001 && p.lunge <= 0){ p.x += (dx/d)*(min-d); p.y += (dy/d)*(min-d); p.hx = dx/d; p.hy = dy/d; } }
     // CRACK -> rise as a persistent town-wraith (unless the roam is already full)
     if(h.t >= K.HUSK_CRACK_T && !demons.some(d=>d.feast===h)){
-      const town = demons.filter(d=>d.source==='town').length;
-      if(town < K.WRAITH_CAP){
-        demons.push({ x:h.x, y:h.y, t:0, ttl:1e9, hitCd:0, huntVill: rnd()<0.7, ph:rnd()*7, tgt:null,
-                      source:'town', fresh:0 });
+      // A failed rescue cracks open a signal for Keith. The hostile demon is
+      // summoned by him at the husk, never born from the town floor.
+      if(demons.filter(d=>d.source==='keith').length < K.WRAITH_CAP){
+        spawnKeithDemonAt(h.x,h.y,{ttl:1e9,speed:K.DEMON_SPD*1.04});
         ring(h.x, h.y, K.HUSK_R, 80, '#b06a5a', 0.6);
-        if(!META.flags) META.flags={}; if(!META.flags.sawWraith){ META.flags.sawWraith=true; saveMeta(); }   // opens a diary page
       }
+      if(!META.flags) META.flags={}; if(!META.flags.sawWraith){ META.flags.sawWraith=true; saveMeta(); }   // opens a diary page
       husks.splice(i,1);
     }
   }
@@ -1048,14 +1089,14 @@ function rekindleHusk(h){
 let demonKillSeen = false;
 function killDemon(d){   // dash THROUGH any fire monster to shatter it: heat you can bank + embers to spend
   const p = player;
-  const town = d.source === 'town';
+  const vent = isVentDemon(d);
   p.heat = Math.min(K.HEAT_MAX, p.heat + K.DEMON_KILL_HEAT);
-  const em = d.source==='vent'?0:K.DEMON_KILL_EMBERS; runEmbers += em;
+  const em = vent?0:K.DEMON_KILL_EMBERS; runEmbers += em;
   edge += 0.25; edgePop = 0.5;                                   // clearing them nudges the town war your way
   p.absorbPop = 0.26; flash = DT*1.5; hitstop = K.HITSTOP*0.5;
-  ring(d.x, d.y, 6, 50, town?'#c79be0':'#ffb050', 0.5);
-  for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:town?285:24}); }
-  if(!demonKillSeen){ demonKillSeen = true; notePresentEvent('demonKill'); callout = { text:d.source==='vent'?'VENT DEMON CLEARED · +1 HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +1 HEAT +EMBERS', t:0, life:2.3, good:true }; }
+  ring(d.x, d.y, 6, 50, d.source==='well'?'#d66bff':'#ffb050', 0.5);
+  for(let k=0;k<10;k++){ const a=rnd()*7; sparks.push({x:d.x,y:d.y,t:0,life:0.3+rnd()*0.22,out:true,vx:Math.cos(a)*140,vy:Math.sin(a)*140,hue:d.source==='well'?285:24}); }
+  if(!demonKillSeen){ demonKillSeen = true; notePresentEvent('demonKill'); callout = { text:vent?'VENT DEMON CLEARED · +1 HEAT, NO EMBERS':'DASH THROUGH FIRE MONSTERS · +1 HEAT +EMBERS', t:0, life:2.3, good:true }; }
   else callout = { text:em>0?'SHATTERED! +1 HEAT +EMBERS':'SHATTERED! +1 HEAT', t:0, life:0.7, good:true };
 }
 
@@ -1136,9 +1177,9 @@ function execArbiterMove(b){
       shots.push({ x:b.x, y:b.y, vx:Math.cos(a)*K.SPIT_SPD, vy:Math.sin(a)*K.SPIT_SPD, t:0, ph:rnd()*7 }); }
     ring(b.x,b.y,4,40,'#ff9a2e',0.4);
   } else if(b.move === 'demon'){
+    showKeithSummon(b.x,b.y);
     for(let i=0;i<K.ARBITER_DEMONS;i++){ const a=rnd()*Math.PI*2;
-      demons.push({ x:b.x+Math.cos(a)*30, y:b.y+Math.sin(a)*30, t:0, ttl:K.ARBITER_DEMON_TTL, hitCd:0,
-                    huntVill:false, ph:rnd()*7, tgt:null, source:'arbiter' }); }
+      spawnKeithDemonAt(b.x+Math.cos(a)*30,b.y+Math.sin(a)*30,{ttl:K.ARBITER_DEMON_TTL}); }
     ring(b.x,b.y,6,60,'#ff5a2e',0.5);
   } else if(b.move === 'siphon'){
     // pull nearby villagers into an orbiting shield; save them to strip it (timed out otherwise)

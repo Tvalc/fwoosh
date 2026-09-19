@@ -379,7 +379,8 @@ function drawAnim(ctx, key, X, y, targetH, o){ o=o||{};
   if(o.alpha!=null) ctx.globalAlpha*=o.alpha;
   ctx.imageSmoothingEnabled=true;
   const anchor=m.anchorX==null?m.fw/2:m.anchorX;
-  const cols=m.cols||m.frames, padding=m.padding||0;
+  const cols=m.cols||m.frames;
+  const padding=m.padding||0;
   const col=fi%cols, row=Math.floor(fi/cols);
   const sx=padding+col*(m.fw+padding*2), sy=padding+row*(m.fh+padding*2);
   ctx.drawImage(im, sx, sy, m.fw, m.fh, -anchor*sc, -targetH/2, w, targetH);
@@ -908,7 +909,8 @@ function drawDialogue(ctx){
   const d=presentDialogue;
   const line=intro?STORY.intro[intro.i]:d?d.lines[d.i]:null;
   if(!line) return;
-  const t=intro?intro.lineT:d.t,shown=Math.min(line.text.length,Math.floor(t/INTRO.CHAR));
+  const charRate=intro?INTRO.TALK_CHAR:INTRO.CHAR;
+  const t=intro?intro.lineT:d.t,shown=Math.min(line.text.length,Math.floor(t/charRate));
   const talking=shown<line.text.length;
   // Bottom dialogue strip stays above the mobile vent circle and dash-charge row.
   const bx=8,bw=538,bh=144,by=PLAY_VIEW.bottom+4,pad=8,ps=76;
@@ -923,6 +925,9 @@ function drawDialogue(ctx){
   ctx.font='800 22px "Chakra Petch",system-ui,sans-serif';ctx.fillText(line.who,tx,by+25);
   ctx.fillStyle='#f2f3ff';ctx.font='500 26px "Chakra Petch",system-ui,sans-serif';
   wrapText(ctx,line.text.slice(0,shown),tx,by+54,tw,28);
+  ctx.textAlign='right';ctx.font='700 15px "Chakra Petch",system-ui,sans-serif';
+  ctx.fillStyle=talking?'rgba(255,255,255,0.52)':'rgba(255,210,138,0.86)';
+  ctx.fillText(talking?'TAP TO REVEAL':'TAP TO CONTINUE',bx+bw-pad,by+bh-10);
 
   ctx.restore();
 }
@@ -1008,7 +1013,25 @@ function drawLopingDemon(ctx,x,y,d){
   ctx.restore();
 }
 
-
+// The shipped backdrop contains a small stone well at the bottom-left. Keep
+// that authored object as Keith's arrival cue, then veil it as the new portal
+// takes over. The veil is deliberately soft so it reads as a transition, not
+// a second gameplay well.
+function drawLegacyWellTransition(ctx,w){
+  const x=133,y=1117,r=94;
+  const reveal = w && w.state==='opening'
+    ? Math.max(0,1-Math.min(1,(w.t||0)/K.DEMON_WELL_OPEN_T)) : 0;
+  const veil=1-reveal;
+  if(veil<=0.001)return;
+  ctx.save();
+  ctx.globalAlpha=Math.min(0.96,veil*0.96);
+  const g=ctx.createRadialGradient(x,y,6,x,y,r*1.25);
+  g.addColorStop(0,'rgba(8,6,13,0.98)');
+  g.addColorStop(0.72,'rgba(11,8,16,0.88)');
+  g.addColorStop(1,'rgba(11,8,16,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,r*1.08,r*.72,0,0,7);ctx.fill();
+  ctx.restore();
+}
 
 // ---- TITLE / START SCREEN: FWOOSH logo, Khet-Tak-Tor looming, the hero below, the town ablaze
 // ---------------------------------------------------------------- THE TOWN HUB (meta home base)
@@ -1050,6 +1073,9 @@ function hubAct(a){
 }
 // a soft rounded panel
 function panel(ctx,x,y,w,h,r,fill,stroke){ ctx.beginPath();
+  // Once Makko's panel export lands, every existing screen gets the authored
+  // surface automatically. Until then this preserves the current fallback.
+  if(typeof uiDrawSurface==='function' && uiDrawSurface(ctx,'panel',x,y,w,h,{where:'panel',quiet:true})) return;
   ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
   if(fill){ ctx.fillStyle=fill; ctx.fill(); } if(stroke){ ctx.lineWidth=2; ctx.strokeStyle=stroke; ctx.stroke(); } }
 
@@ -1492,6 +1518,7 @@ function render(){
   ctx.save();ctx.beginPath();ctx.rect(0,PLAY_VIEW.top,VW,PLAY_VIEW.bottom-PLAY_VIEW.top);ctx.clip();
   ctx.translate(view.x,view.y);ctx.scale(view.s,view.s);
   SK.bg(ctx);
+  drawLegacyWellTransition(ctx,demonWell);
 
   if(window.OBS_DEBUG){                                 // obstacle-tuning overlay (dev only)
     ctx.save(); ctx.strokeStyle='rgba(0,255,255,0.9)'; ctx.fillStyle='rgba(0,255,255,0.12)'; ctx.lineWidth=2;
@@ -1575,17 +1602,18 @@ function render(){
     ctx.globalAlpha = 1;
   }
 
-  // Keith's pressure demons visibly lock onto a Ratkin. The moving tether is the warning:
-  // cut across it before the demon reaches the marked villager.
-  for(const d of demons){if(d.source!=='keith')continue;
+  // Keith and well demons visibly lock onto a Ratkin. The moving tether is the
+  // warning and the counter-play: cut across it before the marked villager is hit.
+  for(const d of demons){if(d.source!=='keith'&&d.source!=='well')continue;
     if(d.tgt){
       ctx.save();
       const pulse = 0.55 + 0.25*Math.sin(frame*0.25+(d.ph||0));
-      ctx.globalAlpha=pulse;ctx.strokeStyle='#ff4f66';ctx.lineWidth=2.5;
+      const col=d.source==='well'?'#d66bff':'#ff4f66';
+      ctx.globalAlpha=pulse;ctx.strokeStyle=col;ctx.lineWidth=2.5;
       ctx.setLineDash([8,10]);ctx.lineDashOffset=-frame*0.8;
       ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.tgt.x,d.tgt.y);ctx.stroke();
       ctx.setLineDash([]);
-      ctx.strokeStyle='#ffb04f';ctx.lineWidth=2;
+      ctx.strokeStyle=d.source==='well'?'#efb7ff':'#ffb04f';ctx.lineWidth=2;
       ctx.beginPath();ctx.arc(d.tgt.x,d.tgt.y,K.R_CELL+8+3*Math.sin(frame*0.22),0,Math.PI*2);ctx.stroke();
       ctx.restore();
     }
@@ -1612,21 +1640,23 @@ function render(){
     for(let j=0;j<6;j++){const a=j*Math.PI/3;drawFlame(ctx,b.x+Math.cos(a)*K.CINDER_BLAST_R*f,b.y+Math.sin(a)*K.CINDER_BLAST_R*f+30,85*(1-f)+35,frame*0.6+j,1-f);}
   }
 
-  // ---- FIRE DEMONS: vent-bred (orange, persistent) and TOWN wraiths (ashen-violet, persistent, dash to kill)
+  // ---- FIRE DEMONS: every demon now has an explicit source. Wells create
+  // the persistent loping threat; Keith creates direct summons. No town-floor
+  // wraiths or edge-spawned demon family remains.
   for(const d of demons){
-    const town = d.source === 'town';
+    if((d.source==='town'||d.source==='arbiter')&&!d.wellSpawn)continue;
+    if(d.source==='vent'&&!d.wellSpawn)continue;
     wrapDraw(d.x, X=>drawWorldActor(ctx,X,d.y,K.DEMON_R*1.2,()=>{
-      if(d.wellSpawn){ drawLopingDemon(ctx,X,d.y,d); return; }
-      const gr=(town?K.DEMON_R*2.15:K.DEMON_R*1.7)+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
-      if(town){ g.addColorStop(0,'rgba(198,128,190,0.72)'); g.addColorStop(0.6,'rgba(150,95,155,0.30)'); g.addColorStop(1,'rgba(140,90,140,0)'); }
-      else { g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)'); }
+      if(d.wellSpawn||d.source==='well'||d.source==='keith'){ drawLopingDemon(ctx,X,d.y,d); return; }
+      const gr=K.DEMON_R*1.7+3*Math.sin(frame*0.4+(d.ph||0)), g=ctx.createRadialGradient(X,d.y,2,X,d.y,gr);
+      g.addColorStop(0,'rgba(255,120,40,0.6)'); g.addColorStop(1,'rgba(255,90,30,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(X,d.y,gr,0,7); ctx.fill();
       groundShadow(ctx, X, d.y+K.DEMON_R*1.2, K.DEMON_R*1.0, K.DEMON_R*0.34);
       const flip = (d.tgt ? d.tgt.x<d.x : player.x<d.x);
-      ctx.globalAlpha = (!player.venting && !town && d.source!=='vent') ? Math.min(1, (d.ttl||0)/0.6) : (town?0.94:1);   // vent-demon collapse fade
+      ctx.globalAlpha = !player.venting ? Math.min(1, (d.ttl||0)/0.6) : 1;
       if(!drawAnim(ctx,'firedemon', X, d.y, K.DEMON_R*3.2, {fps:12, flip}) &&
          !drawSpr(ctx,'firedemon', X, d.y, K.DEMON_R*3.0, {flip})){
-        ctx.fillStyle= town?'#b06a8a':'#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
+        ctx.fillStyle='#ff5a2e'; ctx.beginPath(); ctx.arc(X,d.y,K.DEMON_R,0,7); ctx.fill(); }
       ctx.globalAlpha = 1;
     }));
   }
@@ -1767,6 +1797,19 @@ function render(){
       wrapDraw(sx,X=>{ctx.fillStyle='#ff7aa6';ctx.beginPath();ctx.arc(X,sy,5,0,7);ctx.fill();});
     }
   }
+  if(keithSummon){
+    const k=Math.min(1,keithSummon.t/0.24), fade=Math.min(1,(keithSummon.life-keithSummon.t)/0.22);
+    wrapDraw(keithSummon.x,X=>{
+      ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,Math.min(k,fade)));
+      ctx.globalCompositeOperation='screen';
+      const g=ctx.createRadialGradient(X,keithSummon.y,2,X,keithSummon.y,54+24*k);
+      g.addColorStop(0,'rgba(255,80,130,.55)');g.addColorStop(1,'rgba(255,50,90,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(X,keithSummon.y,54+24*k,0,7);ctx.fill();
+      ctx.globalCompositeOperation='source-over';
+      drawSpr(ctx,'keith',X,keithSummon.y-24,54,{rot:0.08*Math.sin(frame*0.2),sy:0.82+0.18*k});
+      ctx.restore();
+    });
+  }
 
   ctx.restore(); // End world clip; HUD has its own reserved screen space.
 
@@ -1828,7 +1871,7 @@ function render(){
     }
     if(isTouch){drawTouchStick(ctx);drawVentButton(ctx);}
     ctx.textAlign='left';ctx.fillStyle='#b4a7ba';ctx.font='500 20px "Chakra Petch",system-ui,sans-serif';
-    if(intro||presentDialogue)ctx.fillText('AUTO · Diary → Conversations',248,1267);
+    if(intro||presentDialogue)ctx.fillText('TAP TO ADVANCE · Diary → Conversations',248,1267);
   }
 
   // ---- LIVE intro dialogue box (Khet-Tak-Tor narrates over gameplay)
